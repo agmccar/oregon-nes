@@ -1,0 +1,85 @@
+Poop := $412
+
+OXENSPRITES = $0200
+WAGONSPRITES = $0228
+
+PPUSTATUS = $2002
+PPUSCROLL = $2005
+PPUADDR = $2006
+PPUDATA = $2007
+
+KEY_A      = %10000000
+KEY_B      = %01000000
+KEY_SELECT = %00100000
+KEY_START  = %00010000
+KEY_UP     = %00001000
+KEY_DOWN   = %00000100
+KEY_LEFT   = %00000010
+KEY_RIGHT  = %00000001
+
+; COLD
+; COOL
+; FAIR
+; WARM
+; HOT!
+; 2019年 2月 17日
+
+;STEADY
+;STRENUOUS
+;GRUELING
+
+;FILLING
+;
+
+;------Menu
+;MAP
+;ちず
+;STATUS
+;ステータス
+;RATIONS
+;しょくりょう
+;TRADE
+;トレード
+;TALK
+;はなす
+;REST
+;やすみ
+;PACE
+;そくど
+;HUNT
+;ハント
+;OPTIONS
+;オプション
+
+;-------Weather
+;CLEAR
+;かいせい　晴
+;PARTLY CLOUDY
+;うすぐもり　雲
+;CLOUDY
+;くもり　雲
+;RAINY
+;あめ　雨
+;DOWNPOUR
+;どしゃぶり
+;SNOWING
+;ゆき
+;BLIZZARD
+;ブリザード
+;FOG
+;フォグ
+;DUST STORM
+;さじんあらし
+;THUNDERSTORM
+;らいう
+;HAIL
+;ひょうのあらし
+;11
+;
+;12
+;
+;13
+;
+;14
+;
+;15
