@@ -36,27 +36,9 @@
     STX PPUMASK
     STX DMCFREQ
 
-
-    JSR LoadPalette
-    JSR LoadBackground
-    ;JSR InitHUD
-    JSR LoadBackgroundAttribute
-    JSR InitOxenSprite
-    JSR InitWagonSprite
-
-    ; zero sprite
-    LDA #$37         ; Y
-    STA ZEROSPRITE
-    LDA _O_          ; tile index
-    STA ZEROSPRITE+1
-    LDA #%00000001   ; attr
-    STA ZEROSPRITE+2
-    LDA #$F0         ; X
-    STA ZEROSPRITE+3
-
-vblankwait1:
+vblankwait:
     BIT PPUSTATUS
-    BPL vblankwait1
+    BPL vblankwait
 
 clearmemory:
     LDA #$00
@@ -72,13 +54,38 @@ clearmemory:
     INX
     BNE clearmemory
 
+
+; initialize zeropage and vars variables
+    ; Default 0: 
+    ; pointer, sprite0hit, helper, frameCounter, globalScroll, gameState,
+    ; oxenFrame, wagonStatus, traveledMi, traveledDigit, menuOpen,
+    ; buttons1, dollars, foodLbs, foodDigit, clothingSets, bullets,
+    ; spareParts, oxenHeadcount, dateYear, dateMonth, dateDay,
+    ; personStatus
+    LDA #%00001101
+    STA wagonSettings
+    LDA #%00000100
+    STA weather
+    
+    ; set default person names
+    LDX #0
+defaultPersonNameLoop:
+    LDA defaultPersonNames, X
+    STA personName, X
+    CPX TEXT_PERSON_LEN*5
+    BNE defaultPersonNameLoop
+
+; Initialize game state
+    JSR InitStateTitle
+
+
 vblankwait2:
     BIT PPUSTATUS
     BPL vblankwait2
 
+
     LDA #%10010000 ; turn on NMIs, sprites use first pattern table
     STA PPUCTRL
-
     LDA #%00011110 ; turn on screen
     STA PPUMASK
 
@@ -150,30 +157,55 @@ forever:
 
 ;--------------------------------------
 .proc UpdateScreen
+    LDA gameState
+
+    CMP GAMESTATE_TITLE
+    BEQ Title
+
+    CMP GAMESTATE_NEWGAME
+    BEQ NewGame
+
+    CMP GAMESTATE_STORE
+    BEQ Store
+
+    CMP GAMESTATE_STARTDATE
+    BEQ StartDate
+
+    CMP GAMESTATE_LANDMARK
+    BEQ Landmark
+
+    CMP GAMESTATE_MAP
+    BEQ Map
+
+    CMP GAMESTATE_TRAVELING
+    BEQ Traveling
+
+Title:
+    JMP Done
+    
+NewGame:
+    JMP Done
+    
+Store:
+    JMP Done
+    
+StartDate:
+    JMP Done
+    
+Landmark:
+    JMP Done
+    
+Map:
+    JMP Done
+
+Traveling:
     LDX globalScroll
     DEX
     STX PPUSCROLL ; horizontal scroll (globalScroll - 1)
     LDA #0
     STA PPUSCROLL ; vertical scroll (0)
     STX globalScroll ; update globalScroll
-; CheckSprite0Hit:
-;     LDA PPUSTATUS
-;     AND #%01000000
-;     BNE @hit
-;     ; don't freeze scrolling.
-;     LDA globalScroll
-;     STA PPUSCROLL ;horizontal
-;     LDA #0
-;     STA PPUSCROLL ;vertical
-;     JMP @noHit
-; @hit:
-;     ; freeze scrolling.
-;     LDA #0
-;     STA PPUSCROLL ;horizontal
-;     STA PPUSCROLL ;vertical
-; @noHit:
-;     RTS
-CheckSprite0Hit: ; t. @cuttercross
+; CheckSprite0Hit: ; t. @cuttercross
     LDA #%11000000  ;; We'll bit test for both sprite0 flag and vBlank flag at the same time 
                     ;; [Safety measure to prevent a full lockup scenario on sprite0 miss]
 @sprite0Poll1:
@@ -186,56 +218,131 @@ CheckSprite0Hit: ; t. @cuttercross
     LDA #0
     STA PPUSCROLL 
     STA PPUSCROLL
+    JMP Done
+
+Done:
     RTS
 .endproc
 
 ;--------------------------------------
-.proc ReadController1
-    PHP
-    PHA
-    TXA
-    PHA
-    TYA
-    PHA
-    LDA #$01
-    STA $4016
-    LDA #$00
-    STA $4016
-    LDX #$08
-@loop:
-    LDA $4016
-    LSR A
-    ROL buttons1
-    DEX
-    BNE @loop
-    PLA
-    TAY
-    PLA
-    TAX
-    PLA
-    PLP
-    RTS
-.endproc
-
-;--------------------------------------
-LoadPalette:
+.proc InitStateTitle
+    JSR LoadPalette
+    
+LoadBackground:
     LDA PPUSTATUS
-
-    LDA #$3F
+    LDA #$20
     STA PPUADDR
     LDA #$00
-    STA PPUADDR ; $3F00
+    STA PPUADDR ; $2000
 
     LDX #0
+    LDY #0
+@repeatLoop:
+    INY
 @loop:
-    LDA palette, X
+    TXA
     STA PPUDATA
     INX
     CPX #32
     BNE @loop
+    CPY #30
+    BNE @repeatLoop
+
+;     LDA #$21
+;     STA PPUADDR
+;     LDA #$00
+;     STA PPUADDR ; $2100
+;     LDX #0
+; @loop2:
+;     LDA hud1, X
+;     STA PPUDATA
+;     INX
+;     CPX #$00
+;     BNE @loop2
+
+; @loop3:
+;     LDA hud2, X
+;     STA PPUDATA
+;     INX
+;     CPX #$00
+;     BNE @loop3
+
+; @loop4:
+;     LDA hud3, X
+;     STA PPUDATA
+;     INX
+;     CPX #$C0
+;     BNE @loop4
+
+LoadBackgroundAttribute:
+    LDA PPUSTATUS
+    LDA #$23
+    STA PPUADDR
+    LDA #$C0
+    STA PPUADDR ; $23C0 (first screen attribute table)
+
+    LDX #0
+    LDY #0
+@repeatLoop:
+    INY
+@loop:
+    LDA bgAttribute, X
+    STA PPUDATA
+    INX
+    CPX #$40
+    BNE @loop
+
+    LDX #0
+    LDA PPUSTATUS ; load second screen attr table
+    LDA #$27
+    STA PPUADDR
+    LDA #$C0
+    STA PPUADDR ; $27C0 (attribute table)
+    CPY #2
+    BNE @repeatLoop ; 2nd screen
+
     RTS
+.endproc
 
 ;--------------------------------------
+.proc InitStateNewGame
+    RTS
+.endproc
+
+;--------------------------------------
+.proc InitStateStore
+    RTS
+.endproc
+
+;--------------------------------------
+.proc InitStateStartDate
+    RTS
+.endproc
+
+;--------------------------------------
+.proc InitStateLandmark
+    RTS
+.endproc
+
+;--------------------------------------
+.proc InitStateMap
+    RTS
+.endproc
+
+;--------------------------------------
+.proc InitStateTraveling
+    ; zero sprite
+    LDA #$37         ; Y
+    STA ZEROSPRITE
+    LDA _O_          ; tile index
+    STA ZEROSPRITE+1
+    LDA #%00000001   ; attr
+    STA ZEROSPRITE+2
+    LDA #$F0         ; X
+    STA ZEROSPRITE+3
+        
+    JSR LoadPalette
+
 LoadBackground:
     LDA PPUSTATUS
     LDA #$20
@@ -287,9 +394,6 @@ LoadBackground:
     CPX #$C0
     BNE @loop4
 
-    RTS
-
-;--------------------------------------
 LoadBackgroundAttribute:
     LDA PPUSTATUS
     LDA #$23
@@ -317,10 +421,102 @@ LoadBackgroundAttribute:
     CPY #2
     BNE @repeatLoop ; 2nd screen
 
+    JSR InitOxenSprite
+    JSR InitWagonSprite
     RTS
+.endproc
 
 ;--------------------------------------
-UpdateSprites:
+.proc ReadController1
+    PHP
+    PHA
+    TXA
+    PHA
+    TYA
+    PHA
+    LDA #$01
+    STA $4016
+    LDA #$00
+    STA $4016
+    LDX #$08
+@loop:
+    LDA $4016
+    LSR A
+    ROL buttons1
+    DEX
+    BNE @loop
+    PLA
+    TAY
+    PLA
+    TAX
+    PLA
+    PLP
+    RTS
+.endproc
+
+;--------------------------------------
+.proc LoadPalette
+    LDA PPUSTATUS
+
+    LDA #$3F
+    STA PPUADDR
+    LDA #$00
+    STA PPUADDR ; $3F00
+
+    LDX #0
+loop:
+    LDA palette, X
+    STA PPUDATA
+    INX
+    CPX #32
+    BNE loop
+    RTS
+.endproc
+
+;--------------------------------------
+.proc UpdateSprites
+    LDA gameState
+
+    CMP GAMESTATE_TITLE
+    BEQ Title
+
+    CMP GAMESTATE_NEWGAME
+    BEQ NewGame
+
+    CMP GAMESTATE_STORE
+    BEQ Store
+
+    CMP GAMESTATE_STARTDATE
+    BEQ StartDate
+
+    CMP GAMESTATE_LANDMARK
+    BEQ Landmark
+
+    CMP GAMESTATE_MAP
+    BEQ Map
+
+    CMP GAMESTATE_TRAVELING
+    BEQ Traveling
+
+Title:
+    JMP Done
+    
+NewGame:
+    JMP Done
+    
+Store:
+    JMP Done
+    
+StartDate:
+    JMP Done
+    
+Landmark:
+    JMP Done
+    
+Map:
+    JMP Done
+
+Traveling:
     LDA frameCounter
     CLC
     ROL
@@ -337,10 +533,14 @@ UpdateSprites:
     BNE @skipWagonUpdate
     JSR UpdateWagonSprite
 @skipWagonUpdate:
+    JMP Done
+
+Done:
     RTS
+.endproc
 
 ;--------------------------------------
-InitOxenSprite:
+.proc InitOxenSprite
     LDX #0
 @loop:
     LDA oxenSprites, X
@@ -349,9 +549,10 @@ InitOxenSprite:
     CPX #40
     BNE @loop
     RTS
+.endproc
 
 ;--------------------------------------
-UpdateOxenSprite:
+.proc UpdateOxenSprite
     LDA oxenFrame
     CMP #1
     BNE @update
@@ -401,9 +602,10 @@ UpdateOxenSprite:
     STA oxenFrame
 
     RTS
+.endproc
 
 ;--------------------------------------
-InitWagonSprite:
+.proc InitWagonSprite
     LDX #0
 @loop:
     LDA wagonSprites, X
@@ -412,9 +614,10 @@ InitWagonSprite:
     CPX #48
     BNE @loop
     RTS
+.endproc
 
 ;--------------------------------------
-UpdateWagonSprite:
+.proc UpdateWagonSprite
     LDA frameCounter
     CMP #$80
     BNE @update
@@ -444,6 +647,7 @@ UpdateWagonSprite:
     BNE @animLoop
 @done:
     RTS
+.endproc
 
 ;--------------------------------------
 ; UpdateHello:

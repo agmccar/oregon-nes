@@ -18,7 +18,7 @@ wagonStatus:    .res 1
     ;  |||||||+ Speed- 0:stopped, 1:moving
     ;  ||||||+- Trail- 0:at landmark, 1:on the trail 
     ;  ||||++-- unused
-    ;  ++++---- Remaining rest/delay (days)- 0-15   
+    ;  ++++---- Rest- 0-15 days remaining
 wagonSettings:  .res 1 
     ; %00000000
     ;  ||||||++ Pace- 00:unused, 01:steady, 10:strenuous, 11:grueling
@@ -45,8 +45,19 @@ menuOpen:       .res 1
 ; Conditions
 weather:        .res 1
     ; %00000000
-    ;  ||||++++ current (calculated/generated) temperature
+    ;  |||||+++ current (calculated/generated) temperature
+    ;  |||||        000:ICY!  001:COLD  010:COOL  011:FAIR 
+    ;  |||||        100:FAIR  101:WARM  110:HOT   111:HOT! 
+    ;  ||||+--- unused
     ;  ++++---- current weather type
+    ;               0000:CLEAR        0001:PARTLY CLOUDY
+    ;               0010:CLOUDY       0011:RAINY
+    ;               0100:VERY RAINY   0101:SNOWING
+    ;               0110:BLIZZARD     0111:FOGGY
+    ;               1000:DUST STORM   1001:THUNDER STORM
+    ;               1010:HAIL STORM   1011:unused
+    ;               1100:unused       1101:unused
+    ;               1110:unused       1111:unused
 
 ; Controller input
 buttons1:       .res 1
@@ -71,11 +82,24 @@ dateMonth:      .res 1
 dateDay:        .res 1
 
 ; People
-personName:    .res 20  ; 4 each, 5 people
-personAttrs:   .res 5   ; 1 each
-    ; %00000000
-    ;  ||||++++ health (healthText($0-$8) + afflictionText($9-$F))
-    ;  ++++---- unused
+personName:    .res 20  ; 4 each * 5 people
+personStatus:  .res 5   ; 1 each * 5 
+    ; $00: GOOD
+    ; $01: 
+    ; .byte _F_,_E_,_V_,_E_,_R_,___,___,___,___,___
+    ; .byte _D_,_Y_,_S_,_E_,_N_,_T_,_E_,_R_,_Y_,___
+    ; .byte _M_,_E_,_A_,_S_,_L_,_E_,_S_,___,___,___
+    ; .byte _S_,_N_,_A_,_K_,_E_,___,_B_,_I_,_T_,_E_
+    ; .byte _E_,_X_,_H_,_A_,_U_,_S_,_T_,_E_,_D_,___
+    ; .byte _T_,_Y_,_P_,_H_,_O_,_I_,_D_,___,___,___
+    ; .byte _C_,_H_,_O_,_L_,_E_,_R_,_A_,___,___,___
+    ; .byte _B_,_R_,_O_,_K_,_E_,_N_,___,_A_,_R_,_M_
+    ; .byte _B_,_R_,_O_,_K_,_E_,_N_,___,_L_,_E_,_G_
+    ; .byte _G_,_O_,_O_,_D_,___,___,___,___,___,___
+    ; .byte _F_,_A_,_I_,_R_,___,___,___,___,___,___
+    ; .byte _P_,_O_,_O_,_R_,___,___,___,___,___,___
+    ; .byte _V_,_E_,_R_,_Y_,___,_P_,_O_,_O_,_R_,___
+    ; .byte _D_,_E_,_C_,_E_,_A_,_S_,_E_,_D_,___,___
 
 ; remaining: $c4
 

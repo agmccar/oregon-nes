@@ -95,7 +95,14 @@ healthText:
     .byte ___,___,_P_,_O_,_O_,_R_
     .byte _V_,_PD,_P_,_O_,_O_,_R_
 
-afflictionText:
+defaultPersonNames:
+    .byte ___,___,___,___
+    .byte _E_,_M_,_M_,_A_
+    .byte _B_,_E_,_T_,_H_
+    .byte _J_,_E_,_D_,___
+    .byte _Z_,_E_,_K_,_E_
+
+personStatusText:
     .byte _F_,_E_,_V_,_E_,_R_,___,___,___,___,___
     .byte _D_,_Y_,_S_,_E_,_N_,_T_,_E_,_R_,_Y_,___
     .byte _M_,_E_,_A_,_S_,_L_,_E_,_S_,___,___,___
@@ -114,10 +121,12 @@ afflictionText:
     ;.byte ___,___,___,___,___,___,___,___,___,___
     ;.byte ___,___,___,___,___,___,___,___,___,___
 
-afflictionAttribute:
+personStatusAttribute:
     ; %0000
     ;  |+++ unused
-    ;  +--- Diary Text- 0:text is one line, 1:two lines.
+    ;  +--- diaryAffliction line count
+    ;       0:text is one line  1:two lines
+    ;        
     .byte %00000000 ; FEVER, DYSENTERY
     .byte %00000000 ; MEASLES, SNAKE BITE
     .byte %10001000 ; EXHAUSTION, TYPHOID

@@ -3,7 +3,7 @@
 
 palette:
     ; background palette data
-    .byte $21, $25, $19, $30 ; Sky, Pink, Trees, White
+    .byte $21, $19, $25, $30 ; Sky, Trees, Pink, White
     .byte $21, $19, $29, $30 ; Sky, Trees, Grass, White
     .byte $21, $06, $29, $30 ; Sky, Brown, Grass, White
     .byte $21, $16, $0F, $30 ; Sky, Red, Black, White (HUD)
