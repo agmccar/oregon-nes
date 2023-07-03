@@ -7,6 +7,7 @@ sprite0hit:     .res 1
 helper:         .res 1
 frameCounter:   .res 1
 globalScroll:   .res 1
+lastGameState:  .res 1 
 gameState:      .res 1 
 
 ; Graphics
@@ -101,5 +102,5 @@ personStatus:  .res 5   ; 1 each * 5
     ; .byte _V_,_E_,_R_,_Y_,___,_P_,_O_,_O_,_R_,___
     ; .byte _D_,_E_,_C_,_E_,_A_,_S_,_E_,_D_,___,___
 
-; remaining: $c4
+; remaining: $c3
 

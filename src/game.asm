@@ -72,12 +72,12 @@ clearmemory:
 defaultPersonNameLoop:
     LDA defaultPersonNames, X
     STA personName, X
-    CPX TEXT_PERSON_LEN*5
+    INX
+    CPX #20
     BNE defaultPersonNameLoop
 
 ; Initialize game state
     JSR InitStateTitle
-
 
 vblankwait2:
     BIT PPUSTATUS
@@ -88,6 +88,10 @@ vblankwait2:
     STA PPUCTRL
     LDA #%00011110 ; turn on screen
     STA PPUMASK
+
+
+
+
 
     JMP main
 
@@ -105,6 +109,18 @@ forever:
 .proc nmi
     JSR InitPPU
     JSR ReadController1
+
+    LDA lastGameState
+    CMP gameState
+    BEQ Done
+    LDA gameState
+    STA lastGameState
+    CMP #GAMESTATE_TITLE
+    JSR InitStateTitle
+    CMP #GAMESTATE_TRAVELING
+    JSR InitStateTraveling
+    JMP Done
+Done:
     JSR UpdateSprites
     JSR UpdateScreen
     INC frameCounter
@@ -159,25 +175,25 @@ forever:
 .proc UpdateScreen
     LDA gameState
 
-    CMP GAMESTATE_TITLE
+    CMP #GAMESTATE_TITLE
     BEQ Title
 
-    CMP GAMESTATE_NEWGAME
+    CMP #GAMESTATE_NEWGAME
     BEQ NewGame
 
-    CMP GAMESTATE_STORE
+    CMP #GAMESTATE_STORE
     BEQ Store
 
-    CMP GAMESTATE_STARTDATE
+    CMP #GAMESTATE_STARTDATE
     BEQ StartDate
 
-    CMP GAMESTATE_LANDMARK
+    CMP #GAMESTATE_LANDMARK
     BEQ Landmark
 
-    CMP GAMESTATE_MAP
+    CMP #GAMESTATE_MAP
     BEQ Map
 
-    CMP GAMESTATE_TRAVELING
+    CMP #GAMESTATE_TRAVELING
     BEQ Traveling
 
 Title:
@@ -235,44 +251,118 @@ LoadBackground:
     LDA #$00
     STA PPUADDR ; $2000
 
+;     LDY #0 ; tile row (tile Y)
+; @repeatLoop:
+;     LDX #0 ; tile column (tile X)
+;     INY
+; @loop:
+;     LDA #0
+;     CPY #14 ; ~50% down screen
+;     BNE @skipTitleText
+;     CPX #8 ; 25% across screen
+;     BCC @skipTitleText
+;     CPX #24; 75% across screen
+;     BCS @skipTitleText
+
+;     TXA
+;     STA helper
+;     SBC #7
+;     TAX
+;     LDA titleText, X
+;     TAX
+;     LDA helper
+;     STX helper
+;     TAX
+;     LDA helper
+
+; @skipTitleText:
+    ; LDA #_X_
+    ; STA PPUDATA
+    ; INX
+    ; CPX #32
+    ; BNE @loop
+    ; CPY #30
+    ; BNE @repeatLoop
+
+
+
     LDX #0
     LDY #0
 @repeatLoop:
     INY
 @loop:
-    TXA
+    LDA #___
     STA PPUDATA
     INX
-    CPX #32
+    CPX #$00
     BNE @loop
-    CPY #30
+    LDA #$24
+    STA PPUADDR
+    LDA #$00
+    STA PPUADDR ; $2400
+    LDX #0
+    CPY #2
     BNE @repeatLoop
 
-;     LDA #$21
-;     STA PPUADDR
-;     LDA #$00
-;     STA PPUADDR ; $2100
-;     LDX #0
-; @loop2:
-;     LDA hud1, X
-;     STA PPUDATA
-;     INX
-;     CPX #$00
-;     BNE @loop2
+    LDA #$21
+    STA PPUADDR
+    LDA #$00
+    STA PPUADDR ; $2100
+    LDX #0
+@loop2:
+    LDA #___
+    CPX #8 ; 25% across screen
+    BCC @skipTitleText2
+    CPX #24; 75% across screen
+    BCS @skipTitleText2
 
-; @loop3:
-;     LDA hud2, X
-;     STA PPUDATA
-;     INX
-;     CPX #$00
-;     BNE @loop3
+    TXA
+    STA helper
+    SBC #7
+    TAX
+    LDA titleText, X
+    TAX
+    LDA helper
+    STX helper
+    TAX
+    LDA helper
 
-; @loop4:
-;     LDA hud3, X
-;     STA PPUDATA
-;     INX
-;     CPX #$C0
-;     BNE @loop4
+@skipTitleText2:
+    STA PPUDATA
+    INX
+    CPX #$00
+    BNE @loop2
+
+@loop3:
+    LDA #___
+    CPX #10 ; >25% across screen
+    BCC @skipTitleText3
+    CPX #22; <75% across screen
+    BCS @skipTitleText3
+
+    TXA
+    STA helper
+    SBC #9
+    TAX
+    LDA titleOptions, X
+    TAX
+    LDA helper
+    STX helper
+    TAX
+    LDA helper
+
+@skipTitleText3:
+    STA PPUDATA
+    INX
+    CPX #$00
+    BNE @loop3
+
+@loop4:
+    LDA #___
+    STA PPUDATA
+    INX
+    CPX #$C0
+    BNE @loop4
 
 LoadBackgroundAttribute:
     LDA PPUSTATUS
@@ -286,7 +376,7 @@ LoadBackgroundAttribute:
 @repeatLoop:
     INY
 @loop:
-    LDA bgAttribute, X
+    LDA #$FF
     STA PPUDATA
     INX
     CPX #$40
@@ -334,7 +424,7 @@ LoadBackgroundAttribute:
     ; zero sprite
     LDA #$37         ; Y
     STA ZEROSPRITE
-    LDA _O_          ; tile index
+    LDA #_O_          ; tile index
     STA ZEROSPRITE+1
     LDA #%00000001   ; attr
     STA ZEROSPRITE+2
@@ -428,12 +518,14 @@ LoadBackgroundAttribute:
 
 ;--------------------------------------
 .proc ReadController1
+; preserve registers
     PHP
     PHA
     TXA
     PHA
     TYA
     PHA
+; read inputs
     LDA #$01
     STA $4016
     LDA #$00
@@ -445,6 +537,59 @@ LoadBackgroundAttribute:
     ROL buttons1
     DEX
     BNE @loop
+
+    LDA gameState
+
+    CMP #GAMESTATE_TITLE
+    BEQ Title
+
+    CMP #GAMESTATE_NEWGAME
+    BEQ NewGame
+
+    CMP #GAMESTATE_STORE
+    BEQ Store
+
+    CMP #GAMESTATE_STARTDATE
+    BEQ StartDate
+
+    CMP #GAMESTATE_LANDMARK
+    BEQ Landmark
+
+    CMP #GAMESTATE_MAP
+    BEQ Map
+
+    CMP #GAMESTATE_TRAVELING
+    BEQ Traveling
+
+Title:
+    LDA #KEY_START
+    BIT buttons1
+    BEQ @skip
+    LDA #GAMESTATE_TRAVELING
+    STA gameState
+@skip:
+    JMP Done
+    
+NewGame:
+    JMP Done
+    
+Store:
+    JMP Done
+    
+StartDate:
+    JMP Done
+    
+Landmark:
+    JMP Done
+    
+Map:
+    JMP Done
+
+Traveling:
+    JMP Done
+
+Done:
+; preserve registers
     PLA
     TAY
     PLA
@@ -477,25 +622,25 @@ loop:
 .proc UpdateSprites
     LDA gameState
 
-    CMP GAMESTATE_TITLE
+    CMP #GAMESTATE_TITLE
     BEQ Title
 
-    CMP GAMESTATE_NEWGAME
+    CMP #GAMESTATE_NEWGAME
     BEQ NewGame
 
-    CMP GAMESTATE_STORE
+    CMP #GAMESTATE_STORE
     BEQ Store
 
-    CMP GAMESTATE_STARTDATE
+    CMP #GAMESTATE_STARTDATE
     BEQ StartDate
 
-    CMP GAMESTATE_LANDMARK
+    CMP #GAMESTATE_LANDMARK
     BEQ Landmark
 
-    CMP GAMESTATE_MAP
+    CMP #GAMESTATE_MAP
     BEQ Map
 
-    CMP GAMESTATE_TRAVELING
+    CMP #GAMESTATE_TRAVELING
     BEQ Traveling
 
 Title:
