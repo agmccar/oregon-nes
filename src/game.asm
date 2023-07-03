@@ -1,6 +1,8 @@
 .include "constants.inc"
 .include "header.inc"
 .include "rodata.inc"
+.include "zeropage.inc"
+.include "diarytext.inc"
 
 ;-------------------------------------------------------------------------------
 .segment "CHARS"
@@ -11,38 +13,23 @@
     .addr nmi, reset, irq
 
 ;-------------------------------------------------------------------------------
-.segment "ZEROPAGE"
-
-pointer:        .res 2
-sprite0hit:     .res 1
-helper:         .res 1
-frameCounter:   .res 1
-globalScroll:   .res 1
-oxenFrame:      .res 1 ; frame 0=$01; 1=$02; 2=$04, 3=$08, 4=$10
-oxenPace:       .res 1 
-traveledMi:     .res 2
-traveledDigit:  .res 4
-; Supplies
-dollars:        .res 2 
-foodLbs:        .res 2 
-foodDigit:      .res 4
-clothingSets:   .res 1
-bullets:        .res 2
-spareParts:     .res 1 
-    ; %00000000
-    ;  ||||||++ wagon wheels
-    ;  ||||++-- wagon axles
-    ;  ||++---- wagon tongues
-    ;  ++------ unused
-oxenHeadcount:  .res 1
-; Calendar
-dateMonth:      .res 1
-dateDay:        .res 1
-dateDigit:      .res 2
-; remaining: $e1
-
-;-------------------------------------------------------------------------------
 .segment "BSS"
+
+; HUD text variables
+diaryTextLine1:     .res TEXT_DIARY_LINE_LEN
+diaryTextLine2:     .res TEXT_DIARY_LINE_LEN
+diaryTextLine3:     .res TEXT_DIARY_LINE_LEN
+diaryTextLine4:     .res TEXT_DIARY_LINE_LEN
+;;;; are these necessary? or is it OK to generate them every frame?
+; weatherTextLine1:   .res TEXT_WEATHER_LEN
+; weatherTextLine2:   .res TEXT_WEATHER_LEN
+; temperatureText:    .res TEXT_TEMP_LEN
+; healthText:         .res TEXT_HEALTH_LEN 
+; foodText:           .res TEXT_FOOD_LEN
+; traveledText:       .res TEXT_TRAVELED_LEN
+; dateText:           .res TEXT_DATE_LEN
+
+
 ;-------------------------------------------------------------------------------
 .segment "CODE"
 ;--------------------------------------
@@ -168,6 +155,9 @@ forever:
     STA PPUADDR
     STA PPUADDR ; clean up ppu address registers
 
+; read controller inputs
+    JSR readController1 ; get button data for player 1
+
 ; scroll the screen
     LDX globalScroll
     DEX
@@ -200,6 +190,33 @@ forever:
 ;   PLP
 ;   RTS
 ; .endproc
+
+.proc readController1
+    PHP
+    PHA
+    TXA
+    PHA
+    TYA
+    PHA
+    LDA #$01
+    STA $4016
+    LDA #$00
+    STA $4016
+    LDX #$08
+@loop:
+    LDA $4016
+    LSR A
+    ROL buttons1
+    DEX
+    BNE @loop
+    PLA
+    TAY
+    PLA
+    TAX
+    PLA
+    PLP
+    RTS
+.endproc
 
 IncrementFrameCounter:
     LDA frameCounter

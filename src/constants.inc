@@ -14,6 +14,7 @@ PPUDATA     = $2007
 OAMADDR     = $2003
 OAMDMA      = $4014
 
+
 DMCFREQ     = $4010
 
 KEY_A       = %10000000
@@ -73,12 +74,22 @@ _HR = 122 ; horiz line
 _VR = 123 ; vertical line
 _LB = 144 ; lb
 _MI = 145 ; mi
+_DL = 146 ; $
+_00 = 147 ; 00
 
 ;------Text stuff
+TEXT_MENU_LEN = 7
 TEXT_PACE_LEN = 9
 TEXT_WEATHER_LEN = 8 ; per line. total is 8 + (8*weatherTextLineCount)
 TEXT_TEMP_LEN = 4 
 TEXT_RATIONS_LEN = 10
+TEXT_HEALTH_LEN = 6
+TEXT_FOOD_LEN = 4
+TEXT_TRAVELED_LEN = 4
+TEXT_DATE_LEN = 12
+TEXT_AFFLICTION_LEN = 10
+TEXT_OCCUPATION_LEN = 11
+TEXT_DIARY_LINE_LEN = 30
 
 
 
