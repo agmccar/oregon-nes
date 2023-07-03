@@ -1,8 +1,12 @@
 .include "constants.inc"
 .include "header.inc"
-.include "rodata.inc"
+.include "palettes.inc"
+.include "backgrounds.inc"
+.include "sprites.inc"
+.include "text.inc"
 .include "zeropage.inc"
 .include "diarytext.inc"
+.include "vars.inc"
 
 ;-------------------------------------------------------------------------------
 .segment "CHARS"
@@ -11,24 +15,6 @@
 ;-------------------------------------------------------------------------------
 .segment "VECTORS"
     .addr nmi, reset, irq
-
-;-------------------------------------------------------------------------------
-.segment "BSS"
-
-; HUD text variables
-diaryTextLine1:     .res TEXT_DIARY_LINE_LEN
-diaryTextLine2:     .res TEXT_DIARY_LINE_LEN
-diaryTextLine3:     .res TEXT_DIARY_LINE_LEN
-diaryTextLine4:     .res TEXT_DIARY_LINE_LEN
-;;;; are these necessary? or is it OK to generate them every frame?
-; weatherTextLine1:   .res TEXT_WEATHER_LEN
-; weatherTextLine2:   .res TEXT_WEATHER_LEN
-; temperatureText:    .res TEXT_TEMP_LEN
-; healthText:         .res TEXT_HEALTH_LEN 
-; foodText:           .res TEXT_FOOD_LEN
-; traveledText:       .res TEXT_TRAVELED_LEN
-; dateText:           .res TEXT_DATE_LEN
-
 
 ;-------------------------------------------------------------------------------
 .segment "CODE"
@@ -50,12 +36,6 @@ diaryTextLine4:     .res TEXT_DIARY_LINE_LEN
     STX PPUMASK
     STX DMCFREQ
 
-    ; initialize variables
-    LDA #$10
-    STA oxenPace
-    LDA #$00
-    STA globalScroll
-    STA sprite0hit
 
     JSR LoadPalette
     JSR LoadBackground
@@ -110,62 +90,17 @@ vblankwait2:
 
 .proc main
 forever:
-    ; JSR ScrollBackground
     JMP forever
 .endproc
 
 ;--------------------------------------
 
 .proc nmi
-    LDA #$00
-    STA OAMADDR ; tell PPU to prepare for transfer to OAM starting at byte zero
-    LDA #$02
-    STA OAMDMA ; tell PPU to initiate transfer of 256 bytes $0200-$02ff into OAM
-
-    ;JSR UpdateHello
-
-    LDA frameCounter
-    CLC
-    ROL
-    CMP #$80
-    BNE @skipOxenUpdate
-    LDA frameCounter
-    JSR UpdateOxenSprite
-    LDA #$00
-@skipOxenUpdate:
-    LDA frameCounter
-    CLC
-    ROL
-    CMP #$00
-    BNE @skipWagonUpdate
-    JSR UpdateWagonSprite
-@skipWagonUpdate:
-    JSR IncrementFrameCounter
-
-    LDA #0
-    STA PPUADDR
-    STA PPUADDR
-
-    LDA #%10010000;enable NMI, sprites from Pattern 0, background from Pattern 1
-    STA PPUCTRL ; PpuControl_2000
-    LDA #%00011110 ; enable sprites, enable background
-    STA PPUMASK ; PpuMask_2001
-
-    LDA #$00
-    STA PPUADDR
-    STA PPUADDR ; clean up ppu address registers
-
-; read controller inputs
-    JSR readController1 ; get button data for player 1
-
-; scroll the screen
-    LDX globalScroll
-    DEX
-    STX PPUSCROLL ; horizontal scroll (globalScroll - 1)
-    STA PPUSCROLL ; vertical scroll (0)
-    STX globalScroll ; update globalScroll
-    JSR CheckSprite0Hit
-
+    JSR InitPPU
+    JSR ReadController1
+    JSR UpdateSprites
+    JSR UpdateScreen
+    INC frameCounter
     RTI
 .endproc
 
@@ -191,7 +126,71 @@ forever:
 ;   RTS
 ; .endproc
 
-.proc readController1
+;--------------------------------------
+.proc InitPPU
+    LDA #$00
+    STA OAMADDR ; tell PPU to prepare for transfer to OAM starting at byte zero
+    LDA #$02
+    STA OAMDMA ; tell PPU to initiate transfer of 256 bytes $0200-$02ff into OAM
+
+    LDA #0
+    STA PPUADDR
+    STA PPUADDR
+
+    LDA #%10010000 ;enable NMI, sprites from Pattern 0, background from Pattern 1
+    STA PPUCTRL
+    LDA #%00011110 ; enable sprites, enable background
+    STA PPUMASK
+
+    LDA #0
+    STA PPUADDR
+    STA PPUADDR ; clean up ppu address registers
+    RTS
+.endproc
+
+;--------------------------------------
+.proc UpdateScreen
+    LDX globalScroll
+    DEX
+    STX PPUSCROLL ; horizontal scroll (globalScroll - 1)
+    LDA #0
+    STA PPUSCROLL ; vertical scroll (0)
+    STX globalScroll ; update globalScroll
+; CheckSprite0Hit:
+;     LDA PPUSTATUS
+;     AND #%01000000
+;     BNE @hit
+;     ; don't freeze scrolling.
+;     LDA globalScroll
+;     STA PPUSCROLL ;horizontal
+;     LDA #0
+;     STA PPUSCROLL ;vertical
+;     JMP @noHit
+; @hit:
+;     ; freeze scrolling.
+;     LDA #0
+;     STA PPUSCROLL ;horizontal
+;     STA PPUSCROLL ;vertical
+; @noHit:
+;     RTS
+CheckSprite0Hit: ; t. @cuttercross
+    LDA #%11000000  ;; We'll bit test for both sprite0 flag and vBlank flag at the same time 
+                    ;; [Safety measure to prevent a full lockup scenario on sprite0 miss]
+@sprite0Poll1:
+    BIT PPUSTATUS
+    BNE @sprite0Poll1    ;; Ensure that sprite0 + vBlank flag are clear before proceeding
+@sprite0Poll2:
+    BIT PPUSTATUS 
+    BEQ @sprite0Poll2    ;; Wait for sprite0 flag to be set
+    ;; Freeze scroll for status bar
+    LDA #0
+    STA PPUSCROLL 
+    STA PPUSCROLL
+    RTS
+.endproc
+
+;--------------------------------------
+.proc ReadController1
     PHP
     PHA
     TXA
@@ -217,13 +216,6 @@ forever:
     PLP
     RTS
 .endproc
-
-IncrementFrameCounter:
-    LDA frameCounter
-    CLC
-    ADC #$08
-    STA frameCounter
-    RTS
 
 ;--------------------------------------
 LoadPalette:
@@ -328,37 +320,23 @@ LoadBackgroundAttribute:
     RTS
 
 ;--------------------------------------
-; CheckSprite0Hit:
-;     LDA PPUSTATUS
-;     AND #%01000000
-;     BNE @hit
-;     ; don't freeze scrolling.
-;     LDA globalScroll
-;     STA PPUSCROLL ;horizontal
-;     LDA #0
-;     STA PPUSCROLL ;vertical
-;     JMP @noHit
-; @hit:
-;     ; freeze scrolling.
-;     LDA #0
-;     STA PPUSCROLL ;horizontal
-;     STA PPUSCROLL ;vertical
-; @noHit:
-;     RTS
-
-CheckSprite0Hit: ; t. @cuttercross
-    LDA #%11000000  ;; We'll bit test for both sprite0 flag and vBlank flag at the same time 
-                    ;; [Safety measure to prevent a full lockup scenario on sprite0 miss]
-@sprite0Poll1:
-    BIT PPUSTATUS
-    BNE @sprite0Poll1    ;; Ensure that sprite0 + vBlank flag are clear before proceeding
-@sprite0Poll2:
-    BIT PPUSTATUS 
-    BEQ @sprite0Poll2    ;; Wait for sprite0 flag to be set
-    ;; Freeze scroll for status bar
-    LDA #0
-    STA PPUSCROLL 
-    STA PPUSCROLL
+UpdateSprites:
+    LDA frameCounter
+    CLC
+    ROL
+    CMP #$80
+    BNE @skipOxenUpdate
+    LDA frameCounter
+    JSR UpdateOxenSprite
+    LDA #$00
+@skipOxenUpdate:
+    LDA frameCounter
+    CLC
+    ROL
+    CMP #$00
+    BNE @skipWagonUpdate
+    JSR UpdateWagonSprite
+@skipWagonUpdate:
     RTS
 
 ;--------------------------------------
