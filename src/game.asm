@@ -77,7 +77,9 @@ defaultPersonNameLoop:
     BNE defaultPersonNameLoop
 
 ; Initialize game state
-    JSR InitStateTitle
+    ;JSR InitStateTitle
+    LDA #$FF
+    STA lastGameState
 
 vblankwait2:
     BIT PPUSTATUS
@@ -107,23 +109,31 @@ forever:
 ;--------------------------------------
 
 .proc nmi
-    JSR InitPPU
-    JSR ReadController1
+    LDA #$00
+    STA OAMADDR ; tell PPU to prepare for transfer to OAM starting at byte zero
+    LDA #$02
+    STA OAMDMA ; tell PPU to initiate transfer of 256 bytes $0200-$02ff into OAM
 
-    LDA lastGameState
-    CMP gameState
-    BEQ Done
-    LDA gameState
-    STA lastGameState
-    CMP #GAMESTATE_TITLE
-    JSR InitStateTitle
-    CMP #GAMESTATE_TRAVELING
-    JSR InitStateTraveling
-    JMP Done
-Done:
-    JSR UpdateSprites
+    LDA #0
+    STA PPUADDR
+    STA PPUADDR
+
+
+    JSR ReadController1
+    JSR CheckGameState
     JSR UpdateScreen
+    JSR UpdateSprites
     INC frameCounter
+
+    ; LDA #%10010000 ;enable NMI, sprites from Pattern 0, background from Pattern 1
+    ; STA PPUCTRL
+    ; LDA #%00011110 ; enable sprites, enable background
+    ; STA PPUMASK
+
+    ; LDA #0
+    ; STA PPUADDR
+    ; STA PPUADDR ; clean up ppu address registers
+    
     RTI
 .endproc
 
@@ -131,6 +141,69 @@ Done:
 
 ;--SUBROUTINES------------------------------------------------------------------
 
+.proc CheckGameState
+    LDA lastGameState
+    CMP gameState
+    BEQ Done ; No state change: goto Done
+
+    ; State changed:
+    LDA #%00010000      ; disable NMI, sprites from Pattern 0, background from Pattern 1
+    STA PPUCTRL
+    LDA #%00000000      ; disable sprites, disable background
+    STA PPUMASK
+    STA bgLoaded        ; reload background
+    LDA gameState   
+    STA lastGameState   ; update lastGameState
+
+CheckStateTitle:
+    CMP #GAMESTATE_TITLE
+    BNE CheckStateTraveling
+    JSR InitStateTitle
+    JMP Done
+
+CheckStateTraveling:
+    CMP #GAMESTATE_TRAVELING
+    BNE CheckStateNewGame
+    JSR InitStateTraveling
+    JMP Done
+
+CheckStateNewGame:
+    CMP #GAMESTATE_NEWGAME
+    BNE CheckStateStore
+    JSR InitStateNewGame
+    JMP Done
+
+CheckStateStore:
+    CMP #GAMESTATE_STORE
+    BNE CheckStateStartDate
+    JSR InitStateStore
+    JMP Done
+
+CheckStateStartDate:
+    CMP #GAMESTATE_STARTDATE
+    BNE CheckStateLandmark
+    JSR InitStateStartDate
+    JMP Done
+
+CheckStateLandmark:
+    CMP #GAMESTATE_LANDMARK
+    BNE CheckStateMap
+    JSR InitStateLandmark
+    JMP Done
+
+CheckStateMap:
+    CMP #GAMESTATE_MAP
+    BNE Done
+    JSR InitStateMap
+    JMP Done
+
+Done:
+    LDA #%10010000 ;enable NMI, sprites from Pattern 0, background from Pattern 1
+    STA PPUCTRL
+    LDA #%00011110 ; enable sprites, enable background
+    STA PPUMASK
+    RTS
+.endproc
 ;;;;;; Preserve all registers template
 ; .proc my_subroutine
 ;   PHP
@@ -150,33 +223,23 @@ Done:
 ; .endproc
 
 ;--------------------------------------
-.proc InitPPU
-    LDA #$00
-    STA OAMADDR ; tell PPU to prepare for transfer to OAM starting at byte zero
-    LDA #$02
-    STA OAMDMA ; tell PPU to initiate transfer of 256 bytes $0200-$02ff into OAM
-
-    LDA #0
-    STA PPUADDR
-    STA PPUADDR
-
-    LDA #%10010000 ;enable NMI, sprites from Pattern 0, background from Pattern 1
-    STA PPUCTRL
-    LDA #%00011110 ; enable sprites, enable background
-    STA PPUMASK
-
-    LDA #0
-    STA PPUADDR
-    STA PPUADDR ; clean up ppu address registers
-    RTS
-.endproc
-
-;--------------------------------------
 .proc UpdateScreen
+
+    ; LDA #%00010000      ; disable NMI, sprites from Pattern 0, background from Pattern 1
+    ; STA PPUCTRL
+    ; LDA #%00000000      ; disable sprites, disable background
+    ; STA PPUMASK
+    ; lda #$00
+    ; sta $2006        ; clean up PPU address registers
+    ; sta $2006
+
     LDA gameState
 
     CMP #GAMESTATE_TITLE
     BEQ Title
+
+    CMP #GAMESTATE_TRAVELING
+    BEQ Traveling
 
     CMP #GAMESTATE_NEWGAME
     BEQ NewGame
@@ -192,9 +255,6 @@ Done:
 
     CMP #GAMESTATE_MAP
     BEQ Map
-
-    CMP #GAMESTATE_TRAVELING
-    BEQ Traveling
 
 Title:
     JMP Done
@@ -237,11 +297,14 @@ Traveling:
     JMP Done
 
 Done:
+    LDA #1
+    STA bgLoaded
     RTS
 .endproc
 
 ;--------------------------------------
 .proc InitStateTitle
+
     JSR LoadPalette
     
 LoadBackground:
@@ -391,6 +454,8 @@ LoadBackgroundAttribute:
     CPY #2
     BNE @repeatLoop ; 2nd screen
 
+    LDA #1
+    STA bgLoaded
     RTS
 .endproc
 
@@ -421,10 +486,11 @@ LoadBackgroundAttribute:
 
 ;--------------------------------------
 .proc InitStateTraveling
+
     ; zero sprite
     LDA #$37         ; Y
     STA ZEROSPRITE
-    LDA #_O_          ; tile index
+    LDA #0          ; tile index
     STA ZEROSPRITE+1
     LDA #%00000001   ; attr
     STA ZEROSPRITE+2
@@ -540,6 +606,9 @@ LoadBackgroundAttribute:
 
     LDA gameState
 
+    CMP #GAMESTATE_TRAVELING
+    BEQ Traveling
+
     CMP #GAMESTATE_TITLE
     BEQ Title
 
@@ -557,9 +626,6 @@ LoadBackgroundAttribute:
 
     CMP #GAMESTATE_MAP
     BEQ Map
-
-    CMP #GAMESTATE_TRAVELING
-    BEQ Traveling
 
 Title:
     LDA #KEY_START
@@ -622,6 +688,9 @@ loop:
 .proc UpdateSprites
     LDA gameState
 
+    CMP #GAMESTATE_TRAVELING
+    BEQ Traveling
+
     CMP #GAMESTATE_TITLE
     BEQ Title
 
@@ -639,9 +708,6 @@ loop:
 
     CMP #GAMESTATE_MAP
     BEQ Map
-
-    CMP #GAMESTATE_TRAVELING
-    BEQ Traveling
 
 Title:
     JMP Done

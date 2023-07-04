@@ -9,6 +9,7 @@ frameCounter:   .res 1
 globalScroll:   .res 1
 lastGameState:  .res 1 
 gameState:      .res 1 
+bgLoaded:       .res 1
 
 ; Graphics
 oxenFrame:      .res 1 ; frame 0=$01; 1=$02; 2=$04, 3=$08, 4=$10 (a hack)
