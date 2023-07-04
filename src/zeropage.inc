@@ -43,6 +43,12 @@ menuOpen:       .res 1
     ; $06: options menu open
     ; $07: 
     ; $08: ...
+fingerX:        .res 1 ; (tiles from top left)
+fingerY:        .res 1 ; (tiles from top left)
+fingerAttr:     .res 1
+    ; %00000000
+    ;  ||||||++ Pointing- 0:R, 1:L
+    ;  ++++++-- unused
 
 ; Conditions
 weather:        .res 1
@@ -103,5 +109,5 @@ personStatus:  .res 5   ; 1 each * 5
     ; .byte _V_,_E_,_R_,_Y_,___,_P_,_O_,_O_,_R_,___
     ; .byte _D_,_E_,_C_,_E_,_A_,_S_,_E_,_D_,___,___
 
-; remaining: $c3
+; remaining: $c0
 

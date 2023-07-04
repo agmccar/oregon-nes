@@ -2,6 +2,12 @@
 .SEGMENT "RODATA"
 ;-----------------------------------------------------------
 
+; 4 byte per object: 
+;   +Y
+;   tile index
+;   attributes
+;   +X
+
 ; 76543210  OAM Attributes
 ; ||||||||
 ; ||||||++- Palette (4 to 7) of sprite

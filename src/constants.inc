@@ -73,6 +73,9 @@ _LB = 144 ; lb
 _MI = 145 ; mi
 _DL = 146 ; $
 _00 = 147 ; 00
+_AL = 148 ; < (arrow left)
+_AR = 149 ; < (arrow right)
+_UL = 150 ; __ (underline)
 
 ; Length (in characters) of HUD elements
 TEXT_MENU_LEN       = 7   ; main menu options
@@ -100,6 +103,9 @@ GAMESTATE_MAP       = 5 ; looking at the map
 GAMESTATE_TRAVELING = 6 ; main game state - traveling the trail
 ;GAMESTATE_DECISION  = ?
 
+;; Finger locations?
+;FINGER_X_NEWGAME_1:
+
 ;; BG index is relative 
-DATE_BG_IDX  = 50 ; hud1
+;DATE_BG_IDX  = 50 ; hud1
 

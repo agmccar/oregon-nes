@@ -7,6 +7,18 @@ titleText:
 titleOptions:
     .byte _P_,_R_,_E_,_S_,_S_,___,___,_S_,_T_,_A_,_R_,_T_
 
+newGameText:
+    .byte _L_,_E_,_A_,_D_,_E_,_R_,_CL
+    .byte _O_,_C_,_C_,_U_,_P_,_A_,_T_,_I_,_O_,_N_,_CL
+    .byte _O_,_T_,_H_,_E_,_R_,___,_P_,_A_,_R_,_T_,_Y_,___,_M_,_E_,_M_,_B_,_E_,_R_,_S_,_CL
+
+keyboard:
+    .byte _A_,_B_,_C_,_D_,_E_,_F_,_G_,_H_,_7_,_8_,_9_
+    .byte _I_,_J_,_K_,_L_,_M_,_N_,_O_,_P_,_4_,_5_,_6_
+    .byte _Q_,_R_,_S_,_T_,_U_,_V_,_W_,_X_,_1_,_2_,_3_
+    .byte _Y_,_Z_,_CL,_CM,_PD,_EX,_QU,___
+    .byte _D_,_O_,_N_,_E_
+
 hudMenu:
     .byte _M_,_A_,_P_,___,___,___,___ ;ちず
     .byte _S_,_T_,_A_,_T_,_U_,_S_,___ ;ステータス
