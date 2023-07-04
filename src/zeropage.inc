@@ -31,6 +31,9 @@ wagonSettings:  .res 1
     ;  +------- unused
 
 ; HUD
+keyboardKey:    .res 1 ; keyboard key (letter/symbol) currently selected
+nameCursor:     .res 1 ; 
+occupCursor:    .res 1 ; which occupation is selected on New Game screen
 traveledMi:     .res 2
 traveledDigit:  .res 4
 menuOpenLast:   .res 1
@@ -91,7 +94,6 @@ dateDay:        .res 1
 ; People
 occupation:    .res 1   ;
 personName:    .res 20  ; 4 each * 5 people
-typingAddr:    .res 1   ; address of what letter is currently being typed
 personStatus:  .res 5   ; 1 each * 5 
     ; $00: GOOD
     ; $01: 

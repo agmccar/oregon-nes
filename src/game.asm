@@ -279,6 +279,42 @@
         LDA bgLoaded
         CMP #0
         BNE @skipReload
+        LDA fingerX
+        PHA
+        LDA fingerY
+        PHA
+        LDA fingerLastX
+        PHA
+        LDA fingerLastY
+        PHA
+        LDA fingerLastLastX
+        PHA
+        LDA fingerLastLastY
+        PHA
+        LDA menuOpen
+        PHA
+        JSR PausePPU
+        JSR InitStateNewGame
+        JSR UnpausePPU
+        PLA
+        STA menuOpen
+        PLA
+        STA fingerLastLastY
+        PLA
+        STA fingerLastLastX
+        PLA
+        STA fingerLastY
+        PLA
+        STA fingerLastX
+        PLA
+        STA fingerY
+        PLA
+        STA fingerX
+        LDA menuOpen
+        CMP #MENU_NEWGAME_TYPING
+        BNE @skipKeyboardReload
+        JSR LoadMenuKeyboard
+        @skipKeyboardReload:
         JSR MoveFinger
         @skipReload:
         JMP Done
@@ -394,6 +430,7 @@
         STA fingerY         ; move finger to keyboard 'A'
         LDA #0
         STA fingerLastY     ; hack to redraw finger
+        STA keyboardKey
         JSR LoadMenuKeyboard
         JSR MoveFinger
         JMP Done
@@ -443,7 +480,7 @@
         TXA
         LSR
         TAY
-        LDA keyboard1, Y
+        LDA keyboard, Y
         JMP @letter1
         @skipLetter1:
             LDA #___
@@ -467,7 +504,6 @@
     STA PPUADDR
     LDA #_VR ;vert line
     STA PPUDATA
-    LDA #___
     LDX #0 ;loop 23 times
     @letters2:
         TXA
@@ -475,8 +511,10 @@
         BEQ @skipLetter2
         TXA
         LSR
+        CLC
+        ADC #11
         TAY
-        LDA keyboard2, Y
+        LDA keyboard, Y
         JMP @letter2
         @skipLetter2:
             LDA #___
@@ -500,7 +538,6 @@
     STA PPUADDR
     LDA #_VR ;vert line
     STA PPUDATA
-    LDA #___
     LDX #0 ;loop 23 times
     @letters3:
         TXA
@@ -508,8 +545,10 @@
         BEQ @skipLetter3
         TXA
         LSR
+        CLC
+        ADC #22
         TAY
-        LDA keyboard3, Y
+        LDA keyboard, Y
         JMP @letter3
         @skipLetter3:
             LDA #___
@@ -533,7 +572,6 @@
     STA PPUADDR
     LDA #_VR ;vert line
     STA PPUDATA
-    LDA #___
     LDX #0 ;loop 23 times
     @letters4:
         TXA
@@ -541,8 +579,10 @@
         BEQ @skipLetter4
         TXA
         LSR
+        CLC
+        ADC #33
         TAY
-        LDA keyboard4, Y
+        LDA keyboard, Y
         JMP @letter4
         @skipLetter4:
             LDA #___
@@ -593,6 +633,7 @@
 .endproc
 
 .proc CloseKeyboard
+    JSR PausePPU
     LDA fingerLastLastX
     STA fingerX
     LDA fingerLastLastY
@@ -603,6 +644,7 @@
     LDA #MENU_NONE
     STA menuOpen
     JSR InitStateNewGame
+    JSR UnpausePPU
     RTS
 .endproc
 
@@ -640,7 +682,7 @@
     STA PPUADDR ; clean up ppu address registers
     RTS
 .endproc
-;--------------------------------------
+
 .proc SetPpuAddrPointerFromXY
     ; X,Y registers must already be set!
     LDA #0 ; clear pointer
@@ -798,7 +840,6 @@
     RTS
 .endproc
 
-;--------------------------------------
 .proc InitStateNewGame
 
     JSR LoadPalette
@@ -1046,27 +1087,22 @@
     RTS
 .endproc
 
-;--------------------------------------
 .proc InitStateStore
     RTS
 .endproc
 
-;--------------------------------------
 .proc InitStateStartDate
     RTS
 .endproc
 
-;--------------------------------------
 .proc InitStateLandmark
     RTS
 .endproc
 
-;--------------------------------------
 .proc InitStateMap
     RTS
 .endproc
 
-;--------------------------------------
 .proc InitStateTraveling
     ; zero sprite
     LDA #$37         ; Y
@@ -1219,7 +1255,6 @@
     RTS
 .endproc
 
-;--------------------------------------
 .proc ControllerTitle
     LDA #KEY_START
     BIT buttons1
@@ -1230,7 +1265,6 @@
     RTS
 .endproc
         
-;--------------------------------------
 .proc ControllerNewGame
     ; LDA bgLoaded
     ; CMP #1
@@ -1271,8 +1305,8 @@
             BNE @checkOccupationA
             LDA #MENU_NEWGAME_TYPING
             STA menuOpen
-            LDA #personName
-            STA typingAddr
+            LDA #0
+            STA nameCursor
             STX bgLoaded
             JMP Done
         @checkOccupationA:
@@ -1301,8 +1335,8 @@
             BNE @checkPerson2A
             LDA #MENU_NEWGAME_TYPING
             STA menuOpen
-            LDA #personName+4
-            STA typingAddr
+            LDA #4
+            STA nameCursor
             STX bgLoaded
             JMP Done
         @checkPerson2A:
@@ -1317,8 +1351,8 @@
             BNE @checkPerson3A
             LDA #MENU_NEWGAME_TYPING
             STA menuOpen
-            LDA #personName+8
-            STA typingAddr
+            LDA #8
+            STA nameCursor
             STX bgLoaded
             JMP Done
         @checkPerson3A:
@@ -1333,8 +1367,8 @@
             BNE @checkPerson4A
             LDA #MENU_NEWGAME_TYPING
             STA menuOpen
-            LDA #personName+12
-            STA typingAddr
+            LDA #12
+            STA nameCursor
             STX bgLoaded
             JMP Done
         @checkPerson4A:
@@ -1349,11 +1383,36 @@
             BNE CheckB
             LDA #MENU_NEWGAME_TYPING
             STA menuOpen
-            LDA #personName+16
-            STA typingAddr
+            LDA #16
+            STA nameCursor
             STX bgLoaded
             JMP Done
         @checkTypingA:
+            LDA fingerX
+            CMP #21
+            BNE @stillTypingA
+            LDA fingerY
+            CMP #24
+            BNE @stillTypingA
+            JSR CloseKeyboard
+            JMP Done
+            @stillTypingA:
+            LDX keyboardKey
+            LDA keyboard, X
+            LDY nameCursor
+            STA personName,Y
+            INC nameCursor
+            LDA nameCursor
+            AND #%00000011
+            BNE @reloadA
+            DEC nameCursor
+            LDA #21
+            STA fingerX
+            LDA #24
+            STA fingerY
+            @reloadA:
+            LDA #0
+            STA bgLoaded
             JMP Done
 
     ; B button
@@ -1402,14 +1461,14 @@
         @checkTypingStart:
             LDA #21
             CMP fingerX
-            BNE @StillTyping
+            BNE @stillTypingStart
             LDA #24
             CMP fingerY
-            BNE @StillTyping
+            BNE @stillTypingStart
             ; "DONE" key pressed. close keyboard
             JSR CloseKeyboard
             JMP Done
-            @StillTyping:
+            @stillTypingStart:
                 ; jump to the "DONE" key
                 LDA #21
                 STA fingerX
@@ -1523,15 +1582,26 @@
             LDX fingerX
             DEX
             DEX
+            DEC keyboardKey
+            LDA keyboardKey
+            STA helper
             CPX #3  ; check if we need to wrap around
             BNE @moveFingerL
             LDX #25 ; wrap around
+            LDA keyboardKey
+            CLC
+            ADC #TEXT_KEYBOARD_LEN
+            STA helper
             LDA fingerY
             CMP #24 ; check if we need to wrap to the "DONE" keyboard button
             BNE @moveFingerL
             LDX #21 ; wrap around to "DONE" keyboard button
+            LDA #41
+            STA helper
             @moveFingerL:
             STX fingerX
+            LDA helper
+            STA keyboardKey
             JMP Done
     ; Right button
     CheckRight:
@@ -1639,6 +1709,9 @@
             LDX fingerX
             INX
             INX
+            INC keyboardKey
+            LDA keyboardKey
+            STA helper
             LDA fingerY
             CMP #24 ; check if we are on bottom row
             BNE @wrapFingerNormallyR
@@ -1647,10 +1720,20 @@
             @wrapFingerNormallyR:
             CPX #27 ; check if we need to wrap around normally
             BNE @moveFingerR
+            LDA helper
+            SEC
+            SBC #2
+            STA helper
             @wrapFingerR:
             LDX #5  ; wrap around
+            LDA helper
+            SEC
+            SBC #9
+            STA helper
             @moveFingerR:
             STX fingerX
+            LDA helper
+            STA keyboardKey
             JMP Done
     ; Up button
     CheckUp:
@@ -1768,6 +1851,10 @@
             LDX fingerY
             DEX
             DEX
+            LDA keyboardKey
+            SEC
+            SBC #TEXT_KEYBOARD_LEN
+            STA helper
             CPX #16 ; check if fingerY is past top of screen
             BNE @moveFingerU
             LDA fingerX
@@ -1775,10 +1862,20 @@
             BCC @wrapFingerU
             LDA #21
             STA fingerX ; wrap to the "DONE" key
+            LDA #41
+            STA helper
+            LDX #24 ; wrap to bottom of keyboard
+            JMP @moveFingerU
             @wrapFingerU:
             LDX #24 ; wrap to bottom of keyboard
+            LDA keyboardKey
+            CLC
+            ADC #33
+            STA helper
             @moveFingerU:
             STX fingerY
+            LDA helper
+            STA keyboardKey
             JMP Done
     ; Down button
     CheckDown:
@@ -1896,6 +1993,10 @@
             LDX fingerY
             INX
             INX
+            LDA keyboardKey
+            CLC
+            ADC #11
+            STA helper
             CPX #26 ; check if fingerY is past bottom of screen
             BEQ @wrapFingerD
             LDA fingerX
@@ -1905,37 +2006,40 @@
             BNE @moveFingerD
             LDA #21
             STA fingerX
+            LDA #41
+            STA helper
             JMP @moveFingerD
             @wrapFingerD:
             LDX #18 ; wrap to top of screen
+            LDA keyboardKey
+            SEC
+            SBC #33
+            STA helper
             @moveFingerD:
             STX fingerY
+            LDA helper
+            STA keyboardKey
             JMP Done
     Done:
     RTS
 .endproc
         
-;--------------------------------------
 .proc ControllerStore
     RTS
 .endproc
         
-;--------------------------------------
 .proc ControllerStartDate
     RTS
 .endproc
         
-;--------------------------------------
 .proc ControllerLandmark
     RTS
 .endproc
         
-;--------------------------------------
 .proc ControllerMap
     RTS
 .endproc
 
-;--------------------------------------
 .proc ControllerTraveling
     RTS
 .endproc
@@ -1959,7 +2063,6 @@
     RTS
 .endproc
 
-;--------------------------------------
 .proc UpdateSprites
     LDA gameState
 
@@ -2025,7 +2128,6 @@
     RTS
 .endproc
 
-;--------------------------------------
 .proc InitOxenSprite
     LDX #0
     @loop:
@@ -2037,7 +2139,6 @@
     RTS
 .endproc
 
-;--------------------------------------
 .proc UpdateOxenSprite
     LDA oxenFrame
     CMP #1
@@ -2090,7 +2191,6 @@
     RTS
 .endproc
 
-;--------------------------------------
 .proc InitWagonSprite
     LDX #0
     @loop:
@@ -2102,7 +2202,6 @@
     RTS
 .endproc
 
-;--------------------------------------
 .proc UpdateWagonSprite
     LDA frameCounter
     CMP #$80

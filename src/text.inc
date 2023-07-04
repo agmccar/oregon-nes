@@ -12,13 +12,10 @@ newGameText:
     .byte _O_,_C_,_C_,_U_,_P_,_A_,_T_,_I_,_O_,_N_,_CL
     .byte _O_,_T_,_H_,_E_,_R_,___,_P_,_A_,_R_,_T_,_Y_,___,_M_,_E_,_M_,_B_,_E_,_R_,_S_,_CL
 
-keyboard1:
+keyboard:
     .byte _A_,_B_,_C_,_D_,_E_,_F_,_G_,_H_,_7_,_8_,_9_
-keyboard2:
     .byte _I_,_J_,_K_,_L_,_M_,_N_,_O_,_P_,_4_,_5_,_6_
-keyboard3:
     .byte _Q_,_R_,_S_,_T_,_U_,_V_,_W_,_X_,_1_,_2_,_3_
-keyboard4:
     .byte _Y_,_Z_,_CL,_CM,_PD,_EX,_QU,___,___,___,___
 keyboardDone:
     .byte _D_,_O_,_N_,_E_

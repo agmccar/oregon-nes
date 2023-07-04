@@ -96,6 +96,7 @@ TEXT_AFFLICTION_LEN = 10
 TEXT_OCCUPATION_LEN = 11
 TEXT_DIARY_LINE_LEN = 30
 TEXT_PERSON_LEN     = 4   ; person name
+TEXT_KEYBOARD_LEN   = 11  ; per line
 
 ; Game states
 GAMESTATE_TITLE     = 0 ; title screen
