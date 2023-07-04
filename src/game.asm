@@ -123,16 +123,13 @@
     JSR CheckGameState
     JSR UpdateScreen
     JSR UpdateSprites
+    
+    LDA buttons1
+    STA buttons1Last ; Remember last controller inputs
+    LDA menuOpen
+    STA menuOpenLast ; Remember last menu open
+
     INC frameCounter
-
-    ; LDA #%10010000 ;enable NMI, sprites from Pattern 0, background from Pattern 1
-    ; STA PPUCTRL
-    ; LDA #%00011110 ; enable sprites, enable background
-    ; STA PPUMASK
-
-    ; LDA #0
-    ; STA PPUADDR
-    ; STA PPUADDR ; clean up ppu address registers
     
     RTI
 .endproc
@@ -228,41 +225,79 @@
 ;--------------------------------------
 .proc UpdateScreen
 
-    ; LDA #%00010000      ; disable NMI, sprites from Pattern 0, background from Pattern 1
-    ; STA PPUCTRL
-    ; LDA #%00000000      ; disable sprites, disable background
-    ; STA PPUMASK
-    ; lda #$00
-    ; sta $2006        ; clean up PPU address registers
-    ; sta $2006
+    CheckForNewMenu:
+        LDA menuOpen
+        CMP menuOpenLast
+        BEQ CheckState
+        JSR NewMenuOpened
+        JMP Done
+    CheckState:
+        LDA gameState
 
-    LDA gameState
+        CMP #GAMESTATE_TITLE
+        BEQ Title
 
-    CMP #GAMESTATE_TITLE
-    BEQ Title
+        CMP #GAMESTATE_TRAVELING
+        BEQ Traveling
 
-    CMP #GAMESTATE_TRAVELING
-    BEQ Traveling
+        CMP #GAMESTATE_NEWGAME
+        BEQ NewGame
 
-    CMP #GAMESTATE_NEWGAME
-    BEQ NewGame
+        CMP #GAMESTATE_STORE
+        BEQ Store
 
-    CMP #GAMESTATE_STORE
-    BEQ Store
+        CMP #GAMESTATE_STARTDATE
+        BEQ StartDate
 
-    CMP #GAMESTATE_STARTDATE
-    BEQ StartDate
+        CMP #GAMESTATE_LANDMARK
+        BEQ Landmark
 
-    CMP #GAMESTATE_LANDMARK
-    BEQ Landmark
-
-    CMP #GAMESTATE_MAP
-    BEQ Map
+        CMP #GAMESTATE_MAP
+        BEQ Map
 
     Title:
         JMP Done
         
     NewGame:
+        LDA bgLoaded
+        CMP #0
+        BNE @skipReload
+        LDX fingerX
+        LDY fingerY
+        CPX fingerLastX
+        BNE @reloadFinger
+        CPY fingerLastY
+        BNE @reloadFinger
+        JMP @skipReload
+        @reloadFinger:
+            JSR PausePPU
+            JSR SetPpuAddrPointerFromXY
+            LDA PPUSTATUS
+            LDA pointer
+            STA PPUADDR
+            LDA pointer+1
+            STA PPUADDR
+            LDA #_PR
+            STA PPUDATA ; Place new finger on screen
+
+            LDX fingerLastX
+            LDY fingerLastY
+            JSR SetPpuAddrPointerFromXY
+            LDA PPUSTATUS
+            LDA pointer
+            STA PPUADDR
+            LDA pointer+1
+            STA PPUADDR
+            LDA #___
+            STA PPUDATA ; Place blank at old finger position
+            
+            LDA fingerX
+            STA fingerLastX
+            LDA fingerY
+            STA fingerLastY
+            JSR UnpausePPU
+
+        @skipReload:
         JMP Done
         
     Store:
@@ -284,24 +319,331 @@
         LDA #0
         STA PPUSCROLL ; vertical scroll (0)
         STX globalScroll ; update globalScroll
-    ; CheckSprite0Hit: ; t. @cuttercross
+        ; CheckSprite0Hit: ; t. @cuttercross
         LDA #%11000000  ;; We'll bit test for both sprite0 flag and vBlank flag at the same time 
                         ;; [Safety measure to prevent a full lockup scenario on sprite0 miss]
-    @sprite0Poll1:
-        BIT PPUSTATUS
-        BNE @sprite0Poll1    ;; Ensure that sprite0 + vBlank flag are clear before proceeding
-    @sprite0Poll2:
-        BIT PPUSTATUS 
-        BEQ @sprite0Poll2    ;; Wait for sprite0 flag to be set
-        ;; Freeze scroll for status bar
-        LDA #0
-        STA PPUSCROLL 
-        STA PPUSCROLL
-        JMP Done
+        @sprite0Poll1:
+            BIT PPUSTATUS
+            BNE @sprite0Poll1    ;; Ensure that sprite0 + vBlank flag are clear before proceeding
+        @sprite0Poll2:
+            BIT PPUSTATUS 
+            BEQ @sprite0Poll2    ;; Wait for sprite0 flag to be set
+            ;; Freeze scroll for status bar
+            LDA #0
+            STA PPUSCROLL 
+            STA PPUSCROLL
+            JMP Done
 
     Done:
+
     LDA #1
     STA bgLoaded
+    RTS
+.endproc
+
+.proc NewMenuOpened
+    ; A register should contain menuOpen
+    WhichMenu:
+        CMP #MENU_NONE
+        BEQ None
+
+        CMP #MENU_NEWGAME_LEADER
+        BEQ NewGameLeader
+
+        CMP #MENU_NEWGAME_OCCUPATION
+        BEQ NewGameOccupation
+        
+        CMP #MENU_NEWGAME_PERSON1
+        BEQ NewGamePerson1
+        
+        CMP #MENU_NEWGAME_PERSON2
+        BEQ NewGamePerson2
+        
+        CMP #MENU_NEWGAME_PERSON3
+        BEQ NewGamePerson3
+        
+        CMP #MENU_NEWGAME_PERSON4
+        BEQ NewGamePerson4
+        
+    None:
+        JMP Done
+    NewGameLeader:
+        JSR LoadMenuKeyboard
+        JMP Done
+    NewGameOccupation:
+        JMP Done
+    NewGamePerson1:
+        JSR LoadMenuKeyboard
+        JMP Done
+    NewGamePerson2:
+        JSR LoadMenuKeyboard
+        JMP Done
+    NewGamePerson3:
+        JSR LoadMenuKeyboard
+        JMP Done
+    NewGamePerson4:
+        JSR LoadMenuKeyboard
+        JMP Done
+    Done:
+    RTS
+.endproc
+
+.proc LoadMenuKeyboard
+    JSR PausePPU
+
+    LDA #$22 ; Line 0  top border
+    STA PPUADDR
+    LDA #$04
+    STA PPUADDR
+    LDA #_RD ;corner
+    STA PPUDATA
+    LDA #_HR ;horiz line
+    LDX #0 ;loop 23 times
+    @topBorderLine:
+        STA PPUDATA
+        INX
+        CPX #23
+        BNE @topBorderLine
+    LDA #_LD ;corner
+    STA PPUDATA
+
+    LDA #$22 ; Line 1 blank
+    STA PPUADDR
+    LDA #$24
+    STA PPUADDR
+    JSR DrawMenuKeyboardBlankLine
+
+    LDA #$22 ; Line 2 A-9
+    STA PPUADDR
+    LDA #$44
+    STA PPUADDR
+    LDA #_VR ;vert line
+    STA PPUDATA
+    LDA #___
+    LDX #0 ;loop 23 times
+    @letters1:
+        TXA
+        AND #%00000001
+        BEQ @skipLetter1
+        TXA
+        LSR
+        TAY
+        LDA keyboard1, Y
+        JMP @letter1
+        @skipLetter1:
+            LDA #___
+        @letter1:
+        STA PPUDATA
+        INX
+        CPX #23
+        BNE @letters1
+    LDA #_VR ;vert line
+    STA PPUDATA
+
+    LDA #$22 ; Line 3 blank
+    STA PPUADDR
+    LDA #$64
+    STA PPUADDR
+    JSR DrawMenuKeyboardBlankLine
+
+    LDA #$22 ; Line 4 I-6
+    STA PPUADDR
+    LDA #$84
+    STA PPUADDR
+    LDA #_VR ;vert line
+    STA PPUDATA
+    LDA #___
+    LDX #0 ;loop 23 times
+    @letters2:
+        TXA
+        AND #%00000001
+        BEQ @skipLetter2
+        TXA
+        LSR
+        TAY
+        LDA keyboard2, Y
+        JMP @letter2
+        @skipLetter2:
+            LDA #___
+        @letter2:
+        STA PPUDATA
+        INX
+        CPX #23
+        BNE @letters2
+    LDA #_VR ;vert line
+    STA PPUDATA
+
+    LDA #$22 ; Line 5 blank
+    STA PPUADDR
+    LDA #$A4
+    STA PPUADDR
+    JSR DrawMenuKeyboardBlankLine
+
+    LDA #$22 ; Line 6 Q-3
+    STA PPUADDR
+    LDA #$C4
+    STA PPUADDR
+    LDA #_VR ;vert line
+    STA PPUDATA
+    LDA #___
+    LDX #0 ;loop 23 times
+    @letters3:
+        TXA
+        AND #%00000001
+        BEQ @skipLetter3
+        TXA
+        LSR
+        TAY
+        LDA keyboard3, Y
+        JMP @letter3
+        @skipLetter3:
+            LDA #___
+        @letter3:
+        STA PPUDATA
+        INX
+        CPX #23
+        BNE @letters3
+    LDA #_VR ;vert line
+    STA PPUDATA
+
+    LDA #$22 ; Line 7 blank
+    STA PPUADDR
+    LDA #$E4
+    STA PPUADDR
+    JSR DrawMenuKeyboardBlankLine
+
+    LDA #$23 ; Line 8 Y-?
+    STA PPUADDR
+    LDA #$04
+    STA PPUADDR
+    LDA #_VR ;vert line
+    STA PPUDATA
+    LDA #___
+    LDX #0 ;loop 23 times
+    @letters4:
+        TXA
+        AND #%00000001
+        BEQ @skipLetter4
+        TXA
+        LSR
+        TAY
+        LDA keyboard4, Y
+        JMP @letter4
+        @skipLetter4:
+            LDA #___
+        @letter4:
+        STA PPUDATA
+        INX
+        CPX #23
+        BNE @letters4
+    LDA #_VR ;vert line
+    STA PPUDATA
+
+    LDA #$23 ; Line 8 "DONE"
+    STA PPUADDR
+    LDA #$16
+    STA PPUADDR
+    LDX #0 ;loop 4 times
+    @letterDone:
+        LDA keyboardDone, X
+        STA PPUDATA
+        INX
+        CPX #4
+        BNE @letterDone
+
+    LDA #$23 ; Line 9 blank
+    STA PPUADDR
+    LDA #$24
+    STA PPUADDR
+    JSR DrawMenuKeyboardBlankLine
+
+    LDA #$23 ; Line 0  bottom border
+    STA PPUADDR
+    LDA #$44
+    STA PPUADDR
+    LDA #_RU ;corner
+    STA PPUDATA
+    LDA #_HR ;horiz line
+    LDX #0 ;loop 23 times
+    @bottomBorderLine:
+        STA PPUDATA
+        INX
+        CPX #23
+        BNE @bottomBorderLine
+    LDA #_LU ;corner
+    STA PPUDATA
+
+    JSR UnpausePPU
+    RTS
+.endproc
+
+.proc DrawMenuKeyboardBlankLine
+    ; PPUADDR must be set
+    LDA #_VR ;vert line
+    STA PPUDATA
+    LDA #___
+    LDX #0 ;loop 23 times
+    @blank1:
+        STA PPUDATA
+        INX
+        CPX #23
+        BNE @blank1
+    LDA #_VR ;vert line
+    STA PPUDATA
+    RTS
+.endproc
+
+.proc PausePPU
+    LDA #%00010000      ; disable NMI, sprites from Pattern 0, background from Pattern 1
+    STA PPUCTRL
+    LDA #%00000000      ; disable sprites, disable background
+    STA PPUMASK
+    RTS
+.endproc
+
+.proc UnpausePPU
+    LDA #%10010000 ;enable NMI, sprites from Pattern 0, background from Pattern 1
+    STA PPUCTRL
+    LDA #%00011110 ; enable sprites, enable background
+    STA PPUMASK
+    LDA #0
+    STA PPUADDR
+    STA PPUADDR ; clean up ppu address registers
+    RTS
+.endproc
+;--------------------------------------
+.proc SetPpuAddrPointerFromXY
+    ; X,Y registers must already be set!
+    LDA #0 ; clear pointer
+    STA pointer
+    STA pointer+1
+    TYA 
+    CLC
+    ROL 
+    ROL 
+    ROL
+    TAY
+    TXA 
+    CLC
+    ROL 
+    ROL 
+    ROL
+    TAX
+    LDA #%00001000 ;base value for $2000 (change lower 2 bits for other NTs)
+    STA pointer
+    TYA
+    AND #%11111000
+    ASL
+    ROL pointer
+    ASL
+    ROL pointer
+    STA pointer+1
+    TXA
+    LSR
+    LSR
+    LSR
+    ORA pointer+1
+    STA pointer+1
     RTS
 .endproc
 
@@ -519,8 +861,10 @@
     ; initialize cursor: (5x,6y) tiles from top left, facing R
     LDA #5
     STA fingerX
+    STA fingerLastX
     LDA #6
     STA fingerY
+    STA fingerLastY
     LDA #0
     STA fingerAttr
     LDA PPUSTATUS
@@ -786,52 +1130,25 @@
         LDA gameState
 
         CMP #GAMESTATE_TRAVELING
-        BEQ Traveling
+        JSR ControllerTraveling
 
         CMP #GAMESTATE_TITLE
-        BEQ Title
+        JSR ControllerTitle
 
         CMP #GAMESTATE_NEWGAME
-        BEQ NewGame
+        JSR ControllerNewGame
 
         CMP #GAMESTATE_STORE
-        BEQ Store
+        JSR ControllerStore
 
         CMP #GAMESTATE_STARTDATE
-        BEQ StartDate
+        JSR ControllerStartDate
 
         CMP #GAMESTATE_LANDMARK
-        BEQ Landmark
+        JSR ControllerLandmark
 
         CMP #GAMESTATE_MAP
-        BEQ Map
-
-    Title:
-        LDA #KEY_START
-        BIT buttons1
-        BEQ @skip
-        LDA #GAMESTATE_NEWGAME
-        STA gameState
-    @skip:
-        JMP Done
-        
-    NewGame:
-        JMP Done
-        
-    Store:
-        JMP Done
-        
-    StartDate:
-        JMP Done
-        
-    Landmark:
-        JMP Done
-        
-    Map:
-        JMP Done
-
-    Traveling:
-        JMP Done
+        JSR ControllerMap
 
     Done:
         ; preserve registers
@@ -841,6 +1158,547 @@
         TAX
         PLA
         PLP
+    RTS
+.endproc
+
+;--------------------------------------
+.proc ControllerTitle
+    LDA #KEY_START
+    BIT buttons1
+    BEQ @skip
+    LDA #GAMESTATE_NEWGAME
+    STA gameState
+    @skip:
+    RTS
+.endproc
+        
+;--------------------------------------
+.proc ControllerNewGame
+    ; LDA bgLoaded
+    ; CMP #1
+    ; BEQ CheckA
+    ; JMP Done ; skip controller checking if bg is not loaded
+    LDA buttons1
+    CMP buttons1Last
+    BNE CheckA
+    JMP Done
+
+    CheckA:
+        LDX #0
+        LDA #KEY_A
+        BIT buttons1
+        BNE @checkLeaderA
+        JMP CheckB
+        ; pushed A
+        @checkLeaderA:
+            LDA fingerX ; check finger coords for "Leader" selection
+            CMP #5
+            BNE @checkOccupationA
+            LDA fingerY 
+            CMP #6
+            BNE @checkOccupationA
+            LDA menuOpen
+            CMP #MENU_NONE
+            BNE @checkOccupationA
+            LDA #MENU_NEWGAME_LEADER
+            STA menuOpen
+            STX bgLoaded
+            JMP Done
+        @checkOccupationA:
+            LDA fingerX ; check finger coords for "Occupation" selection
+            CMP #14
+            BNE @checkPerson1A
+            LDA fingerY 
+            CMP #6
+            BNE @checkPerson1A
+            LDA menuOpen
+            CMP #MENU_NONE
+            BNE @checkPerson1A
+            LDA #MENU_NEWGAME_OCCUPATION
+            STA menuOpen
+            STX bgLoaded
+            JMP Done
+        @checkPerson1A:
+            LDA fingerX ; check finger coords for "Person1" selection
+            CMP #5
+            BNE @checkPerson2A
+            LDA fingerY 
+            CMP #12
+            BNE @checkPerson2A
+            LDA menuOpen
+            CMP #MENU_NONE
+            BNE @checkPerson2A
+            LDA #MENU_NEWGAME_PERSON1
+            STA menuOpen
+            STX bgLoaded
+            JMP Done
+        @checkPerson2A:
+            LDA fingerX ; check finger coords for "Person2" selection
+            CMP #5
+            BNE @checkPerson3A
+            LDA fingerY 
+            CMP #14
+            BNE @checkPerson3A
+            LDA menuOpen
+            CMP #MENU_NONE
+            BNE @checkPerson3A
+            LDA #MENU_NEWGAME_PERSON2
+            STA menuOpen
+            STX bgLoaded
+            JMP Done
+        @checkPerson3A:
+            LDA fingerX ; check finger coords for "Person3" selection
+            CMP #15
+            BNE @checkPerson4A
+            LDA fingerY 
+            CMP #12
+            BNE @checkPerson4A
+            LDA menuOpen
+            CMP #MENU_NONE
+            BNE @checkPerson4A
+            LDA #MENU_NEWGAME_PERSON3
+            STA menuOpen
+            STX bgLoaded
+            JMP Done
+        @checkPerson4A:
+            LDA fingerX ; check finger coords for "Person4" selection
+            CMP #15
+            BNE CheckB
+            LDA fingerY 
+            CMP #14
+            BNE CheckB
+            LDA menuOpen
+            CMP #MENU_NONE
+            BNE CheckB
+            LDA #MENU_NEWGAME_PERSON4
+            STA menuOpen
+            STX bgLoaded
+            JMP Done
+
+    CheckB:
+        LDA #KEY_B
+        BIT buttons1
+        BNE @checkLeaderB
+        JMP CheckStart
+        @checkLeaderB:
+
+    CheckStart:
+        LDA #KEY_START
+        BIT buttons1
+        BNE @checkLeaderStart
+        JMP CheckLeft
+        @checkLeaderStart:
+
+    CheckLeft:
+        LDA #KEY_LEFT
+        BIT buttons1
+        BNE @checkLeaderL
+        JMP CheckRight
+        ; pushed A
+        @checkLeaderL:
+            LDA fingerX ; check finger coords for "Leader" selection
+            CMP #5
+            BNE @checkOccupationL
+            LDA fingerY 
+            CMP #6
+            BNE @checkOccupationL
+            LDA menuOpen
+            CMP #MENU_NONE
+            BNE @checkOccupationL
+            LDA #14
+            STA fingerX ; move finger to "Occupation"
+            STX bgLoaded
+            JMP Done
+        @checkOccupationL:
+            LDA fingerX ; check finger coords for "Occupation" selection
+            CMP #14
+            BNE @checkPerson1L
+            LDA fingerY 
+            CMP #6
+            BNE @checkPerson1L
+            LDA menuOpen
+            CMP #MENU_NONE
+            BNE @checkPerson1L
+            LDA #5
+            STA fingerX ; move finger to "Leader"
+            STX bgLoaded
+            JMP Done
+        @checkPerson1L:
+            LDA fingerX ; check finger coords for "Person1" selection
+            CMP #5
+            BNE @checkPerson2L
+            LDA fingerY 
+            CMP #12
+            BNE @checkPerson2L
+            LDA menuOpen
+            CMP #MENU_NONE
+            BNE @checkPerson2L
+            LDA #15
+            STA fingerX ; move finger to "Person3"
+            STX bgLoaded
+            JMP Done
+        @checkPerson2L:
+            LDA fingerX ; check finger coords for "Person2" selection
+            CMP #5
+            BNE @checkPerson3L
+            LDA fingerY 
+            CMP #14
+            BNE @checkPerson3L
+            LDA menuOpen
+            CMP #MENU_NONE
+            BNE @checkPerson3L
+            LDA #15
+            STA fingerX ; move finger to "Person4"
+            STX bgLoaded
+            JMP Done
+        @checkPerson3L:
+            LDA fingerX ; check finger coords for "Person3" selection
+            CMP #15
+            BNE @checkPerson4L
+            LDA fingerY 
+            CMP #12
+            BNE @checkPerson4L
+            LDA menuOpen
+            CMP #MENU_NONE
+            BNE @checkPerson4L
+            LDA #5
+            STA fingerX ; move finger to "Person1"
+            STX bgLoaded
+            JMP Done
+        @checkPerson4L:
+            LDA fingerX ; check finger coords for "Person4" selection
+            CMP #15
+            BNE CheckRight
+            LDA fingerY 
+            CMP #14
+            BNE CheckRight
+            LDA menuOpen
+            CMP #MENU_NONE
+            BNE CheckRight
+            LDA #5
+            STA fingerX ; move finger to "Person2"
+            STX bgLoaded
+            JMP Done
+
+    CheckRight:
+        LDA #KEY_RIGHT
+        BIT buttons1
+        BNE @checkLeaderR
+        JMP CheckUp
+        ; pushed A
+        @checkLeaderR:
+            LDA fingerX ; check finger coords for "Leader" selection
+            CMP #5
+            BNE @checkOccupationR
+            LDA fingerY 
+            CMP #6
+            BNE @checkOccupationR
+            LDA menuOpen
+            CMP #MENU_NONE
+            BNE @checkOccupationR
+            LDA #14
+            STA fingerX ; move finger to "Occupation"
+            STX bgLoaded
+            JMP Done
+        @checkOccupationR:
+            LDA fingerX ; check finger coords for "Occupation" selection
+            CMP #14
+            BNE @checkPerson1R
+            LDA fingerY 
+            CMP #6
+            BNE @checkPerson1R
+            LDA menuOpen
+            CMP #MENU_NONE
+            BNE @checkPerson1R
+            LDA #5
+            STA fingerX ; move finger to "Leader"
+            STX bgLoaded
+            JMP Done
+        @checkPerson1R:
+            LDA fingerX ; check finger coords for "Person1" selection
+            CMP #5
+            BNE @checkPerson2R
+            LDA fingerY 
+            CMP #12
+            BNE @checkPerson2R
+            LDA menuOpen
+            CMP #MENU_NONE
+            BNE @checkPerson2R
+            LDA #15
+            STA fingerX ; move finger to "Person3"
+            STX bgLoaded
+            JMP Done
+        @checkPerson2R:
+            LDA fingerX ; check finger coords for "Person2" selection
+            CMP #5
+            BNE @checkPerson3R
+            LDA fingerY 
+            CMP #14
+            BNE @checkPerson3R
+            LDA menuOpen
+            CMP #MENU_NONE
+            BNE @checkPerson3R
+            LDA #15
+            STA fingerX ; move finger to "Person4"
+            STX bgLoaded
+            JMP Done
+        @checkPerson3R:
+            LDA fingerX ; check finger coords for "Person3" selection
+            CMP #15
+            BNE @checkPerson4R
+            LDA fingerY 
+            CMP #12
+            BNE @checkPerson4R
+            LDA menuOpen
+            CMP #MENU_NONE
+            BNE @checkPerson4R
+            LDA #5
+            STA fingerX ; move finger to "Person1"
+            STX bgLoaded
+            JMP Done
+        @checkPerson4R:
+            LDA fingerX ; check finger coords for "Person4" selection
+            CMP #15
+            BNE CheckUp
+            LDA fingerY 
+            CMP #14
+            BNE CheckUp
+            LDA menuOpen
+            CMP #MENU_NONE
+            BNE CheckUp
+            LDA #5
+            STA fingerX ; move finger to "Person2"
+            STX bgLoaded
+            JMP Done
+
+    CheckUp:
+        LDA #KEY_UP
+        BIT buttons1
+        BNE @checkLeaderU
+        JMP CheckDown
+        ; pushed A
+        @checkLeaderU:
+            LDA fingerX ; check finger coords for "Leader" selection
+            CMP #5
+            BNE @checkOccupationU
+            LDA fingerY 
+            CMP #6
+            BNE @checkOccupationU
+            LDA menuOpen
+            CMP #MENU_NONE
+            BNE @checkOccupationU
+            LDA #14
+            STA fingerY ; move finger to "Person2"
+            STX bgLoaded
+            JMP Done
+            ;
+        @checkOccupationU:
+            LDA fingerX ; check finger coords for "Occupation" selection
+            CMP #14
+            BNE @checkPerson1U
+            LDA fingerY 
+            CMP #6
+            BNE @checkPerson1U
+            LDA menuOpen
+            CMP #MENU_NONE
+            BNE @checkPerson1U
+            LDA #15
+            STA fingerX
+            LDA #14
+            STA fingerY ; move finger to "Person4"
+            STX bgLoaded
+            JMP Done
+            ;
+        @checkPerson1U:
+            LDA fingerX ; check finger coords for "Person1" selection
+            CMP #5
+            BNE @checkPerson2U
+            LDA fingerY 
+            CMP #12
+            BNE @checkPerson2U
+            LDA menuOpen
+            CMP #MENU_NONE
+            BNE @checkPerson2U
+            LDA #6
+            STA fingerY ; move finger to "Leader"
+            STX bgLoaded
+            JMP Done
+            ;
+        @checkPerson2U:
+            LDA fingerX ; check finger coords for "Person2" selection
+            CMP #5
+            BNE @checkPerson3U
+            LDA fingerY 
+            CMP #14
+            BNE @checkPerson3U
+            LDA menuOpen
+            CMP #MENU_NONE
+            BNE @checkPerson3U
+            LDA #12
+            STA fingerY ; move finger to "Person1"
+            STX bgLoaded
+            JMP Done
+            ;
+        @checkPerson3U:
+            LDA fingerX ; check finger coords for "Person3" selection
+            CMP #15
+            BNE @checkPerson4U
+            LDA fingerY 
+            CMP #12
+            BNE @checkPerson4U
+            LDA menuOpen
+            CMP #MENU_NONE
+            BNE @checkPerson4U
+            LDA #14
+            STA fingerX
+            LDA #6
+            STA fingerY ; move finger to "Occupation"
+            STX bgLoaded
+            JMP Done
+            ;
+        @checkPerson4U:
+            LDA fingerX ; check finger coords for "Person4" selection
+            CMP #15
+            BNE CheckDown
+            LDA fingerY 
+            CMP #14
+            BNE CheckDown
+            LDA menuOpen
+            CMP #MENU_NONE
+            BNE CheckDown
+            LDA #12
+            STA fingerY ; move finger to "Person3"
+            STX bgLoaded
+            JMP Done
+            ;
+
+    CheckDown:
+        LDA #KEY_DOWN
+        BIT buttons1
+        BNE @checkLeaderD
+        JMP Done
+        ; pushed A
+        @checkLeaderD:
+            LDA fingerX ; check finger coords for "Leader" selection
+            CMP #5
+            BNE @checkOccupationD
+            LDA fingerY 
+            CMP #6
+            BNE @checkOccupationD
+            LDA menuOpen
+            CMP #MENU_NONE
+            BNE @checkOccupationD
+            LDA #12
+            STA fingerY ; move finger to "Person1"
+            STX bgLoaded
+            JMP Done
+            ;
+        @checkOccupationD:
+            LDA fingerX ; check finger coords for "Occupation" selection
+            CMP #14
+            BNE @checkPerson1D
+            LDA fingerY 
+            CMP #6
+            BNE @checkPerson1D
+            LDA menuOpen
+            CMP #MENU_NONE
+            BNE @checkPerson1D
+            LDA #15
+            STA fingerX
+            LDA #12
+            STA fingerY ; move finger to "Person3"
+            STX bgLoaded
+            JMP Done
+            ;
+        @checkPerson1D:
+            LDA fingerX ; check finger coords for "Person1" selection
+            CMP #5
+            BNE @checkPerson2D
+            LDA fingerY 
+            CMP #12
+            BNE @checkPerson2D
+            LDA menuOpen
+            CMP #MENU_NONE
+            BNE @checkPerson2D
+            LDA #14
+            STA fingerY ; move finger to "Person2"
+            STX bgLoaded
+            JMP Done
+            ;
+        @checkPerson2D:
+            LDA fingerX ; check finger coords for "Person2" selection
+            CMP #5
+            BNE @checkPerson3D
+            LDA fingerY 
+            CMP #14
+            BNE @checkPerson3D
+            LDA menuOpen
+            CMP #MENU_NONE
+            BNE @checkPerson3D
+            LDA #6
+            STA fingerY ; move finger to "Leader"
+            STX bgLoaded
+            JMP Done
+            ;
+        @checkPerson3D:
+            LDA fingerX ; check finger coords for "Person3" selection
+            CMP #15
+            BNE @checkPerson4D
+            LDA fingerY 
+            CMP #12
+            BNE @checkPerson4D
+            LDA menuOpen
+            CMP #MENU_NONE
+            BNE @checkPerson4D
+            LDA #14
+            STA fingerY ; move finger to "Person4"
+            STX bgLoaded
+            JMP Done
+            ;
+        @checkPerson4D:
+            LDA fingerX ; check finger coords for "Person4" selection
+            CMP #15
+            BNE Done
+            LDA fingerY 
+            CMP #14
+            BNE Done
+            LDA menuOpen
+            CMP #MENU_NONE
+            BNE Done
+            LDA #14
+            STA fingerX
+            LDA #6
+            STA fingerY ; move finger to "Occupation"
+            STX bgLoaded
+            JMP Done
+            ;
+
+    Done:
+    RTS
+.endproc
+        
+;--------------------------------------
+.proc ControllerStore
+    RTS
+.endproc
+        
+;--------------------------------------
+.proc ControllerStartDate
+    RTS
+.endproc
+        
+;--------------------------------------
+.proc ControllerLandmark
+    RTS
+.endproc
+        
+;--------------------------------------
+.proc ControllerMap
+    RTS
+.endproc
+
+;--------------------------------------
+.proc ControllerTraveling
     RTS
 .endproc
 

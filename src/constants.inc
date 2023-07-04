@@ -69,6 +69,10 @@ _PR = 120 ; hand pointing right
 _PL = 121 ; hand pointing left
 _HR = 122 ; horiz line
 _VR = 123 ; vertical line
+_LU = 124 ; left/up corner
+_LD = 125 ; left/down corner
+_RU = 126 ; right/up corner
+_RD = 127 ; right/down corner
 _LB = 144 ; lb
 _MI = 145 ; mi
 _DL = 146 ; $
@@ -102,6 +106,15 @@ GAMESTATE_LANDMARK  = 4 ; at a landmark/town/river/etc
 GAMESTATE_MAP       = 5 ; looking at the map
 GAMESTATE_TRAVELING = 6 ; main game state - traveling the trail
 ;GAMESTATE_DECISION  = ?
+
+; Menu states
+MENU_NONE               = 0 ; all menus closed
+MENU_NEWGAME_LEADER     = 1 ; new game Leader name input 
+MENU_NEWGAME_OCCUPATION = 2 ; new game Occupation menu 
+MENU_NEWGAME_PERSON1    = 3 ; new game party member 1 name input 
+MENU_NEWGAME_PERSON2    = 4 ; new game party member 2 name input 
+MENU_NEWGAME_PERSON3    = 5 ; new game party member 3 name input 
+MENU_NEWGAME_PERSON4    = 6 ; new game party member 4 name input 
 
 ;; Finger locations?
 ;FINGER_X_NEWGAME_1:

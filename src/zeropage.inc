@@ -33,18 +33,14 @@ wagonSettings:  .res 1
 ; HUD
 traveledMi:     .res 2
 traveledDigit:  .res 4
+menuOpenLast:   .res 1
 menuOpen:       .res 1
-    ; $00: all menus closed
-    ; $01: main menu open
-    ; $02: status menu open
-    ; $03: rations menu open
-    ; $04: pace menu open
-    ; $05: rest menu open
-    ; $06: options menu open
-    ; $07: 
-    ; $08: ...
+    ; see: constants.inc -> Menu states
+
 fingerX:        .res 1 ; (tiles from top left)
 fingerY:        .res 1 ; (tiles from top left)
+fingerLastX:    .res 1 ; last pos for graphics refresh
+fingerLastY:    .res 1 ;
 fingerAttr:     .res 1
     ; %00000000
     ;  ||||||++ Pointing- 0:R, 1:L
@@ -69,6 +65,7 @@ weather:        .res 1
 
 ; Controller input
 buttons1:       .res 1
+buttons1Last:   .res 1
 
 ; Supplies
 dollars:        .res 2 
@@ -109,5 +106,5 @@ personStatus:  .res 5   ; 1 each * 5
     ; .byte _V_,_E_,_R_,_Y_,___,_P_,_O_,_O_,_R_,___
     ; .byte _D_,_E_,_C_,_E_,_A_,_S_,_E_,_D_,___,___
 
-; remaining: $c0
+; remaining: $BE
 
