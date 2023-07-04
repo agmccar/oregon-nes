@@ -41,6 +41,8 @@ fingerX:        .res 1 ; (tiles from top left)
 fingerY:        .res 1 ; (tiles from top left)
 fingerLastX:    .res 1 ; last pos for graphics refresh
 fingerLastY:    .res 1 ;
+fingerLastLastX: .res 1 ; previous last pos (for submenus)
+fingerLastLastY: .res 1 ;
 fingerAttr:     .res 1
     ; %00000000
     ;  ||||||++ Pointing- 0:R, 1:L
@@ -87,7 +89,9 @@ dateMonth:      .res 1
 dateDay:        .res 1
 
 ; People
+occupation:    .res 1   ;
 personName:    .res 20  ; 4 each * 5 people
+typingAddr:    .res 1   ; address of what letter is currently being typed
 personStatus:  .res 5   ; 1 each * 5 
     ; $00: GOOD
     ; $01: 
@@ -106,5 +110,5 @@ personStatus:  .res 5   ; 1 each * 5
     ; .byte _V_,_E_,_R_,_Y_,___,_P_,_O_,_O_,_R_,___
     ; .byte _D_,_E_,_C_,_E_,_A_,_S_,_E_,_D_,___,___
 
-; remaining: $BE
+; remaining: $BB
 

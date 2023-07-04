@@ -125,9 +125,13 @@
     JSR UpdateSprites
     
     LDA buttons1
-    STA buttons1Last ; Remember last controller inputs
+    STA buttons1Last    ; Remember last controller inputs
     LDA menuOpen
-    STA menuOpenLast ; Remember last menu open
+    STA menuOpenLast    ; Remember last menu open
+    LDA fingerX
+    STA fingerLastX
+    LDA fingerY
+    STA fingerLastY     ; Remember last x,y of finger pointer
 
     INC frameCounter
     
@@ -225,12 +229,25 @@
 ;--------------------------------------
 .proc UpdateScreen
 
+    CheckIfFingerMoved:
+        LDA fingerX
+        CMP fingerLastX
+        BNE @fingerMoved
+        LDA fingerY
+        CMP fingerLastY
+        BNE @fingerMoved
+        JMP CheckForNewMenu
+        @fingerMoved:
+            LDA #0
+            STA bgLoaded
+
     CheckForNewMenu:
         LDA menuOpen
         CMP menuOpenLast
         BEQ CheckState
         JSR NewMenuOpened
         JMP Done
+
     CheckState:
         LDA gameState
 
@@ -262,41 +279,7 @@
         LDA bgLoaded
         CMP #0
         BNE @skipReload
-        LDX fingerX
-        LDY fingerY
-        CPX fingerLastX
-        BNE @reloadFinger
-        CPY fingerLastY
-        BNE @reloadFinger
-        JMP @skipReload
-        @reloadFinger:
-            JSR PausePPU
-            JSR SetPpuAddrPointerFromXY
-            LDA PPUSTATUS
-            LDA pointer
-            STA PPUADDR
-            LDA pointer+1
-            STA PPUADDR
-            LDA #_PR
-            STA PPUDATA ; Place new finger on screen
-
-            LDX fingerLastX
-            LDY fingerLastY
-            JSR SetPpuAddrPointerFromXY
-            LDA PPUSTATUS
-            LDA pointer
-            STA PPUADDR
-            LDA pointer+1
-            STA PPUADDR
-            LDA #___
-            STA PPUDATA ; Place blank at old finger position
-            
-            LDA fingerX
-            STA fingerLastX
-            LDA fingerY
-            STA fingerLastY
-            JSR UnpausePPU
-
+        JSR MoveFinger
         @skipReload:
         JMP Done
         
@@ -341,48 +324,80 @@
     RTS
 .endproc
 
+.proc MoveFinger
+    LDX fingerX
+    LDY fingerY
+    CPX fingerLastX
+    BNE @reloadFinger
+    CPY fingerLastY
+    BNE @reloadFinger
+    JMP @skipReload
+    @reloadFinger:
+        JSR PausePPU
+        JSR SetPpuAddrPointerFromXY
+        LDA PPUSTATUS
+        LDA pointer
+        STA PPUADDR
+        LDA pointer+1
+        STA PPUADDR
+        LDA #_PR
+        STA PPUDATA ; Place new finger on screen
+
+        LDX fingerLastX
+        LDY fingerLastY
+        JSR SetPpuAddrPointerFromXY
+        LDA PPUSTATUS
+        LDA pointer
+        STA PPUADDR
+        LDA pointer+1
+        STA PPUADDR
+        LDA #___
+        STA PPUDATA ; Place blank at old finger position
+        
+        LDA fingerX
+        STA fingerLastX
+        LDA fingerY
+        STA fingerLastY
+        JSR UnpausePPU
+    @skipReload:
+    RTS
+.endproc
+
 .proc NewMenuOpened
-    ; A register should contain menuOpen
-    WhichMenu:
+    ; A-register should contain menuOpen.
+    STA menuOpenLast
+
+    WhichMenu: ; which menu was just opened?
         CMP #MENU_NONE
         BEQ None
 
-        CMP #MENU_NEWGAME_LEADER
-        BEQ NewGameLeader
+        CMP #MENU_NEWGAME_TYPING
+        BEQ NewGameTyping
 
         CMP #MENU_NEWGAME_OCCUPATION
         BEQ NewGameOccupation
         
-        CMP #MENU_NEWGAME_PERSON1
-        BEQ NewGamePerson1
-        
-        CMP #MENU_NEWGAME_PERSON2
-        BEQ NewGamePerson2
-        
-        CMP #MENU_NEWGAME_PERSON3
-        BEQ NewGamePerson3
-        
-        CMP #MENU_NEWGAME_PERSON4
-        BEQ NewGamePerson4
-        
     None:
+        LDA #0
+        STA fingerLastLastX
+        STA fingerLastLastY ; clear LastLast pos since we are NOT in a submenu.
         JMP Done
-    NewGameLeader:
+    NewGameTyping:
+        LDA fingerX
+        STA fingerLastLastX
+        LDA fingerY
+        STA fingerLastLastY ; Set LastLast pos since we are in a submenu.
+        LDA #5
+        STA fingerX
+        STA fingerLastX
+        LDA #18
+        STA fingerY         ; move finger to keyboard 'A'
+        LDA #0
+        STA fingerLastY     ; hack to redraw finger
         JSR LoadMenuKeyboard
+        JSR MoveFinger
         JMP Done
     NewGameOccupation:
-        JMP Done
-    NewGamePerson1:
-        JSR LoadMenuKeyboard
-        JMP Done
-    NewGamePerson2:
-        JSR LoadMenuKeyboard
-        JMP Done
-    NewGamePerson3:
-        JSR LoadMenuKeyboard
-        JMP Done
-    NewGamePerson4:
-        JSR LoadMenuKeyboard
         JMP Done
     Done:
     RTS
@@ -574,6 +589,20 @@
     STA PPUDATA
 
     JSR UnpausePPU
+    RTS
+.endproc
+
+.proc CloseKeyboard
+    LDA fingerLastLastX
+    STA fingerX
+    LDA fingerLastLastY
+    STA fingerY
+    LDA #0
+    STA fingerLastLastX
+    STA fingerLastLastY
+    LDA #MENU_NONE
+    STA menuOpen
+    JSR InitStateNewGame
     RTS
 .endproc
 
@@ -772,16 +801,6 @@
 ;--------------------------------------
 .proc InitStateNewGame
 
-    ; sprite: hand pointing right..or not
-    ; LDA #48
-    ; STA ZEROSPRITE+4 ; +y
-    ; LDA #_PR
-    ; STA ZEROSPRITE+5 ; tile index (Wrong pattern table..)
-    ; LDA #0
-    ; STA ZEROSPRITE+6 ; oam attributes
-    ; LDA #40
-    ; STA ZEROSPRITE+7 ; +x
-
     JSR LoadPalette
     
     LoadBackground:
@@ -875,16 +894,20 @@
     LDA #_PR
     STA PPUDATA
 
-    ; draw blanks/underlines 
+    ; draw names/occupation (or blanks if not set) 
     
     LDA PPUSTATUS ; leader name
     LDA #$20
     STA PPUADDR
     LDA #$C7
     STA PPUADDR
-    LDA #_UL
     LDX #0
     @underline1:
+        LDA personName, X
+        CMP #___
+        BNE @store0
+        LDA #_UL
+        @store0:
         STA PPUDATA
         INX
         CPX #4
@@ -895,61 +918,96 @@
     STA PPUADDR
     LDA #$D0
     STA PPUADDR
-    LDA #_UL
     LDX #0
+    LDY #0
+    LDA occupation
+    STA helper
+    @occTextLoop:
+        LDA helper
+        CMP #0
+        BEQ @underline2
+        DEC helper
+        @occTextLoop2:
+            INX 
+            INY
+            CPY #TEXT_OCCUPATION_LEN
+            BNE @occTextLoop2
+        LDY #0
+        JMP @occTextLoop
     @underline2:
+        LDA occupationText, X
+        CMP #___
+        BNE @storeOcc
+        LDA #_UL
+        @storeOcc:
         STA PPUDATA
         INX
         CPX #11
         BNE @underline2 
     
-    LDA PPUSTATUS ; party member 2
+    LDA PPUSTATUS ; party member 1
     LDA #$21
     STA PPUADDR
     LDA #$87
     STA PPUADDR
-    LDA #_UL
     LDX #0
     @underline3:
+        LDA personName+4, X
+        CMP #___
+        BNE @store1
+        LDA #_UL
+        @store1:
         STA PPUDATA
         INX
         CPX #4
         BNE @underline3
     
-    LDA PPUSTATUS ; party member 3
+    LDA PPUSTATUS ; party member 2
     LDA #$21
     STA PPUADDR
     LDA #$91
     STA PPUADDR
-    LDA #_UL
     LDX #0
     @underline4:
+        LDA personName+8, X
+        CMP #___
+        BNE @store2
+        LDA #_UL
+        @store2:
         STA PPUDATA
         INX
         CPX #4
         BNE @underline4
     
-    LDA PPUSTATUS ; party member 4
+    LDA PPUSTATUS ; party member 3
     LDA #$21
     STA PPUADDR
     LDA #$C7
     STA PPUADDR
-    LDA #_UL
     LDX #0
     @underline5:
+        LDA personName+12, X
+        CMP #___
+        BNE @store3
+        LDA #_UL
+        @store3:
         STA PPUDATA
         INX
         CPX #4
         BNE @underline5
     
-    LDA PPUSTATUS ; party member 5
+    LDA PPUSTATUS ; party member 4
     LDA #$21
     STA PPUADDR
     LDA #$D1
     STA PPUADDR
-    LDA #_UL
     LDX #0
     @underline6:
+        LDA personName+16, X
+        CMP #___
+        BNE @store4
+        LDA #_UL
+        @store4:
         STA PPUDATA
         INX
         CPX #4
@@ -1183,13 +1241,24 @@
     BNE CheckA
     JMP Done
 
+    ; A button
     CheckA:
         LDX #0
         LDA #KEY_A
         BIT buttons1
-        BNE @checkLeaderA
-        JMP CheckB
-        ; pushed A
+        BNE @checkMenuA_None
+        JMP @skipA
+        @checkMenuA_None:
+            LDA menuOpen
+            CMP #MENU_NONE
+            BNE @checkMenuA_Typing
+            JMP @checkLeaderA
+        @checkMenuA_Typing:
+            CMP #MENU_NEWGAME_TYPING
+            BNE @skipA
+            JMP @checkTypingA
+        @skipA:
+            JMP CheckB
         @checkLeaderA:
             LDA fingerX ; check finger coords for "Leader" selection
             CMP #5
@@ -1200,8 +1269,10 @@
             LDA menuOpen
             CMP #MENU_NONE
             BNE @checkOccupationA
-            LDA #MENU_NEWGAME_LEADER
+            LDA #MENU_NEWGAME_TYPING
             STA menuOpen
+            LDA #personName
+            STA typingAddr
             STX bgLoaded
             JMP Done
         @checkOccupationA:
@@ -1228,8 +1299,10 @@
             LDA menuOpen
             CMP #MENU_NONE
             BNE @checkPerson2A
-            LDA #MENU_NEWGAME_PERSON1
+            LDA #MENU_NEWGAME_TYPING
             STA menuOpen
+            LDA #personName+4
+            STA typingAddr
             STX bgLoaded
             JMP Done
         @checkPerson2A:
@@ -1242,8 +1315,10 @@
             LDA menuOpen
             CMP #MENU_NONE
             BNE @checkPerson3A
-            LDA #MENU_NEWGAME_PERSON2
+            LDA #MENU_NEWGAME_TYPING
             STA menuOpen
+            LDA #personName+8
+            STA typingAddr
             STX bgLoaded
             JMP Done
         @checkPerson3A:
@@ -1256,8 +1331,10 @@
             LDA menuOpen
             CMP #MENU_NONE
             BNE @checkPerson4A
-            LDA #MENU_NEWGAME_PERSON3
+            LDA #MENU_NEWGAME_TYPING
             STA menuOpen
+            LDA #personName+12
+            STA typingAddr
             STX bgLoaded
             JMP Done
         @checkPerson4A:
@@ -1270,31 +1347,94 @@
             LDA menuOpen
             CMP #MENU_NONE
             BNE CheckB
-            LDA #MENU_NEWGAME_PERSON4
+            LDA #MENU_NEWGAME_TYPING
             STA menuOpen
+            LDA #personName+16
+            STA typingAddr
             STX bgLoaded
             JMP Done
+        @checkTypingA:
+            JMP Done
 
+    ; B button
     CheckB:
+        LDX #0
         LDA #KEY_B
         BIT buttons1
-        BNE @checkLeaderB
-        JMP CheckStart
+        BNE @checkMenuB_None
+        JMP @skipB
+        @checkMenuB_None:
+            LDA menuOpen
+            CMP #MENU_NONE
+            BNE @checkMenuB_Typing
+            JMP @checkLeaderB
+        @checkMenuB_Typing:
+            CMP #MENU_NEWGAME_TYPING
+            BNE @skipB
+            JMP @checkTypingB
+        @skipB:
+            JMP CheckStart
         @checkLeaderB:
+            JMP Done
+        @checkTypingB:
+            JMP Done
 
+    ; Start button
     CheckStart:
+        LDX #0
         LDA #KEY_START
         BIT buttons1
-        BNE @checkLeaderStart
-        JMP CheckLeft
+        BNE @checkMenuStart_None
+        JMP @skipStart
+        @checkMenuStart_None:
+            LDA menuOpen
+            CMP #MENU_NONE
+            BNE @checkMenuStart_Typing
+            JMP @checkLeaderStart
+        @checkMenuStart_Typing:
+            CMP #MENU_NEWGAME_TYPING
+            BNE @skipStart
+            JMP @checkTypingStart
+        @skipStart:
+            JMP CheckLeft
         @checkLeaderStart:
+            JMP Done
+        @checkTypingStart:
+            LDA #21
+            CMP fingerX
+            BNE @StillTyping
+            LDA #24
+            CMP fingerY
+            BNE @StillTyping
+            ; "DONE" key pressed. close keyboard
+            JSR CloseKeyboard
+            JMP Done
+            @StillTyping:
+                ; jump to the "DONE" key
+                LDA #21
+                STA fingerX
+                LDA #24
+                STA fingerY
+            JMP Done
 
+    ; Left button
     CheckLeft:
+        LDX #0
         LDA #KEY_LEFT
         BIT buttons1
-        BNE @checkLeaderL
-        JMP CheckRight
-        ; pushed A
+        BNE @checkMenuL_None
+        JMP @skipL
+        @checkMenuL_None:
+            LDA menuOpen
+            CMP #MENU_NONE
+            BNE @checkMenuL_Typing
+            JMP @checkLeaderL
+        @checkMenuL_Typing:
+            CMP #MENU_NEWGAME_TYPING
+            BNE @skipL
+            JMP @checkTypingL
+        @skipL:
+            JMP CheckRight
         @checkLeaderL:
             LDA fingerX ; check finger coords for "Leader" selection
             CMP #5
@@ -1379,13 +1519,38 @@
             STA fingerX ; move finger to "Person2"
             STX bgLoaded
             JMP Done
-
+        @checkTypingL:
+            LDX fingerX
+            DEX
+            DEX
+            CPX #3  ; check if we need to wrap around
+            BNE @moveFingerL
+            LDX #25 ; wrap around
+            LDA fingerY
+            CMP #24 ; check if we need to wrap to the "DONE" keyboard button
+            BNE @moveFingerL
+            LDX #21 ; wrap around to "DONE" keyboard button
+            @moveFingerL:
+            STX fingerX
+            JMP Done
+    ; Right button
     CheckRight:
+        LDX #0
         LDA #KEY_RIGHT
         BIT buttons1
-        BNE @checkLeaderR
-        JMP CheckUp
-        ; pushed A
+        BNE @checkMenuR_None
+        JMP @skipR
+        @checkMenuR_None:
+            LDA menuOpen
+            CMP #MENU_NONE
+            BNE @checkMenuR_Typing
+            JMP @checkLeaderR
+        @checkMenuR_Typing:
+            CMP #MENU_NEWGAME_TYPING
+            BNE @skipR
+            JMP @checkTypingR
+        @skipR:
+            JMP CheckUp
         @checkLeaderR:
             LDA fingerX ; check finger coords for "Leader" selection
             CMP #5
@@ -1470,13 +1635,41 @@
             STA fingerX ; move finger to "Person2"
             STX bgLoaded
             JMP Done
-
+        @checkTypingR:
+            LDX fingerX
+            INX
+            INX
+            LDA fingerY
+            CMP #24 ; check if we are on bottom row
+            BNE @wrapFingerNormallyR
+            CPX #23 ; check if we need to wrap around the "DONE" key
+            BEQ @wrapFingerR
+            @wrapFingerNormallyR:
+            CPX #27 ; check if we need to wrap around normally
+            BNE @moveFingerR
+            @wrapFingerR:
+            LDX #5  ; wrap around
+            @moveFingerR:
+            STX fingerX
+            JMP Done
+    ; Up button
     CheckUp:
+        LDX #0
         LDA #KEY_UP
         BIT buttons1
-        BNE @checkLeaderU
-        JMP CheckDown
-        ; pushed A
+        BNE @checkMenuU_None
+        JMP @skipU
+        @checkMenuU_None:
+            LDA menuOpen
+            CMP #MENU_NONE
+            BNE @checkMenuU_Typing
+            JMP @checkLeaderU
+        @checkMenuU_Typing:
+            CMP #MENU_NEWGAME_TYPING
+            BNE @skipU
+            JMP @checkTypingU
+        @skipU:
+            JMP CheckDown
         @checkLeaderU:
             LDA fingerX ; check finger coords for "Leader" selection
             CMP #5
@@ -1571,13 +1764,40 @@
             STX bgLoaded
             JMP Done
             ;
-
+        @checkTypingU:
+            LDX fingerY
+            DEX
+            DEX
+            CPX #16 ; check if fingerY is past top of screen
+            BNE @moveFingerU
+            LDA fingerX
+            CMP #23 ; check if we are in last 2 columns
+            BCC @wrapFingerU
+            LDA #21
+            STA fingerX ; wrap to the "DONE" key
+            @wrapFingerU:
+            LDX #24 ; wrap to bottom of keyboard
+            @moveFingerU:
+            STX fingerY
+            JMP Done
+    ; Down button
     CheckDown:
+        LDX #0
         LDA #KEY_DOWN
         BIT buttons1
-        BNE @checkLeaderD
-        JMP Done
-        ; pushed A
+        BNE @checkMenuD_None
+        JMP @skipD
+        @checkMenuD_None:
+            LDA menuOpen
+            CMP #MENU_NONE
+            BNE @checkMenuD_Typing
+            JMP @checkLeaderD
+        @checkMenuD_Typing:
+            CMP #MENU_NEWGAME_TYPING
+            BNE @skipD
+            JMP @checkTypingD
+        @skipD:
+            JMP Done
         @checkLeaderD:
             LDA fingerX ; check finger coords for "Leader" selection
             CMP #5
@@ -1672,7 +1892,25 @@
             STX bgLoaded
             JMP Done
             ;
-
+        @checkTypingD:
+            LDX fingerY
+            INX
+            INX
+            CPX #26 ; check if fingerY is past bottom of screen
+            BEQ @wrapFingerD
+            LDA fingerX
+            CMP #23 ; check if fingerX is in "DONE" columns
+            BCC @moveFingerD
+            CPX #24 ; check if fingerY is in 3rd row
+            BNE @moveFingerD
+            LDA #21
+            STA fingerX
+            JMP @moveFingerD
+            @wrapFingerD:
+            LDX #18 ; wrap to top of screen
+            @moveFingerD:
+            STX fingerY
+            JMP Done
     Done:
     RTS
 .endproc

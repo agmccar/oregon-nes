@@ -109,12 +109,8 @@ GAMESTATE_TRAVELING = 6 ; main game state - traveling the trail
 
 ; Menu states
 MENU_NONE               = 0 ; all menus closed
-MENU_NEWGAME_LEADER     = 1 ; new game Leader name input 
+MENU_NEWGAME_TYPING     = 1 ; new game name input 
 MENU_NEWGAME_OCCUPATION = 2 ; new game Occupation menu 
-MENU_NEWGAME_PERSON1    = 3 ; new game party member 1 name input 
-MENU_NEWGAME_PERSON2    = 4 ; new game party member 2 name input 
-MENU_NEWGAME_PERSON3    = 5 ; new game party member 3 name input 
-MENU_NEWGAME_PERSON4    = 6 ; new game party member 4 name input 
 
 ;; Finger locations?
 ;FINGER_X_NEWGAME_1:
