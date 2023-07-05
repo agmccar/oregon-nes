@@ -109,32 +109,29 @@
 ;--------------------------------------
 
 .proc nmi
-    LDA #$00
-    STA OAMADDR ; tell PPU to prepare for transfer to OAM starting at byte zero
-    LDA #$02
-    STA OAMDMA ; tell PPU to initiate transfer of 256 bytes $0200-$02ff into OAM
+    PHA
+    TXA
+    PHA
+    TYA
+    PHA
 
-    LDA #0
-    STA PPUADDR
-    STA PPUADDR
-
-
+    JSR UpdateSprites
     JSR ReadController1
     JSR CheckGameState
-    JSR UpdateScreen
-    JSR UpdateSprites
+    JSR UpdateBg
     
     LDA buttons1
     STA buttons1Last    ; Remember last controller inputs
     LDA menuOpen
     STA menuOpenLast    ; Remember last menu open
-    LDA fingerX
-    STA fingerLastX
-    LDA fingerY
-    STA fingerLastY     ; Remember last x,y of finger pointer
 
     INC frameCounter
     
+    PLA
+    TAY
+    PLA
+    TAX
+    PLA
     RTI
 .endproc
 
@@ -145,17 +142,14 @@
 .proc CheckGameState
     LDA lastGameState
     CMP gameState
-    BEQ Done ; No state change: goto Done
+    BNE @StateChanged
+    JMP Done
 
-    ; State changed:
-    LDA #%00010000      ; disable NMI, sprites from Pattern 0, background from Pattern 1
-    STA PPUCTRL
-    LDA #%00000000      ; disable sprites, disable background
-    STA PPUMASK
-    STA bgLoaded        ; reload background
+    @StateChanged:
+    LDA #0
+    STA bgLoaded        ; bg needs reload
     LDA gameState   
     STA lastGameState   ; update lastGameState
-
     CheckStateTitle:
         CMP #GAMESTATE_TITLE
         BNE CheckStateTraveling
@@ -199,10 +193,6 @@
         JMP Done
 
     Done:
-        LDA #%10010000 ;enable NMI, sprites from Pattern 0, background from Pattern 1
-        STA PPUCTRL
-        LDA #%00011110 ; enable sprites, enable background
-        STA PPUMASK
     RTS
 .endproc
 
@@ -227,7 +217,7 @@
 ; .endproc
 
 ;--------------------------------------
-.proc UpdateScreen
+.proc UpdateBg
 
     CheckIfFingerMoved:
         LDA fingerX
@@ -273,50 +263,24 @@
         BEQ Map
 
     Title:
+        LDA bgLoaded
+        CMP #0
+        BNE @TitleBgDone
+        JSR LoadBgTitle
+        @TitleBgDone:
         JMP Done
         
     NewGame:
         LDA bgLoaded
         CMP #0
-        BNE @skipReload
-        LDA fingerX
-        PHA
-        LDA fingerY
-        PHA
-        LDA fingerLastX
-        PHA
-        LDA fingerLastY
-        PHA
-        LDA fingerLastLastX
-        PHA
-        LDA fingerLastLastY
-        PHA
-        LDA menuOpen
-        PHA
-        JSR PausePPU
-        JSR InitStateNewGame
-        JSR UnpausePPU
-        PLA
-        STA menuOpen
-        PLA
-        STA fingerLastLastY
-        PLA
-        STA fingerLastLastX
-        PLA
-        STA fingerLastY
-        PLA
-        STA fingerLastX
-        PLA
-        STA fingerY
-        PLA
-        STA fingerX
+        BNE @newGameBgDone
+        JSR LoadBgNewGame
         LDA menuOpen
         CMP #MENU_NEWGAME_TYPING
-        BNE @skipKeyboardReload
+        BNE @newGameBgDone
         JSR LoadMenuKeyboard
-        @skipKeyboardReload:
-        JSR MoveFinger
-        @skipReload:
+        @newGameBgDone:
+        JSR LoadFinger
         JMP Done
         
     Store:
@@ -360,25 +324,16 @@
     RTS
 .endproc
 
-.proc MoveFinger
+.proc LoadFinger
+    JSR PausePPU
     LDX fingerX
     LDY fingerY
     CPX fingerLastX
     BNE @reloadFinger
     CPY fingerLastY
     BNE @reloadFinger
-    JMP @skipReload
+    JMP Done
     @reloadFinger:
-        JSR PausePPU
-        JSR SetPpuAddrPointerFromXY
-        LDA PPUSTATUS
-        LDA pointer
-        STA PPUADDR
-        LDA pointer+1
-        STA PPUADDR
-        LDA #_PR
-        STA PPUDATA ; Place new finger on screen
-
         LDX fingerLastX
         LDY fingerLastY
         JSR SetPpuAddrPointerFromXY
@@ -389,13 +344,43 @@
         STA PPUADDR
         LDA #___
         STA PPUDATA ; Place blank at old finger position
+
+        LDX fingerLastLastX
+        LDY fingerLastLastY ; are we in a submenu?
+        CPX #0
+        BNE @submenuReloadFinger
+        CPY #0
+        BNE @submenuReloadFinger
+        JMP @placeFinger
+        @submenuReloadFinger:
+        JSR SetPpuAddrPointerFromXY
+        LDA PPUSTATUS
+        LDA pointer
+        STA PPUADDR
+        LDA pointer+1
+        STA PPUADDR
+        LDA #_PR
+        STA PPUDATA ; Place finger at 1st menu finger position
+        
+        @placeFinger:
+        LDX fingerX
+        LDY fingerY
+        JSR SetPpuAddrPointerFromXY
+        LDA PPUSTATUS
+        LDA pointer
+        STA PPUADDR
+        LDA pointer+1
+        STA PPUADDR
+        LDA #_PR
+        STA PPUDATA ; Place new finger on screen
         
         LDA fingerX
         STA fingerLastX
         LDA fingerY
         STA fingerLastY
-        JSR UnpausePPU
-    @skipReload:
+        
+    Done:
+    JSR UnpausePPU
     RTS
 .endproc
 
@@ -430,9 +415,7 @@
         STA fingerY         ; move finger to keyboard 'A'
         LDA #0
         STA fingerLastY     ; hack to redraw finger
-        STA keyboardKey
-        JSR LoadMenuKeyboard
-        JSR MoveFinger
+        STA keyboardKey     ; default key to 'A'
         JMP Done
     NewGameOccupation:
         JMP Done
@@ -442,198 +425,207 @@
 
 .proc LoadMenuKeyboard
     JSR PausePPU
-
-    LDA #$22 ; Line 0  top border
-    STA PPUADDR
-    LDA #$04
-    STA PPUADDR
-    LDA #_RD ;corner
-    STA PPUDATA
-    LDA #_HR ;horiz line
-    LDX #0 ;loop 23 times
-    @topBorderLine:
+    KBLine0:
+        LDA #$22 ; Line 0  top border
+        STA PPUADDR
+        LDA #$04
+        STA PPUADDR
+        LDA #_RD ;corner
         STA PPUDATA
-        INX
-        CPX #23
-        BNE @topBorderLine
-    LDA #_LD ;corner
-    STA PPUDATA
-
-    LDA #$22 ; Line 1 blank
-    STA PPUADDR
-    LDA #$24
-    STA PPUADDR
-    JSR DrawMenuKeyboardBlankLine
-
-    LDA #$22 ; Line 2 A-9
-    STA PPUADDR
-    LDA #$44
-    STA PPUADDR
-    LDA #_VR ;vert line
-    STA PPUDATA
-    LDA #___
-    LDX #0 ;loop 23 times
-    @letters1:
-        TXA
-        AND #%00000001
-        BEQ @skipLetter1
-        TXA
-        LSR
-        TAY
-        LDA keyboard, Y
-        JMP @letter1
-        @skipLetter1:
-            LDA #___
-        @letter1:
+        LDA #_HR ;horiz line
+        LDX #0 ;loop 23 times
+        @topBorderLine:
+            STA PPUDATA
+            INX
+            CPX #23
+            BNE @topBorderLine
+        LDA #_LD ;corner
         STA PPUDATA
-        INX
-        CPX #23
-        BNE @letters1
-    LDA #_VR ;vert line
-    STA PPUDATA
 
-    LDA #$22 ; Line 3 blank
-    STA PPUADDR
-    LDA #$64
-    STA PPUADDR
-    JSR DrawMenuKeyboardBlankLine
+    KBLine1:
+        LDA #$22 ; Line 1 blank
+        STA PPUADDR
+        LDA #$24
+        STA PPUADDR
+        JSR DrawMenuKeyboardBlankLine
 
-    LDA #$22 ; Line 4 I-6
-    STA PPUADDR
-    LDA #$84
-    STA PPUADDR
-    LDA #_VR ;vert line
-    STA PPUDATA
-    LDX #0 ;loop 23 times
-    @letters2:
-        TXA
-        AND #%00000001
-        BEQ @skipLetter2
-        TXA
-        LSR
-        CLC
-        ADC #11
-        TAY
-        LDA keyboard, Y
-        JMP @letter2
-        @skipLetter2:
-            LDA #___
-        @letter2:
+    KBLine2:
+        LDA #$22 ; Line 2 A-9
+        STA PPUADDR
+        LDA #$44
+        STA PPUADDR
+        LDA #_VR ;vert line
         STA PPUDATA
-        INX
-        CPX #23
-        BNE @letters2
-    LDA #_VR ;vert line
-    STA PPUDATA
-
-    LDA #$22 ; Line 5 blank
-    STA PPUADDR
-    LDA #$A4
-    STA PPUADDR
-    JSR DrawMenuKeyboardBlankLine
-
-    LDA #$22 ; Line 6 Q-3
-    STA PPUADDR
-    LDA #$C4
-    STA PPUADDR
-    LDA #_VR ;vert line
-    STA PPUDATA
-    LDX #0 ;loop 23 times
-    @letters3:
-        TXA
-        AND #%00000001
-        BEQ @skipLetter3
-        TXA
-        LSR
-        CLC
-        ADC #22
-        TAY
-        LDA keyboard, Y
-        JMP @letter3
-        @skipLetter3:
-            LDA #___
-        @letter3:
+        LDA #___
+        LDX #0 ;loop 23 times
+        @letters1:
+            TXA
+            AND #%00000001
+            BEQ @skipLetter1
+            TXA
+            LSR
+            TAY
+            LDA keyboard, Y
+            JMP @letter1
+            @skipLetter1:
+                LDA #___
+            @letter1:
+            STA PPUDATA
+            INX
+            CPX #23
+            BNE @letters1
+        LDA #_VR ;vert line
         STA PPUDATA
-        INX
-        CPX #23
-        BNE @letters3
-    LDA #_VR ;vert line
-    STA PPUDATA
 
-    LDA #$22 ; Line 7 blank
-    STA PPUADDR
-    LDA #$E4
-    STA PPUADDR
-    JSR DrawMenuKeyboardBlankLine
+    KBLine3:
+        LDA #$22 ; Line 3 blank
+        STA PPUADDR
+        LDA #$64
+        STA PPUADDR
+        JSR DrawMenuKeyboardBlankLine
 
-    LDA #$23 ; Line 8 Y-?
-    STA PPUADDR
-    LDA #$04
-    STA PPUADDR
-    LDA #_VR ;vert line
-    STA PPUDATA
-    LDX #0 ;loop 23 times
-    @letters4:
-        TXA
-        AND #%00000001
-        BEQ @skipLetter4
-        TXA
-        LSR
-        CLC
-        ADC #33
-        TAY
-        LDA keyboard, Y
-        JMP @letter4
-        @skipLetter4:
-            LDA #___
-        @letter4:
+    KBLine4:
+        LDA #$22 ; Line 4 I-6
+        STA PPUADDR
+        LDA #$84
+        STA PPUADDR
+        LDA #_VR ;vert line
         STA PPUDATA
-        INX
-        CPX #23
-        BNE @letters4
-    LDA #_VR ;vert line
-    STA PPUDATA
-
-    LDA #$23 ; Line 8 "DONE"
-    STA PPUADDR
-    LDA #$16
-    STA PPUADDR
-    LDX #0 ;loop 4 times
-    @letterDone:
-        LDA keyboardDone, X
+        LDX #0 ;loop 23 times
+        @letters2:
+            TXA
+            AND #%00000001
+            BEQ @skipLetter2
+            TXA
+            LSR
+            CLC
+            ADC #11
+            TAY
+            LDA keyboard, Y
+            JMP @letter2
+            @skipLetter2:
+                LDA #___
+            @letter2:
+            STA PPUDATA
+            INX
+            CPX #23
+            BNE @letters2
+        LDA #_VR ;vert line
         STA PPUDATA
-        INX
-        CPX #4
-        BNE @letterDone
 
-    LDA #$23 ; Line 9 blank
-    STA PPUADDR
-    LDA #$24
-    STA PPUADDR
-    JSR DrawMenuKeyboardBlankLine
+    KBLine5:
+        LDA #$22 ; Line 5 blank
+        STA PPUADDR
+        LDA #$A4
+        STA PPUADDR
+        JSR DrawMenuKeyboardBlankLine
 
-    LDA #$23 ; Line 0  bottom border
-    STA PPUADDR
-    LDA #$44
-    STA PPUADDR
-    LDA #_RU ;corner
-    STA PPUDATA
-    LDA #_HR ;horiz line
-    LDX #0 ;loop 23 times
-    @bottomBorderLine:
+    KBLine6:
+        LDA #$22 ; Line 6 Q-3
+        STA PPUADDR
+        LDA #$C4
+        STA PPUADDR
+        LDA #_VR ;vert line
         STA PPUDATA
-        INX
-        CPX #23
-        BNE @bottomBorderLine
-    LDA #_LU ;corner
-    STA PPUDATA
+        LDX #0 ;loop 23 times
+        @letters3:
+            TXA
+            AND #%00000001
+            BEQ @skipLetter3
+            TXA
+            LSR
+            CLC
+            ADC #22
+            TAY
+            LDA keyboard, Y
+            JMP @letter3
+            @skipLetter3:
+                LDA #___
+            @letter3:
+            STA PPUDATA
+            INX
+            CPX #23
+            BNE @letters3
+        LDA #_VR ;vert line
+        STA PPUDATA
+
+    KBLine7:
+        LDA #$22 ; Line 7 blank
+        STA PPUADDR
+        LDA #$E4
+        STA PPUADDR
+        JSR DrawMenuKeyboardBlankLine
+
+    KBLine8:
+        LDA #$23 ; Line 8 Y-?
+        STA PPUADDR
+        LDA #$04
+        STA PPUADDR
+        LDA #_VR ;vert line
+        STA PPUDATA
+        LDX #0 ;loop 23 times
+        @letters4:
+            TXA
+            AND #%00000001
+            BEQ @skipLetter4
+            TXA
+            LSR
+            CLC
+            ADC #33
+            TAY
+            LDA keyboard, Y
+            JMP @letter4
+            @skipLetter4:
+                LDA #___
+            @letter4:
+            STA PPUDATA
+            INX
+            CPX #23
+            BNE @letters4
+        LDA #_VR ;vert line
+        STA PPUDATA
+
+        LDA #$23 ; Line 8 "DONE"
+        STA PPUADDR
+        LDA #$16
+        STA PPUADDR
+        LDX #0 ;loop 4 times
+        @letterDone:
+            LDA keyboardDone, X
+            STA PPUDATA
+            INX
+            CPX #4
+            BNE @letterDone
+
+    KBLine9:
+        LDA #$23 ; Line 9 blank
+        STA PPUADDR
+        LDA #$24
+        STA PPUADDR
+        JSR DrawMenuKeyboardBlankLine
+
+    KBLineA:
+        LDA #$23 ; Line 10  bottom border
+        STA PPUADDR
+        LDA #$44
+        STA PPUADDR
+        LDA #_RU ;corner
+        STA PPUDATA
+        LDA #_HR ;horiz line
+        LDX #0 ;loop 23 times
+        @bottomBorderLine:
+            STA PPUDATA
+            INX
+            CPX #23
+            BNE @bottomBorderLine
+        LDA #_LU ;corner
+        STA PPUDATA
 
     JSR UnpausePPU
     RTS
 .endproc
 
 .proc CloseKeyboard
-    JSR PausePPU
     LDA fingerLastLastX
     STA fingerX
     LDA fingerLastLastY
@@ -643,8 +635,6 @@
     STA fingerLastLastY
     LDA #MENU_NONE
     STA menuOpen
-    JSR InitStateNewGame
-    JSR UnpausePPU
     RTS
 .endproc
 
@@ -720,130 +710,24 @@
 
 ;--------------------------------------
 .proc InitStateTitle
-
-    JSR LoadPalette
-    
-    LoadBackground:
-        LDA PPUSTATUS
-        LDA #$20
-        STA PPUADDR
-        LDA #$00
-        STA PPUADDR 
-
-        LDX #0
-        LDY #0
-    @repeatLoop:
-        INY
-    @loop:
-        LDA #___
-        STA PPUDATA
-        INX
-        CPX #$00
-        BNE @loop
-        LDA #$24
-        STA PPUADDR
-        LDA #$00
-        STA PPUADDR ; $2400
-        LDX #0
-        CPY #2
-        BNE @repeatLoop
-
-        LDA #$21
-        STA PPUADDR
-        LDA #$00
-        STA PPUADDR ; $2100
-        LDX #0
-    @loop2:
-        LDA #___
-        CPX #8 ; 25% across screen
-        BCC @skipTitleText2
-        CPX #24; 75% across screen
-        BCS @skipTitleText2
-
-        TXA
-        STA helper
-        SBC #7
-        TAX
-        LDA titleText, X
-        TAX
-        LDA helper
-        STX helper
-        TAX
-        LDA helper
-
-    @skipTitleText2:
-        STA PPUDATA
-        INX
-        CPX #$00
-        BNE @loop2
-
-    @loop3:
-        LDA #___
-        CPX #10 ; >25% across screen
-        BCC @skipTitleText3
-        CPX #22; <75% across screen
-        BCS @skipTitleText3
-
-        TXA
-        STA helper
-        SBC #9
-        TAX
-        LDA titleOptions, X
-        TAX
-        LDA helper
-        STX helper
-        TAX
-        LDA helper
-
-    @skipTitleText3:
-        STA PPUDATA
-        INX
-        CPX #$00
-        BNE @loop3
-
-    @loop4:
-        LDA #___
-        STA PPUDATA
-        INX
-        CPX #$C0
-        BNE @loop4
-
-    LoadBackgroundAttribute:
-        LDA PPUSTATUS
-        LDA #$23
-        STA PPUADDR
-        LDA #$C0
-        STA PPUADDR ; $23C0 (first screen attribute table)
-
-        LDX #0
-        LDY #0
-    @repeatLoop:
-        INY
-    @loop:
-        LDA #$FF
-        STA PPUDATA
-        INX
-        CPX #$40
-        BNE @loop
-
-        LDX #0
-        LDA PPUSTATUS ; load second screen attr table
-        LDA #$27
-        STA PPUADDR
-        LDA #$C0
-        STA PPUADDR ; $27C0 (attribute table)
-        CPY #2
-        BNE @repeatLoop ; 2nd screen
-
-    LDA #1
-    STA bgLoaded
     RTS
 .endproc
 
 .proc InitStateNewGame
+    ; initialize cursor: (5x,6y) tiles from top left, facing R
+    LDA #0
+    STA fingerLastX
+    STA fingerLastY
+    STA fingerAttr
+    LDA #5
+    STA fingerX
+    LDA #6
+    STA fingerY
+    RTS
+.endproc
 
-    JSR LoadPalette
-    
+.proc InitStateStore
+
     LoadBackground:
         LDA PPUSTATUS
         LDA #$20
@@ -852,242 +736,36 @@
         STA PPUADDR 
         
         LDX #0
-    @blank1:
+        @blank1:
         LDA #___
         STA PPUDATA
         INX
-        CPX #$85
+        CPX #0
         BNE @blank1
 
         LDX #0
-    @textLeader:
-        LDA newGameText, X
-        STA PPUDATA
-        INX
-        CPX #7
-        BNE @textLeader
-
-        LDX #0
-    @blank2:
+        @blank2:
         LDA #___
         STA PPUDATA
         INX
-        CPX #3
+        CPX #0
         BNE @blank2
 
-        LDX #7
-    @textOccupation:
-        LDA newGameText, X
-        STA PPUDATA
-        INX
-        CPX #18
-        BNE @textOccupation
-
         LDX #0
-    @blank3:
+        @blank3:
         LDA #___
         STA PPUDATA
         INX
-        CPX #$AB
+        CPX #0
         BNE @blank3
 
-        LDX #18
-    @textOtherPartyMembers:
-        LDA newGameText, X
-        STA PPUDATA
-        INX
-        CPX #38
-        BNE @textOtherPartyMembers
-
         LDX #0
-    @blank4:
+        @blank4:
         LDA #___
-        STA PPUDATA
-        INX
-        CPX #$27
-        BNE @blank4
-
-    ; fill the rest blank
-        LDX #0
-    @fill:
-        LDA #___
-        STA PPUDATA
-        STA PPUDATA
         STA PPUDATA
         INX
         CPX #$C0
-        BNE @fill
-
-    ; initialize cursor: (5x,6y) tiles from top left, facing R
-    LDA #5
-    STA fingerX
-    STA fingerLastX
-    LDA #6
-    STA fingerY
-    STA fingerLastY
-    LDA #0
-    STA fingerAttr
-    LDA PPUSTATUS
-    LDA #$20
-    STA PPUADDR
-    LDA #$C5
-    STA PPUADDR 
-    LDA #_PR
-    STA PPUDATA
-
-    ; draw names/occupation (or blanks if not set) 
-    
-    LDA PPUSTATUS ; leader name
-    LDA #$20
-    STA PPUADDR
-    LDA #$C7
-    STA PPUADDR
-    LDX #0
-    @underline1:
-        LDA personName, X
-        CMP #___
-        BNE @store0
-        LDA #_UL
-        @store0:
-        STA PPUDATA
-        INX
-        CPX #4
-        BNE @underline1 
-    
-    LDA PPUSTATUS ; occupation
-    LDA #$20
-    STA PPUADDR
-    LDA #$D0
-    STA PPUADDR
-    LDX #0
-    LDY #0
-    LDA occupation
-    STA helper
-    @occTextLoop:
-        LDA helper
-        CMP #0
-        BEQ @underline2
-        DEC helper
-        @occTextLoop2:
-            INX 
-            INY
-            CPY #TEXT_OCCUPATION_LEN
-            BNE @occTextLoop2
-        LDY #0
-        JMP @occTextLoop
-    @underline2:
-        LDA occupationText, X
-        CMP #___
-        BNE @storeOcc
-        LDA #_UL
-        @storeOcc:
-        STA PPUDATA
-        INX
-        CPX #11
-        BNE @underline2 
-    
-    LDA PPUSTATUS ; party member 1
-    LDA #$21
-    STA PPUADDR
-    LDA #$87
-    STA PPUADDR
-    LDX #0
-    @underline3:
-        LDA personName+4, X
-        CMP #___
-        BNE @store1
-        LDA #_UL
-        @store1:
-        STA PPUDATA
-        INX
-        CPX #4
-        BNE @underline3
-    
-    LDA PPUSTATUS ; party member 2
-    LDA #$21
-    STA PPUADDR
-    LDA #$91
-    STA PPUADDR
-    LDX #0
-    @underline4:
-        LDA personName+8, X
-        CMP #___
-        BNE @store2
-        LDA #_UL
-        @store2:
-        STA PPUDATA
-        INX
-        CPX #4
-        BNE @underline4
-    
-    LDA PPUSTATUS ; party member 3
-    LDA #$21
-    STA PPUADDR
-    LDA #$C7
-    STA PPUADDR
-    LDX #0
-    @underline5:
-        LDA personName+12, X
-        CMP #___
-        BNE @store3
-        LDA #_UL
-        @store3:
-        STA PPUDATA
-        INX
-        CPX #4
-        BNE @underline5
-    
-    LDA PPUSTATUS ; party member 4
-    LDA #$21
-    STA PPUADDR
-    LDA #$D1
-    STA PPUADDR
-    LDX #0
-    @underline6:
-        LDA personName+16, X
-        CMP #___
-        BNE @store4
-        LDA #_UL
-        @store4:
-        STA PPUDATA
-        INX
-        CPX #4
-        BNE @underline6
-
-    ;;;;;;;;;;;;;;;;
-    LoadBackgroundAttribute:
-        LDA PPUSTATUS
-        LDA #$23
-        STA PPUADDR
-        LDA #$C0
-        STA PPUADDR ; $23C0 (first screen attribute table)
-
-        LDX #0
-        LDY #0
-    @repeatLoop:
-        INY
-    @loop:
-        LDA #$FF
-        STA PPUDATA
-        INX
-        CPX #$40
-        BNE @loop
-
-        LDX #0
-        LDA PPUSTATUS ; load second screen attr table
-        LDA #$27
-        STA PPUADDR
-        LDA #$C0
-        STA PPUADDR ; $27C0 (attribute table)
-        CPY #2
-        BNE @repeatLoop ; 2nd screen
-
-        LDA #1
-        STA bgLoaded
-    RTS
-.endproc
-
-.proc InitStateStore
+        BNE @blank4
     RTS
 .endproc
 
@@ -1200,6 +878,405 @@
 .endproc
 
 ;--------------------------------------
+.proc LoadBgTitle
+    JSR PausePPU
+    JSR LoadPalette
+    LoadBackground:
+        LDA PPUSTATUS
+        LDA #$20
+        STA PPUADDR
+        LDA #$00
+        STA PPUADDR 
+
+        LDX #0
+        LDY #0
+        @repeatLoop:
+            INY
+            @loop:
+                LDA #___
+                STA PPUDATA
+                INX
+                CPX #$00
+                BNE @loop
+            LDA #$24
+            STA PPUADDR
+            LDA #$00
+            STA PPUADDR ; $2400
+            LDX #0
+            CPY #2
+            BNE @repeatLoop
+
+            LDA #$21
+            STA PPUADDR
+            LDA #$00
+            STA PPUADDR ; $2100
+            LDX #0
+        @loop2:
+            LDA #___
+            CPX #8 ; 25% across screen
+            BCC @skipTitleText2
+            CPX #24; 75% across screen
+            BCS @skipTitleText2
+
+            TXA
+            STA helper
+            SBC #7
+            TAX
+            LDA titleText, X
+            TAX
+            LDA helper
+            STX helper
+            TAX
+            LDA helper
+
+        @skipTitleText2:
+            STA PPUDATA
+            INX
+            CPX #$00
+            BNE @loop2
+
+        @loop3:
+            LDA #___
+            CPX #10 ; >25% across screen
+            BCC @skipTitleText3
+            CPX #22; <75% across screen
+            BCS @skipTitleText3
+
+            TXA
+            STA helper
+            SBC #9
+            TAX
+            LDA titleOptions, X
+            TAX
+            LDA helper
+            STX helper
+            TAX
+            LDA helper
+
+        @skipTitleText3:
+            STA PPUDATA
+            INX
+            CPX #$00
+            BNE @loop3
+
+        @loop4:
+            LDA #___
+            STA PPUDATA
+            INX
+            CPX #$C0
+            BNE @loop4
+
+    LoadBackgroundAttribute:
+        LDA PPUSTATUS
+        LDA #$23
+        STA PPUADDR
+        LDA #$C0
+        STA PPUADDR ; $23C0 (first screen attribute table)
+
+        LDX #0
+        LDY #0
+        @repeatLoop:
+            INY
+            @loop:
+                LDA #$FF
+                STA PPUDATA
+                INX
+                CPX #$40
+                BNE @loop
+
+            LDX #0
+            LDA PPUSTATUS ; load second screen attr table
+            LDA #$27
+            STA PPUADDR
+            LDA #$C0
+            STA PPUADDR ; $27C0 (attribute table)
+            CPY #2
+            BNE @repeatLoop ; 2nd screen
+
+    Done:
+    LDA #1
+    STA bgLoaded
+    JSR UnpausePPU
+    RTS
+.endproc
+
+.proc LoadBgNewGame
+    JSR PausePPU
+    JSR LoadPalette
+    LoadBackground:
+        LDA PPUSTATUS
+        LDA #$20
+        STA PPUADDR
+        LDA #$00
+        STA PPUADDR 
+        
+        LDX #0
+        @blank1:
+            LDA #___
+            STA PPUDATA
+            INX
+            CPX #$85
+            BNE @blank1
+
+        LDX #0
+        @textLeader:
+            LDA newGameText, X
+            STA PPUDATA
+            INX
+            CPX #7
+            BNE @textLeader
+
+        LDX #0
+        @blank2:
+            LDA #___
+            STA PPUDATA
+            INX
+            CPX #3
+            BNE @blank2
+
+        LDX #7
+        @textOccupation:
+            LDA newGameText, X
+            STA PPUDATA
+            INX
+            CPX #18
+            BNE @textOccupation
+
+        LDX #0
+        @blank3:
+            LDA #___
+            STA PPUDATA
+            INX
+            CPX #$AB
+            BNE @blank3
+
+        LDX #18
+        @textOtherPartyMembers:
+            LDA newGameText, X
+            STA PPUDATA
+            INX
+            CPX #38
+            BNE @textOtherPartyMembers
+
+        LDX #0
+        @blank4:
+            LDA #___
+            STA PPUDATA
+            INX
+            CPX #$27
+            BNE @blank4
+
+        ; fill the rest blank
+        LDX #0
+        @fill:
+            LDA #___
+            STA PPUDATA
+            STA PPUDATA
+            STA PPUDATA
+            INX
+            CPX #$C0
+            BNE @fill
+
+    ; draw names/occupation (or blanks if not set) 
+    DrawNames:
+        LDA PPUSTATUS ; leader name
+        LDA #$20
+        STA PPUADDR
+        LDA #$C7
+        STA PPUADDR
+        LDX #0
+        @underline1:
+            LDA personName, X
+            CMP #___
+            BNE @store0
+            LDA #_UL
+            @store0:
+            STA PPUDATA
+            INX
+            CPX #4
+            BNE @underline1 
+    
+        LDA PPUSTATUS ; occupation
+        LDA #$20
+        STA PPUADDR
+        LDA #$D0
+        STA PPUADDR
+        LDX #0
+        LDY #0
+        LDA occupation
+        STA helper
+        @occTextLoop:
+            LDA helper
+            CMP #0
+            BEQ @underline2
+            DEC helper
+            @occTextLoop2:
+                INX 
+                INY
+                CPY #TEXT_OCCUPATION_LEN
+                BNE @occTextLoop2
+            LDY #0
+            JMP @occTextLoop
+        @underline2:
+            LDA occupationText, X
+            CMP #___
+            BNE @storeOcc
+            LDA #_UL
+            @storeOcc:
+            STA PPUDATA
+            INX
+            CPX #11
+            BNE @underline2 
+    
+        LDA PPUSTATUS ; party member 1
+        LDA #$21
+        STA PPUADDR
+        LDA #$87
+        STA PPUADDR
+        LDX #0
+        @underline3:
+            LDA personName+4, X
+            CMP #___
+            BNE @store1
+            LDA #_UL
+            @store1:
+            STA PPUDATA
+            INX
+            CPX #4
+            BNE @underline3
+        
+        LDA PPUSTATUS ; party member 2
+        LDA #$21
+        STA PPUADDR
+        LDA #$91
+        STA PPUADDR
+        LDX #0
+        @underline4:
+            LDA personName+8, X
+            CMP #___
+            BNE @store2
+            LDA #_UL
+            @store2:
+            STA PPUDATA
+            INX
+            CPX #4
+            BNE @underline4
+    
+        LDA PPUSTATUS ; party member 3
+        LDA #$21
+        STA PPUADDR
+        LDA #$C7
+        STA PPUADDR
+        LDX #0
+        @underline5:
+            LDA personName+12, X
+            CMP #___
+            BNE @store3
+            LDA #_UL
+            @store3:
+            STA PPUDATA
+            INX
+            CPX #4
+            BNE @underline5
+        
+        LDA PPUSTATUS ; party member 4
+        LDA #$21
+        STA PPUADDR
+        LDA #$D1
+        STA PPUADDR
+        LDX #0
+        @underline6:
+            LDA personName+16, X
+            CMP #___
+            BNE @store4
+            LDA #_UL
+            @store4:
+            STA PPUDATA
+            INX
+            CPX #4
+            BNE @underline6
+
+    ;;;;;;;;
+    LoadBackgroundAttribute:
+        LDA PPUSTATUS
+        LDA #$23
+        STA PPUADDR
+        LDA #$C0
+        STA PPUADDR ; $23C0 (first screen attribute table)
+
+        LDX #0
+        LDY #0
+        @repeatLoop:
+            INY
+            @loop:
+                LDA #$FF
+                STA PPUDATA
+                INX
+                CPX #$40
+                BNE @loop
+
+            LDX #0
+            LDA PPUSTATUS ; load second screen attr table
+            LDA #$27
+            STA PPUADDR
+            LDA #$C0
+            STA PPUADDR ; $27C0 (attribute table)
+            CPY #2
+            BNE @repeatLoop ; 2nd screen
+
+    Done:
+    LDA #1
+    STA bgLoaded
+    JSR UnpausePPU
+    RTS
+.endproc
+
+.proc LoadBgStore
+    JSR PausePPU
+    Done:
+    LDA #1
+    STA bgLoaded
+    JSR UnpausePPU
+    RTS
+.endproc
+
+.proc LoadBgStartDate
+    JSR PausePPU
+    Done:
+    LDA #1
+    STA bgLoaded
+    JSR UnpausePPU
+    RTS
+.endproc
+
+.proc LoadBgLandmark
+    JSR PausePPU
+    Done:
+    LDA #1
+    STA bgLoaded
+    JSR UnpausePPU
+    RTS
+.endproc
+
+.proc LoadBgMap
+    JSR PausePPU
+    Done:
+    LDA #1
+    STA bgLoaded
+    JSR UnpausePPU
+    RTS
+.endproc
+
+.proc LoadBgTraveling
+    JSR PausePPU
+    Done:
+    LDA #1
+    STA bgLoaded
+    JSR UnpausePPU
+    RTS
+.endproc
+
+;--------------------------------------
 .proc ReadController1
     ; preserve registers
     PHP
@@ -1224,26 +1301,47 @@
         LDA gameState
 
         CMP #GAMESTATE_TRAVELING
+        BNE @skip1
         JSR ControllerTraveling
+        JMP Done
 
+        @skip1:
         CMP #GAMESTATE_TITLE
+        BNE @skip2
         JSR ControllerTitle
+        JMP Done
 
+        @skip2:
         CMP #GAMESTATE_NEWGAME
+        BNE @skip3
         JSR ControllerNewGame
+        JMP Done
 
+        @skip3:
         CMP #GAMESTATE_STORE
+        BNE @skip4
         JSR ControllerStore
+        JMP Done
 
+        @skip4:
         CMP #GAMESTATE_STARTDATE
+        BNE @skip5
         JSR ControllerStartDate
+        JMP Done
 
+        @skip5:
         CMP #GAMESTATE_LANDMARK
+        BNE @skip6
         JSR ControllerLandmark
+        JMP Done
 
+        @skip6:
         CMP #GAMESTATE_MAP
+        BNE @skip7
         JSR ControllerMap
+        JMP Done
 
+        @skip7:
     Done:
         ; preserve registers
         PLA
@@ -1457,6 +1555,8 @@
         @skipStart:
             JMP CheckLeft
         @checkLeaderStart:
+            LDA #GAMESTATE_STORE
+            STA gameState
             JMP Done
         @checkTypingStart:
             LDA #21
@@ -2047,7 +2147,6 @@
 ;--------------------------------------
 .proc LoadPalette
     LDA PPUSTATUS
-
     LDA #$3F
     STA PPUADDR
     LDA #$00
@@ -2064,6 +2163,15 @@
 .endproc
 
 .proc UpdateSprites
+    LDA #$00
+    STA OAMADDR ; tell PPU to prepare for transfer to OAM starting at byte zero
+    LDA #$02
+    STA OAMDMA ; tell PPU to initiate transfer of 256 bytes $0200-$02ff into OAM
+
+    LDA #0
+    STA PPUADDR
+    STA PPUADDR
+
     LDA gameState
 
     CMP #GAMESTATE_TRAVELING
