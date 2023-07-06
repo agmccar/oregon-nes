@@ -35,11 +35,9 @@
     STX PPUCTRL
     STX PPUMASK
     STX DMCFREQ
-
     vblankwait:
         BIT PPUSTATUS
         BPL vblankwait
-
     clearmemory:
         LDA #$00
         STA $0000, X
@@ -53,55 +51,30 @@
         STA $0200, X
         INX
         BNE clearmemory
-
-
-    ; initialize zeropage and vars variables
-        ; Default 0: 
-        ; pointer, sprite0hit, helper, frameCounter, globalScroll, gameState,
-        ; oxenFrame, wagonStatus, traveledMi, traveledDigit, menuOpen,
-        ; buttons1, dollars, foodLbs, foodDigit, clothingSets, bullets,
-        ; spareParts, oxenHeadcount, dateYear, dateMonth, dateDay,
-        ; personStatus
-        LDA #%00001101
-        STA wagonSettings
-        LDA #%00000100
-        STA weather
-        
-        ; set default person names
-        LDX #0
-    defaultPersonNameLoop:
-        LDA defaultPersonNames, X
-        STA personName, X
-        INX
-        CPX #20
-        BNE defaultPersonNameLoop
-
-    ; Initialize game state
-        ;JSR InitStateTitle
-        LDA #$FF
-        STA lastGameState
-
     vblankwait2:
         BIT PPUSTATUS
         BPL vblankwait2
-
-
-        LDA #%10010000 ; turn on NMIs, sprites use first pattern table
-        STA PPUCTRL
-        LDA #%00011110 ; turn on screen
-        STA PPUMASK
-
-
-
-
-
+    LDA #%10010000 ; turn on NMIs, sprites use first pattern table
+    STA PPUCTRL
+    LDA #%00011110 ; turn on screen
+    STA PPUMASK
+    JSR InitStateTitle
     JMP main
-
 .endproc
 
 ;--------------------------------------
 
 .proc main
+
+    ; JSR UpdateSprites
+    ; JSR UpdateBg
+    ; JSR ReadController1
+    ; JSR CheckGameState
+    
+    LDA buttons1
+    STA buttons1Last    ; Remember last controller inputs
+    LDA menuOpen
+    STA menuOpenLast    ; Remember last menu open
     forever:
         JMP forever
 .endproc
@@ -115,15 +88,7 @@
     TYA
     PHA
 
-    JSR UpdateSprites
-    JSR ReadController1
-    JSR CheckGameState
-    JSR UpdateBg
-    
-    LDA buttons1
-    STA buttons1Last    ; Remember last controller inputs
-    LDA menuOpen
-    STA menuOpenLast    ; Remember last menu open
+    JSR DrawScreen
 
     INC frameCounter
     
@@ -139,13 +104,46 @@
 
 ;--SUBROUTINES------------------------------------------------------------------
 
+.proc DrawScreen
+    ; read buffer
+    LDX #0
+    LDY nametableBuffer ; note first byte in buffer (length of data segment)
+    STX nametableBufferPtr ; reset buffer pointer
+    INX
+    @loop: ; write buffer data to nametable
+        CPY #0 ; check if data segment length > 0
+        BNE :+
+        JMP Done ; exit early if no more data segments
+        :
+        LDA PPUSTATUS 
+        LDA nametableBuffer, X ; read PPU address from buffer data segment
+        STA PPUADDR
+        INX
+        LDA nametableBuffer, X
+        STA PPUADDR
+        INX 
+        @segmentLoop: 
+            LDA nametableBuffer, X ; write bytes to ppu
+            STA PPUDATA
+            INX
+            DEY
+            BNE @segmentLoop ; repeat until no more bytes to copy
+            LDY nametableBuffer, X
+            INX
+        CPX #0
+        BNE @loop ; exit if entire buffer has been read
+    Done:
+    LDA #1
+    STA bgLoaded
+    RTS
+.endproc
+
 .proc CheckGameState
     LDA lastGameState
     CMP gameState
-    BNE @StateChanged
+    BNE :+
     JMP Done
-
-    @StateChanged:
+    :
     LDA #0
     STA bgLoaded        ; bg needs reload
     LDA gameState   
@@ -710,6 +708,21 @@
 
 ;--------------------------------------
 .proc InitStateTitle
+    LDA #%00001101
+    STA wagonSettings
+    LDA #%00000100
+    STA weather
+    ; set default person names
+    LDX #0
+    @loop:
+        LDA defaultPersonNames, X
+        STA personName, X
+        INX
+        CPX #20
+        BNE @loop
+    ; Initialize game state
+    LDA #$FF
+    STA lastGameState
     RTS
 .endproc
 
