@@ -54,10 +54,9 @@
     vblankwait2:
         BIT PPUSTATUS
         BPL vblankwait2
-    LDA #%10010000 ; turn on NMIs, sprites use first pattern table
+    LDA #%10010000 ; enable NMI, sprites use first pattern table
+    STA softPPUCTRL
     STA PPUCTRL
-    LDA #%00011110 ; turn on screen
-    STA PPUMASK
     JSR InitStateTitle
     JMP main
 .endproc
@@ -65,66 +64,126 @@
 ;--------------------------------------
 
 .proc main
-
     ; JSR UpdateSprites
     ; JSR UpdateBg
     ; JSR ReadController1
     ; JSR CheckGameState
-    
-    LDA buttons1
-    STA buttons1Last    ; Remember last controller inputs
-    LDA menuOpen
-    STA menuOpenLast    ; Remember last menu open
-    forever:
-        JMP forever
+    ; LDA buttons1
+    ; STA buttons1Last    ; Remember last controller inputs
+    ; LDA menuOpen
+    ; STA menuOpenLast    ; Remember last menu open
+    JMP main
 .endproc
 
 ;--------------------------------------
 
 .proc nmi
+    PHP
     PHA
     TXA
     PHA
     TYA
     PHA
-
-    JSR DrawScreen
-
+    LDA softPPUCTRL
+    STA PPUCTRL
+    LDA softPPUMASK
+    STA PPUMASK
+    JSR ProcessNametableBuffer
     INC frameCounter
-    
     PLA
     TAY
     PLA
     TAX
     PLA
+    PLP
     RTI
 .endproc
 
-;--------------------------------------
-
 ;--SUBROUTINES------------------------------------------------------------------
 
-.proc DrawScreen
-    ; read buffer
-    LDX #0
+.proc ClearScreen
+    LDA #%00000000
+    STA softPPUMASK     ; turn off screen
+    vblankwait:
+        BIT PPUSTATUS
+        BPL vblankwait
+    
+    LDA PPUSTATUS
+    LDA #$20
+    STA PPUADDR
+    LDA #$00
+    STA PPUADDR
+    LDA #0
+    TAX
+    TAY
+    @clearTiles:
+        :
+            STA PPUDATA
+            INX
+            CPX #32
+            BNE :-
+        LDX #0
+        INY
+        CPY #30
+        BNE @clearTiles
+
+    LDA PPUSTATUS ; clear first screen attr table
+    LDA #$23
+    STA PPUADDR
+    LDA #$C0
+    STA PPUADDR ; $23C0
+    LDA #0
+    TAX
+    TAY
+    @attributeLoop:
+        :
+            LDA #$FF
+            STA PPUDATA
+            INX
+            CPX #$40
+            BNE :-
+
+        LDX #0
+        LDA PPUSTATUS ; clear second screen attr table
+        LDA #$27
+        STA PPUADDR
+        LDA #$C0
+        STA PPUADDR ; $27C0
+        INY
+        CPY #2
+        BNE @attributeLoop ; 2nd screen
+    
+    LDA #%00011110 
+    STA softPPUMASK             ; turn on screen
+    RTS
+.endproc
+
+.proc ProcessNametableBuffer
+    LDA bufferLoading
+    CMP #1
+    BEQ Done
+    LDA PPUSTATUS
+    LDX #0 
     LDY nametableBuffer ; note first byte in buffer (length of data segment)
     STX nametableBufferPtr ; reset buffer pointer
-    INX
-    @loop: ; write buffer data to nametable
-        CPY #0 ; check if data segment length > 0
-        BNE :+
-        JMP Done ; exit early if no more data segments
+    INX 
+    @loop: ; read buffer
+        CPY #0 
+        BNE :+ ; exit if length of data segment is 0
+        JMP Done
         :
-        LDA PPUSTATUS 
-        LDA nametableBuffer, X ; read PPU address from buffer data segment
+        LDA nametableBuffer, X ; set PPU address
         STA PPUADDR
         INX
         LDA nametableBuffer, X
         STA PPUADDR
+        LDA #0
+        STA PPUSCROLL           
+        STA PPUSCROLL           ; default 0 scroll position
         INX 
         @segmentLoop: 
-            LDA nametableBuffer, X ; write bytes to ppu
-            STA PPUDATA
+            LDA nametableBuffer, X 
+            STA PPUDATA ; write buffer data to nametable
             INX
             DEY
             BNE @segmentLoop ; repeat until no more bytes to copy
@@ -137,6 +196,8 @@
     STA bgLoaded
     RTS
 .endproc
+
+;--------------------------------------
 
 .proc CheckGameState
     LDA lastGameState
@@ -193,26 +254,6 @@
     Done:
     RTS
 .endproc
-
-;--------------------------------------
-
-;;;;;; Preserve all registers template
-; .proc my_subroutine
-;   PHP
-;   PHA
-;   TXA
-;   PHA
-;   TYA
-;   PHA
-;   ; your actual subroutine code here
-;   PLA
-;   TAY
-;   PLA
-;   TAX
-;   PLA
-;   PLP
-;   RTS
-; .endproc
 
 ;--------------------------------------
 .proc UpdateBg
@@ -709,20 +750,70 @@
 ;--------------------------------------
 .proc InitStateTitle
     LDA #%00001101
-    STA wagonSettings
+    STA wagonSettings       ; default steady pace, filling rations
     LDA #%00000100
-    STA weather
-    ; set default person names
+    STA weather             ; default fair weather
+    LDX #0              
+    STX gameState           ; set gameState to GAMESTATE_TITLE
+    :                       ; default person names
+    LDA defaultPersonNames, X
+    STA personName, X
+    INX
+    CPX #20
+    BNE :-
+    JSR ClearScreen
+    LDA #1
+    STA bufferLoading       ; begin loading buffer
+    LDY nametableBufferPtr  
+    LDA #$20                
+    STA nametableBuffer, Y  ; length of palette in bytes
+    INC nametableBufferPtr
+    INY
+    LDA #$3F
+    STA nametableBuffer, Y
+    INC nametableBufferPtr
+    INY
+    LDA #$00
+    STA nametableBuffer, Y  ; $3F00 - palette VRAM location
+    INC nametableBufferPtr
+    INY
     LDX #0
-    @loop:
-        LDA defaultPersonNames, X
-        STA personName, X
+    :                       ; load palette to buffer
+        LDA palette, X      ; palette data
+        STA nametableBuffer, Y
+        INC nametableBufferPtr
+        INY
         INX
-        CPX #20
-        BNE @loop
-    ; Initialize game state
-    LDA #$FF
-    STA lastGameState
+        CPX #$20
+        BNE :-
+    LDY nametableBufferPtr  
+    LDA #17
+    STA nametableBuffer, Y  ; length of title text in bytes
+    INC nametableBufferPtr
+    INY
+    LDA #$21
+    STA nametableBuffer, Y
+    INC nametableBufferPtr
+    INY
+    LDA #$29
+    STA nametableBuffer, Y  ; $2129 - title text VRAM location
+    INC nametableBufferPtr
+    INY
+    LDX #0
+    :                       ; load title text to buffer
+        LDA titleText, X    ; title text data
+        STA nametableBuffer, Y
+        INC nametableBufferPtr
+        INY
+        INX
+        CPX #17
+        BNE :-
+    LDA #0
+    STA bufferLoading       ; end buffer loading
+    LDA #%10010000
+    STA softPPUCTRL         ; Ensure NMIs are enabled
+    LDA #%00011110 
+    STA softPPUMASK         ; turn on screen
     RTS
 .endproc
 
@@ -805,7 +896,7 @@
     LDA #$F0         ; X
     STA ZEROSPRITE+3
         
-    JSR LoadPalette
+    ;JSR LoadPalette
 
     LoadBackground:
         LDA PPUSTATUS
@@ -893,7 +984,7 @@
 ;--------------------------------------
 .proc LoadBgTitle
     JSR PausePPU
-    JSR LoadPalette
+    ;JSR LoadPalette
     LoadBackground:
         LDA PPUSTATUS
         LDA #$20
@@ -1015,7 +1106,7 @@
 
 .proc LoadBgNewGame
     JSR PausePPU
-    JSR LoadPalette
+    ;JSR LoadPalette
     LoadBackground:
         LDA PPUSTATUS
         LDA #$20
@@ -2158,22 +2249,22 @@
 .endproc
 
 ;--------------------------------------
-.proc LoadPalette
-    LDA PPUSTATUS
-    LDA #$3F
-    STA PPUADDR
-    LDA #$00
-    STA PPUADDR ; $3F00
+; .proc LoadPalette
+;     LDA PPUSTATUS
+;     LDA #$3F
+;     STA PPUADDR
+;     LDA #$00
+;     STA PPUADDR ; $3F00
 
-    LDX #0
-    loop:
-        LDA palette, X
-        STA PPUDATA
-        INX
-        CPX #32
-        BNE loop
-    RTS
-.endproc
+;     LDX #0
+;     loop:
+;         LDA palette, X
+;         STA PPUDATA
+;         INX
+;         CPX #32
+;         BNE loop
+;     RTS
+; .endproc
 
 .proc UpdateSprites
     LDA #$00

@@ -10,10 +10,11 @@ globalScroll:   .res 1
 lastGameState:  .res 1 
 gameState:      .res 1 
 bgLoaded:       .res 1
+bufferLoading:  .res 1
 
 softPPUCTRL:    .res 1
 softPPUMASK:    .res 1
-
+softPPUSCROLL:  .res 2
 
 ; Graphics
 oxenFrame:      .res 1 ; frame 0=$01; 1=$02; 2=$04, 3=$08, 4=$10 (a hack)
@@ -116,5 +117,5 @@ personStatus:  .res 5   ; 1 each * 5
     ; .byte _V_,_E_,_R_,_Y_,___,_P_,_O_,_O_,_R_,___
     ; .byte _D_,_E_,_C_,_E_,_A_,_S_,_E_,_D_,___,___
 
-; remaining: $B3
+; remaining: $B2
 
