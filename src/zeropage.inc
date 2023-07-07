@@ -19,57 +19,63 @@ buttons1:           .res 1  ; Controller 1 input
 buttons1Last:       .res 1
 
 ; Graphics ---------------------------------------------------------------------
+
 oxenFrame:      .res 1 ; frame 0=$01; 1=$02; 2=$04, 3=$08, 4=$10 (a hack)
 
 ; HUD --------------------------------------------------------------------------
-keyboardKey:    .res 1 ; keyboard key (letter/symbol) currently selected
-nameCursor:     .res 1
-occupationCursor: .res 1
-traveledMi:     .res 2
-traveledDigit:  .res 4
-menuOpenLast:   .res 1
-menuOpen:       .res 1
-    ; see: constants.inc -> Menu states
 
-fingerX:        .res 1 ; (tiles from top left)
-fingerY:        .res 1 ; (tiles from top left)
-fingerLastX:    .res 1 ; last pos for graphics refresh
-fingerLastY:    .res 1 ;
-fingerLastLastX: .res 1 ; previous last pos (for submenus)
-fingerLastLastY: .res 1 ;
+keyboardKey:        .res 1 ; keyboard key (letter/symbol) currently selected
+nameCursor:         .res 1
+occupationCursor:   .res 1
+traveledMi:         .res 2
+traveledDigit:      .res 4
+menuOpenLast:       .res 1
+menuOpen:           .res 1 ; see: constants.inc -> Menu states
+fingerX:            .res 1 ; (tiles from top left)
+fingerY:            .res 1 ; (tiles from top left)
+fingerLastX:        .res 1 ; last pos for graphics refresh
+fingerLastY:        .res 1 ;
+fingerLastLastX:    .res 1 ; previous last pos (for submenus)
+fingerLastLastY:    .res 1 ;
+
+; %00000000 fingerAttr
+;  |||||||+ Finger direction- 0:R, 1:L
+;  ||||||+- Submenu finger direction- 0:R, 1:L
+;  |||||+-- Finger visible- 0:no, 1:yes
+;  ||||+--- Submenu finger visible- 0:no, 1:yes
+;  ++++---- unused
 fingerAttr:     .res 1
-    ; %00000000
-    ;  |||||||+ Finger direction- 0:R, 1:L
-    ;  ||||||+- Submenu finger direction- 0:R, 1:L
-    ;  |||||+-- Finger visible- 0:no, 1:yes
-    ;  ||||+--- Submenu finger visible- 0:no, 1:yes
-    ;  ++++---- unused
 
 ; Wagon ------------------------------------------------------------------------
+
+; %00000000 wagonStatus
+;  |||||||+ Speed- 0:stopped, 1:moving
+;  ||||||+- Trail- 0:at landmark, 1:on the trail 
+;  ||||++-- unused
+;  ++++---- Rest- 0-15 days remaining
 wagonStatus:    .res 1
-    ; %00000000
-    ;  |||||||+ Speed- 0:stopped, 1:moving
-    ;  ||||||+- Trail- 0:at landmark, 1:on the trail 
-    ;  ||||++-- unused
-    ;  ++++---- Rest- 0-15 days remaining
+
+; %00000000 wagonSettings
+;  ||||||++ Pace- 00:unused, 01:steady, 10:strenuous, 11:grueling
+;  ||||++-- Rations- 00:unused, 01:bare bones, 10:meager, 11:filling
+;  |||+---- Rest- 0:not resting, 1:resting
+;  ||+----- unused
+;  |+------ unused
+;  +------- unused
 wagonSettings:  .res 1 
-    ; %00000000
-    ;  ||||||++ Pace- 00:unused, 01:steady, 10:strenuous, 11:grueling
-    ;  ||||++-- Rations- 00:unused, 01:bare bones, 10:meager, 11:filling
-    ;  |||+---- Rest- 0:not resting, 1:resting
-    ;  ||+----- unused
-    ;  |+------ unused
-    ;  +------- unused
+
 dollars:        .res 2
 foodLbs:        .res 2
 clothing:       .res 1
 bullets:        .res 2
+
+; %00000000
+;  ||||||++ wagon wheels
+;  ||||++-- wagon axles
+;  ||++---- wagon tongues
+;  ++------ unused
 spareParts:     .res 1
-    ; %00000000
-    ;  ||||||++ wagon wheels
-    ;  ||||++-- wagon axles
-    ;  ||++---- wagon tongues
-    ;  ++------ unused
+
 oxenHeadcount:  .res 1
 ; dollarsDigit:   .res 4
 ; foodDigit:      .res 4
@@ -97,26 +103,27 @@ personStatus:  .res 5   ; 1 each * 5
     ; .byte _D_,_E_,_C_,_E_,_A_,_S_,_E_,_D_,___,___
 
 ; Conditions -------------------------------------------------------------------
+
+; %00000000
+;  |||||+++ current (calculated/generated) temperature
+;  |||||        000:ICY!  001:COLD  010:COOL  011:FAIR 
+;  |||||        100:FAIR  101:WARM  110:HOT   111:HOT! 
+;  ||||+--- unused
+;  ++++---- current weather type
+;               0000:CLEAR        0001:PARTLY CLOUDY
+;               0010:CLOUDY       0011:RAINY
+;               0100:VERY RAINY   0101:SNOWING
+;               0110:BLIZZARD     0111:FOGGY
+;               1000:DUST STORM   1001:THUNDER STORM
+;               1010:HAIL STORM   1011:unused
+;               1100:unused       1101:unused
+;               1110:unused       1111:unused
 weather:        .res 1
-    ; %00000000
-    ;  |||||+++ current (calculated/generated) temperature
-    ;  |||||        000:ICY!  001:COLD  010:COOL  011:FAIR 
-    ;  |||||        100:FAIR  101:WARM  110:HOT   111:HOT! 
-    ;  ||||+--- unused
-    ;  ++++---- current weather type
-    ;               0000:CLEAR        0001:PARTLY CLOUDY
-    ;               0010:CLOUDY       0011:RAINY
-    ;               0100:VERY RAINY   0101:SNOWING
-    ;               0110:BLIZZARD     0111:FOGGY
-    ;               1000:DUST STORM   1001:THUNDER STORM
-    ;               1010:HAIL STORM   1011:unused
-    ;               1100:unused       1101:unused
-    ;               1110:unused       1111:unused
-dateYear:       .res 1  ; years since 1848
+
+dateYear:       .res 1 ; years since 1848
 dateMonth:      .res 1
 dateDay:        .res 1
-location:       .res 1
-    ; see: constants.inc -> Locations
+location:       .res 1 ; see: constants.inc -> Locations
 
 ;-------------------------------------------------------------------------------
 ; remaining: $B0

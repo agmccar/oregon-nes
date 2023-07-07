@@ -1152,6 +1152,7 @@
     ;   LDA #$FF
     ;   JSR Add16Bit
     ;   ;     dollars, dollars+1 = $02 $00
+    ; Big Endian Energy
     PHA
     INX ; low byte
     TXA
@@ -1257,17 +1258,29 @@
     LDA #$01            ; default $400.00 ($190)
     STA dollars
     LDA #$90
-    STA dollars
+    STA dollars+1
     LDX occupation
     LDA occupationAttribute, X
-    
+    LSR                 ; shift occupationAttribute to only starting cash
+    LSR
+    LSR
+    LSR
+    LSR
+    LSR
+    TAY
+    :
+    CPY #0
+    BNE :+
+    JMP :++
+    :
     LDX #dollars        ; add $400.00 ($FF+$91)
     LDA #$FF
     JSR Add16Bit
     LDX #dollars
     LDA #$91
     JSR Add16Bit
-    
+    DEY
+    JMP :--
     :
     JSR LoadBgStore     ; Load background
     RTS
