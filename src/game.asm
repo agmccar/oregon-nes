@@ -66,10 +66,10 @@
 .proc main
     ; JSR UpdateSprites
     ; JSR UpdateBg
-    ; JSR ReadController1
-    ; JSR CheckGameState
-    ; LDA buttons1
-    ; STA buttons1Last    ; Remember last controller inputs
+    JSR ReadController1
+    JSR CheckGameState
+    LDA buttons1
+    STA buttons1Last    ; Remember last controller inputs
     ; LDA menuOpen
     ; STA menuOpenLast    ; Remember last menu open
     JMP main
@@ -116,7 +116,7 @@
     LDA #0
     TAX
     TAY
-    @clearTiles:
+    @clear2000:
         :
             STA PPUDATA
             INX
@@ -125,7 +125,26 @@
         LDX #0
         INY
         CPY #30
-        BNE @clearTiles
+        BNE @clear2000
+
+    LDA PPUSTATUS
+    LDA #$23
+    STA PPUADDR
+    LDA #$00
+    STA PPUADDR
+    LDA #0
+    TAX
+    TAY
+    @clear2300:
+        :
+            STA PPUDATA
+            INX
+            CPX #32
+            BNE :-
+        LDX #0
+        INY
+        CPY #30
+        BNE @clear2300
 
     LDA PPUSTATUS ; clear first screen attr table
     LDA #$23
@@ -166,6 +185,7 @@
     LDX #0 
     LDY nametableBuffer ; note first byte in buffer (length of data segment)
     STX nametableBufferPtr ; reset buffer pointer
+    STX nametableBuffer ; reset first byte in buffer
     INX 
     @loop: ; read buffer
         CPY #0 
@@ -181,19 +201,17 @@
         STA PPUSCROLL           
         STA PPUSCROLL           ; default 0 scroll position
         INX 
-        @segmentLoop: 
-            LDA nametableBuffer, X 
-            STA PPUDATA ; write buffer data to nametable
-            INX
-            DEY
-            BNE @segmentLoop ; repeat until no more bytes to copy
-            LDY nametableBuffer, X
-            INX
+        : 
+        LDA nametableBuffer, X 
+        STA PPUDATA ; write buffer data to nametable
+        INX
+        DEY
+        BNE :- ; repeat until no more bytes to copy
+        LDY nametableBuffer, X
+        INX
         CPX #0
         BNE @loop ; exit if entire buffer has been read
     Done:
-    LDA #1
-    STA bgLoaded
     RTS
 .endproc
 
@@ -205,52 +223,43 @@
     BNE :+
     JMP Done
     :
-    LDA #0
-    STA bgLoaded        ; bg needs reload
     LDA gameState   
-    STA lastGameState   ; update lastGameState
-    CheckStateTitle:
-        CMP #GAMESTATE_TITLE
-        BNE CheckStateTraveling
-        JSR InitStateTitle
-        JMP Done
-
-    CheckStateTraveling:
-        CMP #GAMESTATE_TRAVELING
-        BNE CheckStateNewGame
-        JSR InitStateTraveling
-        JMP Done
-
-    CheckStateNewGame:
-        CMP #GAMESTATE_NEWGAME
-        BNE CheckStateStore
-        JSR InitStateNewGame
-        JMP Done
-
-    CheckStateStore:
-        CMP #GAMESTATE_STORE
-        BNE CheckStateStartDate
-        JSR InitStateStore
-        JMP Done
-
-    CheckStateStartDate:
-        CMP #GAMESTATE_STARTDATE
-        BNE CheckStateLandmark
-        JSR InitStateStartDate
-        JMP Done
-
-    CheckStateLandmark:
-        CMP #GAMESTATE_LANDMARK
-        BNE CheckStateMap
-        JSR InitStateLandmark
-        JMP Done
-
-    CheckStateMap:
-        CMP #GAMESTATE_MAP
-        BNE Done
-        JSR InitStateMap
-        JMP Done
-
+    STA lastGameState
+    CMP #GAMESTATE_TITLE
+    BNE :+
+    JSR InitStateTitle
+    JMP Done
+    :
+    CMP #GAMESTATE_TRAVELING
+    BNE :+ 
+    JSR InitStateTraveling
+    JMP Done
+    :
+    CMP #GAMESTATE_NEWGAME
+    BNE :+ 
+    JSR InitStateNewGame
+    JMP Done
+    :
+    CMP #GAMESTATE_STORE
+    BNE :+ 
+    JSR InitStateStore
+    JMP Done
+    :
+    CMP #GAMESTATE_STARTDATE
+    BNE :+ 
+    JSR InitStateStartDate
+    JMP Done
+    :
+    CMP #GAMESTATE_LANDMARK
+    BNE :+ 
+    JSR InitStateLandmark
+    JMP Done
+    :
+    CMP #GAMESTATE_MAP
+    BNE :+
+    JSR InitStateMap
+    JMP Done
+    :
     Done:
     RTS
 .endproc
@@ -302,11 +311,6 @@
         BEQ Map
 
     Title:
-        LDA bgLoaded
-        CMP #0
-        BNE @TitleBgDone
-        JSR LoadBgTitle
-        @TitleBgDone:
         JMP Done
         
     NewGame:
@@ -753,8 +757,6 @@
     STA wagonSettings       ; default steady pace, filling rations
     LDA #%00000100
     STA weather             ; default fair weather
-    LDX #0              
-    STX gameState           ; set gameState to GAMESTATE_TITLE
     :                       ; default person names
     LDA defaultPersonNames, X
     STA personName, X
@@ -764,7 +766,7 @@
     JSR ClearScreen
     LDA #1
     STA bufferLoading       ; begin loading buffer
-    LDY nametableBufferPtr  
+    LDY nametableBufferPtr  ; begin loading palette to buffer
     LDA #$20                
     STA nametableBuffer, Y  ; length of palette in bytes
     INC nametableBufferPtr
@@ -778,7 +780,7 @@
     INC nametableBufferPtr
     INY
     LDX #0
-    :                       ; load palette to buffer
+    :                       
         LDA palette, X      ; palette data
         STA nametableBuffer, Y
         INC nametableBufferPtr
@@ -786,7 +788,7 @@
         INX
         CPX #$20
         BNE :-
-    LDY nametableBufferPtr  
+    LDY nametableBufferPtr  ; begin loading title text to buffer
     LDA #17
     STA nametableBuffer, Y  ; length of title text in bytes
     INC nametableBufferPtr
@@ -808,7 +810,31 @@
         INX
         CPX #17
         BNE :-
+    LDY nametableBufferPtr  ; begin loading titleOptions to buffer
+    LDA #12                
+    STA nametableBuffer, Y  ; length of titleOptions in bytes
+    INC nametableBufferPtr
+    INY
+    LDA #$22
+    STA nametableBuffer, Y
+    INC nametableBufferPtr
+    INY
+    LDA #$0B
+    STA nametableBuffer, Y  ; $3F00 - titleOptions VRAM location
+    INC nametableBufferPtr
+    INY
+    LDX #0
+    :                       
+        LDA titleOptions, X      ; palette data
+        STA nametableBuffer, Y
+        INC nametableBufferPtr
+        INY
+        INX
+        CPX #12
+        BNE :-
     LDA #0
+    STA nametableBuffer, Y
+    INC nametableBufferPtr
     STA bufferLoading       ; end buffer loading
     LDA #%10010000
     STA softPPUCTRL         ; Ensure NMIs are enabled
@@ -818,6 +844,7 @@
 .endproc
 
 .proc InitStateNewGame
+    JSR ClearScreen
     ; initialize cursor: (5x,6y) tiles from top left, facing R
     LDA #0
     STA fingerLastX
@@ -827,6 +854,16 @@
     STA fingerX
     LDA #6
     STA fingerY
+
+    LDA #%00000000          ; turn off screen
+    STA softPPUMASK     
+    vblankwait:
+        BIT PPUSTATUS
+        BPL vblankwait
+    JSR LoadBgNewGame       ; Load background
+    LDA #%00011110 
+    STA softPPUMASK         ; turn on screen
+
     RTS
 .endproc
 
@@ -982,131 +1019,8 @@
 .endproc
 
 ;--------------------------------------
-.proc LoadBgTitle
-    JSR PausePPU
-    ;JSR LoadPalette
-    LoadBackground:
-        LDA PPUSTATUS
-        LDA #$20
-        STA PPUADDR
-        LDA #$00
-        STA PPUADDR 
-
-        LDX #0
-        LDY #0
-        @repeatLoop:
-            INY
-            @loop:
-                LDA #___
-                STA PPUDATA
-                INX
-                CPX #$00
-                BNE @loop
-            LDA #$24
-            STA PPUADDR
-            LDA #$00
-            STA PPUADDR ; $2400
-            LDX #0
-            CPY #2
-            BNE @repeatLoop
-
-            LDA #$21
-            STA PPUADDR
-            LDA #$00
-            STA PPUADDR ; $2100
-            LDX #0
-        @loop2:
-            LDA #___
-            CPX #8 ; 25% across screen
-            BCC @skipTitleText2
-            CPX #24; 75% across screen
-            BCS @skipTitleText2
-
-            TXA
-            STA helper
-            SBC #7
-            TAX
-            LDA titleText, X
-            TAX
-            LDA helper
-            STX helper
-            TAX
-            LDA helper
-
-        @skipTitleText2:
-            STA PPUDATA
-            INX
-            CPX #$00
-            BNE @loop2
-
-        @loop3:
-            LDA #___
-            CPX #10 ; >25% across screen
-            BCC @skipTitleText3
-            CPX #22; <75% across screen
-            BCS @skipTitleText3
-
-            TXA
-            STA helper
-            SBC #9
-            TAX
-            LDA titleOptions, X
-            TAX
-            LDA helper
-            STX helper
-            TAX
-            LDA helper
-
-        @skipTitleText3:
-            STA PPUDATA
-            INX
-            CPX #$00
-            BNE @loop3
-
-        @loop4:
-            LDA #___
-            STA PPUDATA
-            INX
-            CPX #$C0
-            BNE @loop4
-
-    LoadBackgroundAttribute:
-        LDA PPUSTATUS
-        LDA #$23
-        STA PPUADDR
-        LDA #$C0
-        STA PPUADDR ; $23C0 (first screen attribute table)
-
-        LDX #0
-        LDY #0
-        @repeatLoop:
-            INY
-            @loop:
-                LDA #$FF
-                STA PPUDATA
-                INX
-                CPX #$40
-                BNE @loop
-
-            LDX #0
-            LDA PPUSTATUS ; load second screen attr table
-            LDA #$27
-            STA PPUADDR
-            LDA #$C0
-            STA PPUADDR ; $27C0 (attribute table)
-            CPY #2
-            BNE @repeatLoop ; 2nd screen
-
-    Done:
-    LDA #1
-    STA bgLoaded
-    JSR UnpausePPU
-    RTS
-.endproc
 
 .proc LoadBgNewGame
-    JSR PausePPU
-    ;JSR LoadPalette
     LoadBackground:
         LDA PPUSTATUS
         LDA #$20
@@ -1329,9 +1243,6 @@
             BNE @repeatLoop ; 2nd screen
 
     Done:
-    LDA #1
-    STA bgLoaded
-    JSR UnpausePPU
     RTS
 .endproc
 
@@ -1382,88 +1293,64 @@
 
 ;--------------------------------------
 .proc ReadController1
-    ; preserve registers
-    PHP
-    PHA
-    TXA
-    PHA
-    TYA
-    PHA
-    ; read inputs
-    LDA #$01
+    LDA #$01    ; read inputs
     STA $4016
     LDA #$00
     STA $4016
     LDX #$08
-    @loop:
+    :
         LDA $4016
         LSR A
         ROL buttons1
         DEX
-        BNE @loop
-
-        LDA gameState
-
-        CMP #GAMESTATE_TRAVELING
-        BNE @skip1
-        JSR ControllerTraveling
-        JMP Done
-
-        @skip1:
-        CMP #GAMESTATE_TITLE
-        BNE @skip2
-        JSR ControllerTitle
-        JMP Done
-
-        @skip2:
-        CMP #GAMESTATE_NEWGAME
-        BNE @skip3
-        JSR ControllerNewGame
-        JMP Done
-
-        @skip3:
-        CMP #GAMESTATE_STORE
-        BNE @skip4
-        JSR ControllerStore
-        JMP Done
-
-        @skip4:
-        CMP #GAMESTATE_STARTDATE
-        BNE @skip5
-        JSR ControllerStartDate
-        JMP Done
-
-        @skip5:
-        CMP #GAMESTATE_LANDMARK
-        BNE @skip6
-        JSR ControllerLandmark
-        JMP Done
-
-        @skip6:
-        CMP #GAMESTATE_MAP
-        BNE @skip7
-        JSR ControllerMap
-        JMP Done
-
-        @skip7:
+        BNE :-
+    LDA gameState
+    CMP #GAMESTATE_TRAVELING
+    BNE :+
+    JSR ControllerTraveling
+    JMP Done
+    :
+    CMP #GAMESTATE_TITLE
+    BNE :+
+    JSR ControllerTitle
+    JMP Done
+    :
+    CMP #GAMESTATE_NEWGAME
+    BNE :+
+    JSR ControllerNewGame
+    JMP Done
+    :
+    CMP #GAMESTATE_STORE
+    BNE :+
+    JSR ControllerStore
+    JMP Done
+    :
+    CMP #GAMESTATE_STARTDATE
+    BNE :+
+    JSR ControllerStartDate
+    JMP Done
+    :
+    CMP #GAMESTATE_LANDMARK
+    BNE :+
+    JSR ControllerLandmark
+    JMP Done
+    :
+    CMP #GAMESTATE_MAP
+    BNE :+
+    JSR ControllerMap
+    JMP Done
+    :
     Done:
-        ; preserve registers
-        PLA
-        TAY
-        PLA
-        TAX
-        PLA
-        PLP
     RTS
 .endproc
 
 .proc ControllerTitle
     LDA #KEY_START
     BIT buttons1
-    BEQ @skip
+    BEQ :+
     LDA #GAMESTATE_NEWGAME
     STA gameState
-    @skip:
+    :
     RTS
 .endproc
         
