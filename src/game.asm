@@ -35,26 +35,26 @@
     STX PPUCTRL
     STX PPUMASK
     STX DMCFREQ
-    vblankwait:
-        BIT PPUSTATUS
-        BPL vblankwait
-    clearmemory:
-        LDA #$00
-        STA $0000, X
-        STA $0100, X
-        STA $0300, X
-        STA $0400, X
-        STA $0500, X
-        STA $0600, X
-        STA $0700, X
-        LDA #$FE
-        STA $0200, X
-        INX
-        BNE clearmemory
-    vblankwait2:
-        BIT PPUSTATUS
-        BPL vblankwait2
-    LDA #%10010000 ; enable NMI, sprites use first pattern table
+    :                   ; vblankwait
+    BIT PPUSTATUS
+    BPL :-
+    :                   ; clear memory
+    LDA #$00
+    STA $0000, X
+    STA $0100, X
+    STA $0300, X
+    STA $0400, X
+    STA $0500, X
+    STA $0600, X
+    STA $0700, X
+    LDA #$FE
+    STA $0200, X
+    INX
+    BNE :-
+    :                   ; vblankwait again
+    BIT PPUSTATUS
+    BPL :-
+    LDA #%10010000      ; enable NMI, sprites use first pattern table
     STA softPPUCTRL
     STA PPUCTRL
     JSR InitStateTitle
@@ -96,11 +96,27 @@
 ;--SUBROUTINES------------------------------------------------------------------
 
 ; Direct screen drawing ---------------
-
-.proc ClearScreen
-    LDA #%00000000
+.proc StartBulkDrawing
+    LDA #%00000000      ; turn off screen
     STA softPPUMASK
     STA PPUMASK
+    RTS
+.endproc
+
+.proc DoneBulkDrawing
+    LDA #0              ; reset scroll position
+    STA PPUSCROLL
+    STA PPUSCROLL
+    LDA #%00011110 
+    STA softPPUMASK     ; turn on screen
+    :                   ; wait for vblank
+    BIT PPUSTATUS
+    BPL :-
+    RTS
+.endproc
+
+.proc ClearScreen
+    JSR StartBulkDrawing
     LDA PPUSTATUS       ; clear first screen tiles
     LDA #$20
     STA PPUADDR
@@ -161,18 +177,12 @@
     INY
     CPY #2
     BNE @attributeLoop
-    LDA #%00011110 
-    STA softPPUMASK     ; turn on screen
-    :                   ; wait for vblank
-    BIT PPUSTATUS
-    BPL :-
+    JSR DoneBulkDrawing
     RTS
 .endproc
 
 .proc DrawMenuKeyboard
-    LDA #%00000000
-    STA softPPUMASK
-    STA PPUMASK
+    JSR StartBulkDrawing
     KBLine0:
         LDA #$22 ; Line 0  top border
         STA PPUADDR
@@ -369,14 +379,7 @@
         LDA #_LU ;corner
         STA PPUDATA
 
-    LDA #0
-    STA PPUSCROLL           
-    STA PPUSCROLL       ; default 0 scroll position
-    LDA #%00011110 
-    STA softPPUMASK     ; turn on screen
-    :                   ; wait for vblank
-    BIT PPUSTATUS
-    BPL :-
+    JSR DoneBulkDrawing
     RTS
 .endproc
 
@@ -397,173 +400,185 @@
 .endproc
 
 .proc LoadBgNewGame
-    LDA #%00000000      ; turn off screen
-    STA softPPUMASK
-    STA PPUMASK
-    LDA PPUSTATUS       ; write "LEADER:"
-    LDA #$20            
-    STA PPUADDR
-    LDA #$85
-    STA PPUADDR
-    LDX #0
-    :
-    LDA newGameText, X  
-    STA PPUDATA
-    INX
-    CPX #7
-    BNE :-
-    LDA PPUSTATUS       ; write "OCCUPATION:"
-    LDA #$20     
-    STA PPUADDR
-    LDA #$8F
-    STA PPUADDR
-    :
-    LDA newGameText, X  
-    STA PPUDATA
-    INX
-    CPX #18
-    BNE :-
-    LDA PPUSTATUS       ; write "OTHER PARTY MEMBERS:"
-    LDA #$21
-    STA PPUADDR
-    LDA #$45
-    STA PPUADDR
-    :
-    LDA newGameText, X  
-    STA PPUDATA
-    INX
-    CPX #38
-    BNE :-
-    LDA PPUSTATUS       ; write leader name
+    JSR StartBulkDrawing
+    Leader:
+        LDA PPUSTATUS       ; write "LEADER:"
+        LDA #$20            
+        STA PPUADDR
+        LDA #$85
+        STA PPUADDR
+        LDX #0
+        :
+        LDA newGameText, X  
+        STA PPUDATA
+        INX
+        CPX #7
+        BNE :-
+    Occupation:
+        LDA PPUSTATUS       ; write "OCCUPATION:"
+        LDA #$20     
+        STA PPUADDR
+        LDA #$8F
+        STA PPUADDR
+        :
+        LDA newGameText, X  
+        STA PPUDATA
+        INX
+        CPX #18
+        BNE :-
+    OtherPartyMembers:
+        LDA PPUSTATUS       ; write "OTHER PARTY MEMBERS:"
+        LDA #$21
+        STA PPUADDR
+        LDA #$45
+        STA PPUADDR
+        :
+        LDA newGameText, X  
+        STA PPUDATA
+        INX
+        CPX #38
+        BNE :-
+    NameLeader:
+        LDA PPUSTATUS       ; write leader name
+        LDA #$20
+        STA PPUADDR
+        LDA #$C7
+        STA PPUADDR
+        LDX #0
+        :
+        LDA personName, X
+        CMP #___
+        BNE :+
+        LDA #_UL
+        :
+        STA PPUDATA
+        INX
+        CPX #4
+        BNE :--
+    NameOccupation:
+        LDA PPUSTATUS       ; write occupation
+        LDA #$20            
+        STA PPUADDR
+        LDA #$D0
+        STA PPUADDR
+        LDX #0
+        LDY #0
+        LDA occupation
+        CMP #0
+        BNE :+
+        JMP @occTextLoop
+        :
+        STX helper
+        :
+        INX
+        INC helper
+        CPX #TEXT_OCCUPATION_LEN
+        BNE :-
+        LDX #0
+        INY
+        CPY occupation
+        BNE :-
+        LDY #0
+        LDX helper
+        @occTextLoop:
+        LDA occupationText, X
+        CMP #___
+        BNE :+
+        LDA #_UL
+        :
+        STA PPUDATA
+        INX
+        INY
+        CPY #TEXT_OCCUPATION_LEN
+        BNE @occTextLoop
+    NamePerson1:
+        LDA PPUSTATUS       ; write party member 1 name
+        LDA #$21            
+        STA PPUADDR
+        LDA #$87
+        STA PPUADDR
+        LDX #0
+        @underline3:
+        LDA personName+4, X
+        CMP #___
+        BNE :+
+        LDA #_UL
+        :
+        STA PPUDATA
+        INX
+        CPX #4
+        BNE @underline3
+    NamePerson2:
+        LDA PPUSTATUS       ; write party member 3 name
+        LDA #$21
+        STA PPUADDR
+        LDA #$91
+        STA PPUADDR
+        LDX #0
+        @underline4:
+        LDA personName+12, X
+        CMP #___
+        BNE :+
+        LDA #_UL
+        :
+        STA PPUDATA
+        INX
+        CPX #4
+        BNE @underline4
+    NamePerson3:
+        LDA PPUSTATUS       ; write party member 2 name
+        LDA #$21
+        STA PPUADDR
+        LDA #$C7
+        STA PPUADDR
+        LDX #0
+        @underline5:
+        LDA personName+8, X
+        CMP #___
+        BNE :+
+        LDA #_UL
+        :
+        STA PPUDATA
+        INX
+        CPX #4
+        BNE @underline5
+    NamePerson4:
+        LDA PPUSTATUS       ; write party member 4 name
+        LDA #$21
+        STA PPUADDR
+        LDA #$D1
+        STA PPUADDR
+        LDX #0
+        @underline6:
+        LDA personName+16, X
+        CMP #___
+        BNE :+
+        LDA #_UL
+        :
+        STA PPUDATA
+        INX
+        CPX #4
+        BNE @underline6
+    JSR DoneBulkDrawing
+    RTS
+.endproc
+
+.proc LoadBgStore
+    JSR StartBulkDrawing
+    LDA PPUSTATUS
     LDA #$20
     STA PPUADDR
-    LDA #$C7
+    LDA #$00
     STA PPUADDR
-    LDX #0
-    :
-    LDA personName, X
-    CMP #___
-    BNE :+
-    LDA #_UL
-    :
-    STA PPUDATA
-    INX
-    CPX #4
-    BNE :--
-    LDA PPUSTATUS       ; write occupation
-    LDA #$20            
-    STA PPUADDR
-    LDA #$D0
-    STA PPUADDR
-    LDX #0
-    LDY #0
-    LDA occupation
-    CMP #0
-    BNE :+
-    JMP @occTextLoop
-    :
-    STX helper
-    :
-    INX
-    INC helper
-    CPX #TEXT_OCCUPATION_LEN
-    BNE :-
-    LDX #0
-    INY
-    CPY occupation
-    BNE :-
-    LDY #0
-    LDX helper
-    @occTextLoop:
-    LDA occupationText, X
-    CMP #___
-    BNE :+
-    LDA #_UL
-    :
-    STA PPUDATA
-    INX
-    INY
-    CPY #TEXT_OCCUPATION_LEN
-    BNE @occTextLoop
-    LDA PPUSTATUS       ; write party member 1 name
-    LDA #$21            
-    STA PPUADDR
-    LDA #$87
-    STA PPUADDR
-    LDX #0
-    @underline3:
-    LDA personName+4, X
-    CMP #___
-    BNE :+
-    LDA #_UL
-    :
-    STA PPUDATA
-    INX
-    CPX #4
-    BNE @underline3
-    LDA PPUSTATUS       ; write party member 3 name
-    LDA #$21
-    STA PPUADDR
-    LDA #$91
-    STA PPUADDR
-    LDX #0
-    @underline4:
-    LDA personName+12, X
-    CMP #___
-    BNE :+
-    LDA #_UL
-    :
-    STA PPUDATA
-    INX
-    CPX #4
-    BNE @underline4
-    LDA PPUSTATUS       ; write party member 2 name
-    LDA #$21
-    STA PPUADDR
-    LDA #$C7
-    STA PPUADDR
-    LDX #0
-    @underline5:
-    LDA personName+8, X
-    CMP #___
-    BNE :+
-    LDA #_UL
-    :
-    STA PPUDATA
-    INX
-    CPX #4
-    BNE @underline5
-    LDA PPUSTATUS       ; write party member 4 name
-    LDA #$21
-    STA PPUADDR
-    LDA #$D1
-    STA PPUADDR
-    LDX #0
-    @underline6:
-    LDA personName+16, X
-    CMP #___
-    BNE :+
-    LDA #_UL
-    :
-    STA PPUDATA
-    INX
-    CPX #4
-    BNE @underline6
-    LDA #0              ; reset scroll position
-    STA PPUSCROLL
-    STA PPUSCROLL
-    LDA #%00011110 
-    STA softPPUMASK     ; turn on screen
-    :                   ; wait for vblank
-    BIT PPUSTATUS
-    BPL :-
+
+
+
+    JSR DoneBulkDrawing
     RTS
 .endproc
 
 .proc DrawOccupationMenu
-    LDA #%00000000
-    STA softPPUMASK
-    STA PPUMASK
+    JSR StartBulkDrawing
     LDA PPUSTATUS
     Line0:
         LDA #$20 ; Line 0  top border
@@ -647,14 +662,7 @@
         BNE :-
         LDA #_LU ;corner
         STA PPUDATA
-    LDA #0              ; default 0 scroll position
-    STA PPUSCROLL           
-    STA PPUSCROLL       
-    LDA #%00011110 
-    STA softPPUMASK     ; turn on screen
-    :                   ; wait for vblank
-    BIT PPUSTATUS
-    BPL :-
+    JSR DoneBulkDrawing
     RTS
 .endproc
 
@@ -687,7 +695,7 @@
     LDA PPUSTATUS
     LDX #0 
     LDY nametableBuffer     ; note first byte in buffer (length of data segment)
-    STX nametableBufferPtr  ; reset buffer pointer
+    STX bufferPointer  ; reset buffer pointer
     STX nametableBuffer     ; reset first byte in buffer
     INX 
     @loop:                  ; read buffer
@@ -721,9 +729,9 @@
 .proc WriteByteToBuffer
     ; write contents of A register to the nametable buffer
     ; this will kill the contents of Y register
-    LDY nametableBufferPtr
+    LDY bufferPointer
     STA nametableBuffer, Y
-    INC nametableBufferPtr
+    INC bufferPointer
     RTS
 .endproc
     
@@ -743,7 +751,7 @@
     PLA
     JSR WriteByteToBuffer
     LDA #0
-    LDY nametableBufferPtr
+    LDY bufferPointer
     STA nametableBuffer, Y
     STA bufferLoading
     RTS
@@ -828,6 +836,7 @@
     JSR UpdateGame
     JMP Done
     :
+    JSR ClearScreen
     LDA gameState   
     STA lastGameState
     CMP #GAMESTATE_TITLE
@@ -887,7 +896,6 @@
     :
     CMP #GAMESTATE_NEWGAME
     BNE :+ 
-    JSR DrawFinger
     JMP Done
     :
     CMP #GAMESTATE_STORE
@@ -907,6 +915,7 @@
     JMP Done
     :
     Done:
+    JSR DrawFinger
     RTS
 .endproc
 
@@ -960,20 +969,7 @@
     RTS
 .endproc
 
-.proc CloseSubmenu
-    LDA fingerLastLastX
-    STA fingerX
-    LDA fingerLastLastY
-    STA fingerY
-    LDA #0
-    STA fingerLastLastX
-    STA fingerLastLastY
-    LDA #MENU_NONE
-    STA menuOpen
-    RTS
-.endproc
-
-.proc UpdateBg
+.proc UpdateBg ; deprecated
 
     CheckIfFingerMoved:
         LDA fingerX
@@ -1132,7 +1128,51 @@
     RTS
 .endproc
 
-;--------------------------------------
+.proc CloseSubmenu
+    LDA fingerLastLastX
+    STA fingerX
+    LDA fingerLastLastY
+    STA fingerY
+    LDA #0
+    STA fingerLastLastX
+    STA fingerLastLastY
+    LDA #MENU_NONE
+    STA menuOpen
+    RTS
+.endproc
+
+.proc Add16Bit
+    ; X: Target address (remember to use #)
+    ;    Must be zero-page, res 2
+    ; A: number to add to target address value
+    ; Usage example:
+    ;   ; dollars = #$0101
+    ;   ; ie. dollars, dollars+1 = $01 $01
+    ;   LDX #dollars        ; add $400.00 ($FF+$91)
+    ;   LDA #$FF
+    ;   JSR Add16Bit
+    ;   ;     dollars, dollars+1 = $02 $00
+    PHA
+    INX ; low byte
+    TXA
+    STA helper
+    LDY #0
+    PLA
+    CLC
+    ADC (helper), Y
+    STA (helper), Y
+    BCC :+
+    LDA #0
+    DEC helper
+    LDY #0
+    ADC (helper), Y
+    STA (helper), Y
+    :
+    RTS
+.endproc
+
+; Game state initialization -----------
+
 .proc InitStateTitle
     LDA #%00001101          ; default steady pace, filling rations
     STA wagonSettings
@@ -1146,7 +1186,6 @@
     INX
     CPX #20
     BNE :-
-    JSR ClearScreen
     LDA #1                  ; begin writing to buffer
     STA bufferLoading
     LDX #0                  ; default palette
@@ -1178,7 +1217,7 @@
     CPX #12
     BNE :-
     LDA #0                  ; finish writing to buffer
-    LDY nametableBufferPtr
+    LDY bufferPointer
     STA nametableBuffer, Y
     STA bufferLoading
     LDA #%10010000
@@ -1189,7 +1228,6 @@
 .endproc
 
 .proc InitStateNewGame
-    JSR ClearScreen
     LDA #%00001100      ; both fingers visible, pointing right
     STA fingerAttr
     LDA #0              ; initialize cursor
@@ -1204,6 +1242,34 @@
 .endproc
 
 .proc InitStateStore
+    LDA #%00001100      ; both fingers visible, pointing right
+    STA fingerAttr
+    LDA #0              ; initialize cursor
+    STA fingerLastX     ; (5x,6y) tiles from top left, facing R
+    STA fingerLastY
+    LDA #5
+    STA fingerX
+    LDA #6
+    STA fingerY
+    LDA location
+    CMP #LOC_INDEPENDENCE
+    BNE :+
+    LDA #$01            ; default $400.00 ($190)
+    STA dollars
+    LDA #$90
+    STA dollars
+    LDX occupation
+    LDA occupationAttribute, X
+    
+    LDX #dollars        ; add $400.00 ($FF+$91)
+    LDA #$FF
+    JSR Add16Bit
+    LDX #dollars
+    LDA #$91
+    JSR Add16Bit
+    
+    :
+    JSR LoadBgStore     ; Load background
     RTS
 .endproc
 
@@ -1315,7 +1381,8 @@
     RTS
 .endproc
 
-;--------------------------------------
+; Controller reading ------------------
+
 .proc ReadController1
     LDA #$01    ; read inputs
     STA $4016
@@ -1545,39 +1612,46 @@
     CheckStart:
         LDA #KEY_START
         BIT buttons1
-        BNE @checkMenuStart_None
-        JMP @skipStart
-        @checkMenuStart_None:
-            LDA menuOpen
-            CMP #MENU_NONE
-            BNE @checkMenuStart_Typing
-            JMP @checkLeaderStart
-        @checkMenuStart_Typing:
-            CMP #MENU_NEWGAME_TYPING
-            BNE @skipStart
-            JMP @checkTypingStart
-        @skipStart:
-            JMP CheckLeft
-        @checkLeaderStart:
+        BNE :+
+        JMP CheckLeft
+        :
+        LDA menuOpen
+        CMP #MENU_NONE
+        BNE :+
+        JMP @menuNone
+        :
+        CMP #MENU_NEWGAME_TYPING
+        BNE :+
+        JMP @menuTyping
+        :
+        CMP #MENU_NEWGAME_OCCUPATION
+        BNE :+
+        JMP @menuOccupation
+        :
+        JMP CheckLeft
+        @menuNone:
             LDA #GAMESTATE_STORE
             STA gameState
             JMP Done
-        @checkTypingStart:
+        @menuTyping:
             LDA #21
             CMP fingerX
-            BNE @stillTypingStart
+            BNE :+
             LDA #24
             CMP fingerY
-            BNE @stillTypingStart
-            ; "DONE" key pressed. close keyboard
-            JSR CloseSubmenu
+            BNE :+
+            JSR CloseSubmenu    ; "DONE" key pressed. close keyboard
             JMP Done
-            @stillTypingStart:
-                ; jump to the "DONE" key
-                LDA #21
-                STA fingerX
-                LDA #24
-                STA fingerY
+            :
+            LDA #21             ; move finger to the "DONE" key
+            STA fingerX
+            LDA #24
+            STA fingerY
+            JMP Done
+        @menuOccupation:
+            LDA occupationCursor
+            STA occupation
+            JSR CloseSubmenu
             JMP Done
 
     ; Left button

@@ -76,10 +76,13 @@ _RD = 127 ; right/down corner
 _LB = 144 ; lb
 _MI = 145 ; mi
 _DL = 146 ; $
-_00 = 147 ; 00
+_00 = 147 ; .00
 _AL = 148 ; < (arrow left)
-_AR = 149 ; < (arrow right)
+_AR = 149 ; > (arrow right)
 _UL = 150 ; __ (underline)
+_AP = 151 ; ' (apostrophe)
+_AU = 152 ; ^ (arrow up)
+_AD = 153 ; v (arrow down)
 
 ; Length (in characters) of HUD elements
 TEXT_MENU_LEN       = 7   ; main menu options
@@ -111,11 +114,10 @@ GAMESTATE_TRAVELING = 6 ; main game state - traveling the trail
 ; Menu states
 MENU_NONE               = 0 ; all menus closed
 MENU_NEWGAME_TYPING     = 1 ; new game name input 
-MENU_NEWGAME_OCCUPATION = 2 ; new game Occupation menu 
+MENU_NEWGAME_OCCUPATION = 2 ; new game occupation selection menu 
+MENU_STORE_ITEM1        = 3 ; 1 digit general store item selection
+MENU_STORE_ITEM2        = 4 ; 2 digit general store item selection
+MENU_STORE_ITEM4        = 5 ; 4 digit general store item selection
 
-;; Finger locations?
-;FINGER_X_NEWGAME_1:
-
-;; BG index is relative 
-;DATE_BG_IDX  = 50 ; hud1
-
+; Locations
+LOC_INDEPENDENCE        = 0 ; Independence, MO

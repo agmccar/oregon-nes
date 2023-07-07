@@ -16,7 +16,6 @@ diaryTextLine4:     .res TEXT_DIARY_LINE_LEN
 ; dateText:           .res TEXT_DATE_LEN
 
 
-nametableBufferPtr: .res 1
 nametableBuffer:    .res 256
 ;   byte    0 = length of data (0 = no more data)
 ;   byte    1 = high byte of target PPU address
