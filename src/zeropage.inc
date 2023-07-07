@@ -37,8 +37,8 @@ wagonSettings:  .res 1
 
 ; HUD
 keyboardKey:    .res 1 ; keyboard key (letter/symbol) currently selected
-nameCursor:     .res 1 ; 
-occupCursor:    .res 1 ; which occupation is selected on New Game screen
+nameCursor:     .res 1
+occupationCursor: .res 1
 traveledMi:     .res 2
 traveledDigit:  .res 4
 menuOpenLast:   .res 1
@@ -53,8 +53,11 @@ fingerLastLastX: .res 1 ; previous last pos (for submenus)
 fingerLastLastY: .res 1 ;
 fingerAttr:     .res 1
     ; %00000000
-    ;  ||||||++ Pointing- 0:R, 1:L
-    ;  ++++++-- unused
+    ;  |||||||+ Finger direction- 0:R, 1:L
+    ;  ||||||+- Submenu finger direction- 0:R, 1:L
+    ;  |||||+-- Finger visible- 0:no, 1:yes
+    ;  ||||+--- Submenu finger visible- 0:no, 1:yes
+    ;  ++++---- unused
 
 ; Conditions
 weather:        .res 1
@@ -117,5 +120,5 @@ personStatus:  .res 5   ; 1 each * 5
     ; .byte _V_,_E_,_R_,_Y_,___,_P_,_O_,_O_,_R_,___
     ; .byte _D_,_E_,_C_,_E_,_A_,_S_,_E_,_D_,___,___
 
-; remaining: $B2
+; remaining: $B1
 
