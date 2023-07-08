@@ -879,11 +879,11 @@
         STA PPUDATA
         STA PPUDATA
         LDA cartSpareParts      ; number in Buy column
+        LSR
+        LSR
+        LSR
+        LSR
         AND #%00000011
-        LSR
-        LSR
-        LSR
-        LSR
         TAY
         LDX #_1_
         DEX
@@ -1065,9 +1065,10 @@
 .proc DrawShopCost
     LDA #_DL
     STA PPUDATA
-    LDA #_QU
+    LDA #_UL
     STA PPUDATA
     STA PPUDATA
+    LDA #_0_
     STA PPUDATA
     LDA #_00
     STA PPUDATA
@@ -1077,10 +1078,11 @@
 .proc DrawShopTotal
     LDA #_DL
     STA PPUDATA
-    LDA #_QU
+    LDA #_UL
     STA PPUDATA
     STA PPUDATA
     STA PPUDATA
+    LDA #_0_
     STA PPUDATA
     LDA #_00
     STA PPUDATA
@@ -1205,7 +1207,7 @@
     LDA PPUSTATUS
     LDX #0 
     LDY nametableBuffer     ; note first byte in buffer (length of data segment)
-    STX bufferPointer  ; reset buffer pointer
+    STX bufferPointer       ; reset buffer pointer
     STX nametableBuffer     ; reset first byte in buffer
     INX 
     @loop:                  ; read buffer
@@ -1213,6 +1215,7 @@
     BNE :+                  ; exit if length of data segment is 0
     JMP Done
     :
+    LDA PPUSTATUS
     LDA nametableBuffer, X  ; set PPU address
     STA PPUADDR
     INX
@@ -1272,7 +1275,7 @@
     BIT fingerAttr
     BNE :+
     JMP Done
-    :
+    :                       ; skip drawing if finger hasn't moved
     LDX fingerX
     LDY fingerY
     CPX fingerLastX
@@ -1280,10 +1283,10 @@
     CPY fingerLastY
     BNE :+
     JMP Done
-    :
+    :                       ; erase finger at old position (draw blank tile)
     LDX fingerLastX
     LDY fingerLastY
-    LDA #___                ; erase finger at old position (draw blank tile)
+    LDA #___
     JSR WriteTileToBuffer
     LDX fingerLastLastX     ; are we in a submenu?
     LDY fingerLastLastY 
@@ -1299,9 +1302,24 @@
     LDA #_PR
     JSR WriteTileToBuffer
     :                       ; draw finger at new position
-    LDA #%00000100
+    LDA #%00000100          ; check if main finger is visible
     BIT fingerAttr
+    BEQ :++
+    LDA #%00010000          ; draw normal finger or "up/down" arrows
+    BIT fingerAttr          ; check if main finger is normal or "up/down" arrows
     BEQ :+
+    LDX fingerX
+    LDY fingerY
+    INY
+    LDA #_AD    ; arrow down
+    JSR WriteTileToBuffer
+    LDX fingerX
+    LDY fingerY
+    DEY
+    LDA #_AU    ; arrow up
+    JSR WriteTileToBuffer
+    JMP :++
+    :
     LDX fingerX
     LDY fingerY
     LDA #_PR
@@ -1334,6 +1352,134 @@
     BNE :-
     LDA #0
     STA bufferLoading
+    RTS
+.endproc
+
+.proc DrawStoreSubmenu
+    LDX #2                  ; first row of submenu
+    INX
+    LDY fingerY
+    DEY
+    DEY
+    JSR SetPpuAddrPointerFromXY
+    LDA #16
+    JSR WriteByteToBuffer
+    LDA pointer
+    JSR WriteByteToBuffer
+    LDA pointer+1
+    JSR WriteByteToBuffer
+    LDA #_RD
+    JSR WriteByteToBuffer
+    LDA #_HR
+    LDX #0
+    :
+    JSR WriteByteToBuffer
+    INX
+    CPX #14
+    BNE :-
+    LDA #_LD
+    JSR WriteByteToBuffer
+    LDX #3                  ; vertical bars (left)
+    LDY fingerY
+    DEY
+    LDA #_VR
+    JSR WriteTileToBuffer
+    LDX #3
+    LDY fingerY
+    LDA #_VR
+    JSR WriteTileToBuffer
+    LDX #3
+    LDY fingerY
+    INY
+    LDA #_VR
+    JSR WriteTileToBuffer
+    LDX #18                 ; vertical bars (right)
+    LDY fingerY
+    DEY
+    LDA #_VR
+    JSR WriteTileToBuffer
+    LDX #18
+    LDY fingerY
+    LDA #_VR
+    JSR WriteTileToBuffer
+    LDX #18
+    LDY fingerY
+    INY
+    LDA #_VR
+    JSR WriteTileToBuffer
+    LDX #2                  ; last row of submenu
+    INX
+    LDY fingerY
+    INY
+    INY
+    JSR SetPpuAddrPointerFromXY
+    LDA #16
+    JSR WriteByteToBuffer
+    LDA pointer
+    JSR WriteByteToBuffer
+    LDA pointer+1
+    JSR WriteByteToBuffer
+    LDA #_RU
+    JSR WriteByteToBuffer
+    LDA #_HR
+    LDX #0
+    :
+    JSR WriteByteToBuffer
+    INX
+    CPX #14
+    BNE :-
+    LDA #_LU
+    JSR WriteByteToBuffer
+    RTS
+.endproc
+
+.proc IncreaseDigit
+    ; X: memory location of digit to increment
+    LDA #0
+    STA pointer+1
+    STX pointer
+    CPX #0
+    BNE Ones
+    JMP Done
+    Ones:
+        LDA fingerX
+        CMP #7 ; 1's place
+        BNE Tens
+        LDY #1
+        LDA (pointer), Y
+        TAX
+        INX
+        CPX #_CL ; #_9_+1
+        BNE :+
+        LDX #_0_
+        :
+        TXA
+        STA (pointer), Y
+        LDX fingerX
+        LDY fingerY
+        JSR WriteTileToBuffer
+        JMP Done
+    Tens:
+        CMP #6 ; 10's place
+        BNE Hundreds
+        JMP Done
+    Hundreds:
+        CMP #5 ; 100's place
+        BNE Thousands
+        JMP Done
+    Thousands:
+    
+    Done:
+    RTS
+.endproc
+
+.proc DecreaseDigit
+    ; X: memory location of digit to decrement
+    CPX #0
+    BEQ Done
+
+
+    Done:
     RTS
 .endproc
 
@@ -1444,6 +1590,24 @@
     BNE :+
     JMP NewGameOccupation
     : 
+    CMP #MENU_STORE_ITEM1
+    BNE :+
+    LDA #7
+    PHA
+    JMP StoreSubmenu
+    : 
+    CMP #MENU_STORE_ITEM2
+    BNE :+
+    LDA #7
+    PHA
+    JMP StoreSubmenu
+    : 
+    CMP #MENU_STORE_ITEM4
+    BNE :+
+    LDA #6
+    PHA
+    JMP StoreSubmenu
+    : 
     None:
         LDA #0
         STA fingerLastLastX
@@ -1452,9 +1616,17 @@
         LDA gameState
         CMP #GAMESTATE_NEWGAME
         BNE :+
-        LDA #%00001100      ; both fingers visible, pointing right
+        LDA #%00001100      ; both fingers visible, normal, pointing right
         STA fingerAttr
         JSR LoadBgNewGame
+        :
+        CMP #GAMESTATE_STORE
+        BNE :+
+        LDA #%00001100      ; both fingers visible, normal, pointing right
+        STA fingerAttr
+        LDA #0
+        STA fingerLastY     ; hack to redraw finger
+        JSR LoadBgStore
         :
         JMP Done
     NewGameTyping:
@@ -1473,6 +1645,15 @@
         JSR DrawOccupationMenu
         LDX #15
         LDY #7
+        JSR MoveFingerToSubmenu
+        JMP Done
+    StoreSubmenu:
+        LDA #%00011100      ; both fingers visible, main finger "up/down" arrows
+        STA fingerAttr
+        JSR DrawStoreSubmenu
+        PLA
+        TAX
+        LDY fingerY
         JSR MoveFingerToSubmenu
         JMP Done
     Done:
@@ -1724,7 +1905,7 @@
 .endproc
 
 .proc InitStateStore
-    LDA #%00001100      ; both fingers visible, pointing right
+    LDA #%00000100      ; main finger visible, pointing right
     STA fingerAttr
     LDA #0              ; initialize cursor
     STA fingerLastX     ; (5x,6y) tiles from top left, facing R
@@ -1990,7 +2171,6 @@
     CMP buttons1Last
     BNE CheckA
     JMP Done
-    ; A button
     CheckA:
         LDA #KEY_A
         BIT buttons1
@@ -2117,7 +2297,6 @@
             JSR LoadBgNewGame ; todo: only update 1 tile (use WriteTileToBuffer?)
             JMP Done
 
-    ; B button
     CheckB:
         LDA #KEY_B
         BIT buttons1
@@ -2146,7 +2325,6 @@
         JSR CloseSubmenu
         JMP Done
 
-    ; Start button
     CheckStart:
         LDA #KEY_START
         BIT buttons1
@@ -2192,7 +2370,6 @@
             JSR CloseSubmenu
             JMP Done
 
-    ; Left button
     CheckLeft:
         LDA #KEY_LEFT
         BIT buttons1
@@ -2312,7 +2489,6 @@
             LDA helper
             STA keyboardKey
             JMP Done
-    ; Right button
     CheckRight:
         LDA #KEY_RIGHT
         BIT buttons1
@@ -2437,7 +2613,6 @@
             LDA helper
             STA keyboardKey
             JMP Done
-    ; Up button
     CheckUp:
         LDA #KEY_UP
         BIT buttons1
@@ -2567,7 +2742,6 @@
             DEC occupationCursor
             STX fingerY
             JMP Done
-    ; Down button
     CheckDown:
         LDA #KEY_DOWN
         BIT buttons1
@@ -2701,6 +2875,508 @@
 .endproc
         
 .proc ControllerStore
+    LDA buttons1
+    CMP buttons1Last
+    BNE CheckA
+    JMP Done
+    CheckA:
+        LDA #KEY_A
+        BIT buttons1
+        BNE :+
+        JMP CheckB
+        :
+        LDA menuOpen
+        CMP #MENU_NONE
+        BNE :+
+        JMP @menuNone
+        :
+        CMP #MENU_STORE_ITEM1
+        BNE :+
+        JMP @menuItem1
+        :
+        CMP #MENU_STORE_ITEM2
+        BNE :+
+        JMP @menuItem2
+        :
+        CMP #MENU_STORE_ITEM4
+        BNE :+
+        JMP @menuItem4
+        :
+        JMP CheckB
+        @menuNone:
+            LDA fingerY     ; 'Oxen' selected
+            CMP #8
+            BNE :+
+            LDA #MENU_STORE_ITEM2
+            STA menuOpen
+            JMP Done
+            :
+            CMP #10         ; 'Clothes' selected
+            BNE :+
+            LDA #MENU_STORE_ITEM2
+            STA menuOpen
+            JMP Done
+            :
+            CMP #12         ; 'Bullets' selected
+            BNE :+
+            LDA #MENU_STORE_ITEM4
+            STA menuOpen
+            JMP Done
+            :
+            CMP #14         ; 'Wheels' selected
+            BNE :+
+            LDA #MENU_STORE_ITEM1
+            STA menuOpen
+            JMP Done
+            :
+            CMP #16         ; 'Axles' selected
+            BNE :+
+            LDA #MENU_STORE_ITEM1
+            STA menuOpen
+            JMP Done
+            :
+            CMP #18         ; 'Tongues' selected
+            BNE :+
+            LDA #MENU_STORE_ITEM1
+            STA menuOpen
+            JMP Done
+            :
+            CMP #20         ; 'lb Food' selected
+            BNE :+
+            LDA #MENU_STORE_ITEM4
+            STA menuOpen
+            JMP Done
+            :
+            JMP Done
+        @menuItem1:
+        @menuItem2:
+        @menuItem4:
+            JSR CloseSubmenu
+            JMP Done
+
+    CheckB:
+        LDA #KEY_B
+        BIT buttons1
+        BNE :+
+        JMP CheckStart
+        :
+        LDA menuOpen
+        CMP #MENU_NONE
+        BNE :+
+        JMP @menuNone
+        :
+        CMP #MENU_STORE_ITEM1
+        BNE :+
+        JMP @menuItem1
+        :
+        CMP #MENU_STORE_ITEM2
+        BNE :+
+        JMP @menuItem2
+        :
+        CMP #MENU_STORE_ITEM4
+        BNE :+
+        JMP @menuItem4
+        :
+        JMP CheckStart
+        @menuNone:
+            JMP Done
+        @menuItem1:
+        @menuItem2:
+        @menuItem4:
+            JSR CloseSubmenu
+            JMP Done
+
+    CheckStart:
+        LDA #KEY_START
+        BIT buttons1
+        BNE :+
+        JMP CheckLeft
+        :
+        LDA menuOpen
+        CMP #MENU_NONE
+        BNE :+
+        JMP @menuNone
+        :
+        CMP #MENU_STORE_ITEM1
+        BNE :+
+        JMP @menuItem1
+        :
+        CMP #MENU_STORE_ITEM2
+        BNE :+
+        JMP @menuItem2
+        :
+        CMP #MENU_STORE_ITEM4
+        BNE :+
+        JMP @menuItem4
+        :
+        JMP CheckLeft
+        @menuNone:
+        @menuItem1:
+        @menuItem2:
+        @menuItem4:
+        JMP Done
+
+    CheckLeft:
+        LDA #KEY_LEFT
+        BIT buttons1
+        BNE :+
+        JMP CheckRight
+        :
+        LDA menuOpen
+        CMP #MENU_NONE
+        BNE :+
+        JMP @menuNone
+        :
+        CMP #MENU_STORE_ITEM1
+        BNE :+
+        JMP @menuItem1
+        :
+        CMP #MENU_STORE_ITEM2
+        BNE :+
+        JMP @menuItem2
+        :
+        CMP #MENU_STORE_ITEM4
+        BNE :+
+        JMP @menuItem4
+        :
+        JMP CheckRight
+        @menuNone:
+        @menuItem1:
+        @menuItem2:
+        @menuItem4:
+        JMP Done
+
+    CheckRight:
+        LDA #KEY_RIGHT
+        BIT buttons1
+        BNE :+
+        JMP CheckUp
+        :
+        LDA menuOpen
+        CMP #MENU_NONE
+        BNE :+
+        JMP @menuNone
+        :
+        CMP #MENU_STORE_ITEM1
+        BNE :+
+        JMP @menuItem1
+        :
+        CMP #MENU_STORE_ITEM2
+        BNE :+
+        JMP @menuItem2
+        :
+        CMP #MENU_STORE_ITEM4
+        BNE :+
+        JMP @menuItem4
+        :
+        JMP CheckUp
+        @menuNone:
+        @menuItem1:
+        @menuItem2:
+        @menuItem4:
+        JMP Done
+
+    CheckUp:
+        LDA #KEY_UP
+        BIT buttons1
+        BNE :+
+        JMP CheckDown
+        :
+        LDA menuOpen
+        CMP #MENU_NONE
+        BNE :+
+        JMP @menuNone
+        :
+        CMP #MENU_STORE_ITEM1
+        BNE :+
+        JMP @menuItem1
+        :
+        CMP #MENU_STORE_ITEM2
+        BNE :+
+        JMP @menuItem2
+        :
+        CMP #MENU_STORE_ITEM4
+        BNE :+
+        JMP @menuItem4
+        :
+        JMP CheckDown
+        @menuNone:
+            LDX fingerY
+            DEX
+            DEX
+            CPX #6      ; check if finger is past top of list
+            BNE :+
+            LDX #20     ; wrap around to bottom
+            :
+            STX fingerY
+            JMP Done
+        @menuItem1:
+            LDA fingerY
+            CMP #14
+            BNE :+
+            LDA cartSpareParts ; wheels
+            AND #%00000011
+            TAY
+            INY
+            TYA
+            AND #%00000011
+            TAX
+            LDA #%11111100
+            AND cartSpareParts
+            STA cartSpareParts
+            TXA
+            ORA cartSpareParts
+            STA cartSpareParts
+            LDA decimalDigits, X
+            LDX fingerX
+            LDY fingerY
+            JSR WriteTileToBuffer
+            JMP Done
+            :
+            CMP #16
+            BNE :+
+            LDA cartSpareParts ; Axles
+            AND #%00001100
+            LSR
+            LSR
+            TAY
+            INY
+            TYA
+            AND #%00000011
+            TAX
+            CLC
+            ROL
+            ROL
+            LDA #%11110011
+            AND cartSpareParts
+            STA cartSpareParts
+            TXA
+            CLC
+            ROL
+            ROL
+            ORA cartSpareParts
+            STA cartSpareParts
+            LDA decimalDigits, X
+            LDX fingerX
+            LDY fingerY
+            JSR WriteTileToBuffer
+            JMP Done
+            :
+            CMP #18
+            BNE :+
+            LDA cartSpareParts ; Tongues
+            AND #%00110000
+            LSR
+            LSR
+            LSR
+            LSR
+            TAY
+            INY
+            TYA
+            AND #%00000011
+            TAX
+            CLC
+            ROL
+            ROL
+            ROL
+            ROL
+            LDA #%11001111
+            AND cartSpareParts
+            STA cartSpareParts
+            TXA
+            CLC
+            ROL
+            ROL
+            ROL
+            ROL
+            ORA cartSpareParts
+            STA cartSpareParts
+            LDA decimalDigits, X
+            LDX fingerX
+            LDY fingerY
+            JSR WriteTileToBuffer
+            :
+            JMP Done
+        @menuItem2:
+            LDA fingerY
+            CMP #8
+            BNE :+
+            LDX #cartOxenDigit
+            JMP @increaseDigit
+            :
+            CMP #10
+            BNE :+
+            LDX #cartClothingDigit
+            JMP @increaseDigit
+            :
+            JMP Done
+        @menuItem4:
+            LDA fingerY
+            CMP #12
+            BNE :+
+            LDX #cartBulletsDigit
+            JMP @increaseDigit
+            :
+            CMP #20
+            BNE :+
+            LDX #cartFoodLbsDigit
+            JMP @increaseDigit
+            :
+            JMP Done
+        @increaseDigit:
+            JSR IncreaseDigit 
+            JMP Done
+    CheckDown:
+        LDA #KEY_DOWN
+        BIT buttons1
+        BNE :+
+        JMP Done
+        :
+        LDA menuOpen
+        CMP #MENU_NONE
+        BNE :+
+        JMP @menuNone
+        :
+        CMP #MENU_STORE_ITEM1
+        BNE :+
+        JMP @menuItem1
+        :
+        CMP #MENU_STORE_ITEM2
+        BNE :+
+        JMP @menuItem2
+        :
+        CMP #MENU_STORE_ITEM4
+        BNE :+
+        JMP @menuItem4
+        :
+        JMP Done
+        @menuNone:
+            LDX fingerY
+            INX
+            INX
+            CPX #22     ; check if finger is past bottom of list
+            BNE :+
+            LDX #8      ; wrap around to top
+            :
+            STX fingerY
+            JMP Done
+        @menuItem1:
+            LDA fingerY
+            CMP #14
+            BNE :+
+            LDA cartSpareParts ; wheels
+            AND #%00000011
+            TAY
+            DEY
+            TYA
+            AND #%00000011
+            TAX
+            LDA #%11111100
+            AND cartSpareParts
+            STA cartSpareParts
+            TXA
+            ORA cartSpareParts
+            STA cartSpareParts
+            LDA decimalDigits, X
+            LDX fingerX
+            LDY fingerY
+            JSR WriteTileToBuffer
+            JMP Done
+            :
+            CMP #16
+            BNE :+
+            LDA cartSpareParts ; Axles
+            AND #%00001100
+            LSR
+            LSR
+            TAY
+            DEY
+            TYA
+            AND #%00000011
+            TAX
+            CLC
+            ROL
+            ROL
+            LDA #%11110011
+            AND cartSpareParts
+            STA cartSpareParts
+            TXA
+            CLC
+            ROL
+            ROL
+            ORA cartSpareParts
+            STA cartSpareParts
+            LDA decimalDigits, X
+            LDX fingerX
+            LDY fingerY
+            JSR WriteTileToBuffer
+            JMP Done
+            :
+            CMP #18
+            BNE :+
+            LDA cartSpareParts ; Tongues
+            AND #%00110000
+            LSR
+            LSR
+            LSR
+            LSR
+            TAY
+            DEY
+            TYA
+            AND #%00000011
+            TAX
+            CLC
+            ROL
+            ROL
+            ROL
+            ROL
+            LDA #%11001111
+            AND cartSpareParts
+            STA cartSpareParts
+            TXA
+            CLC
+            ROL
+            ROL
+            ROL
+            ROL
+            ORA cartSpareParts
+            STA cartSpareParts
+            LDA decimalDigits, X
+            LDX fingerX
+            LDY fingerY
+            JSR WriteTileToBuffer
+            :
+            JMP Done
+        @menuItem2:
+            LDA fingerY
+            CMP #8
+            BNE :+
+            LDX #cartOxenDigit
+            JMP @decreaseDigit
+            :
+            CMP #10
+            BNE :+
+            LDX #cartClothingDigit
+            JMP @decreaseDigit
+            :
+            JMP Done
+        @menuItem4:
+            LDA fingerY
+            CMP #12
+            BNE :+
+            LDX #cartBulletsDigit
+            JMP @decreaseDigit
+            :
+            CMP #20
+            BNE :+
+            LDX #cartFoodLbsDigit
+            JMP @decreaseDigit
+            :
+            JMP Done
+        @decreaseDigit:
+            JSR DecreaseDigit 
+            JMP Done
+    Done:
     RTS
 .endproc
         

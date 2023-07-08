@@ -20,6 +20,9 @@ keyboard:
 keyboardDone:
     .byte _D_,_O_,_N_,_E_
 
+decimalDigits:
+    .byte _0_,_1_,_2_,_3_,_4_,_5_,_6_,_7_,_8_,_9_
+
 hudMenu:
     .byte _M_,_A_,_P_,___,___,___,___ ;ちず
     .byte _S_,_T_,_A_,_T_,_U_,_S_,___ ;ステータス

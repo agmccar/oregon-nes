@@ -39,11 +39,12 @@ fingerLastLastX:    .res 1 ; previous last pos (for submenus)
 fingerLastLastY:    .res 1 ;
 
 ; %00000000 fingerAttr
-;  |||||||+ Finger direction- 0:R, 1:L
-;  ||||||+- Submenu finger direction- 0:R, 1:L
-;  |||||+-- Finger visible- 0:no, 1:yes
-;  ||||+--- Submenu finger visible- 0:no, 1:yes
-;  ++++---- unused
+;  |||||||+ Main finger direction- 0:R, 1:L
+;  ||||||+- "Old" finger direction- 0:R, 1:L
+;  |||||+-- Main finger visible- 0:no, 1:yes
+;  ||||+--- "Old" finger visible- 0:no, 1:yes
+;  |||+---- type- 0:normal finger 1:"up/down" arrows
+;  +++----- unused
 fingerAttr:         .res 1
 
 ; decimal digits text
