@@ -585,7 +585,7 @@
         LDA PPUSTATUS           ; write store name
         LDA #$20
         STA PPUADDR
-        LDA #$62
+        LDA #$64
         STA PPUADDR
         :
         LDA storeNameText, X
@@ -618,6 +618,7 @@
         CPX #4
         BNE :-
         LDA #___
+        STA PPUDATA
         STA PPUDATA
         :
         LDA storeColumnHeaderText, X
@@ -652,7 +653,7 @@
         STA PPUADDR
         LDA #$04
         STA PPUADDR
-        LDA #_UL
+        LDA #___
         STA PPUDATA
         STA PPUDATA
         LDA cartOxenDigit       ; number in Buy column
@@ -660,6 +661,7 @@
         LDA cartOxenDigit+1
         STA PPUDATA
         LDA #___
+        STA PPUDATA
         STA PPUDATA             ; the word "OXEN"
         LDY #0
         LDX #0                  
@@ -689,7 +691,7 @@
         STA PPUADDR
         LDA #$44
         STA PPUADDR
-        LDA #_UL
+        LDA #___
         STA PPUDATA
         STA PPUDATA
         LDA cartClothingDigit   ; number in Buy column
@@ -697,6 +699,7 @@
         LDA cartClothingDigit+1
         STA PPUDATA
         LDA #___
+        STA PPUDATA
         STA PPUDATA             ; the word "CLOTHES"
         LDY #0
         LDX #7
@@ -720,133 +723,278 @@
         STA PPUDATA
         STA PPUDATA
         JSR DrawShopCost        ; number in Cost column
-    JMP Done
-    _Buy:
-        LDA PPUSTATUS           ; write Buy column
-        LDA #$20
+    Bullets:
+        LDA PPUSTATUS           ; write bullets row
+        LDA #$21
+        STA PPUADDR
+        LDA #$84
+        STA PPUADDR
+        LDA cartBulletsDigit    ; number in Buy column
+        STA PPUDATA
+        LDA cartBulletsDigit+1
+        STA PPUDATA
+        LDA cartBulletsDigit+2
+        STA PPUDATA
+        LDA cartBulletsDigit+3
+        STA PPUDATA
+        LDA #___
+        STA PPUDATA
+        STA PPUDATA             ; the word "bullets"
+        LDY #0
+        LDX #14
+        :
+        LDA suppliesText, X
+        STA PPUDATA
+        INX
+        INY
+        CPY #TEXT_SUPPLIES_LEN
+        BNE :-
+        LDA #___
+        STA PPUDATA
+        STA PPUDATA
+        
+        ; LDA location            ; calculate price each
+        ; AND #$0F
+        LDA #COST_BULLETS
+
+        JSR DrawShopEach        ; number in Each column
+        LDA #___
+        STA PPUDATA
+        STA PPUDATA
+        JSR DrawShopCost        ; number in Cost column
+    Wheels:
+        LDA PPUSTATUS           ; write Wheels row
+        LDA #$21
         STA PPUADDR
         LDA #$C4
         STA PPUADDR
-        LDX #0
-        :                       ; write column header "BUY"
-        LDA storeColumnHeaderText, X
+        LDA #___
         STA PPUDATA
+        STA PPUDATA
+        STA PPUDATA
+        LDA cartSpareParts      ; number in Buy column
+        AND #%00000011
+        TAY
+        LDX #_1_
+        DEX
+        CPY #0
+        BNE :+
+        LDA #_0_
+        STA PPUDATA
+        JMP :++
+        :
         INX
-        CPX #4
+        DEY
+        CPY #0
         BNE :-
-        LDX #4                  ; write Buy text rows
-        LDY #8
-        JSR SetPpuAddrPointerFromXY
-        LDA PPUSTATUS
-        LDA pointer
-        STA PPUADDR
-        LDA pointer+1
-        STA PPUADDR
-        LDA #0
-        LDX #0
+        STX PPUDATA
+        :
+        LDA #___
+        STA PPUDATA
+        STA PPUDATA             ; the word "Wheels"
         LDY #0
-        STA helper
+        LDX #21
         :
         LDA suppliesText, X
         STA PPUDATA
-        INY
         INX
+        INY
         CPY #TEXT_SUPPLIES_LEN
         BNE :-
-        LDY #0
-        INC helper
-        CLC
-        LDA #$40     ; add 4 tile rows to PPUADDR (+$0040)
-        ADC pointer+1
-        STA pointer+1
-        LDA #$00
-        ADC pointer
-        STA pointer
-        LDA PPUSTATUS
-        LDA pointer
-        STA PPUADDR
-        LDA pointer+1
-        STA PPUADDR
-        LDA helper
-        CMP #7
-        BNE :-
-    _Item:
-        LDA PPUSTATUS           ; Item column
-        LDA #$20
-        STA PPUADDR
-        LDA #$C9
-        STA PPUADDR
-        LDX #4
-        :                       ; write column header
-        LDA storeColumnHeaderText, X
+        LDA #___
         STA PPUDATA
-        INX
-        CPX #8
-        BNE :-
-        LDX #9                  ; write supply text rows
-        LDY #8
-        JSR SetPpuAddrPointerFromXY
-        LDA PPUSTATUS
-        LDA pointer
-        STA PPUADDR
-        LDA pointer+1
-        STA PPUADDR
-        LDA #0
-        LDX #0
-        LDY #0
-        STA helper
-        :
-        LDA suppliesText, X
         STA PPUDATA
-        INY
-        INX
-        CPY #TEXT_SUPPLIES_LEN
-        BNE :-
-        LDY #0
-        INC helper
-        CLC
-        LDA #$40     ; add 4 tile rows to PPUADDR (+$0040)
-        ADC pointer+1
-        STA pointer+1
-        LDA #$00
-        ADC pointer
-        STA pointer
-        LDA PPUSTATUS
-        LDA pointer
-        STA PPUADDR
-        LDA pointer+1
-        STA PPUADDR
-        LDA helper
-        CMP #7
-        BNE :-
-    _Each:
-        LDA PPUSTATUS           ; write Each column
-        LDA #$20
-        STA PPUADDR
-        LDA #$D2
-        STA PPUADDR
-        LDX #8
-        :
-        LDA storeColumnHeaderText, X
-        STA PPUDATA
-        INX
-        CPX #12
-        BNE :-
-    _Cost:
-        LDA PPUSTATUS           ; write Cost column
-        LDA #$20
-        STA PPUADDR
-        LDA #$D8
-        STA PPUADDR
-        LDX #12
-        :
-        LDA storeColumnHeaderText, X
-        STA PPUDATA
-        INX
-        CPX #16
-        BNE :-
-    
+        
+        ; LDA location            ; calculate price each
+        ; AND #$0F
+        LDA #COST_PARTS
 
+        JSR DrawShopEach        ; number in Each column
+        LDA #___
+        STA PPUDATA
+        STA PPUDATA
+        JSR DrawShopCost        ; number in Cost column
+    Axles:
+        LDA PPUSTATUS           ; write Axles row
+        LDA #$22
+        STA PPUADDR
+        LDA #$04
+        STA PPUADDR
+        LDA #___
+        STA PPUDATA
+        STA PPUDATA
+        STA PPUDATA
+        LDA cartSpareParts      ; number in Buy column
+        LSR
+        LSR
+        AND #%00000011
+        TAY
+        LDX #_1_
+        DEX
+        CPY #0
+        BNE :+
+        LDA #_0_
+        STA PPUDATA
+        JMP :++
+        :
+        INX
+        DEY
+        CPY #0
+        BNE :-
+        STX PPUDATA
+        :
+        LDA #___
+        STA PPUDATA
+        STA PPUDATA             ; the word "Axles"
+        LDY #0
+        LDX #28
+        :
+        LDA suppliesText, X
+        STA PPUDATA
+        INX
+        INY
+        CPY #TEXT_SUPPLIES_LEN
+        BNE :-
+        LDA #___
+        STA PPUDATA
+        STA PPUDATA
+        
+        ; LDA location            ; calculate price each
+        ; AND #$0F
+        LDA #COST_PARTS
+
+        JSR DrawShopEach        ; number in Each column
+        LDA #___
+        STA PPUDATA
+        STA PPUDATA
+        JSR DrawShopCost        ; number in Cost column
+    Tongues:
+        LDA PPUSTATUS           ; write Tongues row
+        LDA #$22
+        STA PPUADDR
+        LDA #$44
+        STA PPUADDR
+        LDA #___
+        STA PPUDATA
+        STA PPUDATA
+        STA PPUDATA
+        LDA cartSpareParts      ; number in Buy column
+        AND #%00000011
+        LSR
+        LSR
+        LSR
+        LSR
+        TAY
+        LDX #_1_
+        DEX
+        CPY #0
+        BNE :+
+        LDA #_0_
+        STA PPUDATA
+        JMP :++
+        :
+        INX
+        DEY
+        CPY #0
+        BNE :-
+        STX PPUDATA
+        :
+        LDA #___
+        STA PPUDATA
+        STA PPUDATA             ; the word "Tongues"
+        LDY #0
+        LDX #35
+        :
+        LDA suppliesText, X
+        STA PPUDATA
+        INX
+        INY
+        CPY #TEXT_SUPPLIES_LEN
+        BNE :-
+        LDA #___
+        STA PPUDATA
+        STA PPUDATA
+        
+        ; LDA location            ; calculate price each
+        ; AND #$0F
+        LDA #COST_PARTS
+
+        JSR DrawShopEach        ; number in Each column
+        LDA #___
+        STA PPUDATA
+        STA PPUDATA
+        JSR DrawShopCost        ; number in Cost column
+    Food:
+        LDA PPUSTATUS           ; write Food row
+        LDA #$22
+        STA PPUADDR
+        LDA #$84
+        STA PPUADDR
+        LDA cartFoodLbsDigit    ; number in Buy column
+        STA PPUDATA
+        LDA cartFoodLbsDigit+1
+        STA PPUDATA
+        LDA cartFoodLbsDigit+2
+        STA PPUDATA
+        LDA cartFoodLbsDigit+3
+        STA PPUDATA
+        LDA #___
+        STA PPUDATA
+        STA PPUDATA             ; the word "Food"
+        LDY #0
+        LDX #42
+        :
+        LDA suppliesText, X
+        STA PPUDATA
+        INX
+        INY
+        CPY #TEXT_SUPPLIES_LEN
+        BNE :-
+        LDA #___
+        STA PPUDATA
+        STA PPUDATA
+        
+        ; LDA location            ; calculate price each
+        ; AND #$0F
+        LDA #COST_FOOD_LB
+
+        JSR DrawShopEach        ; number in Each column
+        LDA #___
+        STA PPUDATA
+        STA PPUDATA
+        JSR DrawShopCost        ; number in Cost column
+    Total:
+        LDA PPUSTATUS           ; write Total:
+        LDA #$22
+        STA PPUADDR
+        LDA #$EE
+        STA PPUADDR
+        LDX #0
+        :
+        LDA storeTotalText, X
+        STA PPUDATA
+        INX
+        CPX #9
+        BNE :-
+        LDA #___
+        STA PPUDATA
+        JSR DrawShopTotal
+    YouHave:
+        LDA PPUSTATUS           ; write You Have: 
+        LDA #$23
+        STA PPUADDR
+        LDA #$6E
+        STA PPUADDR
+        LDX #9
+        :
+        LDA storeTotalText, X
+        STA PPUDATA
+        INX
+        CPX #18
+        BNE :-
+        LDA #___
+        STA PPUDATA
+        JSR DrawShopTotal
     Done:
     JSR DoneBulkDrawing
     RTS
@@ -918,6 +1066,19 @@
     LDA #_DL
     STA PPUDATA
     LDA #_QU
+    STA PPUDATA
+    STA PPUDATA
+    STA PPUDATA
+    LDA #_00
+    STA PPUDATA
+    RTS
+.endproc
+
+.proc DrawShopTotal
+    LDA #_DL
+    STA PPUDATA
+    LDA #_QU
+    STA PPUDATA
     STA PPUDATA
     STA PPUDATA
     STA PPUDATA
@@ -1572,16 +1733,16 @@
     STA fingerX
     LDA #8
     STA fingerY
-    LDA #_UL                ; default empty shopping cart
-    STA cartDollarsDigit    ; Dollars: "___0"
+    LDA #___                ; default empty shopping cart
+    STA cartDollarsDigit    ; Dollars: "   0"
     STA cartDollarsDigit+1
     STA cartDollarsDigit+2
-    STA cartFoodLbsDigit    ; food lbs: "__00"
+    STA cartFoodLbsDigit    ; food lbs: "  00"
     STA cartFoodLbsDigit+1
-    STA cartBulletsDigit    ; bullets: "__00"
+    STA cartBulletsDigit    ; bullets: "  00"
     STA cartBulletsDigit+1
-    STA cartClothingDigit   ; clothing: "_0"
-    STA cartOxenDigit       ; oxen: "_0"
+    STA cartClothingDigit   ; clothing: " 0"
+    STA cartOxenDigit       ; oxen: " 0"
     LDA #_0_            
     STA cartDollarsDigit+3
     STA cartFoodLbsDigit+2

@@ -207,6 +207,9 @@ storeColumnHeaderText:
     .byte _I_,_T_,_E_,_M_
     .byte _E_,_A_,_C_,_H_
     .byte _C_,_O_,_S_,_T_
+storeTotalText:
+    .byte ___,___,___,_T_,_O_,_T_,_A_,_L_,_CL
+    .byte _Y_,_O_,_U_,___,_H_,_A_,_V_,_E_,_CL
 storeNameText:
     .byte _I_,_N_,_D_,_E_,_P_,_E_,_N_,_D_,_E_,_N_,_C_,_E_
     .byte _F_,_O_,_R_,_T_,___,_K_,_E_,_A_,_R_,_N_,_E_,_Y_
