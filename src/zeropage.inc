@@ -4,7 +4,7 @@
 ; Engine
 pointer:            .res 2
 sprite0hit:         .res 1
-helper:             .res 1
+helper:             .res 2
 frameCounter:       .res 1
 globalScroll:       .res 1
 lastGameState:      .res 1 
@@ -44,7 +44,20 @@ fingerLastLastY:    .res 1 ;
 ;  |||||+-- Finger visible- 0:no, 1:yes
 ;  ||||+--- Submenu finger visible- 0:no, 1:yes
 ;  ++++---- unused
-fingerAttr:     .res 1
+fingerAttr:         .res 1
+
+; decimal digits text
+
+dollarsDigit:       .res 4 ; dollars in inventory
+cartDollarsDigit:   .res 4 ; dollar cost of shopping cart
+foodLbsDigit:       .res 4 ; lbs of food in inventory
+cartFoodLbsDigit:   .res 4 ; lbs of food in shopping cart
+clothingDigit:      .res 2 ; sets of clothing in inventory
+cartClothingDigit:  .res 2 ; sets of clothing in shopping cart
+bulletsDigit:       .res 4 ; bullets in inventory
+cartBulletsDigit:   .res 4 ; bullets in shopping cart
+oxenDigit:          .res 2 ; oxen in inventory
+cartOxenDigit:      .res 2 ; oxen in shopping cart
 
 ; Wagon ------------------------------------------------------------------------
 
@@ -64,24 +77,31 @@ wagonStatus:    .res 1
 ;  +------- unused
 wagonSettings:  .res 1 
 
-dollars:        .res 2
-foodLbs:        .res 2
-clothing:       .res 1
-bullets:        .res 2
+; Supplies ---------------------------------------------------------------------
+
+dollars:        .res 2  ; dollars in inventory
+cartDollars:    .res 2  ; dollar cost of entire shopping cart
+foodLbs:        .res 2  ; lbs of food in inventory
+cartFoodLbs:    .res 2  ; lbs of food in shopping cart
+clothing:       .res 1  ; sets of clothing in inventory
+cartClothing:   .res 1  ; sets of clothing in shopping cart
+bullets:        .res 2  ; bullets in inventory
+cartBullets:    .res 2  ; bullets in shopping cart
 
 ; %00000000
 ;  ||||||++ wagon wheels
 ;  ||||++-- wagon axles
 ;  ||++---- wagon tongues
 ;  ++------ unused
-spareParts:     .res 1
+spareParts:     .res 1  ; spare parts in inventory
+cartSpareParts: .res 1  ; spare parts in shopping cart
 
-oxenHeadcount:  .res 1
-; dollarsDigit:   .res 4
-; foodDigit:      .res 4
-; clothingDigit:  .res 4
-; bulletsDigit:   .res 4
-; oxenDigit:      .res 2
+oxenHeadcount:  .res 1  ; oxen in inventory
+cartOxen:       .res 1  ; oxen in shopping cart
+
+
+; Party ------------------------------------------------------------------------
+
 occupation:    .res 1   ;
 personName:    .res 20  ; 4 each * 5 people
 personStatus:  .res 5   ; 1 each * 5 
@@ -126,4 +146,4 @@ dateDay:        .res 1
 location:       .res 1 ; see: constants.inc -> Locations
 
 ;-------------------------------------------------------------------------------
-; remaining: $B0
+; remaining: $94

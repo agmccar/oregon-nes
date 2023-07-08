@@ -565,15 +565,364 @@
 
 .proc LoadBgStore
     JSR StartBulkDrawing
-    LDA PPUSTATUS
-    LDA #$20
-    STA PPUADDR
-    LDA #$00
-    STA PPUADDR
+    LDA location            ; calculate address of store name text
+    AND #%00001111
+    STA helper
+    LDY #0
+    LDX #0
+    CPY helper
+    BNE :+
+    JMP StoreName
+    :
+    INX
+    CPX #TEXT_STORENAME_LEN
+    BNE :-
+    INY
+    CPY helper
+    BNE :-
+    StoreName:
+        LDY #0
+        LDA PPUSTATUS           ; write store name
+        LDA #$20
+        STA PPUADDR
+        LDA #$62
+        STA PPUADDR
+        :
+        LDA storeNameText, X
+        STA PPUDATA
+        INX
+        INY
+        CPY #TEXT_STORENAME_LEN
+        BNE :-
+        LDX #0                  ; write " GENERAL STORE"
+        LDA #___
+        STA PPUDATA
+        :
+        LDA generalStoreText, X
+        STA PPUDATA
+        INX
+        CPX #13
+        BNE :-
+    ColumnHeaders:
+        LDY #0
+        LDA PPUSTATUS           ; write column headers
+        LDA #$20
+        STA PPUADDR
+        LDA #$C4
+        STA PPUADDR
+        LDX #0
+        :
+        LDA storeColumnHeaderText, X
+        STA PPUDATA
+        INX
+        CPX #4
+        BNE :-
+        LDA #___
+        STA PPUDATA
+        :
+        LDA storeColumnHeaderText, X
+        STA PPUDATA
+        INX
+        CPX #8
+        BNE :-
+        LDA #___
+        STA PPUDATA
+        STA PPUDATA
+        STA PPUDATA
+        STA PPUDATA
+        STA PPUDATA
+        :
+        LDA storeColumnHeaderText, X
+        STA PPUDATA
+        INX
+        CPX #12
+        BNE :-
+        LDA #___
+        STA PPUDATA
+        STA PPUDATA
+        :
+        LDA storeColumnHeaderText, X
+        STA PPUDATA
+        INX
+        CPX #16
+        BNE :-
+    Oxen:
+        LDA PPUSTATUS           ; write oxen row
+        LDA #$21
+        STA PPUADDR
+        LDA #$04
+        STA PPUADDR
+        LDA #_UL
+        STA PPUDATA
+        STA PPUDATA
+        LDA cartOxenDigit       ; number in Buy column
+        STA PPUDATA
+        LDA cartOxenDigit+1
+        STA PPUDATA
+        LDA #___
+        STA PPUDATA             ; the word "OXEN"
+        LDY #0
+        LDX #0                  
+        :
+        LDA suppliesText, X
+        STA PPUDATA
+        INX
+        INY
+        CPY #TEXT_SUPPLIES_LEN
+        BNE :-
+        LDA #___
+        STA PPUDATA
+        STA PPUDATA
+        
+        ; LDA location            ; calculate price each
+        ; AND #$0F
+        LDA #COST_OXEN
 
+        JSR DrawShopEach        ; number in Each column
+        LDA #___
+        STA PPUDATA
+        STA PPUDATA
+        JSR DrawShopCost        ; number in Cost column
+    Clothes:
+        LDA PPUSTATUS           ; write clothes row
+        LDA #$21
+        STA PPUADDR
+        LDA #$44
+        STA PPUADDR
+        LDA #_UL
+        STA PPUDATA
+        STA PPUDATA
+        LDA cartClothingDigit   ; number in Buy column
+        STA PPUDATA
+        LDA cartClothingDigit+1
+        STA PPUDATA
+        LDA #___
+        STA PPUDATA             ; the word "CLOTHES"
+        LDY #0
+        LDX #7
+        :
+        LDA suppliesText, X
+        STA PPUDATA
+        INX
+        INY
+        CPY #TEXT_SUPPLIES_LEN
+        BNE :-
+        LDA #___
+        STA PPUDATA
+        STA PPUDATA
+        
+        ; LDA location            ; calculate price each
+        ; AND #$0F
+        LDA #COST_CLOTHES
 
+        JSR DrawShopEach        ; number in Each column
+        LDA #___
+        STA PPUDATA
+        STA PPUDATA
+        JSR DrawShopCost        ; number in Cost column
+    JMP Done
+    _Buy:
+        LDA PPUSTATUS           ; write Buy column
+        LDA #$20
+        STA PPUADDR
+        LDA #$C4
+        STA PPUADDR
+        LDX #0
+        :                       ; write column header "BUY"
+        LDA storeColumnHeaderText, X
+        STA PPUDATA
+        INX
+        CPX #4
+        BNE :-
+        LDX #4                  ; write Buy text rows
+        LDY #8
+        JSR SetPpuAddrPointerFromXY
+        LDA PPUSTATUS
+        LDA pointer
+        STA PPUADDR
+        LDA pointer+1
+        STA PPUADDR
+        LDA #0
+        LDX #0
+        LDY #0
+        STA helper
+        :
+        LDA suppliesText, X
+        STA PPUDATA
+        INY
+        INX
+        CPY #TEXT_SUPPLIES_LEN
+        BNE :-
+        LDY #0
+        INC helper
+        CLC
+        LDA #$40     ; add 4 tile rows to PPUADDR (+$0040)
+        ADC pointer+1
+        STA pointer+1
+        LDA #$00
+        ADC pointer
+        STA pointer
+        LDA PPUSTATUS
+        LDA pointer
+        STA PPUADDR
+        LDA pointer+1
+        STA PPUADDR
+        LDA helper
+        CMP #7
+        BNE :-
+    _Item:
+        LDA PPUSTATUS           ; Item column
+        LDA #$20
+        STA PPUADDR
+        LDA #$C9
+        STA PPUADDR
+        LDX #4
+        :                       ; write column header
+        LDA storeColumnHeaderText, X
+        STA PPUDATA
+        INX
+        CPX #8
+        BNE :-
+        LDX #9                  ; write supply text rows
+        LDY #8
+        JSR SetPpuAddrPointerFromXY
+        LDA PPUSTATUS
+        LDA pointer
+        STA PPUADDR
+        LDA pointer+1
+        STA PPUADDR
+        LDA #0
+        LDX #0
+        LDY #0
+        STA helper
+        :
+        LDA suppliesText, X
+        STA PPUDATA
+        INY
+        INX
+        CPY #TEXT_SUPPLIES_LEN
+        BNE :-
+        LDY #0
+        INC helper
+        CLC
+        LDA #$40     ; add 4 tile rows to PPUADDR (+$0040)
+        ADC pointer+1
+        STA pointer+1
+        LDA #$00
+        ADC pointer
+        STA pointer
+        LDA PPUSTATUS
+        LDA pointer
+        STA PPUADDR
+        LDA pointer+1
+        STA PPUADDR
+        LDA helper
+        CMP #7
+        BNE :-
+    _Each:
+        LDA PPUSTATUS           ; write Each column
+        LDA #$20
+        STA PPUADDR
+        LDA #$D2
+        STA PPUADDR
+        LDX #8
+        :
+        LDA storeColumnHeaderText, X
+        STA PPUDATA
+        INX
+        CPX #12
+        BNE :-
+    _Cost:
+        LDA PPUSTATUS           ; write Cost column
+        LDA #$20
+        STA PPUADDR
+        LDA #$D8
+        STA PPUADDR
+        LDX #12
+        :
+        LDA storeColumnHeaderText, X
+        STA PPUDATA
+        INX
+        CPX #16
+        BNE :-
+    
 
+    Done:
     JSR DoneBulkDrawing
+    RTS
+.endproc
+
+.proc DrawShopEach
+    ; A: value to convert to two decimal text digits
+    ; destroys X,Y registers
+    ; Return: helper,helper+1 - resulting digits
+    STA helper
+    LDX #_DL
+    STX PPUDATA
+    CMP #10
+    BCS TwoDigits
+    LDX #_PD
+    STX PPUDATA
+    CMP #1
+    BCS OneDigit
+    LDX #_0_
+    STX PPUDATA
+    JMP Done
+    OneDigit:
+    TAX
+    DEX
+    TXA
+    CLC
+    ADC #_1_
+    STA PPUDATA
+    LDX #_0_
+    STX PPUDATA
+    JMP Done
+    TwoDigits:
+    LDY #0
+    LDX #_1_
+    DEX
+    :
+    INY
+    DEC helper
+    CPY #10
+    BNE :-
+    INX
+    LDY #0
+    LDA helper
+    CMP #10
+    BCS :-
+    STX PPUDATA
+    LDA helper
+    CMP #1
+    BCS :+
+    LDX #_0_
+    STX PPUDATA
+    LDX #_00
+    STX PPUDATA
+    JMP Done
+    :
+    LDX #_1_
+    DEX
+    :
+    INX
+    DEC helper
+    LDA helper
+    CMP #0
+    BCS :-
+    Done:
+    RTS
+.endproc
+
+.proc DrawShopCost
+    LDA #_DL
+    STA PPUDATA
+    LDA #_QU
+    STA PPUDATA
+    STA PPUDATA
+    STA PPUDATA
+    LDA #_00
+    STA PPUDATA
     RTS
 .endproc
 
@@ -1141,37 +1490,6 @@
     RTS
 .endproc
 
-.proc Add16Bit
-    ; X: Target address (remember to use #)
-    ;    Must be zero-page, res 2
-    ; A: number to add to target address value
-    ; Usage example:
-    ;   ; dollars = #$0101
-    ;   ; ie. dollars, dollars+1 = $01 $01
-    ;   LDX #dollars        ; add $400.00 ($FF+$91)
-    ;   LDA #$FF
-    ;   JSR Add16Bit
-    ;   ;     dollars, dollars+1 = $02 $00
-    ; Big Endian Energy
-    PHA
-    INX ; low byte
-    TXA
-    STA helper
-    LDY #0
-    PLA
-    CLC
-    ADC (helper), Y
-    STA (helper), Y
-    BCC :+
-    LDA #0
-    DEC helper
-    LDY #0
-    ADC (helper), Y
-    STA (helper), Y
-    :
-    RTS
-.endproc
-
 ; Game state initialization -----------
 
 .proc InitStateTitle
@@ -1179,8 +1497,10 @@
     STA wagonSettings
     LDA #%00000100          ; default fair weather
     STA weather
-    LDA #%00000000          ; no fingers visible
+    LDA #%00000000          ; default no fingers visible, facing right
     STA fingerAttr
+    LDA #LOC_INDEPENDENCE   ; default location Independence, MO
+    STA location
     :                       ; default person names
     LDA defaultPersonNames, X
     STA personName, X
@@ -1248,40 +1568,84 @@
     LDA #0              ; initialize cursor
     STA fingerLastX     ; (5x,6y) tiles from top left, facing R
     STA fingerLastY
-    LDA #5
+    LDA #2
     STA fingerX
-    LDA #6
+    LDA #8
     STA fingerY
-    LDA location
+    LDA #_UL                ; default empty shopping cart
+    STA cartDollarsDigit    ; Dollars: "___0"
+    STA cartDollarsDigit+1
+    STA cartDollarsDigit+2
+    STA cartFoodLbsDigit    ; food lbs: "__00"
+    STA cartFoodLbsDigit+1
+    STA cartBulletsDigit    ; bullets: "__00"
+    STA cartBulletsDigit+1
+    STA cartClothingDigit   ; clothing: "_0"
+    STA cartOxenDigit       ; oxen: "_0"
+    LDA #_0_            
+    STA cartDollarsDigit+3
+    STA cartFoodLbsDigit+2
+    STA cartFoodLbsDigit+3
+    STA cartBulletsDigit+2
+    STA cartBulletsDigit+3
+    STA cartClothingDigit+1
+    STA cartOxenDigit+1
+    LDA #0
+    STA cartDollars
+    STA cartDollars+1
+    STA cartFoodLbs
+    STA cartFoodLbs+1
+    STA cartBullets
+    STA cartBullets+1
+    STA cartClothing
+    STA cartOxen
+    STA cartSpareParts
+    LDA location        ; switch location
     CMP #LOC_INDEPENDENCE
     BNE :+
-    LDA #$01            ; default $400.00 ($190)
-    STA dollars
-    LDA #$90
-    STA dollars+1
-    LDX occupation
-    LDA occupationAttribute, X
-    LSR                 ; shift occupationAttribute to only starting cash
-    LSR
-    LSR
-    LSR
-    LSR
-    LSR
-    TAY
+    JMP Independence
     :
-    CPY #0
-    BNE :+
-    JMP :++
-    :
-    LDX #dollars        ; add $400.00 ($FF+$91)
-    LDA #$FF
-    JSR Add16Bit
-    LDX #dollars
-    LDA #$91
-    JSR Add16Bit
-    DEY
-    JMP :--
-    :
+    ; CMP #LOC_LOC2
+    ; BNE :+
+    ; JMP Loc2
+    ; :
+    JMP Done
+    Independence:
+        LDA #$90        ; default $400.00 dollar amount (#$190)
+        STA dollars
+        LDA #$01
+        STA dollars+1
+        LDX occupation
+        LDA occupationAttribute, X
+        LSR             ; shift occupationAttribute to only starting cash
+        LSR
+        LSR
+        LSR
+        LSR
+        LSR
+        TAY
+        :
+        CLC
+        LDA #$FF     ; add $400.00 (#$00FF+#$0091) to starting cash, <=4 times
+        ADC dollars
+        STA dollars
+        LDA #$00
+        ADC dollars+1
+        STA dollars+1
+        CLC
+        LDA #$91
+        ADC dollars
+        STA dollars
+        LDA #$00
+        ADC dollars+1
+        STA dollars+1
+        DEY
+        CPY #0
+        BNE :-
+        JMP Done
+    ; Loc2:
+    ;     JMP Done
+    Done:
     JSR LoadBgStore     ; Load background
     RTS
 .endproc

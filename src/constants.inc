@@ -100,6 +100,7 @@ TEXT_OCCUPATION_LEN = 11
 TEXT_DIARY_LINE_LEN = 30
 TEXT_PERSON_LEN     = 4   ; person name
 TEXT_KEYBOARD_LEN   = 11  ; per line
+TEXT_STORENAME_LEN  = 12
 
 ; Game states
 GAMESTATE_TITLE     = 0 ; title screen
@@ -119,5 +120,16 @@ MENU_STORE_ITEM1        = 3 ; 1 digit general store item selection
 MENU_STORE_ITEM2        = 4 ; 2 digit general store item selection
 MENU_STORE_ITEM4        = 5 ; 4 digit general store item selection
 
-; Locations
-LOC_INDEPENDENCE        = 0 ; Independence, MO
+; Locations (landmarks)
+; %00000000
+;  ||||++++ identifier(index)
+;  |||+---- river y/n
+;  ||+----- store y/n
+;  ++------ unused
+LOC_INDEPENDENCE        = %00100000 ; Independence, MO
+
+COST_OXEN       = 20
+COST_CLOTHES    = 10
+COST_BULLETS    = 1
+COST_PARTS      = 10
+COST_FOOD_LB    = 2
