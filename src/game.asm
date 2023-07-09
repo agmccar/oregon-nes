@@ -625,6 +625,9 @@ bankswitch_nosave:
     CPY helper
     BNE :-
     StoreName:
+        LDA #0
+        STA cartDollars
+        STA cartDollars+1
         LDY #0
         LDA PPUSTATUS           ; write store name
         LDA #$20
@@ -731,7 +734,7 @@ bankswitch_nosave:
         LDA #___
         STA PPUDATA
         STA PPUDATA
-        LDX cartOxen
+        LDX #cartOxen
         LDA #COST_OXEN
         JSR DrawShopCost        ; number in Cost column
     Clothes:
@@ -775,7 +778,7 @@ bankswitch_nosave:
         LDA #___
         STA PPUDATA
         STA PPUDATA
-        LDX cartClothing
+        LDX #cartClothing
         LDA #COST_CLOTHES
         JSR DrawShopCost        ; number in Cost column
     Bullets:
@@ -792,8 +795,14 @@ bankswitch_nosave:
         STA PPUDATA
         LDA cartBulletsDigit+1
         CMP #_0_
+        BNE :++
+        LDA cartBulletsDigit
+        CMP #_0_
         BNE :+
         LDA #_UL
+        JMP :++
+        :
+        LDA #_0_
         :
         STA PPUDATA
         LDA cartBulletsDigit+2
@@ -824,7 +833,7 @@ bankswitch_nosave:
         LDA #___
         STA PPUDATA
         STA PPUDATA
-        LDX cartBullets
+        LDX #cartBullets
         LDA #COST_BULLETS
         JSR DrawShopCost        ; number in Cost column
     Wheels:
@@ -880,7 +889,8 @@ bankswitch_nosave:
         STA PPUDATA
         LDA cartSpareParts      ; number in Cost column
         AND #%00000011
-        TAX
+        STA helper2
+        LDX #helper2
         LDA #COST_PARTS
         JSR DrawShopCost
     Axles:
@@ -940,7 +950,8 @@ bankswitch_nosave:
         LSR
         LSR
         AND #%00000011
-        TAX
+        STA helper2
+        LDX #helper2
         LDA #COST_PARTS
         JSR DrawShopCost
     Tongues:
@@ -1004,7 +1015,8 @@ bankswitch_nosave:
         LSR
         LSR
         AND #%00000011
-        TAX
+        STA helper2
+        LDX #helper2
         LDA #COST_PARTS
         JSR DrawShopCost
     Food:
@@ -1021,8 +1033,14 @@ bankswitch_nosave:
         STA PPUDATA
         LDA cartFoodLbsDigit+1
         CMP #_0_
+        BNE :++
+        LDA cartFoodLbsDigit
+        CMP #_0_
         BNE :+
         LDA #_UL
+        JMP :++
+        :
+        LDA #_0_
         :
         STA PPUDATA
         LDA cartFoodLbsDigit+2
@@ -1053,7 +1071,7 @@ bankswitch_nosave:
         LDA #___
         STA PPUDATA
         STA PPUDATA
-        LDX cartFoodLbs
+        LDX #cartFoodLbs
         LDA #COST_FOOD_LB
         JSR DrawShopCost
     Total:
@@ -1109,10 +1127,12 @@ bankswitch_nosave:
     ; destroys X,Y registers
     ; Return: helper,helper+1 - resulting digits
     STA helper
+    ROL
+    LSR
     LDX #_DL
     STX PPUDATA
-    CMP #10
-    BCS TwoDigits
+    BIT helper
+    BPL TwoDigits
     LDX #_PD
     STX PPUDATA
     CMP #1
@@ -1167,31 +1187,41 @@ bankswitch_nosave:
 .endproc
 
 .proc DrawShopCost
-    ; X: amount in cart
-    ; A: cost each
-    STA helper2
-    CMP #10
-    BCS :+
-    TXA
-    ; divide x by 10
-    :
-    LDA #_DL
+    ; X: address of amount in cart
+    ; A: cost each -> cost
+    ; helper: total tally in dollars
+    ; helper2: might be the address of amount in cart, don't touch
+    ; cartHelperDigit: total tally in dollars
+    STX pointer
+    LDY #0
+    STY pointer+1
+    AND #$7F
+    STA cost
+    LDA #_DL        ; draw dollar sign
     STA PPUDATA
-    LDA #0
+    LDA #_0_
+    STA cartHelperDigit
+    LDA #0          ; helper: total tally in dollars
     STA helper
     STA helper+1
-    CPX #0
+    LDA (pointer), Y
+    CMP #0          ; is cart empty?
     BNE :+
     LDA #_UL
     STA PPUDATA
     STA PPUDATA
     LDA #_0_
     STA PPUDATA
+    STA cartHelperDigit+1
+    STA cartHelperDigit+2
+    STA cartHelperDigit+3
     JMP Done
-    :                   ; cart * COST => helper
+    :               ; cart not empty
+    TAX
+    :
     CLC
     LDA helper
-    ADC helper2
+    ADC cost
     STA helper
     LDA helper+1
     ADC #$00
@@ -1201,13 +1231,15 @@ bankswitch_nosave:
     BNE :-
     LDA #_0_            ; convert helper to decimal digits
     STA keyboardKey
+    STA cartHelperDigit+1
     :
     LDA helper+1
     CMP #0              ; is helper >= $0100 (256)?
     BNE :+
     LDA helper
     CMP #$64            ; is helper >= $0064 (100)?
-    BCC :+
+    BCC :++
+    :
     SEC                 ; subtract $0064 (100)
     LDA helper
     SBC #$64
@@ -1216,7 +1248,8 @@ bankswitch_nosave:
     SBC #$00
     STA helper+1
     INC keyboardKey
-    JMP :-
+    INC cartHelperDigit+1
+    JMP :--
     :
     LDA keyboardKey
     CMP #_0_
@@ -1226,6 +1259,7 @@ bankswitch_nosave:
     STA PPUDATA         ; draw 100s place digit
     LDA #_0_
     STA keyboardKey
+    STA cartHelperDigit+2
     :
     LDA helper
     CMP #10             ; is helper >= 10?
@@ -1238,6 +1272,7 @@ bankswitch_nosave:
     SBC #0
     STA helper+1
     INC keyboardKey
+    INC cartHelperDigit+2
     JMP :-
     :
     LDA keyboardKey
@@ -1245,20 +1280,40 @@ bankswitch_nosave:
     LDX helper
     LDA decimalDigits, X    ; draw 1s place digit
     STA PPUDATA
+    STA cartHelperDigit+3
     Done:
     LDA #_00            ; draw ".00"
     STA PPUDATA
+    LDX #cartHelperDigit
+    LDA cartDollars
+    STA costhelper
+    LDA cartDollars+1
+    STA costhelper
+    LDY #costhelper
+    JSR SetValueFromDigit
+    CLC
+    LDA cartDollars
+    ADC costhelper
+    STA cartDollars
+    LDA cartDollars+1
+    ADC costhelper+1
+    STA cartDollars+1
+    LDX #cartDollarsDigit
+    LDY #cartDollars
+    JSR SetDigitFromValue
     RTS
 .endproc
 
 .proc DrawShopTotal
     LDA #_DL
     STA PPUDATA
-    LDA #_UL
+    LDA cartDollarsDigit
     STA PPUDATA
+    LDA cartDollarsDigit+1
     STA PPUDATA
+    LDA cartDollarsDigit+2
     STA PPUDATA
-    LDA #_0_
+    LDA cartDollarsDigit+3
     STA PPUDATA
     LDA #_00
     STA PPUDATA
@@ -1499,10 +1554,26 @@ bankswitch_nosave:
     BNE :+
     JMP Done
     :                       ; erase finger at old position (draw blank tile)
+    LDA #%00010000
+    BIT fingerAttr          ; check if main finger is normal or "up/down" arrows
+    BEQ :+
+    LDX fingerLastX
+    LDY fingerLastY
+    LDA #___
+    DEY
+    JSR WriteTileToBuffer
+    LDX fingerLastX
+    LDY fingerLastY
+    LDA #___
+    INY
+    JSR WriteTileToBuffer
+    JMP :++
+    :
     LDX fingerLastX
     LDY fingerLastY
     LDA #___
     JSR WriteTileToBuffer
+    :
     LDX fingerLastLastX     ; are we in a submenu?
     LDY fingerLastLastY 
     CPX #0
@@ -1656,6 +1727,7 @@ bankswitch_nosave:
 
 .proc IncreaseDigit
     ; X: memory location of digit to increment
+    ; cost+0: bit 7: unit- 0:dollars, 1:cents
     LDA #0
     STA pointer+1
     STX pointer
@@ -1688,6 +1760,22 @@ bankswitch_nosave:
     BNE :+
     LDX #_0_
     :
+    BIT cost
+    BMI :+
+    LDA fingerX
+    CMP #7
+    BCS :+
+    CPX #_2_
+    BNE :+
+    LDX #_0_
+    :
+    LDA fingerX
+    CMP #5
+    BCS :+
+    CPX #_2_ ; #_1_+1
+    BNE :+
+    LDX #_0_
+    :
     TXA
     STA (pointer), Y
     LDX fingerX
@@ -1698,6 +1786,7 @@ bankswitch_nosave:
 
 .proc DecreaseDigit
     ; X: memory location of digit to decrement
+    ; cost+0: bit 7: unit- 0:dollars, 1:cents
     LDA #0
     STA pointer+1
     STX pointer
@@ -1730,6 +1819,22 @@ bankswitch_nosave:
     BNE :+
     LDX #_9_
     :
+    BIT cost
+    BMI :+
+    LDA fingerX
+    CMP #7
+    BCS :+
+    CPX #_9_
+    BNE :+
+    LDX #_1_
+    :
+    LDA fingerX
+    CMP #5
+    BCS :+
+    CPX #_9_ ; #_1_+1
+    BNE :+
+    LDX #_1_
+    :
     TXA
     STA (pointer), Y
     LDX fingerX
@@ -1738,10 +1843,47 @@ bankswitch_nosave:
     RTS
 .endproc
 
-.proc SetAmountFromDigit
-    ; X: memory location of digit to reference (4 bytes)
-    ; Y: memory location of value (2 bytes)
+.proc SetCartFromDigit
+    ; X: address of digits to reference (4 bytes)
+    ; Y: ZP address of cart value (1 byte)
+    ; cost+0: bit 7: unit- 0:dollars, 1:cents
+    TYA
+    PHA
+    BIT cost
+    BPL :+
+    LDA #_0_
+    STA cartHelperDigit
+    STX pointer
+    LDY #0
+    STY pointer+1
+    LDA (pointer), Y
+    STA cartHelperDigit+1
+    INY
+    LDA (pointer), Y
+    STA cartHelperDigit+2
+    INY
+    LDA (pointer), Y
+    STA cartHelperDigit+3
+    LDX #cartHelperDigit
+    :
+    LDY #costhelper
+    JSR SetValueFromDigit
+    LDY #0
+    PLA
+    STA pointer
+    STY pointer+1
+    LDA costhelper
+    STA (pointer), Y
+
+    RTS
+.endproc
+
+.proc SetValueFromDigit
+    ; X: address of digits to reference (4 bytes)
+    ; Y: ZP address of value (2 bytes)
     STX helper      ; helper: address of digit
+    LDX #0
+    STX helper+1
     STY pointer     ; pointer: address of value
     LDY #0
     STY pointer+1
@@ -1760,6 +1902,7 @@ bankswitch_nosave:
         :
         TAX
         :
+        LDY #0
         CLC
         LDA (pointer), Y
         ADC #$E8
@@ -1782,8 +1925,8 @@ bankswitch_nosave:
         :
         TAX
         :
-        CLC
         LDY #0
+        CLC
         LDA (pointer), Y
         ADC #$64
         STA (pointer), Y
@@ -1805,8 +1948,8 @@ bankswitch_nosave:
         :
         TAX
         :
-        CLC
         LDY #0
+        CLC
         LDA (pointer), Y
         ADC #$0A
         STA (pointer), Y
@@ -1828,8 +1971,8 @@ bankswitch_nosave:
         :
         TAX
         :
-        CLC
         LDY #0
+        CLC
         LDA (pointer), Y
         ADC #$01
         STA (pointer), Y
@@ -1841,6 +1984,99 @@ bankswitch_nosave:
         CPX #0
         BNE :-
     Done:
+    RTS
+.endproc
+
+.proc SetDigitFromValue
+    ; X: address of digits to reference (4 bytes)
+    ; Y: ZP address of value (2 bytes)
+    STX helper2
+    LDX #0
+    STX helper2+1
+    STY pointer
+    LDY #0
+    STY pointer+1
+    LDA (pointer), Y
+    STA helper
+    INY
+    LDA (pointer), Y
+    STA helper+1
+    LDA #_0_            ; convert helper to decimal digits
+    LDY #0
+    STA (helper2), Y
+    :   ; 1000s place
+    LDA helper+1 
+    CMP #4 ; is helper >= 1024?
+    BCS :++ ; yes: helper >= 1000
+    CMP #3 ; is helper >= 768?
+    BCS :+ ; yes: helper >= 768
+    JMP :+++ ; no: helper < 1000
+    : ; helper >= 768
+    LDA helper
+    CMP #$E8 ; is helper >= 1000?
+    BCC :++ ; no: helper < 1000 
+    : ; helper >= 1000
+    SEC
+    LDA helper
+    SBC #$E8
+    STA helper
+    LDA helper+1
+    SBC #$03
+    STA helper+1
+    LDA (helper2), Y
+    CLC
+    ADC #1
+    STA (helper2), Y
+    JMP :---
+    : ; helper < 1000
+    INY
+    LDA #_0_
+    STA (helper2), Y
+    :
+    LDA helper+1
+    CMP #0              ; is helper >= $0100 (256)?
+    BNE :+
+    LDA helper
+    CMP #$64            ; is helper >= $0064 (100)?
+    BCC :++
+    :
+    SEC                 ; subtract $0064 (100)
+    LDA helper
+    SBC #$64
+    STA helper
+    LDA helper+1
+    SBC #$00
+    STA helper+1
+    LDA (helper2), Y
+    CLC
+    ADC #1
+    STA (helper2), Y
+    JMP :--
+    :
+    INY
+    LDA #_0_
+    STA (helper2), Y
+    :
+    LDA helper
+    CMP #10             ; is helper >= 10?
+    BCC :+
+    SEC                 ; subtract 10
+    LDA helper
+    SBC #10
+    STA helper
+    LDA helper+1
+    SBC #0
+    STA helper+1
+    LDA (helper2), Y
+    CLC
+    ADC #1
+    STA (helper2), Y
+    JMP :-
+    : ; 10s place digit
+    LDX helper
+    LDA decimalDigits, X    ; draw 1s place digit
+    LDY #3
+    STA (helper2), Y
     RTS
 .endproc
 
@@ -2213,8 +2449,8 @@ bankswitch_nosave:
     LDX #0                  ; default palette
     JSR UpdatePalette
     LDX #17
-    JSR StartBufferWrite
-        LDA #17                 ; title text
+    JSR StartBufferWrite    ; title text
+        LDA #17                 
         JSR WriteByteToBuffer
         LDA #$21                ; $2129 - title text VRAM location
         JSR WriteByteToBuffer
@@ -2229,8 +2465,8 @@ bankswitch_nosave:
         BNE :-
     JSR EndBufferWrite
     LDX #12
-    JSR StartBufferWrite
-        LDA #12                 ; title options text
+    JSR StartBufferWrite    ; title options text
+        LDA #12
         JSR WriteByteToBuffer 
         LDA #$22                ; $220B - titleOptions VRAM location
         JSR WriteByteToBuffer 
@@ -3409,8 +3645,25 @@ bankswitch_nosave:
         JMP CheckRight
         @menuNone:
         @menuItem1:
+            JMP Done
         @menuItem2:
+            LDX fingerX
+            DEX
+            CPX #5      ; check if finger is too far left
+            BNE :+
+            LDX #7     ; wrap around to right
+            :
+            STX fingerX
+            JMP Done
         @menuItem4:
+            LDX fingerX
+            DEX
+            CPX #3      ; check if finger is too far left
+            BNE :+
+            LDX #6     ; wrap around to right
+            :
+            STX fingerX
+            JMP Done
         JMP Done
 
     CheckRight:
@@ -3439,8 +3692,25 @@ bankswitch_nosave:
         JMP CheckUp
         @menuNone:
         @menuItem1:
+            JMP Done
         @menuItem2:
+            LDX fingerX
+            INX
+            CPX #8      ; check if finger is too far right
+            BNE :+
+            LDX #6     ; wrap around to left
+            :
+            STX fingerX
+            JMP Done
         @menuItem4:
+            LDX fingerX
+            INX
+            CPX #7      ; check if finger is too far right
+            BNE :+
+            LDX #4     ; wrap around to left
+            :
+            STX fingerX
+            JMP Done
         JMP Done
 
     CheckUp:
@@ -3568,38 +3838,56 @@ bankswitch_nosave:
             LDA fingerY
             CMP #8
             BNE :+
+            LDX #COST_OXEN
+            STX cost
             LDX #cartOxenDigit
             JSR IncreaseDigit
             LDX #cartOxenDigit
+            LDY #COST_OXEN
+            STY cost
             LDY #cartOxen
-            JMP SetAmount
+            JSR SetCartFromDigit
+            JMP Done
             :
             CMP #10
             BNE :+
+            LDX #COST_CLOTHES
+            STX cost
             LDX #cartClothingDigit
             JSR IncreaseDigit
             LDX #cartClothingDigit
+            LDY #COST_CLOTHES
+            STY cost
             LDY #cartClothing
-            JMP SetAmount
+            JSR SetCartFromDigit
             :
             JMP Done
         @menuItem4:
             LDA fingerY
             CMP #12
             BNE :+
+            LDX #COST_BULLETS
+            STX cost
             LDX #cartBulletsDigit
             JSR IncreaseDigit
             LDX #cartBulletsDigit
+            LDY #COST_BULLETS
+            STY cost
             LDY #cartBullets
-            JMP SetAmount
+            JSR SetCartFromDigit
+            JMP Done
             :
             CMP #20
             BNE :+
+            LDX #COST_FOOD_LB
+            STX cost
             LDX #cartFoodLbsDigit
             JSR IncreaseDigit
             LDX #cartFoodLbsDigit
+            LDY #COST_FOOD_LB
+            STY cost
             LDY #cartFoodLbs
-            JMP SetAmount
+            JSR SetCartFromDigit
             :
             JMP Done
     CheckDown:
@@ -3727,42 +4015,58 @@ bankswitch_nosave:
             LDA fingerY
             CMP #8
             BNE :+
+            LDX #COST_OXEN
+            STX cost
             LDX #cartOxenDigit
             JSR DecreaseDigit
             LDX #cartOxenDigit
+            LDY #COST_OXEN
+            STY cost
             LDY #cartOxen
-            JMP SetAmount
+            JSR SetCartFromDigit
+            JMP Done
             :
             CMP #10
             BNE :+
+            LDX #COST_CLOTHES
+            STX cost
             LDX #cartClothingDigit
             JSR DecreaseDigit
             LDX #cartClothingDigit
+            LDY #COST_CLOTHES
+            STY cost
             LDY #cartClothing
-            JMP SetAmount
+            JSR SetCartFromDigit
             :
             JMP Done
         @menuItem4:
             LDA fingerY
             CMP #12
             BNE :+
+            LDX #COST_BULLETS
+            STX cost
             LDX #cartBulletsDigit
             JSR DecreaseDigit
             LDX #cartBulletsDigit
+            LDY #COST_BULLETS
+            STY cost
             LDY #cartBullets
-            JMP SetAmount
+            JSR SetCartFromDigit
+            JMP Done
             :
             CMP #20
             BNE :+
+            LDX #COST_FOOD_LB
+            STX cost
             LDX #cartFoodLbsDigit
             JSR DecreaseDigit
             LDX #cartFoodLbsDigit
+            LDY #COST_FOOD_LB
+            STY cost
             LDY #cartFoodLbs
-            JMP SetAmount
+            JSR SetCartFromDigit
             :
             JMP Done
-    SetAmount:
-        JSR SetAmountFromDigit
     Done:
     RTS
 .endproc

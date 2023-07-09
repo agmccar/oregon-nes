@@ -129,8 +129,12 @@ MENU_STORE_ITEM4        = 5 ; 4 digit general store item selection
 ;  ++------ unused
 LOC_INDEPENDENCE        = %00100000 ; Independence, MO
 
+; Cost
+; %00000000
+;  |+++++++ number (0-127)
+;  +------- unit- 0:dollars, 1:cents 
 COST_OXEN       = 20
 COST_CLOTHES    = 10
-COST_BULLETS    = 1
+COST_BULLETS    = $81
 COST_PARTS      = 10
-COST_FOOD_LB    = 2
+COST_FOOD_LB    = $82

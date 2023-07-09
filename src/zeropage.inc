@@ -6,7 +6,7 @@ currentBank:        .res 1
 pointer:            .res 2
 sprite0hit:         .res 1
 helper:             .res 2
-helper2:            .res 1
+helper2:            .res 2
 frameCounter:       .res 1
 globalScroll:       .res 1
 lastGameState:      .res 1 
@@ -61,6 +61,7 @@ cartFoodLbsDigit:   .res 4 ; lbs of food in shopping cart
 cartClothingDigit:  .res 4 ; sets of clothing in shopping cart
 cartBulletsDigit:   .res 4 ; bullets in shopping cart
 cartOxenDigit:      .res 4 ; oxen in shopping cart
+cartHelperDigit:    .res 4 ; shameless hack
 
 ; Wagon ------------------------------------------------------------------------
 
@@ -88,10 +89,12 @@ clothing:       .res 2  ; sets of clothing in inventory
 bullets:        .res 2  ; bullets in inventory
 oxenHeadcount:  .res 2  ; oxen in inventory
 cartDollars:    .res 2  ; dollar cost of entire shopping cart
-cartFoodLbs:    .res 2  ; lbs of food in shopping cart
-cartClothing:   .res 2  ; sets of clothing in shopping cart
-cartBullets:    .res 2  ; bullets in shopping cart
-cartOxen:       .res 2  ; oxen in shopping cart
+cartFoodLbs:    .res 1  ; x10 lbs of food in shopping cart
+cartClothing:   .res 1  ; sets of clothing in shopping cart
+cartBullets:    .res 1  ; x10 bullets in shopping cart
+cartOxen:       .res 1  ; oxen in shopping cart
+cost:           .res 2  ; helper for calculating cost
+costhelper:     .res 2
 
 ; %00000000
 ;  ||||||++ wagon wheels
@@ -149,4 +152,4 @@ dateDay:        .res 1
 location:       .res 1 ; see: constants.inc -> Locations
 
 ;-------------------------------------------------------------------------------
-; remaining: $7B
+; remaining: $7A
