@@ -1,4 +1,4 @@
-game.o
-game.nes
-game.dbg
-game.labels.txt
+*.o
+*.nes
+*.dbg
+*.labels.txt
