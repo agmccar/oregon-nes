@@ -2003,76 +2003,124 @@ bankswitch_nosave:
     STA helper+1
     LDA #_0_            ; convert helper to decimal digits
     LDY #0
-    STA (helper2), Y
-    :   ; 1000s place
-    LDA helper+1 
-    CMP #4 ; is helper >= 1024?
-    BCS :++ ; yes: helper >= 1000
-    CMP #3 ; is helper >= 768?
-    BCS :+ ; yes: helper >= 768
-    JMP :+++ ; no: helper < 1000
-    : ; helper >= 768
-    LDA helper
-    CMP #$E8 ; is helper >= 1000?
-    BCC :++ ; no: helper < 1000 
-    : ; helper >= 1000
-    SEC
-    LDA helper
-    SBC #$E8
-    STA helper
-    LDA helper+1
-    SBC #$03
-    STA helper+1
-    LDA (helper2), Y
-    CLC
-    ADC #1
-    STA (helper2), Y
-    JMP :---
-    : ; helper < 1000
-    INY
-    LDA #_0_
-    STA (helper2), Y
-    :
-    LDA helper+1
-    CMP #0              ; is helper >= $0100 (256)?
-    BNE :+
-    LDA helper
-    CMP #$64            ; is helper >= $0064 (100)?
-    BCC :++
-    :
-    SEC                 ; subtract $0064 (100)
-    LDA helper
-    SBC #$64
-    STA helper
-    LDA helper+1
-    SBC #$00
-    STA helper+1
-    LDA (helper2), Y
-    CLC
-    ADC #1
-    STA (helper2), Y
-    JMP :--
-    :
-    INY
-    LDA #_0_
-    STA (helper2), Y
-    :
-    LDA helper
-    CMP #10             ; is helper >= 10?
-    BCC :+
-    SEC                 ; subtract 10
-    LDA helper
-    SBC #10
-    STA helper
-    LDA helper+1
-    SBC #0
-    STA helper+1
-    LDA (helper2), Y
-    CLC
-    ADC #1
-    STA (helper2), Y
-    JMP :-
-    : ; 10s place digit
+    STA (helper2), Y    ; 0 in 1000s place
+    Thousands:   ; 1000s place
+        LDA helper+1 
+        CMP #4 ; is helper >= 1024?
+        BCS :++ ; yes: helper >= 1000
+        CMP #3 ; is helper >= 768?
+        BCS :+ ; yes: helper >= 768
+        JMP Hundreds ; no: helper < 1000
+        : ; helper >= 768
+        LDA helper
+        CMP #$E8 ; is helper >= 1000?
+        BCC Hundreds ; no: helper < 1000 
+        : ; helper >= 1000
+        SEC
+        LDA helper
+        SBC #$E8
+        STA helper
+        LDA helper+1
+        SBC #$03
+        STA helper+1
+        LDA (helper2), Y
+        CLC
+        ADC #1
+        STA (helper2), Y
+        JMP Thousands
+    Hundreds: ; helper < 1000
+        LDA (helper2), Y
+        SEC
+        SBC #_0_
+        CMP #0          ; 0 in 1000s place?
+        BNE :+
+        LDA #_UL        ; replace with line
+        STA (helper2), Y
+        :
+        INY
+        LDA #_0_
+        STA (helper2), Y    ; 0 in 100s place
+        :
+        LDA helper+1
+        CMP #0              ; is helper >= $0100 (256)?
+        BNE :+
+        LDA helper
+        CMP #$64            ; is helper >= $0064 (100)?
+        BCC Tens
+        :
+        SEC                 ; subtract $0064 (100)
+        LDA helper
+        SBC #$64
+        STA helper
+        LDA helper+1
+        SBC #$00
+        STA helper+1
+        LDA (helper2), Y
+        CLC
+        ADC #1
+        STA (helper2), Y
+        JMP :--
+    Tens:
+        LDA (helper2), Y
+        SEC
+        SBC #_0_
+        CMP #0          ; 0 in 100s place?
+        BNE :+
+        DEY
+        LDA (helper2), Y
+        INY
+        SEC
+        SBC #_UL        ; underline in 1000s place?
+        CMP #0
+        BNE :+
+        LDA #_UL        ; replace 100s place with line
+        STA (helper2), Y
+        :
+        INY
+        LDA #_0_
+        STA (helper2), Y
+        :
+        LDA helper
+        CMP #10             ; is helper >= 10?
+        BCC Ones
+        SEC                 ; subtract 10
+        LDA helper
+        SBC #10
+        STA helper
+        LDA helper+1
+        SBC #0
+        STA helper+1
+        LDA (helper2), Y
+        CLC
+        ADC #1
+        STA (helper2), Y
+        JMP :-
+    Ones: 
+        LDA (helper2), Y
+        SEC
+        SBC #_0_
+        CMP #0          ; 0 in 10s place?
+        BNE :+
+        DEY
+        LDA (helper2), Y
+        INY
+        SEC
+        SBC #_UL        ; underline in 100s place?
+        CMP #0
+        BNE :+
+        DEY
+        DEY
+        LDA (helper2), Y
+        INY
+        INY
+        SEC
+        SBC #_UL        ; underline in 1000s place?
+        CMP #0
+        BNE :+
+        LDA #_UL        ; replace 10s place with line
+        STA (helper2), Y
+        DEY
+        :
     LDX helper
     LDA decimalDigits, X    ; draw 1s place digit
     LDY #3
