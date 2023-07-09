@@ -7,17 +7,33 @@
 .include "zeropage.inc"
 .include "diarytext.inc"
 .include "vars.inc"
+.include "rom0.asm"
 
 ;-------------------------------------------------------------------------------
-.segment "CHARS"
-    .incbin "../graphics/tiles.chr"
+; .segment "CHARS"
+;     .incbin "../graphics/tiles.chr"
 
 ;-------------------------------------------------------------------------------
 .segment "VECTORS"
     .addr nmi, reset, irq
 
 ;-------------------------------------------------------------------------------
+.segment "RODATA" ; ROM7
+
+banktable:              ; Write to this table to switch banks.
+    .byte $00, $01, $02, $03, $04, $05, $06
+    .byte $07, $08, $09, $0A, $0B, $0C, $0D, $0E
+
+;-------------------------------------------------------------------------------
 .segment "CODE"
+
+bankswitch_y:
+    sty currentBank       ; save the current bank in RAM so the NMI handler can restore it
+bankswitch_nosave:
+    lda banktable, y      ; read a byte from the banktable
+    sta banktable, y      ; and write it back, switching banks 
+    rts
+
 ;--------------------------------------
 
 .proc irq
@@ -54,6 +70,15 @@
     :                   ; vblankwait again
     BIT PPUSTATUS
     BPL :-
+    ; LDY #?
+    ; JSR bankswitch_y
+    LDA #<tiles_chr
+    STA pointer
+    LDA #>tiles_chr
+    STA pointer+1
+    JSR CopyCHRTiles
+    LDY #1
+    JSR bankswitch_y
     LDA #%10010000      ; enable NMI, sprites use first pattern table
     STA softPPUCTRL
     STA PPUCTRL
@@ -93,8 +118,26 @@
     RTI
 .endproc
 
-
 ;--SUBROUTINES------------------------------------------------------------------
+
+; ROM bank handling -------------------
+
+.proc CopyCHRTiles ; copy chr tiles from ROM bank to CHR RAM
+    LDY #0
+    STY PPUMASK
+    STY PPUADDR
+    STY PPUADDR
+    LDX #32
+    :
+    LDA (pointer), Y
+    STA PPUDATA
+    INY
+    BNE :-
+    INC pointer+1
+    DEX
+    BNE :-
+    RTS
+.endproc
 
 ; Direct screen drawing ---------------
 .proc StartBulkDrawing
