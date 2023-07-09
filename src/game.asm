@@ -70,8 +70,8 @@ bankswitch_nosave:
     :                   ; vblankwait again
     BIT PPUSTATUS
     BPL :-
-    ; LDY #?
-    ; JSR bankswitch_y
+    LDY #0
+    JSR bankswitch_y
     LDA #<tiles_chr
     STA pointer
     LDA #>tiles_chr
