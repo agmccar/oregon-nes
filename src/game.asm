@@ -653,12 +653,16 @@
         STA PPUADDR
         LDA #$04
         STA PPUADDR
-        LDA #___
+        LDA #_UL
         STA PPUDATA
         STA PPUDATA
-        LDA cartOxenDigit       ; number in Buy column
+        LDA cartOxenDigit+2     ; number in Buy column
+        CMP #_0_
+        BNE :+
+        LDA #_UL
+        :
         STA PPUDATA
-        LDA cartOxenDigit+1
+        LDA cartOxenDigit+3
         STA PPUDATA
         LDA #___
         STA PPUDATA
@@ -691,12 +695,16 @@
         STA PPUADDR
         LDA #$44
         STA PPUADDR
-        LDA #___
+        LDA #_UL
         STA PPUDATA
         STA PPUDATA
-        LDA cartClothingDigit   ; number in Buy column
+        LDA cartClothingDigit+2 ; number in Buy column
+        CMP #_0_
+        BNE :+
+        LDA #_UL
+        :
         STA PPUDATA
-        LDA cartClothingDigit+1
+        LDA cartClothingDigit+3
         STA PPUDATA
         LDA #___
         STA PPUDATA
@@ -730,8 +738,16 @@
         LDA #$84
         STA PPUADDR
         LDA cartBulletsDigit    ; number in Buy column
+        CMP #_0_
+        BNE :+
+        LDA #_UL
+        :
         STA PPUDATA
         LDA cartBulletsDigit+1
+        CMP #_0_
+        BNE :+
+        LDA #_UL
+        :
         STA PPUDATA
         LDA cartBulletsDigit+2
         STA PPUDATA
@@ -768,7 +784,7 @@
         STA PPUADDR
         LDA #$C4
         STA PPUADDR
-        LDA #___
+        LDA #_UL
         STA PPUDATA
         STA PPUDATA
         STA PPUDATA
@@ -820,7 +836,7 @@
         STA PPUADDR
         LDA #$04
         STA PPUADDR
-        LDA #___
+        LDA #_UL
         STA PPUDATA
         STA PPUDATA
         STA PPUDATA
@@ -874,7 +890,7 @@
         STA PPUADDR
         LDA #$44
         STA PPUADDR
-        LDA #___
+        LDA #_UL
         STA PPUDATA
         STA PPUDATA
         STA PPUDATA
@@ -931,8 +947,16 @@
         LDA #$84
         STA PPUADDR
         LDA cartFoodLbsDigit    ; number in Buy column
+        CMP #_0_
+        BNE :+
+        LDA #_UL
+        :
         STA PPUDATA
         LDA cartFoodLbsDigit+1
+        CMP #_0_
+        BNE :+
+        LDA #_UL
+        :
         STA PPUDATA
         LDA cartFoodLbsDigit+2
         STA PPUDATA
@@ -994,7 +1018,18 @@
         BNE :-
         LDA #___
         STA PPUDATA
-        JSR DrawShopTotal
+        LDA #_DL
+        STA PPUDATA
+        LDA dollarsDigit
+        STA PPUDATA
+        LDA dollarsDigit+1
+        STA PPUDATA
+        LDA dollarsDigit+2
+        STA PPUDATA
+        LDA dollarsDigit+3
+        STA PPUDATA
+        LDA #_00
+        STA PPUDATA
     Done:
     JSR DoneBulkDrawing
     RTS
@@ -1445,41 +1480,75 @@
         LDA fingerX
         CMP #7 ; 1's place
         BNE Tens
-        LDY #1
-        LDA (pointer), Y
-        TAX
-        INX
-        CPX #_CL ; #_9_+1
-        BNE :+
-        LDX #_0_
-        :
-        TXA
-        STA (pointer), Y
-        LDX fingerX
-        LDY fingerY
-        JSR WriteTileToBuffer
+        LDY #3
         JMP Done
     Tens:
         CMP #6 ; 10's place
         BNE Hundreds
+        LDY #2
         JMP Done
     Hundreds:
         CMP #5 ; 100's place
         BNE Thousands
+        LDY #1
         JMP Done
     Thousands:
-    
+        LDY #0
     Done:
+    LDA (pointer), Y
+    TAX
+    INX
+    CPX #_CL ; #_9_+1
+    BNE :+
+    LDX #_0_
+    :
+    TXA
+    STA (pointer), Y
+    LDX fingerX
+    LDY fingerY
+    JSR WriteTileToBuffer
     RTS
 .endproc
 
 .proc DecreaseDigit
-    ; X: memory location of digit to decrement
+    ; X: memory location of digit to increment
+    LDA #0
+    STA pointer+1
+    STX pointer
     CPX #0
-    BEQ Done
-
-
+    BNE Ones
+    JMP Done
+    Ones:
+        LDA fingerX
+        CMP #7 ; 1's place
+        BNE Tens
+        LDY #3
+        JMP Done
+    Tens:
+        CMP #6 ; 10's place
+        BNE Hundreds
+        LDY #2
+        JMP Done
+    Hundreds:
+        CMP #5 ; 100's place
+        BNE Thousands
+        LDY #1
+        JMP Done
+    Thousands:
+        LDY #0
     Done:
+    LDA (pointer), Y
+    TAX
+    DEX
+    CPX #_Z_ ; #_0_-1
+    BNE :+
+    LDX #_9_
+    :
+    TXA
+    STA (pointer), Y
+    LDX fingerX
+    LDY fingerY
+    JSR WriteTileToBuffer
     RTS
 .endproc
 
@@ -1914,33 +1983,21 @@
     STA fingerX
     LDA #8
     STA fingerY
-    LDA #___                ; default empty shopping cart
-    STA cartDollarsDigit    ; Dollars: "   0"
-    STA cartDollarsDigit+1
-    STA cartDollarsDigit+2
-    STA cartFoodLbsDigit    ; food lbs: "  00"
-    STA cartFoodLbsDigit+1
-    STA cartBulletsDigit    ; bullets: "  00"
-    STA cartBulletsDigit+1
-    STA cartClothingDigit   ; clothing: " 0"
-    STA cartOxenDigit       ; oxen: " 0"
-    LDA #_0_            
-    STA cartDollarsDigit+3
-    STA cartFoodLbsDigit+2
-    STA cartFoodLbsDigit+3
-    STA cartBulletsDigit+2
-    STA cartBulletsDigit+3
-    STA cartClothingDigit+1
-    STA cartOxenDigit+1
+    ; LDA #___                ; default empty shopping cart
+    LDA #_0_
+    LDX #0
+    :
+    STA cartDollarsDigit, X
+    INX
+    CPX #20
+    BNE :-
     LDA #0
-    STA cartDollars
-    STA cartDollars+1
-    STA cartFoodLbs
-    STA cartFoodLbs+1
-    STA cartBullets
-    STA cartBullets+1
-    STA cartClothing
-    STA cartOxen
+    LDX #0
+    :
+    STA cartDollars, X
+    INX
+    CPX #7
+    BNE :-
     STA cartSpareParts
     LDA location        ; switch location
     CMP #LOC_INDEPENDENCE
@@ -1957,6 +2014,12 @@
         STA dollars
         LDA #$01
         STA dollars+1
+        LDA #_0_
+        STA dollarsDigit
+        STA dollarsDigit+2
+        STA dollarsDigit+3
+        LDA #_4_
+        STA dollarsDigit+1
         LDX occupation
         LDA occupationAttribute, X
         LSR             ; shift occupationAttribute to only starting cash
@@ -1966,7 +2029,19 @@
         LSR
         LSR
         TAY
+        CPY #0
+        BNE :+
+        JMP Done
         :
+        CLC
+        LDA dollarsDigit+1
+        ADC #4
+        CMP #_PD ; _8_ + 4 
+        BNE :+
+        INC dollarsDigit
+        LDA #_2_
+        :
+        STA dollarsDigit+1
         CLC
         LDA #$FF     ; add $400.00 (#$00FF+#$0091) to starting cash, <=4 times
         ADC dollars
@@ -1983,7 +2058,7 @@
         STA dollars+1
         DEY
         CPY #0
-        BNE :-
+        BNE :--
         JMP Done
     ; Loc2:
     ;     JMP Done

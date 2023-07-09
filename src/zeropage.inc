@@ -50,15 +50,15 @@ fingerAttr:         .res 1
 ; decimal digits text
 
 dollarsDigit:       .res 4 ; dollars in inventory
-cartDollarsDigit:   .res 4 ; dollar cost of shopping cart
 foodLbsDigit:       .res 4 ; lbs of food in inventory
-cartFoodLbsDigit:   .res 4 ; lbs of food in shopping cart
-clothingDigit:      .res 2 ; sets of clothing in inventory
-cartClothingDigit:  .res 2 ; sets of clothing in shopping cart
+clothingDigit:      .res 4 ; sets of clothing in inventory
 bulletsDigit:       .res 4 ; bullets in inventory
+oxenDigit:          .res 4 ; oxen in inventory
+cartDollarsDigit:   .res 4 ; dollar cost of shopping cart
+cartFoodLbsDigit:   .res 4 ; lbs of food in shopping cart
+cartClothingDigit:  .res 4 ; sets of clothing in shopping cart
 cartBulletsDigit:   .res 4 ; bullets in shopping cart
-oxenDigit:          .res 2 ; oxen in inventory
-cartOxenDigit:      .res 2 ; oxen in shopping cart
+cartOxenDigit:      .res 4 ; oxen in shopping cart
 
 ; Wagon ------------------------------------------------------------------------
 
@@ -81,12 +81,12 @@ wagonSettings:  .res 1
 ; Supplies ---------------------------------------------------------------------
 
 dollars:        .res 2  ; dollars in inventory
-cartDollars:    .res 2  ; dollar cost of entire shopping cart
 foodLbs:        .res 2  ; lbs of food in inventory
-cartFoodLbs:    .res 2  ; lbs of food in shopping cart
 clothing:       .res 1  ; sets of clothing in inventory
-cartClothing:   .res 1  ; sets of clothing in shopping cart
 bullets:        .res 2  ; bullets in inventory
+cartDollars:    .res 2  ; dollar cost of entire shopping cart
+cartFoodLbs:    .res 2  ; lbs of food in shopping cart
+cartClothing:   .res 1  ; sets of clothing in shopping cart
 cartBullets:    .res 2  ; bullets in shopping cart
 
 ; %00000000
@@ -147,4 +147,4 @@ dateDay:        .res 1
 location:       .res 1 ; see: constants.inc -> Locations
 
 ;-------------------------------------------------------------------------------
-; remaining: $94
+; remaining: $80
