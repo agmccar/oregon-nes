@@ -6,6 +6,7 @@ currentBank:        .res 1
 pointer:            .res 2
 sprite0hit:         .res 1
 helper:             .res 2
+helper2:            .res 1
 frameCounter:       .res 1
 globalScroll:       .res 1
 lastGameState:      .res 1 
@@ -83,12 +84,14 @@ wagonSettings:  .res 1
 
 dollars:        .res 2  ; dollars in inventory
 foodLbs:        .res 2  ; lbs of food in inventory
-clothing:       .res 1  ; sets of clothing in inventory
+clothing:       .res 2  ; sets of clothing in inventory
 bullets:        .res 2  ; bullets in inventory
+oxenHeadcount:  .res 2  ; oxen in inventory
 cartDollars:    .res 2  ; dollar cost of entire shopping cart
 cartFoodLbs:    .res 2  ; lbs of food in shopping cart
-cartClothing:   .res 1  ; sets of clothing in shopping cart
+cartClothing:   .res 2  ; sets of clothing in shopping cart
 cartBullets:    .res 2  ; bullets in shopping cart
+cartOxen:       .res 2  ; oxen in shopping cart
 
 ; %00000000
 ;  ||||||++ wagon wheels
@@ -98,8 +101,6 @@ cartBullets:    .res 2  ; bullets in shopping cart
 spareParts:     .res 1  ; spare parts in inventory
 cartSpareParts: .res 1  ; spare parts in shopping cart
 
-oxenHeadcount:  .res 1  ; oxen in inventory
-cartOxen:       .res 1  ; oxen in shopping cart
 
 
 ; Party ------------------------------------------------------------------------
@@ -148,4 +149,4 @@ dateDay:        .res 1
 location:       .res 1 ; see: constants.inc -> Locations
 
 ;-------------------------------------------------------------------------------
-; remaining: $80
+; remaining: $7B

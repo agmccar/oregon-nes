@@ -727,11 +727,12 @@ bankswitch_nosave:
         ; LDA location            ; calculate price each
         ; AND #$0F
         LDA #COST_OXEN
-
         JSR DrawShopEach        ; number in Each column
         LDA #___
         STA PPUDATA
         STA PPUDATA
+        LDX cartOxen
+        LDA #COST_OXEN
         JSR DrawShopCost        ; number in Cost column
     Clothes:
         LDA PPUSTATUS           ; write clothes row
@@ -774,6 +775,8 @@ bankswitch_nosave:
         LDA #___
         STA PPUDATA
         STA PPUDATA
+        LDX cartClothing
+        LDA #COST_CLOTHES
         JSR DrawShopCost        ; number in Cost column
     Bullets:
         LDA PPUSTATUS           ; write bullets row
@@ -821,6 +824,8 @@ bankswitch_nosave:
         LDA #___
         STA PPUDATA
         STA PPUDATA
+        LDX cartBullets
+        LDA #COST_BULLETS
         JSR DrawShopCost        ; number in Cost column
     Wheels:
         LDA PPUSTATUS           ; write Wheels row
@@ -873,7 +878,11 @@ bankswitch_nosave:
         LDA #___
         STA PPUDATA
         STA PPUDATA
-        JSR DrawShopCost        ; number in Cost column
+        LDA cartSpareParts      ; number in Cost column
+        AND #%00000011
+        TAX
+        LDA #COST_PARTS
+        JSR DrawShopCost
     Axles:
         LDA PPUSTATUS           ; write Axles row
         LDA #$22
@@ -927,7 +936,13 @@ bankswitch_nosave:
         LDA #___
         STA PPUDATA
         STA PPUDATA
-        JSR DrawShopCost        ; number in Cost column
+        LDA cartSpareParts      ; number in Cost column
+        LSR
+        LSR
+        AND #%00000011
+        TAX
+        LDA #COST_PARTS
+        JSR DrawShopCost
     Tongues:
         LDA PPUSTATUS           ; write Tongues row
         LDA #$22
@@ -983,7 +998,15 @@ bankswitch_nosave:
         LDA #___
         STA PPUDATA
         STA PPUDATA
-        JSR DrawShopCost        ; number in Cost column
+        LDA cartSpareParts      ; number in Cost column
+        LSR
+        LSR
+        LSR
+        LSR
+        AND #%00000011
+        TAX
+        LDA #COST_PARTS
+        JSR DrawShopCost
     Food:
         LDA PPUSTATUS           ; write Food row
         LDA #$22
@@ -1030,7 +1053,9 @@ bankswitch_nosave:
         LDA #___
         STA PPUDATA
         STA PPUDATA
-        JSR DrawShopCost        ; number in Cost column
+        LDX cartFoodLbs
+        LDA #COST_FOOD_LB
+        JSR DrawShopCost
     Total:
         LDA PPUSTATUS           ; write Total:
         LDA #$22
@@ -1142,14 +1167,86 @@ bankswitch_nosave:
 .endproc
 
 .proc DrawShopCost
+    ; X: amount in cart
+    ; A: cost each
+    STA helper2
+    CMP #10
+    BCS :+
+    TXA
+    ; divide x by 10
+    :
     LDA #_DL
     STA PPUDATA
+    LDA #0
+    STA helper
+    STA helper+1
+    CPX #0
+    BNE :+
     LDA #_UL
     STA PPUDATA
     STA PPUDATA
     LDA #_0_
     STA PPUDATA
-    LDA #_00
+    JMP Done
+    :                   ; cart * COST => helper
+    CLC
+    LDA helper
+    ADC helper2
+    STA helper
+    LDA helper+1
+    ADC #$00
+    STA helper+1
+    DEX
+    CPX #0
+    BNE :-
+    LDA #_0_            ; convert helper to decimal digits
+    STA keyboardKey
+    :
+    LDA helper+1
+    CMP #0              ; is helper >= $0100 (256)?
+    BNE :+
+    LDA helper
+    CMP #$64            ; is helper >= $0064 (100)?
+    BCC :+
+    SEC                 ; subtract $0064 (100)
+    LDA helper
+    SBC #$64
+    STA helper
+    LDA helper+1
+    SBC #$00
+    STA helper+1
+    INC keyboardKey
+    JMP :-
+    :
+    LDA keyboardKey
+    CMP #_0_
+    BNE :+
+    LDA #_UL
+    :
+    STA PPUDATA         ; draw 100s place digit
+    LDA #_0_
+    STA keyboardKey
+    :
+    LDA helper
+    CMP #10             ; is helper >= 10?
+    BCC :+
+    SEC                 ; subtract 10
+    LDA helper
+    SBC #10
+    STA helper
+    LDA helper+1
+    SBC #0
+    STA helper+1
+    INC keyboardKey
+    JMP :-
+    :
+    LDA keyboardKey
+    STA PPUDATA         ; draw 10s place digit
+    LDX helper
+    LDA decimalDigits, X    ; draw 1s place digit
+    STA PPUDATA
+    Done:
+    LDA #_00            ; draw ".00"
     STA PPUDATA
     RTS
 .endproc
@@ -1318,6 +1415,44 @@ bankswitch_nosave:
     RTS
 .endproc
 
+.proc StartBufferWrite
+    ; X: length of segment
+    ; A: not affected
+    ; Y: not affected
+    PHA
+    INX
+    INX
+    INX
+    INX                 ; total space needed: length + header(3) + footer(1)
+    STX helper2
+    SEC
+    LDA #0
+    SBC helper2
+    STA helper2
+    LDA bufferPointer
+    CMP helper2         ; buffer must have space for segment
+    BCC :++
+    :                   ; vblankwait
+    BIT PPUSTATUS
+    BPL :-
+    :
+    LDA #1
+    STA bufferLoading
+    PLA
+    RTS
+.endproc
+
+.proc EndBufferWrite
+    PHA
+    LDA #0
+    LDY bufferPointer
+    STA nametableBuffer, Y
+    LDA #0
+    STA bufferLoading
+    PLA
+    RTS
+.endproc
+
 .proc WriteByteToBuffer
     ; write contents of A register to the nametable buffer
     ; this will kill the contents of Y register
@@ -1331,21 +1466,22 @@ bankswitch_nosave:
     ; X,Y,A = tiles from left, tiles from top, tile index to draw
     ; write one single tile to the nametable buffer
     PHA
-    LDA #1
-    STA bufferLoading
-    JSR SetPpuAddrPointerFromXY
-    LDA #1
-    JSR WriteByteToBuffer
-    LDA pointer
-    JSR WriteByteToBuffer
-    LDA pointer+1
-    JSR WriteByteToBuffer
-    PLA
-    JSR WriteByteToBuffer
-    LDA #0
-    LDY bufferPointer
-    STA nametableBuffer, Y
-    STA bufferLoading
+    TXA
+    PHA
+    LDX #1
+    JSR StartBufferWrite
+        PLA
+        TAX
+        JSR SetPpuAddrPointerFromXY
+        LDA #1
+        JSR WriteByteToBuffer
+        LDA pointer
+        JSR WriteByteToBuffer
+        LDA pointer+1
+        JSR WriteByteToBuffer
+        PLA
+        JSR WriteByteToBuffer
+    JSR EndBufferWrite
     RTS
 .endproc
 
@@ -1415,22 +1551,22 @@ bankswitch_nosave:
 .proc UpdatePalette
     ; X register set to $00 => first palette
     ; X register set to $20 => second palette. etc.
-    LDA #1
-    STA bufferLoading
-    LDA #$20                ; length of palette
-    JSR WriteByteToBuffer
-    LDA #$3F                ; $3F00 - palette VRAM location
-    JSR WriteByteToBuffer
-    LDA #$00
-    JSR WriteByteToBuffer
-    :                       
-    LDA palette, X
-    JSR WriteByteToBuffer
-    INX
-    CPX #$20
-    BNE :-
-    LDA #0
-    STA bufferLoading
+    LDX #$20
+    JSR StartBufferWrite
+        LDA #$20                ; length of palette
+        JSR WriteByteToBuffer
+        LDA #$3F                ; $3F00 - palette VRAM location
+        JSR WriteByteToBuffer
+        LDA #$00
+        JSR WriteByteToBuffer
+        LDX #0
+        :                       
+        LDA palette, X
+        JSR WriteByteToBuffer
+        INX
+        CPX #$20
+        BNE :-
+    JSR EndBufferWrite
     RTS
 .endproc
 
@@ -1441,23 +1577,26 @@ bankswitch_nosave:
     DEY
     DEY
     JSR SetPpuAddrPointerFromXY
-    LDA #16
-    JSR WriteByteToBuffer
-    LDA pointer
-    JSR WriteByteToBuffer
-    LDA pointer+1
-    JSR WriteByteToBuffer
-    LDA #_RD
-    JSR WriteByteToBuffer
-    LDA #_HR
-    LDX #0
-    :
-    JSR WriteByteToBuffer
-    INX
-    CPX #14
-    BNE :-
-    LDA #_LD
-    JSR WriteByteToBuffer
+    LDX #16
+    JSR StartBufferWrite
+        LDA #16
+        JSR WriteByteToBuffer
+        LDA pointer
+        JSR WriteByteToBuffer
+        LDA pointer+1
+        JSR WriteByteToBuffer
+        LDA #_RD
+        JSR WriteByteToBuffer
+        LDA #_HR
+        LDX #0
+        :
+        JSR WriteByteToBuffer
+        INX
+        CPX #14
+        BNE :-
+        LDA #_LD
+        JSR WriteByteToBuffer
+    JSR EndBufferWrite
     LDX #3                  ; vertical bars (left)
     LDY fingerY
     DEY
@@ -1492,23 +1631,26 @@ bankswitch_nosave:
     INY
     INY
     JSR SetPpuAddrPointerFromXY
-    LDA #16
-    JSR WriteByteToBuffer
-    LDA pointer
-    JSR WriteByteToBuffer
-    LDA pointer+1
-    JSR WriteByteToBuffer
-    LDA #_RU
-    JSR WriteByteToBuffer
-    LDA #_HR
-    LDX #0
-    :
-    JSR WriteByteToBuffer
-    INX
-    CPX #14
-    BNE :-
-    LDA #_LU
-    JSR WriteByteToBuffer
+    LDX #16
+    JSR StartBufferWrite
+        LDA #16
+        JSR WriteByteToBuffer
+        LDA pointer
+        JSR WriteByteToBuffer
+        LDA pointer+1
+        JSR WriteByteToBuffer
+        LDA #_RU
+        JSR WriteByteToBuffer
+        LDA #_HR
+        LDX #0
+        :
+        JSR WriteByteToBuffer
+        INX
+        CPX #14
+        BNE :-
+        LDA #_LU
+        JSR WriteByteToBuffer
+    JSR EndBufferWrite
     RTS
 .endproc
 
@@ -1555,7 +1697,7 @@ bankswitch_nosave:
 .endproc
 
 .proc DecreaseDigit
-    ; X: memory location of digit to increment
+    ; X: memory location of digit to decrement
     LDA #0
     STA pointer+1
     STX pointer
@@ -1593,6 +1735,112 @@ bankswitch_nosave:
     LDX fingerX
     LDY fingerY
     JSR WriteTileToBuffer
+    RTS
+.endproc
+
+.proc SetAmountFromDigit
+    ; X: memory location of digit to reference (4 bytes)
+    ; Y: memory location of value (2 bytes)
+    STX helper      ; helper: address of digit
+    STY pointer     ; pointer: address of value
+    LDY #0
+    STY pointer+1
+    LDA #0          ; clear value
+    STA (pointer), Y
+    INY
+    STA (pointer), Y
+    Thousands:
+        LDY #0
+        SEC
+        LDA (helper), Y
+        SBC #_0_
+        CMP #0
+        BNE :+
+        JMP Hundreds
+        :
+        TAX
+        :
+        CLC
+        LDA (pointer), Y
+        ADC #$E8
+        STA (pointer), Y
+        INY
+        LDA (pointer), Y
+        ADC #$03
+        STA (pointer), Y
+        DEX
+        CPX #0
+        BNE :-
+    Hundreds:
+        LDY #1
+        SEC
+        LDA (helper), Y
+        SBC #_0_
+        CMP #0
+        BNE :+
+        JMP Tens
+        :
+        TAX
+        :
+        CLC
+        LDY #0
+        LDA (pointer), Y
+        ADC #$64
+        STA (pointer), Y
+        INY
+        LDA (pointer), Y
+        ADC #$00
+        STA (pointer), Y
+        DEX
+        CPX #0
+        BNE :-
+    Tens:
+        LDY #2
+        SEC
+        LDA (helper), Y
+        SBC #_0_
+        CMP #0
+        BNE :+
+        JMP Ones
+        :
+        TAX
+        :
+        CLC
+        LDY #0
+        LDA (pointer), Y
+        ADC #$0A
+        STA (pointer), Y
+        INY
+        LDA (pointer), Y
+        ADC #$00
+        STA (pointer), Y
+        DEX
+        CPX #0
+        BNE :-
+    Ones:
+        LDY #3
+        SEC
+        LDA (helper), Y
+        SBC #_0_
+        CMP #0
+        BNE :+
+        JMP Done
+        :
+        TAX
+        :
+        CLC
+        LDY #0
+        LDA (pointer), Y
+        ADC #$01
+        STA (pointer), Y
+        INY
+        LDA (pointer), Y
+        ADC #$00
+        STA (pointer), Y
+        DEX
+        CPX #0
+        BNE :-
+    Done:
     RTS
 .endproc
 
@@ -1962,40 +2210,40 @@ bankswitch_nosave:
     INX
     CPX #20
     BNE :-
-    LDA #1                  ; begin writing to buffer
-    STA bufferLoading
     LDX #0                  ; default palette
     JSR UpdatePalette
-    LDA #17                 ; title text
-    JSR WriteByteToBuffer
-    LDA #$21                ; $2129 - title text VRAM location
-    JSR WriteByteToBuffer
-    LDA #$29
-    JSR WriteByteToBuffer
-    LDX #0
-    :                       
-    LDA titleText, X
-    JSR WriteByteToBuffer
-    INX
-    CPX #17
-    BNE :-
-    LDA #12                 ; title options text
-    JSR WriteByteToBuffer 
-    LDA #$22                ; $220B - titleOptions VRAM location
-    JSR WriteByteToBuffer 
-    LDA #$0B
-    JSR WriteByteToBuffer 
-    LDX #0
-    :                       
-    LDA titleOptions, X
-    JSR WriteByteToBuffer
-    INX
-    CPX #12
-    BNE :-
-    LDA #0                  ; finish writing to buffer
-    LDY bufferPointer
-    STA nametableBuffer, Y
-    STA bufferLoading
+    LDX #17
+    JSR StartBufferWrite
+        LDA #17                 ; title text
+        JSR WriteByteToBuffer
+        LDA #$21                ; $2129 - title text VRAM location
+        JSR WriteByteToBuffer
+        LDA #$29
+        JSR WriteByteToBuffer
+        LDX #0
+        :                       
+        LDA titleText, X
+        JSR WriteByteToBuffer
+        INX
+        CPX #17
+        BNE :-
+    JSR EndBufferWrite
+    LDX #12
+    JSR StartBufferWrite
+        LDA #12                 ; title options text
+        JSR WriteByteToBuffer 
+        LDA #$22                ; $220B - titleOptions VRAM location
+        JSR WriteByteToBuffer 
+        LDA #$0B
+        JSR WriteByteToBuffer 
+        LDX #0
+        :                       
+        LDA titleOptions, X
+        JSR WriteByteToBuffer
+        INX
+        CPX #12
+        BNE :-
+    JSR EndBufferWrite
     LDA #%10010000
     STA softPPUCTRL         ; Ensure NMIs are enabled
     LDA #%00011110 
@@ -3321,12 +3569,18 @@ bankswitch_nosave:
             CMP #8
             BNE :+
             LDX #cartOxenDigit
-            JMP @increaseDigit
+            JSR IncreaseDigit
+            LDX #cartOxenDigit
+            LDY #cartOxen
+            JMP SetAmount
             :
             CMP #10
             BNE :+
             LDX #cartClothingDigit
-            JMP @increaseDigit
+            JSR IncreaseDigit
+            LDX #cartClothingDigit
+            LDY #cartClothing
+            JMP SetAmount
             :
             JMP Done
         @menuItem4:
@@ -3334,16 +3588,19 @@ bankswitch_nosave:
             CMP #12
             BNE :+
             LDX #cartBulletsDigit
-            JMP @increaseDigit
+            JSR IncreaseDigit
+            LDX #cartBulletsDigit
+            LDY #cartBullets
+            JMP SetAmount
             :
             CMP #20
             BNE :+
             LDX #cartFoodLbsDigit
-            JMP @increaseDigit
+            JSR IncreaseDigit
+            LDX #cartFoodLbsDigit
+            LDY #cartFoodLbs
+            JMP SetAmount
             :
-            JMP Done
-        @increaseDigit:
-            JSR IncreaseDigit 
             JMP Done
     CheckDown:
         LDA #KEY_DOWN
@@ -3471,12 +3728,18 @@ bankswitch_nosave:
             CMP #8
             BNE :+
             LDX #cartOxenDigit
-            JMP @decreaseDigit
+            JSR DecreaseDigit
+            LDX #cartOxenDigit
+            LDY #cartOxen
+            JMP SetAmount
             :
             CMP #10
             BNE :+
             LDX #cartClothingDigit
-            JMP @decreaseDigit
+            JSR DecreaseDigit
+            LDX #cartClothingDigit
+            LDY #cartClothing
+            JMP SetAmount
             :
             JMP Done
         @menuItem4:
@@ -3484,17 +3747,22 @@ bankswitch_nosave:
             CMP #12
             BNE :+
             LDX #cartBulletsDigit
-            JMP @decreaseDigit
+            JSR DecreaseDigit
+            LDX #cartBulletsDigit
+            LDY #cartBullets
+            JMP SetAmount
             :
             CMP #20
             BNE :+
             LDX #cartFoodLbsDigit
-            JMP @decreaseDigit
+            JSR DecreaseDigit
+            LDX #cartFoodLbsDigit
+            LDY #cartFoodLbs
+            JMP SetAmount
             :
             JMP Done
-        @decreaseDigit:
-            JSR DecreaseDigit 
-            JMP Done
+    SetAmount:
+        JSR SetAmountFromDigit
     Done:
     RTS
 .endproc
