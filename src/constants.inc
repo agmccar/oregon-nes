@@ -102,6 +102,7 @@ TEXT_DIARY_LINE_LEN = 30
 TEXT_PERSON_LEN     = 4   ; person name
 TEXT_KEYBOARD_LEN   = 11  ; per line
 TEXT_STORENAME_LEN  = 12
+TEXT_STARTDATE_LEN  = 6
 
 ; Game states
 GAMESTATE_TITLE     = 0 ; title screen
@@ -115,10 +116,11 @@ GAMESTATE_TRAVELING = 5 ; main game state - traveling the trail
 ; Menu states
 MENU_NONE               = 0 ; all menus closed
 MENU_NEWGAME_TYPING     = 1 ; new game name input 
-MENU_NEWGAME_OCCUPATION = 2 ; new game occupation selection menu 
-MENU_STORE_ITEM1        = 3 ; 1 digit general store item selection
-MENU_STORE_ITEM2        = 4 ; 2 digit general store item selection
-MENU_STORE_ITEM4        = 5 ; 4 digit general store item selection
+MENU_NEWGAME_OCCUPATION = 2 ; new game occupation selection 
+MENU_NEWGAME_STARTDATE  = 3 ; new game starting month selection
+MENU_STORE_ITEM1        = 4 ; 1 digit general store item selection
+MENU_STORE_ITEM2        = 5 ; 2 digit general store item selection
+MENU_STORE_ITEM4        = 6 ; 4 digit general store item selection
 
 ; Locations (landmarks)
 ; %00000000

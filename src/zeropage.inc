@@ -152,4 +152,4 @@ dateDay:        .res 1
 location:       .res 1 ; see: constants.inc -> Locations
 
 ;-------------------------------------------------------------------------------
-; remaining: $7A
+; remaining: $75

@@ -1,7 +1,7 @@
 Modules list:
 -------------
 game.o:
-    CODE              Offs=000000  Size=001DF8  Align=00001  Fill=0000
+    CODE              Offs=000000  Size=00202C  Align=00001  Fill=0000
     RODATA            Offs=000000  Size=00145A  Align=00001  Fill=0000
     BSS               Offs=000000  Size=000178  Align=00001  Fill=0000
     ZEROPAGE          Offs=000000  Size=00008B  Align=00001  Fill=0000
@@ -19,7 +19,7 @@ ZEROPAGE              000000  00008A  00008B  00001
 BSS                   000300  000477  000178  00001
 ROM0                  008000  009FFF  002000  00001
 RODATA                00C000  00D459  00145A  00001
-CODE                  00D45A  00F251  001DF8  00001
+CODE                  00D45A  00F485  00202C  00001
 VECTORS               00FFFA  00FFFF  000006  00001
 
 

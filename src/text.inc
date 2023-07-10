@@ -15,10 +15,10 @@ newGameText:
 
 startingDateText:
     .byte _M_,_A_,_R_,_C_,_H_,___
-    .byte _M_,_A_,_Y_,___,___,___
-    .byte _A_,_P_,_R_,_I_,_L_,___
     .byte _J_,_U_,_N_,_E_,___,___
+    .byte _A_,_P_,_R_,_I_,_L_,___
     .byte _J_,_U_,_L_,_Y_,___,___
+    .byte _M_,_A_,_Y_,___,___,___
     .byte _A_,_U_,_G_,_U_,_S_,_T_
 
 keyboard:

@@ -79,6 +79,7 @@ bankswitch_nosave:
     JSR CopyCHRTiles
     LDY #1
     JSR bankswitch_y
+    JSR ClearScreen
     LDA #%10010000      ; enable NMI, sprites use first pattern table
     STA softPPUCTRL
     STA PPUCTRL
@@ -427,6 +428,148 @@ bankswitch_nosave:
     RTS
 .endproc
 
+.proc DrawStartDateSubmenu
+    JSR StartBulkDrawing
+    LDA PPUSTATUS
+    LDA #$22
+    STA PPUADDR
+    LDA #$64
+    STA PPUADDR
+    LDA #_RD
+    STA PPUDATA
+    LDX #0
+    LDA #_HR
+    :
+    STA PPUDATA
+    INX
+    CPX #20
+    BNE :-
+    LDA #_LD
+    STA PPUDATA
+    LDA PPUSTATUS
+    LDA #$22
+    STA PPUADDR
+    LDA #$84
+    STA PPUADDR
+    LDA #_VR
+    STA PPUDATA
+    LDX #0
+    LDA #___
+    :
+    STA PPUDATA
+    INX
+    CPX #20
+    BNE :-
+    LDA #_VR
+    STA PPUDATA
+    LDA PPUSTATUS
+    LDA #$22
+    STA PPUADDR
+    LDA #$A4
+    STA PPUADDR
+    LDY #0
+    LDX #0
+    STX helper
+    :
+    LDA #_VR
+    STA PPUDATA
+    LDA #___
+    STA PPUDATA
+    STA PPUDATA
+    STA PPUDATA
+    :
+    LDA startingDateText, X
+    STA PPUDATA
+    INX
+    INC helper
+    LDA helper
+    CMP #TEXT_STARTDATE_LEN
+    BNE :-
+    LDA #0
+    STA helper
+    LDA #___
+    STA PPUDATA
+    STA PPUDATA
+    STA PPUDATA
+    STA PPUDATA
+    :
+    LDA startingDateText, X
+    STA PPUDATA
+    INX
+    INC helper
+    LDA helper
+    CMP #TEXT_STARTDATE_LEN
+    BNE :-
+    LDA #___
+    STA PPUDATA
+    LDA #_VR
+    STA PPUDATA
+    LDA #___
+    STA PPUDATA
+    STA PPUDATA
+    STA PPUDATA
+    STA PPUDATA
+    STA PPUDATA
+    STA PPUDATA
+    JSR DrawStartDateBlankLine
+    LDA #___
+    STA PPUDATA
+    STA PPUDATA
+    STA PPUDATA
+    STA PPUDATA
+    LDA #0
+    STA helper
+    INY
+    CPY #3
+    BNE :---
+    LDA #_RU
+    STA PPUDATA
+    LDA #_HR
+    LDX #0
+    :
+    STA PPUDATA
+    INX
+    CPX #20
+    BNE :-
+    LDA #_LU
+    STA PPUDATA
+    JSR DoneBulkDrawing
+    RTS
+.endproc
+
+.proc DrawStartDateBlankLine
+    PHA
+    TXA
+    PHA
+    LDA #___
+    STA PPUDATA
+    STA PPUDATA
+    STA PPUDATA
+    STA PPUDATA
+    LDA #_VR
+    STA PPUDATA
+    LDA #___
+    LDX #0
+    :
+    STA PPUDATA
+    INX
+    CPX #20
+    BNE :-
+    LDA #_VR
+    STA PPUDATA
+    LDA #___
+    STA PPUDATA
+    STA PPUDATA
+    STA PPUDATA
+    STA PPUDATA
+    STA PPUDATA
+    STA PPUDATA
+    PLA
+    TAX
+    PLA
+    RTS
+.endproc
+
 .proc DrawMenuKeyboardBlankLine
     ; PPUADDR must be set
     LDA #_VR ;vert line
@@ -610,58 +753,57 @@ bankswitch_nosave:
         LDA #$45
         STA PPUADDR
         LDX #38
-        :
+        :               ; draw "STARTING DATE:"
         LDA newGameText, X
         STA PPUDATA
         INX
         CPX #52
         BNE :-
-        LDA PPUSTATUS
+        LDA PPUSTATUS   ; draw the month name
         LDA #$22
         STA PPUADDR
-        LDA #$8A
+        LDA #$87
         STA PPUADDR
+        LDA dateMonth
+        CMP #3
+        BNE :+
         LDA #0
-        STA helper
+        JMP @doLoop
+        :
+        CMP #4
+        BNE :+
+        LDA #12
+        JMP @doLoop
+        :
+        CMP #5
+        BNE :+
+        LDA #24
+        JMP @doLoop
+        :
+        CMP #6
+        BNE :+
+        LDA #6
+        JMP @doLoop
+        :
+        CMP #7
+        BNE :+
+        LDA #18
+        JMP @doLoop
+        :
+        CMP #8
+        BNE :+
+        LDA #30
+        :
+        @doLoop:
+        TAX 
         LDY #0
-        LDX #0
         :
         LDA startingDateText, X
         STA PPUDATA
         INX
-        INC helper
-        LDA helper
-        CMP #6
-        BNE :-
-        LDA #___
-        STA PPUDATA
-        STA PPUDATA
-        STA PPUDATA
-        STA PPUDATA
-        LDA #0
-        STA helper
-        :
-        LDA startingDateText, X
-        STA PPUDATA
-        INX
-        INC helper
-        LDA helper
-        CMP #6
-        BNE :-
-        LDA #0
-        STA helper
-        :
-        LDA #___
-        STA PPUDATA
-        INC helper
-        LDA helper
-        CMP #$30
-        BNE :-
-        LDA #0
-        STA helper
         INY
-        CPY #3
-        BNE :---
+        CPY #TEXT_STARTDATE_LEN
+        BNE :-
 
     JSR DoneBulkDrawing
     RTS
@@ -1600,6 +1742,14 @@ bankswitch_nosave:
     RTS
 .endproc
 
+.proc RedrawFinger ; hack to redraw finger
+    PHA
+    LDA #0
+    STA fingerLastY
+    PLA
+    RTS
+.endproc
+
 .proc DrawFinger
     LDA #%00001100          ; skip drawing if neither finger is set to visible
     BIT fingerAttr
@@ -2198,7 +2348,7 @@ bankswitch_nosave:
     JMP Done
     :
     JSR ClearScreen
-    LDA gameState   
+    LDA gameState
     STA lastGameState
     CMP #GAMESTATE_TITLE
     BNE :+
@@ -2286,6 +2436,10 @@ bankswitch_nosave:
     BNE :+
     JMP NewGameOccupation
     : 
+    CMP #MENU_NEWGAME_STARTDATE
+    BNE :+
+    JMP NewGameStartDate
+    : 
     CMP #MENU_STORE_ITEM1
     BNE :+
     LDA #7
@@ -2320,8 +2474,7 @@ bankswitch_nosave:
         BNE :+
         LDA #%00001100      ; both fingers visible, normal, pointing right
         STA fingerAttr
-        LDA #0
-        STA fingerLastY     ; hack to redraw finger
+        JSR RedrawFinger
         JSR LoadBgStore
         :
         JMP Done
@@ -2341,6 +2494,14 @@ bankswitch_nosave:
         JSR DrawOccupationMenu
         LDX #15
         LDY #7
+        JSR MoveFingerToSubmenu
+        JMP Done
+    NewGameStartDate:
+        LDA #%00000100      ; only main finger visible
+        STA fingerAttr
+        JSR DrawStartDateSubmenu
+        LDX #6
+        LDY #21
         JSR MoveFingerToSubmenu
         JMP Done
     StoreSubmenu:
@@ -2504,8 +2665,7 @@ bankswitch_nosave:
     STX fingerX
     STX fingerLastX
     STY fingerY         ; move finger to keyboard 'A'
-    LDA #0
-    STA fingerLastY     ; hack to redraw finger
+    JSR RedrawFinger
     RTS
 .endproc
 
@@ -2685,8 +2845,10 @@ bankswitch_nosave:
     STA wagonSettings
     LDA #%00000100          ; default fair weather
     STA weather
-    LDA #%00000000          ; default no fingers visible, facing right
-    STA fingerAttr
+    LDA #3                  ; default date March 1, 1848
+    STA dateMonth
+    LDA #1
+    STA dateDay
     LDA #LOC_INDEPENDENCE   ; default location Independence, MO
     STA location
     :                       ; default person names
@@ -3033,6 +3195,10 @@ bankswitch_nosave:
         BNE :+
         JMP @menuOccupation
         :
+        CMP #MENU_NEWGAME_STARTDATE
+        BNE :+
+        JMP @menuStartDate
+        :
         JMP CheckB
         @menuNone:
             LDA fingerX ; check finger coords for "Leader" selection
@@ -3097,14 +3263,25 @@ bankswitch_nosave:
             :
             LDA fingerX ; check finger coords for "Person4" selection
             CMP #15
-            BNE CheckB
+            BNE :+
             LDA fingerY 
             CMP #14
-            BNE CheckB
+            BNE :+
             LDA #MENU_NEWGAME_TYPING
             STA menuOpen
             LDA #16
             STA nameCursor
+            JMP Done
+            :
+            LDA fingerX ; check finger coords for "Starting date" selection
+            CMP #5
+            BNE :+ 
+            LDA fingerY 
+            CMP #20
+            BNE :+  
+            LDA #MENU_NEWGAME_STARTDATE
+            STA menuOpen
+            :
             JMP Done
         @menuOccupation:
             LDA occupationCursor
@@ -3138,8 +3315,55 @@ bankswitch_nosave:
             STA fingerY
             :
             JSR LoadBgNewGame ; todo: only update 1 tile (use WriteTileToBuffer?)
+            JSR DrawMenuKeyboard
+            JSR RedrawFinger
             JMP Done
-
+        @menuStartDate:
+            LDA fingerX
+            CMP #6
+            BNE :+++
+            LDA fingerY
+            CMP #21
+            BNE :+
+            LDA #3 ; march
+            STA dateMonth
+            JMP @startDateDone
+            :
+            CMP #23
+            BNE :+
+            LDA #4 ; april
+            STA dateMonth
+            JMP @startDateDone
+            :
+            CMP #25
+            BNE :+
+            LDA #5 ; may
+            STA dateMonth
+            JMP @startDateDone
+            :
+            CMP #16
+            BNE :+++
+            LDA fingerY
+            CMP #21
+            BNE :+
+            LDA #6 ; june
+            STA dateMonth
+            JMP @startDateDone
+            :
+            CMP #23
+            BNE :+
+            LDA #7 ; july
+            STA dateMonth
+            JMP @startDateDone
+            :
+            CMP #25
+            BNE :+
+            LDA #8 ; august
+            STA dateMonth
+            :
+            @startDateDone:
+            JSR CloseSubmenu
+            JMP Done
     CheckB:
         LDA #KEY_B
         BIT buttons1
@@ -3216,98 +3440,107 @@ bankswitch_nosave:
     CheckLeft:
         LDA #KEY_LEFT
         BIT buttons1
-        BNE @checkMenuL_None
-        JMP @skipL
-        @checkMenuL_None:
-            LDA menuOpen
-            CMP #MENU_NONE
-            BNE @checkMenuL_Typing
-            JMP @checkLeaderL
-        @checkMenuL_Typing:
-            CMP #MENU_NEWGAME_TYPING
-            BNE @skipL
-            JMP @checkTypingL
-        @skipL:
-            JMP CheckRight
-        @checkLeaderL:
+        BNE :+
+        JMP CheckRight
+        :
+        LDA menuOpen
+        CMP #MENU_NONE
+        BNE :+
+        JMP @menuNone
+        :
+        CMP #MENU_NEWGAME_TYPING
+        BNE :+
+        JMP @menuTyping
+        :
+        CMP #MENU_NEWGAME_OCCUPATION
+        BNE :+
+        JMP Done
+        :
+        CMP #MENU_NEWGAME_STARTDATE
+        BNE :+
+        JMP @menuStartDate
+        :
+        JMP CheckRight
+        @menuNone:
             LDA fingerX ; check finger coords for "Leader" selection
             CMP #5
-            BNE @checkOccupationL
+            BNE :+
             LDA fingerY 
             CMP #6
-            BNE @checkOccupationL
+            BNE :+
             LDA menuOpen
             CMP #MENU_NONE
-            BNE @checkOccupationL
+            BNE :+
             LDA #14
             STA fingerX ; move finger to "Occupation"
             JMP Done
-        @checkOccupationL:
+            :
             LDA fingerX ; check finger coords for "Occupation" selection
             CMP #14
-            BNE @checkPerson1L
+            BNE :+
             LDA fingerY 
             CMP #6
-            BNE @checkPerson1L
+            BNE :+
             LDA menuOpen
             CMP #MENU_NONE
-            BNE @checkPerson1L
+            BNE :+
             LDA #5
             STA fingerX ; move finger to "Leader"
             JMP Done
-        @checkPerson1L:
+            :
             LDA fingerX ; check finger coords for "Person1" selection
             CMP #5
-            BNE @checkPerson2L
+            BNE :+
             LDA fingerY 
             CMP #12
-            BNE @checkPerson2L
+            BNE :+
             LDA menuOpen
             CMP #MENU_NONE
-            BNE @checkPerson2L
+            BNE :+
             LDA #15
             STA fingerX ; move finger to "Person3"
             JMP Done
-        @checkPerson2L:
+            :
             LDA fingerX ; check finger coords for "Person2" selection
             CMP #5
-            BNE @checkPerson3L
+            BNE :+
             LDA fingerY 
             CMP #14
-            BNE @checkPerson3L
+            BNE :+
             LDA menuOpen
             CMP #MENU_NONE
-            BNE @checkPerson3L
+            BNE :+
             LDA #15
             STA fingerX ; move finger to "Person4"
             JMP Done
-        @checkPerson3L:
+            :
             LDA fingerX ; check finger coords for "Person3" selection
             CMP #15
-            BNE @checkPerson4L
+            BNE :+
             LDA fingerY 
             CMP #12
-            BNE @checkPerson4L
+            BNE :+
             LDA menuOpen
             CMP #MENU_NONE
-            BNE @checkPerson4L
+            BNE :+
             LDA #5
             STA fingerX ; move finger to "Person1"
             JMP Done
-        @checkPerson4L:
+            :
             LDA fingerX ; check finger coords for "Person4" selection
             CMP #15
-            BNE CheckRight
+            BNE :+
             LDA fingerY 
             CMP #14
-            BNE CheckRight
+            BNE :+
             LDA menuOpen
             CMP #MENU_NONE
-            BNE CheckRight
+            BNE :+
             LDA #5
             STA fingerX ; move finger to "Person2"
+            :
             JMP Done
-        @checkTypingL:
+        @menuTyping:
             LDX fingerX
             DEX
             DEX
@@ -3315,7 +3548,7 @@ bankswitch_nosave:
             LDA keyboardKey
             STA helper
             CPX #3  ; check if we need to wrap around
-            BNE @moveFingerL
+            BNE :+
             LDX #25 ; wrap around
             LDA keyboardKey
             CLC
@@ -3323,110 +3556,114 @@ bankswitch_nosave:
             STA helper
             LDA fingerY
             CMP #24 ; check if we need to wrap to the "DONE" keyboard button
-            BNE @moveFingerL
+            BNE :+
             LDX #21 ; wrap around to "DONE" keyboard button
             LDA #41
             STA helper
-            @moveFingerL:
+            :
             STX fingerX
             LDA helper
             STA keyboardKey
             JMP Done
+        @menuStartDate:
+            LDA fingerX
+            CMP #6
+            BNE :+
+            LDA #16
+            STA fingerX
+            JMP Done
+            :
+            CMP #16
+            BNE :+
+            LDA #6
+            STA fingerX
+            :
+            JMP Done
     CheckRight:
         LDA #KEY_RIGHT
         BIT buttons1
-        BNE @checkMenuR_None
-        JMP @skipR
-        @checkMenuR_None:
-            LDA menuOpen
-            CMP #MENU_NONE
-            BNE @checkMenuR_Typing
-            JMP @checkLeaderR
-        @checkMenuR_Typing:
-            CMP #MENU_NEWGAME_TYPING
-            BNE @skipR
-            JMP @checkTypingR
-        @skipR:
-            JMP CheckUp
-        @checkLeaderR:
+        BNE :+
+        JMP CheckUp
+        :
+        LDA menuOpen
+        CMP #MENU_NONE
+        BNE :+
+        JMP @menuNone
+        :
+        CMP #MENU_NEWGAME_TYPING
+        BNE :+
+        JMP @menuTyping
+        :
+        CMP #MENU_NEWGAME_OCCUPATION
+        BNE :+
+        JMP Done
+        :
+        CMP #MENU_NEWGAME_STARTDATE
+        BNE :+
+        JMP @menuStartDate
+        :
+        JMP CheckUp
+        @menuNone:
             LDA fingerX ; check finger coords for "Leader" selection
             CMP #5
-            BNE @checkOccupationR
+            BNE :+
             LDA fingerY 
             CMP #6
-            BNE @checkOccupationR
-            LDA menuOpen
-            CMP #MENU_NONE
-            BNE @checkOccupationR
+            BNE :+
             LDA #14
             STA fingerX ; move finger to "Occupation"
             JMP Done
-        @checkOccupationR:
+            :
             LDA fingerX ; check finger coords for "Occupation" selection
             CMP #14
-            BNE @checkPerson1R
+            BNE :+
             LDA fingerY 
             CMP #6
-            BNE @checkPerson1R
-            LDA menuOpen
-            CMP #MENU_NONE
-            BNE @checkPerson1R
+            BNE :+
             LDA #5
             STA fingerX ; move finger to "Leader"
             JMP Done
-        @checkPerson1R:
+            :
             LDA fingerX ; check finger coords for "Person1" selection
             CMP #5
-            BNE @checkPerson2R
+            BNE :+
             LDA fingerY 
             CMP #12
-            BNE @checkPerson2R
-            LDA menuOpen
-            CMP #MENU_NONE
-            BNE @checkPerson2R
+            BNE :+
             LDA #15
             STA fingerX ; move finger to "Person3"
             JMP Done
-        @checkPerson2R:
+            :
             LDA fingerX ; check finger coords for "Person2" selection
             CMP #5
-            BNE @checkPerson3R
+            BNE :+
             LDA fingerY 
             CMP #14
-            BNE @checkPerson3R
-            LDA menuOpen
-            CMP #MENU_NONE
-            BNE @checkPerson3R
+            BNE :+
             LDA #15
             STA fingerX ; move finger to "Person4"
             JMP Done
-        @checkPerson3R:
+            :
             LDA fingerX ; check finger coords for "Person3" selection
             CMP #15
-            BNE @checkPerson4R
+            BNE :+
             LDA fingerY 
             CMP #12
-            BNE @checkPerson4R
-            LDA menuOpen
-            CMP #MENU_NONE
-            BNE @checkPerson4R
+            BNE :+
             LDA #5
             STA fingerX ; move finger to "Person1"
             JMP Done
-        @checkPerson4R:
+            :
             LDA fingerX ; check finger coords for "Person4" selection
             CMP #15
-            BNE CheckUp
+            BNE :+
             LDA fingerY 
             CMP #14
-            BNE CheckUp
-            LDA menuOpen
-            CMP #MENU_NONE
-            BNE CheckUp
+            BNE :+
             LDA #5
             STA fingerX ; move finger to "Person2"
             JMP Done
-        @checkTypingR:
+        @menuTyping:
             LDX fingerX
             INX
             INX
@@ -3456,6 +3693,20 @@ bankswitch_nosave:
             LDA helper
             STA keyboardKey
             JMP Done
+        @menuStartDate:
+            LDA fingerX
+            CMP #6
+            BNE :+
+            LDA #16
+            STA fingerX
+            JMP Done
+            :
+            CMP #16
+            BNE :+
+            LDA #6
+            STA fingerX
+            :
+            JMP Done
     CheckUp:
         LDA #KEY_UP
         BIT buttons1
@@ -3475,6 +3726,10 @@ bankswitch_nosave:
         BNE :+
         JMP @menuOccupation
         :
+        CMP #MENU_NEWGAME_STARTDATE
+        BNE :+
+        JMP @menuStartDate
+        :
         JMP CheckDown
         @menuNone:
             LDA fingerX ; check finger coords for "Leader" selection
@@ -3483,8 +3738,8 @@ bankswitch_nosave:
             LDA fingerY 
             CMP #6
             BNE :+
-            LDA #14
-            STA fingerY ; move finger to "Person2"
+            LDA #20
+            STA fingerY ; move finger to "Starting date"
             JMP Done
             :
             LDA fingerX ; check finger coords for "Occupation" selection
@@ -3493,10 +3748,10 @@ bankswitch_nosave:
             LDA fingerY 
             CMP #6
             BNE :+
-            LDA #15
+            LDA #5
             STA fingerX
-            LDA #14
-            STA fingerY ; move finger to "Person4"
+            LDA #20
+            STA fingerY ; move finger to "Starting date"
             JMP Done
             :
             LDA fingerX ; check finger coords for "Person1" selection
@@ -3539,6 +3794,16 @@ bankswitch_nosave:
             BNE :+
             LDA #12
             STA fingerY ; move finger to "Person3"
+            JMP Done
+            :
+            LDA fingerX ; check finger coords for "Starting date" selection
+            CMP #5
+            BNE :+
+            LDA fingerY 
+            CMP #20
+            BNE :+
+            LDA #14
+            STA fingerY ; move finger to "Person2"
             JMP Done
             :
             JMP CheckDown
@@ -3585,6 +3850,16 @@ bankswitch_nosave:
             DEC occupationCursor
             STX fingerY
             JMP Done
+        @menuStartDate:
+            LDX fingerY
+            DEX
+            DEX
+            CPX #19 ; check if fingerY is past top of menu
+            BNE :+
+            LDX #25 ; wrap to bottom of menu
+            :
+            STX fingerY
+            JMP Done
     CheckDown:
         LDA #KEY_DOWN
         BIT buttons1
@@ -3603,6 +3878,10 @@ bankswitch_nosave:
         CMP #MENU_NEWGAME_OCCUPATION
         BNE :+
         JMP @menuOccupation
+        :
+        CMP #MENU_NEWGAME_STARTDATE
+        BNE :+
+        JMP @menuStartDate
         :
         JMP Done
         @menuNone:
@@ -3644,8 +3923,8 @@ bankswitch_nosave:
             LDA fingerY 
             CMP #14
             BNE :+
-            LDA #6
-            STA fingerY ; move finger to "Leader"
+            LDA #20
+            STA fingerY ; move finger to "Starting date"
             JMP Done
             :
             LDA fingerX ; check finger coords for "Person3" selection
@@ -3660,14 +3939,26 @@ bankswitch_nosave:
             :
             LDA fingerX ; check finger coords for "Person4" selection
             CMP #15
-            BNE Done
+            BNE :+
             LDA fingerY 
             CMP #14
+            BNE :+
+            LDA #5
+            STA fingerX
+            LDA #20
+            STA fingerY ; move finger to "Starting date"
+            JMP Done
+            :
+            LDA fingerX ; check finger coords for "Starting date" selection
+            CMP #5
             BNE Done
-            LDA #14
+            LDA fingerY 
+            CMP #20
+            BNE Done
+            LDA #5
             STA fingerX
             LDA #6
-            STA fingerY ; move finger to "Occupation"
+            STA fingerY ; move finger to "Leader"
             JMP Done
         @menuTyping:
             LDX fingerY
@@ -3711,6 +4002,16 @@ bankswitch_nosave:
             STA occupationCursor
             :
             INC occupationCursor
+            STX fingerY
+            JMP Done
+        @menuStartDate:
+            LDX fingerY
+            INX
+            INX
+            CPX #27 ; check if fingerY is past bottom of menu
+            BNE :+
+            LDX #21 ; wrap to top of menu
+            :
             STX fingerY
             JMP Done
     Done:
