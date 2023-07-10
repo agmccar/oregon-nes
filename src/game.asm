@@ -2532,25 +2532,39 @@ bankswitch_nosave:
     CLC
     ADC helper
     STA spareParts
-    CLC                     ; bullets
+    LDX cartBullets             ; bullets- x10
+    :
+    CLC
     LDA bullets
-    ADC cartBullets
+    ADC #10
     STA bullets
     LDA bullets+1
-    ADC cartBullets+1
+    ADC #0
     STA bullets+1
-    CLC                     ; food lbs
+    DEX
+    CPX #0
+    BNE :-
+    LDX cartFoodLbs             ; food lbs- x10
+    :
+    CLC
     LDA foodLbs
-    ADC cartFoodLbs
+    ADC #10
     STA foodLbs
     LDA foodLbs+1
-    ADC cartFoodLbs+1
+    ADC #0
     STA foodLbs+1
+    DEX
+    CPX #0
+    BNE :-
     LDA #0                  ; empty cart
     STA helper
     STA helper+1
     STA cartBullets
     STA cartBullets+1
+    STA cost
+    STA cost+1
+    STA costhelper
+    STA costhelper+1
     STA cartFoodLbs
     STA cartFoodLbs+1
     STA cartSpareParts
