@@ -2477,6 +2477,148 @@ bankswitch_nosave:
     RTS
 .endproc
 
+.proc DoStorePurchase
+    SEC                     ; dollars
+    LDA dollars
+    SBC cartDollars
+    STA dollars
+    LDA dollars+1
+    SBC cartDollars+1
+    STA dollars+1
+    CLC                     ; oxen
+    LDA oxenHeadcount
+    ADC cartOxen
+    STA oxenHeadcount
+    CLC                     ; clothing
+    LDA clothing
+    ADC cartClothing
+    STA clothing
+    LDA cartSpareParts      ; wheels
+    AND #%00000011
+    STA helper
+    LDA spareParts
+    AND #%00000011
+    CLC
+    ADC helper
+    STA helper
+    LDA spareParts
+    AND #%11111100
+    CLC
+    ADC helper
+    STA spareParts
+    LDA cartSpareParts      ; axles
+    AND #%00001100
+    STA helper
+    LDA spareParts
+    AND #%00001100
+    CLC
+    ADC helper
+    STA helper
+    LDA spareParts
+    AND #%11110011
+    CLC
+    ADC helper
+    STA spareParts
+    LDA cartSpareParts      ; tongues
+    AND #%00110000
+    STA helper
+    LDA spareParts
+    AND #%00110000
+    CLC
+    ADC helper
+    STA helper
+    LDA spareParts
+    AND #%11001111
+    CLC
+    ADC helper
+    STA spareParts
+    CLC                     ; bullets
+    LDA bullets
+    ADC cartBullets
+    STA bullets
+    LDA bullets+1
+    ADC cartBullets+1
+    STA bullets+1
+    CLC                     ; food lbs
+    LDA foodLbs
+    ADC cartFoodLbs
+    STA foodLbs
+    LDA foodLbs+1
+    ADC cartFoodLbs+1
+    STA foodLbs+1
+    LDA #0                  ; empty cart
+    STA helper
+    STA helper+1
+    STA cartBullets
+    STA cartBullets+1
+    STA cartFoodLbs
+    STA cartFoodLbs+1
+    STA cartSpareParts
+    STA cartClothing
+    STA cartOxen
+    STA cartDollars
+    STA cartDollars+1
+    RTS
+.endproc
+
+.proc ValidateCart
+    ; return A = 1 or 0 if cart is valid
+    ;   Invalid: cart+inv exceeds wagon capacity, cost exceeds wallet
+    ;       Capacity- wheels/axles/tongues: 3
+    ; TODO: food 2000lb, bullets 2000, clothing 99?, oxen ~20?
+    LDA cartSpareParts
+    AND #%00000011
+    STA helper
+    LDA spareParts
+    AND #%00000011
+    CLC
+    ADC helper
+    CMP #4
+    BCC :+
+    LDA #0 ; too many wheels
+    JMP Done
+    :
+    LDA cartSpareParts
+    AND #%00001100
+    LSR
+    LSR
+    STA helper
+    LDA spareParts
+    AND #%00001100
+    LSR
+    LSR
+    CLC
+    ADC helper
+    CMP #4
+    BCC :+
+    LDA #0
+    JMP Done
+    :
+    LDA cartSpareParts
+    AND #%00110000
+    LSR
+    LSR
+    LSR
+    LSR
+    STA helper
+    LDA spareParts
+    AND #%00110000
+    LSR
+    LSR
+    LSR
+    LSR
+    CLC
+    ADC helper
+    CMP #4
+    BCC :+
+    LDA #0
+    JMP Done
+    :
+    LDA #1
+    Done:
+    RTS
+.endproc
+
 ; Game state initialization -----------
 
 .proc InitStateTitle
@@ -3662,6 +3804,27 @@ bankswitch_nosave:
         :
         JMP CheckLeft
         @menuNone:
+            LDA dollars+1   ; can we afford it?
+            CMP cartDollars+1
+            BCC :+ ; branch if dollars high byte < cartDollars high byte
+            BEQ :++ ; branch if dollars high byte = cartDollars high byte
+            JMP :+++
+            : ; not enough money
+            JMP Done
+            : ; dollars high byte = cartDollars high byte
+            LDA dollars
+            CMP cartDollars
+            BCS :+ ; branch if dollars low byte >= cartDollars low byte
+            JMP :--
+            : ; enough money? inv not full? enough to embark (if applicable?)
+            LDA cartOxen
+            JSR ValidateCart
+            CMP #0
+            BEQ :---
+            JSR DoStorePurchase
+            LDA #GAMESTATE_STARTDATE
+            STA gameState
+            JMP Done
         @menuItem1:
         @menuItem2:
         @menuItem4:
