@@ -603,6 +603,66 @@ bankswitch_nosave:
         INX
         CPX #4
         BNE @underline6
+    StartingDate:
+        LDA PPUSTATUS
+        LDA #$22
+        STA PPUADDR
+        LDA #$45
+        STA PPUADDR
+        LDX #38
+        :
+        LDA newGameText, X
+        STA PPUDATA
+        INX
+        CPX #52
+        BNE :-
+        LDA PPUSTATUS
+        LDA #$22
+        STA PPUADDR
+        LDA #$8A
+        STA PPUADDR
+        LDA #0
+        STA helper
+        LDY #0
+        LDX #0
+        :
+        LDA startingDateText, X
+        STA PPUDATA
+        INX
+        INC helper
+        LDA helper
+        CMP #6
+        BNE :-
+        LDA #___
+        STA PPUDATA
+        STA PPUDATA
+        STA PPUDATA
+        STA PPUDATA
+        LDA #0
+        STA helper
+        :
+        LDA startingDateText, X
+        STA PPUDATA
+        INX
+        INC helper
+        LDA helper
+        CMP #6
+        BNE :-
+        LDA #0
+        STA helper
+        :
+        LDA #___
+        STA PPUDATA
+        INC helper
+        LDA helper
+        CMP #$30
+        BNE :-
+        LDA #0
+        STA helper
+        INY
+        CPY #3
+        BNE :---
+
     JSR DoneBulkDrawing
     RTS
 .endproc
@@ -2160,11 +2220,6 @@ bankswitch_nosave:
     JSR InitStateStore
     JMP Done
     :
-    CMP #GAMESTATE_STARTDATE
-    BNE :+ 
-    JSR InitStateStartDate
-    JMP Done
-    :
     CMP #GAMESTATE_LANDMARK
     BNE :+ 
     JSR InitStateLandmark
@@ -2200,10 +2255,6 @@ bankswitch_nosave:
     JMP Done
     :
     CMP #GAMESTATE_STORE
-    BNE :+ 
-    JMP Done
-    :
-    CMP #GAMESTATE_STARTDATE
     BNE :+ 
     JMP Done
     :
@@ -2335,9 +2386,6 @@ bankswitch_nosave:
         CMP #GAMESTATE_STORE
         BEQ Store
 
-        CMP #GAMESTATE_STARTDATE
-        BEQ StartDate
-
         CMP #GAMESTATE_LANDMARK
         BEQ Landmark
 
@@ -2362,10 +2410,7 @@ bankswitch_nosave:
         
     Store:
         JMP Done
-        
-    StartDate:
-        JMP Done
-        
+          
     Landmark:
         JMP Done
         
@@ -2799,10 +2844,6 @@ bankswitch_nosave:
     RTS
 .endproc
 
-.proc InitStateStartDate
-    RTS
-.endproc
-
 .proc InitStateLandmark
     RTS
 .endproc
@@ -2940,11 +2981,6 @@ bankswitch_nosave:
     CMP #GAMESTATE_STORE
     BNE :+
     JSR ControllerStore
-    JMP Done
-    :
-    CMP #GAMESTATE_STARTDATE
-    BNE :+
-    JSR ControllerStartDate
     JMP Done
     :
     CMP #GAMESTATE_LANDMARK
@@ -3836,7 +3872,7 @@ bankswitch_nosave:
             CMP #0
             BEQ :---
             JSR DoStorePurchase
-            LDA #GAMESTATE_STARTDATE
+            LDA #GAMESTATE_LANDMARK
             STA gameState
             JMP Done
         @menuItem1:
@@ -4296,10 +4332,6 @@ bankswitch_nosave:
     RTS
 .endproc
         
-.proc ControllerStartDate
-    RTS
-.endproc
-        
 .proc ControllerLandmark
     RTS
 .endproc
@@ -4338,9 +4370,6 @@ bankswitch_nosave:
     CMP #GAMESTATE_STORE
     BEQ Store
 
-    CMP #GAMESTATE_STARTDATE
-    BEQ StartDate
-
     CMP #GAMESTATE_LANDMARK
     BEQ Landmark
 
@@ -4354,9 +4383,6 @@ bankswitch_nosave:
         JMP Done
         
     Store:
-        JMP Done
-        
-    StartDate:
         JMP Done
         
     Landmark:

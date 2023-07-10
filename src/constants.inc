@@ -107,10 +107,9 @@ TEXT_STORENAME_LEN  = 12
 GAMESTATE_TITLE     = 0 ; title screen
 GAMESTATE_NEWGAME   = 1 ; set party member names, select occupation
 GAMESTATE_STORE     = 2 ; general store interface
-GAMESTATE_STARTDATE = 3 ; select embark month
-GAMESTATE_LANDMARK  = 4 ; at a landmark/town/river/etc
-GAMESTATE_MAP       = 5 ; looking at the map
-GAMESTATE_TRAVELING = 6 ; main game state - traveling the trail
+GAMESTATE_LANDMARK  = 3 ; at a landmark/town/river/etc
+GAMESTATE_MAP       = 4 ; looking at the map
+GAMESTATE_TRAVELING = 5 ; main game state - traveling the trail
 ;GAMESTATE_DECISION  = ?
 
 ; Menu states

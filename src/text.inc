@@ -11,6 +11,15 @@ newGameText:
     .byte _L_,_E_,_A_,_D_,_E_,_R_,_CL
     .byte _O_,_C_,_C_,_U_,_P_,_A_,_T_,_I_,_O_,_N_,_CL
     .byte _O_,_T_,_H_,_E_,_R_,___,_P_,_A_,_R_,_T_,_Y_,___,_M_,_E_,_M_,_B_,_E_,_R_,_S_,_CL
+    .byte _S_,_T_,_A_,_R_,_T_,_I_,_N_,_G_,___,_D_,_A_,_T_,_E_,_CL
+
+startingDateText:
+    .byte _M_,_A_,_R_,_C_,_H_,___
+    .byte _M_,_A_,_Y_,___,___,___
+    .byte _A_,_P_,_R_,_I_,_L_,___
+    .byte _J_,_U_,_N_,_E_,___,___
+    .byte _J_,_U_,_L_,_Y_,___,___
+    .byte _A_,_U_,_G_,_U_,_S_,_T_
 
 keyboard:
     .byte _A_,_B_,_C_,_D_,_E_,_F_,_G_,_H_,_7_,_8_,_9_
