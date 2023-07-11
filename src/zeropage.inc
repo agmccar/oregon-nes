@@ -1,8 +1,6 @@
-;-------------------------------------------------------------------------------
-.segment "ZEROPAGE"
-
 ; Engine
 currentBank:        .res 1
+tilesBank:          .res 1
 pointer:            .res 2
 sprite0hit:         .res 1
 helper:             .res 2
@@ -33,6 +31,11 @@ traveledMi:         .res 2
 traveledDigit:      .res 4
 menuOpenLast:       .res 1
 menuOpen:           .res 1 ; see: constants.inc -> Menu states
+
+; traveling state, press select: switch between AB, CA, CB
+; location state, press select: switch between A, B, C
+; A:conditions, B:console/log, C:Map
+
 fingerX:            .res 1 ; (tiles from top left)
 fingerY:            .res 1 ; (tiles from top left)
 fingerLastX:        .res 1 ; last pos for graphics refresh

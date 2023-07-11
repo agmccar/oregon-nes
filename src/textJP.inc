@@ -1,16 +1,23 @@
-titleText:
-    .byte _T_,_H_,_E_,___,_O_,_R_,_E_,_G_,_O_,_N_,___,_T_,_R_,_A_,_I_,_L_,___
+; dakuten:
+; %00000000
+;  ||||||++ byte 0 dakuten- 00: none, 01: unused, 10: dakuten, 11: handakuten
+;  ||||++-- byte 1 dakuten
+;  ||++---- byte 2
+;  ++------ byte 3, etc.
 
-titleOptions:
+titleTextJP:
+    .byte ___,___,___,___,__Ok,_REk,_KOk,_NNk,_DOT,_TOk,_REk,__Ik,_RUk,___,___,___,___
+
+titleOptionsJP:
     .byte _P_,_R_,_E_,_S_,_S_,___,___,_S_,_T_,_A_,_R_,_T_
 
-newGameText:
+newGameTextJP:
     .byte _L_,_E_,_A_,_D_,_E_,_R_,_CL
     .byte _O_,_C_,_C_,_U_,_P_,_A_,_T_,_I_,_O_,_N_,_CL
     .byte _O_,_T_,_H_,_E_,_R_,___,_P_,_A_,_R_,_T_,_Y_,___,_M_,_E_,_M_,_B_,_E_,_R_,_S_,_CL
     .byte _S_,_T_,_A_,_R_,_T_,_I_,_N_,_G_,___,_D_,_A_,_T_,_E_,_CL
 
-startingDateText:
+startingDateTextJP:
     .byte _M_,_A_,_R_,_C_,_H_,___
     .byte _J_,_U_,_N_,_E_,___,___
     .byte _A_,_P_,_R_,_I_,_L_,___
@@ -18,18 +25,18 @@ startingDateText:
     .byte _M_,_A_,_Y_,___,___,___
     .byte _A_,_U_,_G_,_U_,_S_,_T_
 
-keyboard:
+keyboardJP:
     .byte _A_,_B_,_C_,_D_,_E_,_F_,_G_,_H_,_7_,_8_,_9_
     .byte _I_,_J_,_K_,_L_,_M_,_N_,_O_,_P_,_4_,_5_,_6_
     .byte _Q_,_R_,_S_,_T_,_U_,_V_,_W_,_X_,_1_,_2_,_3_
     .byte _Y_,_Z_,_CL,_CM,_PD,_EX,_QU,___,___,___,___
-keyboardDone:
+keyboardDoneJP:
     .byte _D_,_O_,_N_,_E_
 
-decimalDigits:
+decimalDigitsJP:
     .byte _0_,_1_,_2_,_3_,_4_,_5_,_6_,_7_,_8_,_9_
 
-hudMenu:
+hudMenuJP:
     .byte _M_,_A_,_P_,___,___,___,___ ;ちず
     .byte _S_,_T_,_A_,_T_,_U_,_S_,___ ;ステータス
     .byte _R_,_A_,_T_,_I_,_O_,_N_,_S_ ;しょくりょう
@@ -41,7 +48,7 @@ hudMenu:
     .byte _O_,_P_,_T_,_I_,_O_,_N_,_S_ ;オプション
     
 
-temperatureText:          ;(Attribute)
+temperatureTextJP:          ;(Attribute)
     .byte _C_,_O_,_L_,_D_ ; $0,$8
     .byte _C_,_O_,_L_,_D_ ; $1,$9 
     .byte _C_,_O_,_O_,_L_ ; $2,$A HAIL STORM, SNOWING, BLIZZARD
@@ -52,7 +59,7 @@ temperatureText:          ;(Attribute)
     .byte _H_,_O_,_T_,_EX ; $7,$F 
 
 
-weatherAttributes:
+weatherAttributesJP:
     ; %0000 ($0-$F)
     ;  |||+ Fine- 0:cooler, 1:warmer
     ;  ||+- Coarse- 0:colder, 1:hotter
@@ -67,7 +74,7 @@ weatherAttributes:
     .byte $00 ; unused, unused
     .byte $00 ; unused, unused
 
-weatherText:
+weatherTextJP:
     .byte ___,_C_,_L_,_E_,_A_,_R_,___,___ ;かいせい　晴
     .byte ___,_P_,_A_,_R_,_T_,_L_,_Y_,___ ;うすぐもり　雲 (ときどき?)
     .byte ___,_C_,_L_,_O_,_U_,_D_,_Y_,___
@@ -94,12 +101,12 @@ weatherText:
 
 
 
-paceText:
+paceTextJP:
     .byte _S_,_T_,_E_,_A_,_D_,_Y_,___,___,___
     .byte _S_,_T_,_R_,_E_,_N_,_U_,_O_,_U_,_S_
     .byte _G_,_R_,_U_,_E_,_L_,_I_,_N_,_G_,___
 
-rationsText:
+rationsTextJP:
     .byte _F_,_I_,_L_,_L_,_I_,_N_,_G_,___,___,___
         ; 3 lb food per person per day
     .byte _M_,_E_,_A_,_G_,_E_,_R_,___,___,___,___
@@ -107,7 +114,7 @@ rationsText:
     .byte _B_,_A_,_R_,_E_,___,_B_,_O_,_N_,_E_,_S_
         ; 1 lb food per person per day
 
-suppliesText:
+suppliesTextJP:
     .byte _O_,_X_,_E_,_N_,___,___,___
     .byte _C_,_L_,_O_,_T_,_H_,_E_,_S_
     .byte _B_,_U_,_L_,_L_,_E_,_T_,_S_
@@ -117,20 +124,20 @@ suppliesText:
     .byte _LB,___,_F_,_O_,_O_,_D_,___
     .byte _DL,_0_,_0_,_0_,_0_,_PD,_00
 
-healthText:
+healthTextJP:
     .byte ___,___,_G_,_O_,_O_,_D_
     .byte ___,___,_F_,_A_,_I_,_R_
     .byte ___,___,_P_,_O_,_O_,_R_
     .byte _V_,_PD,_P_,_O_,_O_,_R_
 
-defaultPersonNames:
+defaultPersonNamesJP:
     .byte ___,___,___,___
     .byte _E_,_M_,_M_,_A_
     .byte _B_,_E_,_T_,_H_
     .byte _J_,_E_,_D_,___
     .byte _Z_,_E_,_K_,_E_
 
-personStatusText:
+personStatusTextJP:
     .byte _F_,_E_,_V_,_E_,_R_,___,___,___,___,___
     .byte _D_,_Y_,_S_,_E_,_N_,_T_,_E_,_R_,_Y_,___
     .byte _M_,_E_,_A_,_S_,_L_,_E_,_S_,___,___,___
@@ -149,7 +156,7 @@ personStatusText:
     ;.byte ___,___,___,___,___,___,___,___,___,___
     ;.byte ___,___,___,___,___,___,___,___,___,___
 
-personStatusAttribute:
+personStatusAttributeJP:
     ; %0000
     ;  |+++ unused
     ;  +--- diaryAffliction line count
@@ -163,7 +170,7 @@ personStatusAttribute:
     .byte %00000000 ; FAIR, POOR
     .byte %00000000 ; VERY POOR, DECEASED
 
-occupationText:
+occupationTextJP:
     .byte _B_,_A_,_N_,_K_,_E_,_R_,___,___,___,___,___
     .byte _D_,_O_,_C_,_T_,_O_,_R_,___,___,___,___,___
     .byte _M_,_E_,_R_,_C_,_H_,_A_,_N_,_T_,___,___,___
@@ -173,7 +180,7 @@ occupationText:
     .byte _F_,_A_,_R_,_M_,_E_,_R_,___,___,___,___,___
     .byte _T_,_E_,_A_,_C_,_H_,_E_,_R_,___,___,___,___
 
-occupationAttribute:
+occupationAttributeJP:
     ; %00000000
     ;  |||||+++ Bonus multiplier (000:x0.0, 001:x0.5, 010:x1.0, ..., 111:x3.5)
     ;  ||||+--- Oxen are less likely to get sick and die
@@ -189,7 +196,7 @@ occupationAttribute:
     .byte %00001110 ; FARMER
     .byte %00000111 ; TEACHER
 
-riverAttribute:
+riverAttributeJP:
     ; %00000000
     ;  |||||+++ Depth?
     ;  ||+++--- Width?
@@ -209,17 +216,17 @@ riverAttribute:
         ; Widths (ft): 
         ; Depths (ft): 
 
-generalStoreText:
+generalStoreTextJP:
     .byte _G_,_E_,_N_,_E_,_R_,_A_,_L_,___,_S_,_T_,_O_,_R_,_E_
-storeColumnHeaderText:
+storeColumnHeaderTextJP:
     .byte _B_,_U_,_Y_,___
     .byte _I_,_T_,_E_,_M_
     .byte _E_,_A_,_C_,_H_
     .byte _C_,_O_,_S_,_T_
-storeTotalText:
+storeTotalTextJP:
     .byte ___,___,___,_T_,_O_,_T_,_A_,_L_,_CL
     .byte _Y_,_O_,_U_,___,_H_,_A_,_V_,_E_,_CL
-storeNameText:
+storeNameTextJP:
     .byte _I_,_N_,_D_,_E_,_P_,_E_,_N_,_D_,_E_,_N_,_C_,_E_
     .byte _F_,_O_,_R_,_T_,___,_K_,_E_,_A_,_R_,_N_,_E_,_Y_
     .byte _F_,_O_,_R_,_T_,___,_L_,_A_,_R_,_A_,_M_,_I_,_E_

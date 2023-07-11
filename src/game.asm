@@ -1,21 +1,40 @@
 .include "constants.inc"
 .include "header.inc"
-.include "palettes.inc"
-.include "backgrounds.inc"
-.include "sprites.inc"
-.include "text.inc"
-.include "zeropage.inc"
-.include "diarytext.inc"
-.include "vars.inc"
-.include "rom0.asm"
-
-;-------------------------------------------------------------------------------
-; .segment "CHARS"
-;     .incbin "../graphics/tiles.chr"
-
 ;-------------------------------------------------------------------------------
 .segment "VECTORS"
     .addr nmi, reset, irq
+    
+;-------------------------------------------------------------------------------
+.segment "ZEROPAGE"
+.include "zeropage.inc"
+
+;-------------------------------------------------------------------------------
+.segment "BSS"
+.include "vars.inc"
+
+;-------------------------------------------------------------------------------
+.segment "ROM0"
+.include "tiles.asm"
+
+;-------------------------------------------------------------------------------
+.segment "ROM1"
+
+
+;-------------------------------------------------------------------------------
+.segment "ROM2"
+.include "textJP.inc"
+
+;-------------------------------------------------------------------------------
+.segment "ROM3"
+
+;-------------------------------------------------------------------------------
+.segment "ROM4"
+
+;-------------------------------------------------------------------------------
+.segment "ROM5"
+
+;-------------------------------------------------------------------------------
+.segment "ROM6"
 
 ;-------------------------------------------------------------------------------
 .segment "RODATA" ; ROM7
@@ -23,6 +42,12 @@
 banktable:              ; Write to this table to switch banks.
     .byte $00, $01, $02, $03, $04, $05, $06
     .byte $07, $08, $09, $0A, $0B, $0C, $0D, $0E
+
+.include "palettes.inc"
+.include "backgrounds.inc"
+.include "diarytext.inc"
+.include "sprites.inc"
+.include "text.inc"
 
 ;-------------------------------------------------------------------------------
 .segment "CODE"
@@ -71,6 +96,7 @@ bankswitch_nosave:
     BIT PPUSTATUS
     BPL :-
     LDY #0
+    STY tilesBank
     JSR bankswitch_y
     LDA #<tiles_chr
     STA pointer
@@ -122,6 +148,34 @@ bankswitch_nosave:
 ;--SUBROUTINES------------------------------------------------------------------
 
 ; ROM bank handling -------------------
+
+.proc SwitchLang
+    LDA tilesBank   ; ROM0 bank0:ENG, bank1:JP
+    BNE :+
+    LDY #0
+    JSR bankswitch_y
+    LDA #<tiles_chr
+    STA pointer
+    LDA #>tiles_chr
+    STA pointer+1
+    LDA #0
+    STA tilesBank
+    JMP :++
+    :
+    LDY #0
+    JSR bankswitch_y
+    LDA #<tilesJP_chr
+    STA pointer
+    LDA #>tilesJP_chr
+    STA pointer+1
+    LDA #1
+    STA tilesBank
+    :
+    JSR CopyCHRTiles
+    LDY #1
+    JSR bankswitch_y
+    RTS
+.endproc
 
 .proc CopyCHRTiles ; copy chr tiles from ROM bank to CHR RAM
     LDY #0

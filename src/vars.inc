@@ -1,6 +1,3 @@
-;-------------------------------------------------------------------------------
-.segment "BSS"
-
 ; HUD text variables
 diaryTextLine1:     .res TEXT_DIARY_LINE_LEN
 diaryTextLine2:     .res TEXT_DIARY_LINE_LEN

@@ -1,6 +1,3 @@
-;-------------------------------------------------------------------------------
-.SEGMENT "RODATA"
-
 palette:
     ; background palette data
     .byte $0F, $00, $10, $30 ; Black, Grey, LGrey, White
