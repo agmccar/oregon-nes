@@ -1,12 +1,8 @@
-; dakuten:
-; %00000000
-;  ||||||++ byte 0 dakuten- 00: none, 01: unused, 10: dakuten, 11: handakuten
-;  ||||++-- byte 1 dakuten
-;  ||++---- byte 2
-;  ++------ byte 3, etc.
+; Dakuten:
+; __DT or _HDT in any string should draw that dakuten above the previous letter 
 
 titleTextJP:
-    .byte ___,___,___,___,__Ok,_REk,_KOk,_NNk,_DOT,_TOk,_REk,__Ik,_RUk,___,___,___,___
+    .byte ___,___,___,___,__Ok,_REk,_KOk,__DT,_NNk,_DOT,_TOk,_REk,__Ik,_RUk,___,___,___,___
 
 titleOptionsJP:
     .byte _P_,_R_,_E_,_S_,_S_,___,___,_S_,_T_,_A_,_R_,_T_

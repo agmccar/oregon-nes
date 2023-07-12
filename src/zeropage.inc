@@ -32,6 +32,13 @@ traveledDigit:      .res 4
 menuOpenLast:       .res 1
 menuOpen:           .res 1 ; see: constants.inc -> Menu states
 
+; %00000000
+;  |||||||+ status HUD visible
+;  ||||||+- diary HUD visible
+;  |||||+-- map HUD visible
+;  +++++--- unused 
+hudOpen:            .res 1
+
 ; traveling state, press select: switch between AB, CA, CB
 ; location state, press select: switch between A, B, C
 ; A:conditions, B:console/log, C:Map
@@ -71,7 +78,7 @@ cartHelperDigit:    .res 4 ; shameless hack
 ; %00000000 wagonStatus
 ;  |||||||+ Speed- 0:stopped, 1:moving
 ;  ||||||+- Trail- 0:at landmark, 1:on the trail 
-;  ||||++-- unused
+;  ||||++-- Health- 00: Good, 01: Fair, 10: Poor, 11: V.Poor
 ;  ++++---- Rest- 0-15 days remaining
 wagonStatus:    .res 1
 
@@ -79,9 +86,7 @@ wagonStatus:    .res 1
 ;  ||||||++ Pace- 00:unused, 01:steady, 10:strenuous, 11:grueling
 ;  ||||++-- Rations- 00:unused, 01:bare bones, 10:meager, 11:filling
 ;  |||+---- Rest- 0:not resting, 1:resting
-;  ||+----- unused
-;  |+------ unused
-;  +------- unused
+;  +++----- unused
 wagonSettings:  .res 1 
 
 ; Supplies ---------------------------------------------------------------------

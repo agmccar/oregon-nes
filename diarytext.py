@@ -62,7 +62,7 @@ text = {
         " THE RIVER.",
         "xxxx DROWNED.",
         "YOUR WAGON SANK AND YOU LOST",
-        " xxxx, xxxxxxx, xxxxxxx."
+        " xxxx, xxxxxxx, xxxxxxx.",
         "YOUR WAGON TIPPED. FORTUNATELY",
         " NOBODY WAS INJURED AND YOU",
         " RECOVERED ALL YOUR SUPPLIES."
@@ -144,24 +144,23 @@ text = {
         "YOU HAVE REACHED"
     ], #"##############################",
     "Locations": [
-        " INDEPENDENCE, MISSOURI.",
-        " THE KANSAS RIVER CROSSING.",
-        " THE BIG BLUE RIVER CROSSING.",
-        "FORT KEARNEY.",
-        "CHIMNEY ROCK.",
-        "FORT LARAMIE.",
-        " INDEPENDENCE ROCK.",
-        "SOUTH PASS.",
-        "FORT BRIDGER.",
-        " THE GREEN RIVER CROSSING.",
-        "SODA SPRINGS.",
-        "FORT HALL."
-        " THE SNAKE RIVER CROSSING.",
-        "FORT BOISE.",
+        "INDEPENDENCE, MISSOURI",
+        "KANSAS RIVER CROSSING",
+        "BIG BLUE RIVER CROSSING",
+        "FORT KEARNEY",
+        "CHIMNEY ROCK",
+        "FORT LARAMIE",
+        "INDEPENDENCE ROCK",
+        "SOUTH PASS",
+        "FORT BRIDGER",
+        "GREEN RIVER CROSSING",
+        "SODA SPRINGS",
+        "FORT HALL",
+        "SNAKE RIVER CROSSING",
+        "FORT BOISE",
         "GRANDE RONDE",
-        " IN THE BLUE MOUNTAINS.",
-        " FORT WALLA WALLA."
-        "THE DALLES."
+        "FORT WALLA WALLA",
+        "THE DALLES"
     ]  #"##############################",
 }
 
@@ -181,21 +180,34 @@ def bytify(text):
     }
     asm = []
     for label in text:
-        asm.append(f"diary{label}:")
-        for line in text[label]:
-            byte = []
-            for char in line:
-                ch = f"_{char}_"
-                if char in special:
-                    ch = special[char]
-                byte.append(ch)
-            while len(byte) < 30:
-                byte.append('___')
-            if len(byte) > 30:
-                print(f"Error: line too long\n{label}: {line}")
-                exit()
-            asm.append("    .byte " + ','.join(byte))
-        asm.append("\n")
+        if label == "Locations":
+            asm.append(f"diary{label}:")
+            for line in text[label]:
+                byte = []
+                byte.append(str(len(line)))
+                for char in line:
+                    ch = f"_{char}_"
+                    if char in special:
+                        ch = special[char]
+                    byte.append(ch)
+                asm.append("    .byte "+ ','.join(byte))
+            asm.append("    .byte 0")
+        else:
+            asm.append(f"diary{label}:")
+            for line in text[label]:
+                byte = []
+                for char in line:
+                    ch = f"_{char}_"
+                    if char in special:
+                        ch = special[char]
+                    byte.append(ch)
+                while len(byte) < 30:
+                    byte.append('___')
+                if len(byte) > 30:
+                    print(f"Error: line too long\n{label}: {line}")
+                    exit()
+                asm.append("    .byte " + ','.join(byte))
+            asm.append("\n")
     return asm
 
 def main():

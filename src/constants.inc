@@ -84,7 +84,11 @@ _UL = 150 ; __ (underline)
 _AP = 151 ; ' (apostrophe)
 _AU = 152 ; ^ (arrow up)
 _AD = 153 ; v (arrow down)
-
+_3U = 154 ; ┬
+_3D = 155 ; ┴
+_3L = 156 ; ├
+_3R = 157 ; ┤
+ 
 ; JP tile characters
 __WO = $50
 _LTU = $51
@@ -234,13 +238,36 @@ MENU_STORE_ITEM1        = 4 ; 1 digit general store item selection
 MENU_STORE_ITEM2        = 5 ; 2 digit general store item selection
 MENU_STORE_ITEM4        = 6 ; 4 digit general store item selection
 
+; HUD states
+HUD_STATUS          = %00000001
+HUD_DIARY           = %00000010
+HUD_MAP             = %00000100
+HUD_STATUS_DIARY    = %00000011
+HUD_MAP_DIARY       = %00000110
+HUD_MAP_STATUS      = %00000101
 ; Locations (landmarks)
 ; %00000000
-;  ||||++++ identifier(index)
-;  |||+---- river y/n
-;  ||+----- store y/n
-;  ++------ unused
-LOC_INDEPENDENCE        = %00100000 ; Independence, MO
+;  |||+++++ identifier(index)
+;  ||+----- trail divides(?) unused for now
+;  |+------ river y/n
+;  +------- store y/n
+LOC_INDEPENDENCE        = %10000000 ; Independence, MO
+LOC_KANSASRIVER         = %01000001 ; "KANSAS RIVER CROSSING",
+LOC_BIGBLUERIVER        = %01000010 ; "BIG BLUE RIVER CROSSING",
+LOC_FORTKEARNEY         = %10000011 ; "FORT KEARNEY",
+LOC_CHIMNEYROCK         = %00000100 ; "CHIMNEY ROCK",
+LOC_FORTLARAMIE         = %10000101 ; "FORT LARAMIE",
+LOC_INDEPENDENCEROCK    = %00000110 ; "INDEPENDENCE ROCK",
+LOC_SOUTHPASS           = %00000111 ; "SOUTH PASS",
+LOC_FORTBRIDGER         = %10001000 ; "FORT BRIDGER",
+LOC_GREENRIVER          = %01001001 ; "GREEN RIVER CROSSING",
+LOC_SODASPRINGE         = %00001010 ; "SODA SPRINGS",
+LOC_FORTHALL            = %10001011 ; "FORT HALL",
+LOC_SNAKERIVER          = %01001100 ; "SNAKE RIVER CROSSING",
+LOC_FORTBOISE           = %10001101 ; "FORT BOISE",
+LOC_GRANDERONDE         = %00001110 ; "GRANDE RONDE",
+LOC_FORTWALLAWALLA      = %10001111 ; "FORT WALLA WALLA",
+LOC_THEDALLES           = %00010000 ; "THE DALLES"
 
 ; Cost
 ; %00000000

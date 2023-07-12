@@ -10,6 +10,26 @@ newGameText:
     .byte _O_,_T_,_H_,_E_,_R_,___,_P_,_A_,_R_,_T_,_Y_,___,_M_,_E_,_M_,_B_,_E_,_R_,_S_,_CL
     .byte _S_,_T_,_A_,_R_,_T_,_I_,_N_,_G_,___,_D_,_A_,_T_,_E_,_CL
 
+monthText:
+    .byte _J_,_A_,_N_
+    .byte _F_,_E_,_B_
+    .byte _M_,_A_,_R_
+    .byte _A_,_P_,_R_
+    .byte _M_,_A_,_Y_
+    .byte _J_,_U_,_N_
+    .byte _J_,_U_,_L_
+    .byte _A_,_U_,_G_
+    .byte _S_,_E_,_P_
+    .byte _O_,_C_,_T_
+    .byte _N_,_O_,_V_
+    .byte _D_,_E_,_C_
+
+hudStatusText:
+    .byte _H_,_E_,_A_,_L_,_T_,_H_,_CL
+    .byte _F_,_O_,_O_,_D_,_CL,___,___
+    .byte _N_,_E_,_X_,_T_,_CL,___,___
+    .byte _T_,_O_,_T_,_A_,_L_,_CL,___
+
 startingDateText:
     .byte _M_,_A_,_R_,_C_,_H_,___
     .byte _J_,_U_,_N_,_E_,___,___

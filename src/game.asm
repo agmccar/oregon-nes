@@ -1378,6 +1378,78 @@ bankswitch_nosave:
     RTS
 .endproc
 
+.proc LoadBgLandmark
+    JSR StartBulkDrawing
+    JSR DrawLandmarkTitle
+    JSR DrawLandmarkImage
+    JSR DrawHUD
+    JSR DoneBulkDrawing
+    RTS
+.endproc
+
+.proc DrawLandmarkTitle
+    LDY #1
+    JSR DrawHorizontalLine
+    LDA PPUSTATUS
+    LDA #$20
+    STA PPUADDR
+    LDA #$60
+    STA PPUADDR
+    LDA location
+    AND #%00111111  ; check location index (ie ignore river and store bits)
+    STA helper
+    LDX #0
+    LDY #0
+    STX helper+1
+    LDA diaryLocations, X
+    STA helper2
+    :
+    CPY helper
+    BNE :+
+    JMP :+++
+    :
+    LDX #0
+    :
+    INX
+    CPX helper2
+    BNE :-
+    CLC
+    ADC helper+1
+    STA helper+1
+    INC helper+1
+    LDX helper+1
+    INY
+    LDA diaryLocations, X
+    STA helper2
+    JMP :---
+    :
+    LDA #32
+    SEC
+    SBC helper2
+    LSR
+    STA helper2+1
+    LDX #0
+    LDA #___
+    :
+    STA PPUDATA
+    INX
+    CPX helper2+1
+    BNE :-
+    LDX helper+1
+    INX
+    LDY #0
+    :
+    LDA diaryLocations, X
+    STA PPUDATA
+    INX
+    INY
+    CPY helper2
+    BNE :-
+    LDY #5
+    JSR DrawHorizontalLine
+    RTS
+.endproc
+
 .proc DrawShopEach
     ; A: value to convert to two decimal text digits
     ; destroys X,Y registers
@@ -1682,6 +1754,320 @@ bankswitch_nosave:
     STA PPUDATA
     PLA
     TAX
+    RTS
+.endproc
+
+.proc DrawBlankLine
+    LDA #___
+    LDX #0
+    :
+    STA PPUDATA
+    INX
+    CPX #32
+    BNE :-
+    RTS
+.endproc
+
+.proc DrawHorizontalLine
+    ; Y: y-coord of the horizontal line
+    LDX #0
+    JSR SetPpuAddrPointerFromXY
+    LDA PPUSTATUS
+    LDA pointer
+    STA PPUADDR
+    LDA pointer+1
+    STA PPUADDR
+    LDA #_HR
+    LDX #0
+    :
+    STA PPUDATA
+    INX
+    CPX #32
+    BNE :-
+    RTS
+.endproc
+
+.proc DrawHUD
+    JSR StartBulkDrawing
+    LDA gameState
+    CMP #GAMESTATE_LANDMARK
+    BNE Traveling
+    LDY #19
+    LDX #0
+    JSR SetPpuAddrPointerFromXY
+    LDA PPUSTATUS
+    LDA pointer
+    STA PPUADDR
+    LDA pointer+1
+    STA PPUADDR
+    JSR DrawHorizontalLine
+    LDA hudOpen
+    CMP #HUD_STATUS
+    BNE :+
+    JSR DrawHUDStatus
+    JMP Done
+    :
+    CMP #HUD_DIARY
+    BNE :+
+    JSR DrawHUDDiary
+    JMP Done
+    :
+    CMP #HUD_MAP
+    BNE :+
+    JSR DrawHUDMap
+    :
+    JMP Done
+    Traveling:
+    LDY #8
+    LDX #0
+    JSR SetPpuAddrPointerFromXY
+    LDA PPUSTATUS
+    LDA pointer
+    STA PPUADDR
+    LDA pointer+1
+    STA PPUADDR
+    JSR DrawHorizontalLine
+    LDA hudOpen
+    CMP #HUD_STATUS_DIARY
+    BNE :+
+    JSR DrawHUDStatus
+    LDY #19
+    LDX #0
+    JSR SetPpuAddrPointerFromXY
+    LDA PPUSTATUS
+    LDA pointer
+    STA PPUADDR
+    LDA pointer+1
+    STA PPUADDR
+    JSR DrawHorizontalLine
+    JSR DrawHUDDiary
+    JMP Done
+    :
+    CMP #HUD_MAP_STATUS
+    BNE :+
+    JSR DrawHUDMap
+    LDY #19
+    LDX #0
+    JSR SetPpuAddrPointerFromXY
+    LDA PPUSTATUS
+    LDA pointer
+    STA PPUADDR
+    LDA pointer+1
+    STA PPUADDR
+    JSR DrawHorizontalLine
+    JSR DrawHUDStatus
+    JMP Done
+    :
+    CMP #HUD_MAP_DIARY
+    BNE :+
+    JSR DrawHUDMap
+    LDY #19
+    LDX #0
+    JSR SetPpuAddrPointerFromXY
+    LDA PPUSTATUS
+    LDA pointer
+    STA PPUADDR
+    LDA pointer+1
+    STA PPUADDR
+    JSR DrawHorizontalLine
+    JSR DrawHUDDiary
+    :
+    Done:
+    JSR DoneBulkDrawing
+    RTS
+.endproc
+
+.proc DrawHUDStatus
+    LDA #___ ; line 1 (line0: horizontal line)
+    LDX #0
+    :
+    STA PPUDATA
+    INX
+    CPX #15
+    BNE :-
+    LDA #_VR
+    STA PPUDATA
+    LDA #___
+    STA PPUDATA
+    STA PPUDATA
+    LDX #0 ; Draw date - month
+    LDY #0
+    :
+    CPY dateMonth
+    BNE :+
+    JMP :++
+    :
+    INX
+    INX
+    INX
+    INY
+    JMP :--
+    :
+    LDA monthText, X
+    STA PPUDATA
+    INX
+    LDA monthText, X
+    STA PPUDATA
+    INX
+    LDA monthText, X
+    STA PPUDATA
+    LDA #___
+    STA PPUDATA
+    LDA dateDay ; Draw date - day
+    STA helper
+    LDX #0 ; 10s place
+    :
+    LDA helper
+    CMP #10
+    BCS :+
+    LDY helper ; 1s place
+    JMP :++
+    :
+    SEC
+    SBC #10
+    STA helper
+    INX
+    JMP :--
+    :
+    LDA decimalDigits, X
+    STA PPUDATA
+    TYA
+    TAX
+    LDA decimalDigits, X
+    STA PPUDATA
+    LDA #_CM
+    STA PPUDATA
+    LDA #___
+    STA PPUDATA
+    LDA #_1_
+    STA PPUDATA
+    LDA #_8_
+    STA PPUDATA
+    LDA #_4_
+    STA PPUDATA
+    LDA #_8_    ; todo dateYear
+    STA PPUDATA
+    LDA #___
+    STA PPUDATA
+    STA PPUDATA ; end of line 1
+    STA PPUDATA ; begin line 2
+    LDX #0
+    :
+    LDA hudStatusText, X ; "HEALTH:"
+    STA PPUDATA
+    INX
+    CPX #7
+    BNE :-
+    LDA wagonStatus
+    AND #%00001100
+    LSR
+    LSR
+    STA helper
+    LDX #0
+    STX helper+1
+    LDY #0
+    :
+    CPY helper
+    BNE :+
+    JMP :++
+    :
+    INX
+    INC helper+1
+    CPX #4
+    BNE :-
+    LDX #0
+    INY
+    BNE :--
+    LDY #0
+    LDX helper+1
+    :
+    LDA healthText, X
+    STA PPUDATA
+    INX
+    INY
+    CPY #TEXT_HEALTH_LEN
+    BNE :-
+    
+    RTS
+.endproc
+
+.proc DrawHUDMap
+    JSR DrawBlankLine
+    LDX #0
+    :
+    LDA #_B_
+    STA PPUDATA
+    INX
+    CPX #$20
+    BNE :-
+    JSR DrawBlankLine
+    LDX #0
+    :
+    LDA #_B_
+    STA PPUDATA
+    INX
+    CPX #$20
+    BNE :-
+    JSR DrawBlankLine
+    LDX #0
+    :
+    LDA #_B_
+    STA PPUDATA
+    INX
+    CPX #$20
+    BNE :-
+    JSR DrawBlankLine
+    LDX #0
+    :
+    LDA #_B_
+    STA PPUDATA
+    INX
+    CPX #$20
+    BNE :-
+    JSR DrawBlankLine
+    JSR DrawBlankLine
+    RTS
+.endproc
+
+.proc DrawHUDDiary
+    JSR DrawBlankLine
+    LDX #0
+    :
+    LDA #_C_
+    STA PPUDATA
+    INX
+    CPX #$20
+    BNE :-
+    JSR DrawBlankLine
+    LDX #0
+    :
+    LDA #_C_
+    STA PPUDATA
+    INX
+    CPX #$20
+    BNE :-
+    JSR DrawBlankLine
+    LDX #0
+    :
+    LDA #_C_
+    STA PPUDATA
+    INX
+    CPX #$20
+    BNE :-
+    JSR DrawBlankLine
+    LDX #0
+    :
+    LDA #_C_
+    STA PPUDATA
+    INX
+    CPX #$20
+    BNE :-
+    JSR DrawBlankLine
+    JSR DrawBlankLine
+    RTS
+.endproc
+
+.proc DrawLandmarkImage
     RTS
 .endproc
 
@@ -2839,6 +3225,20 @@ bankswitch_nosave:
     ;   Invalid: cart+inv exceeds wagon capacity, cost exceeds wallet
     ;       Capacity- wheels/axles/tongues: 3
     ; TODO: food 2000lb, bullets 2000, clothing 99?, oxen ~20?
+    LDA dollars+1   ; can we afford it?
+    CMP cartDollars+1
+    BCC :+ ; branch if dollars high byte < cartDollars high byte
+    BEQ :++ ; branch if dollars high byte = cartDollars high byte
+    JMP :+++
+    : 
+    LDA #0 ; not enough money
+    JMP Done
+    : ; dollars high byte = cartDollars high byte
+    LDA dollars
+    CMP cartDollars
+    BCS :+ ; branch if dollars low byte >= cartDollars low byte
+    JMP :--
+    :
     LDA cartSpareParts
     AND #%00000011
     STA helper
@@ -3003,55 +3403,6 @@ bankswitch_nosave:
     ; :
     JMP Done
     Independence:
-        LDA #$90        ; default $400.00 dollar amount (#$190)
-        STA dollars
-        LDA #$01
-        STA dollars+1
-        LDA #_0_
-        STA dollarsDigit
-        STA dollarsDigit+2
-        STA dollarsDigit+3
-        LDA #_4_
-        STA dollarsDigit+1
-        LDX occupation
-        LDA occupationAttribute, X
-        LSR             ; shift occupationAttribute to only starting cash
-        LSR
-        LSR
-        LSR
-        LSR
-        LSR
-        TAY
-        CPY #0
-        BNE :+
-        JMP Done
-        :
-        CLC
-        LDA dollarsDigit+1
-        ADC #4
-        CMP #_PD ; _8_ + 4 
-        BNE :+
-        INC dollarsDigit
-        LDA #_2_
-        :
-        STA dollarsDigit+1
-        CLC
-        LDA #$FF     ; add $400.00 (#$00FF+#$0091) to starting cash, <=4 times
-        ADC dollars
-        STA dollars
-        LDA #$00
-        ADC dollars+1
-        STA dollars+1
-        CLC
-        LDA #$91
-        ADC dollars
-        STA dollars
-        LDA #$00
-        ADC dollars+1
-        STA dollars+1
-        DEY
-        CPY #0
-        BNE :--
         JMP Done
     ; Loc2:
     ;     JMP Done
@@ -3061,6 +3412,29 @@ bankswitch_nosave:
 .endproc
 
 .proc InitStateLandmark
+    LDA #0
+    STA fingerAttr      ; fingers hidden, pointing right
+    STA menuOpen        ; no menu open
+    STA wagonStatus     ; stopped, at landmark, no rest remaining
+    LDA #HUD_STATUS
+    STA hudOpen         ; default status HUD visible
+    LDA location        ; switch location
+    CMP #LOC_INDEPENDENCE
+    BNE :+
+    JMP Independence
+    :
+    ; CMP #LOC_LOC2
+    ; BNE :+
+    ; JMP Loc2
+    ; :
+    JMP Done
+    Independence:
+        JMP Done
+    ; Loc2:
+    ;     JMP Done
+    Done:
+    JSR LoadBgLandmark     ; Load background
+    RTS
     RTS
 .endproc
 
@@ -3467,6 +3841,55 @@ bankswitch_nosave:
         :
         JMP CheckLeft
         @menuNone:
+            LDA #$90        ; default $400.00 dollar amount (#$190)
+            STA dollars
+            LDA #$01
+            STA dollars+1
+            LDA #_0_
+            STA dollarsDigit
+            STA dollarsDigit+2
+            STA dollarsDigit+3
+            LDA #_4_
+            STA dollarsDigit+1
+            LDX occupation
+            LDA occupationAttribute, X
+            LSR             ; shift occupationAttribute to only starting cash
+            LSR
+            LSR
+            LSR
+            LSR
+            LSR
+            TAY
+            CPY #0
+            BNE :+
+            JMP Done
+            :
+            CLC
+            LDA dollarsDigit+1
+            ADC #4
+            CMP #_PD ; _8_ + 4 
+            BNE :+
+            INC dollarsDigit
+            LDA #_2_
+            :
+            STA dollarsDigit+1
+            CLC
+            LDA #$FF     ; add $400.00 (#$00FF+#$0091) to starting cash, <=4 times
+            ADC dollars
+            STA dollars
+            LDA #$00
+            ADC dollars+1
+            STA dollars+1
+            CLC
+            LDA #$91
+            ADC dollars
+            STA dollars
+            LDA #$00
+            ADC dollars+1
+            STA dollars+1
+            DEY
+            CPY #0
+            BNE :--
             LDA #GAMESTATE_STORE
             STA gameState
             JMP Done
@@ -4209,23 +4632,11 @@ bankswitch_nosave:
         :
         JMP CheckLeft
         @menuNone:
-            LDA dollars+1   ; can we afford it?
-            CMP cartDollars+1
-            BCC :+ ; branch if dollars high byte < cartDollars high byte
-            BEQ :++ ; branch if dollars high byte = cartDollars high byte
-            JMP :+++
-            : ; not enough money
-            JMP Done
-            : ; dollars high byte = cartDollars high byte
-            LDA dollars
-            CMP cartDollars
-            BCS :+ ; branch if dollars low byte >= cartDollars low byte
-            JMP :--
-            : ; enough money? inv not full? enough to embark (if applicable?)
-            LDA cartOxen
             JSR ValidateCart
-            CMP #0
-            BEQ :---
+            CMP #1
+            BEQ :+
+            JMP Done
+            :
             JSR DoStorePurchase
             LDA #GAMESTATE_LANDMARK
             STA gameState
@@ -4688,6 +5099,35 @@ bankswitch_nosave:
 .endproc
         
 .proc ControllerLandmark
+    LDA buttons1
+    CMP buttons1Last
+    BNE CheckSelect
+    JMP Done
+    CheckSelect:
+        LDA #KEY_SELECT
+        BIT buttons1
+        BNE :+
+        JMP Done
+        :
+        LDA hudOpen
+        CMP #HUD_STATUS
+        BNE :+
+        LDA #HUD_DIARY
+        STA hudOpen
+        JSR DrawHUD
+        JMP Done
+        :
+        CMP #HUD_DIARY
+        BNE :+
+        LDA #HUD_MAP
+        STA hudOpen
+        JSR DrawHUD
+        JMP Done
+        :
+        LDA #HUD_STATUS
+        STA hudOpen
+        JSR DrawHUD
+    Done:
     RTS
 .endproc
         
