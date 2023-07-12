@@ -1,4 +1,5 @@
 ; HUD text variables
+diaryTextHelper:    .res TEXT_DIARY_LINE_LEN
 diaryTextLine1:     .res TEXT_DIARY_LINE_LEN
 diaryTextLine2:     .res TEXT_DIARY_LINE_LEN
 diaryTextLine3:     .res TEXT_DIARY_LINE_LEN

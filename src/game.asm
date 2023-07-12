@@ -1891,7 +1891,7 @@ bankswitch_nosave:
     STA PPUDATA
     STA PPUDATA
     LDX #0 ; Draw date - month
-    LDY #0
+    LDY #1
     :
     CPY dateMonth
     BNE :+
@@ -1958,36 +1958,228 @@ bankswitch_nosave:
     INX
     CPX #7
     BNE :-
-    LDA wagonStatus
-    AND #%00001100
-    LSR
-    LSR
-    STA helper
+
+    LDA #___    ; blank space
     LDX #0
-    STX helper+1
-    LDY #0
     :
-    CPY helper
-    BNE :+
-    JMP :++
-    :
-    INX
-    INC helper+1
-    CPX #4
-    BNE :-
-    LDX #0
-    INY
-    BNE :--
-    LDY #0
-    LDX helper+1
-    :
-    LDA healthText, X
     STA PPUDATA
     INX
-    INY
-    CPY #TEXT_HEALTH_LEN
+    CPX #TEXT_HEALTH_LEN
     BNE :-
-    
+    ; LDA wagonStatus     ; wagon health itself
+    ; AND #%00001100
+    ; LSR
+    ; LSR
+    ; STA helper
+    ; LDX #0
+    ; STX helper+1
+    ; LDY #0
+    ; :
+    ; CPY helper
+    ; BNE :+
+    ; JMP :++
+    ; :
+    ; INX
+    ; INC helper+1
+    ; CPX #4
+    ; BNE :-
+    ; LDX #0
+    ; INY
+    ; BNE :--
+    ; LDY #0
+    ; LDX helper+1
+    ; :
+    ; LDA healthText, X
+    ; STA PPUDATA
+    ; INX
+    ; INY
+    ; CPY #TEXT_HEALTH_LEN
+    ; BNE :-
+    LDA #___
+    STA PPUDATA
+    LDA #_VR
+    STA PPUDATA
+    LDA #___
+    LDX #0
+    :
+    STA PPUDATA
+    INX
+    CPX #16
+    BNE :- ; end of line 2
+    LDA #___ ; start line 3
+    LDX #0
+    :
+    STA PPUDATA
+    INX
+    CPX #15
+    BNE :-
+    LDA #_VR
+    STA PPUDATA
+    LDA #___
+    LDX #0
+    :
+    STA PPUDATA
+    INX
+    CPX #16
+    BNE :- ; end of line 3
+    LDA #___ ; start line 4
+    STA PPUDATA
+    LDX #7 ; "FOOD:"
+    :
+    LDA hudStatusText, X
+    STA PPUDATA
+    INX
+    CPX #14
+    BNE :-
+    LDX #0  ; blank space
+    LDA #___
+    :
+    STA PPUDATA
+    INX
+    CPX #TEXT_HEALTH_LEN
+    BNE :-
+    ; LDX #0 ; decimal text food lbs
+    ; :
+    ; LDA foodLbsDigit, X
+    ; STA PPUDATA
+    ; INX
+    ; CPX #4
+    ; BNE :-
+    ; LDA #___
+    ; STA PPUDATA
+    ; LDA #_LB
+    ; STA PPUDATA
+    LDA #___
+    STA PPUDATA
+    LDA #_VR
+    STA PPUDATA
+    LDX #0
+    LDA #___
+    :
+    STA PPUDATA
+    INX
+    CPX #16
+    BNE :- ; end of line 4
+    LDA #___ ; start line 5
+    LDX #0
+    :
+    STA PPUDATA
+    INX
+    CPX #15
+    BNE :-
+    LDA #_VR
+    STA PPUDATA
+    LDA #___
+    LDX #0
+    :
+    STA PPUDATA
+    INX
+    CPX #16
+    BNE :- ; end of line 5
+    LDA #___ ; start line 6
+    STA PPUDATA
+    LDX #14 ; "FOOD:"
+    :
+    LDA hudStatusText, X
+    STA PPUDATA
+    INX
+    CPX #21
+    BNE :-
+    LDX #0  ; blank space
+    LDA #___
+    :
+    STA PPUDATA
+    INX
+    CPX #TEXT_HEALTH_LEN
+    BNE :-
+    LDA #___
+    STA PPUDATA
+    LDA #_VR
+    STA PPUDATA
+    LDX #0
+    LDA #___
+    :
+    STA PPUDATA
+    INX
+    CPX #16
+    BNE :- ; end of line 6
+    LDA #___ ; start line 7
+    LDX #0
+    :
+    STA PPUDATA
+    INX
+    CPX #15
+    BNE :-
+    LDA #_VR
+    STA PPUDATA
+    LDA #___
+    LDX #0
+    :
+    STA PPUDATA
+    INX
+    CPX #16
+    BNE :- ; end of line 7
+    LDA #___ ; start line 8
+    STA PPUDATA
+    LDX #21 ; "FOOD:"
+    :
+    LDA hudStatusText, X
+    STA PPUDATA
+    INX
+    CPX #28
+    BNE :-
+    LDX #0  ; blank space
+    LDA #___
+    :
+    STA PPUDATA
+    INX
+    CPX #TEXT_HEALTH_LEN
+    BNE :-
+    LDA #___
+    STA PPUDATA
+    LDA #_VR
+    STA PPUDATA
+    LDX #0
+    LDA #___
+    :
+    STA PPUDATA
+    INX
+    CPX #16
+    BNE :- ; end of line 8
+    LDA #___ ; start line 9
+    LDX #0
+    :
+    STA PPUDATA
+    INX
+    CPX #15
+    BNE :-
+    LDA #_VR
+    STA PPUDATA
+    LDA #___
+    LDX #0
+    :
+    STA PPUDATA
+    INX
+    CPX #16
+    BNE :- ; end of line 9
+    LDA #___ ; start line 10
+    LDX #0
+    :
+    STA PPUDATA
+    INX
+    CPX #15
+    BNE :-
+    LDA #_VR
+    STA PPUDATA
+    LDA #___
+    LDX #0
+    :
+    STA PPUDATA
+    INX
+    CPX #16
+    BNE :- ; end of line 10
+
+
     RTS
 .endproc
 
@@ -2031,37 +2223,50 @@ bankswitch_nosave:
 
 .proc DrawHUDDiary
     JSR DrawBlankLine
+    LDA #___
+    STA PPUDATA
     LDX #0
     :
-    LDA #_C_
+    LDA diaryTextLine1, X
     STA PPUDATA
     INX
-    CPX #$20
+    CPX #30
     BNE :-
+    LDA #___
+    STA PPUDATA
     JSR DrawBlankLine
+    STA PPUDATA
     LDX #0
     :
-    LDA #_C_
+    LDA diaryTextLine2, X
     STA PPUDATA
     INX
-    CPX #$20
+    CPX #30
     BNE :-
+    LDA #___
+    STA PPUDATA
     JSR DrawBlankLine
+    STA PPUDATA
     LDX #0
     :
-    LDA #_C_
+    LDA diaryTextLine3, X
     STA PPUDATA
     INX
-    CPX #$20
+    CPX #30
     BNE :-
+    LDA #___
+    STA PPUDATA
     JSR DrawBlankLine
+    STA PPUDATA
     LDX #0
     :
-    LDA #_C_
+    LDA diaryTextLine4, X
     STA PPUDATA
     INX
-    CPX #$20
+    CPX #30
     BNE :-
+    LDA #___
+    STA PPUDATA
     JSR DrawBlankLine
     JSR DrawBlankLine
     RTS
@@ -3292,6 +3497,39 @@ bankswitch_nosave:
     RTS
 .endproc
 
+.proc NewDiaryText
+    ; @param diaryTextHelper: text to add to diary 
+    LDX #0 ; shift line 2 up
+    :
+    LDA diaryTextLine2, X
+    STA diaryTextLine1, X
+    INX
+    CPX #30
+    BNE :-
+    LDX #0 ; shift line 3 up
+    :
+    LDA diaryTextLine3, X
+    STA diaryTextLine2, X
+    INX
+    CPX #30
+    BNE :-
+    LDX #0 ; shift line 4 up
+    :
+    LDA diaryTextLine4, X
+    STA diaryTextLine3, X
+    INX
+    CPX #30
+    BNE :-
+    LDX #0 ; insert new line into line 4
+    :
+    LDA diaryTextHelper, X
+    STA diaryTextLine4, X
+    INX
+    CPX #30
+    BNE :-
+    RTS
+.endproc
+
 ; Game state initialization -----------
 
 .proc InitStateTitle
@@ -3841,6 +4079,14 @@ bankswitch_nosave:
         :
         JMP CheckLeft
         @menuNone:
+            LDX #0          ; starter diary text
+            :
+            LDA diaryEmbarkText, X
+            STA diaryTextHelper, X
+            INX 
+            CPX #30
+            BNE :-
+            JSR NewDiaryText
             LDA #$90        ; default $400.00 dollar amount (#$190)
             STA dollars
             LDA #$01
@@ -5101,8 +5347,23 @@ bankswitch_nosave:
 .proc ControllerLandmark
     LDA buttons1
     CMP buttons1Last
-    BNE CheckSelect
+    BNE CheckA
     JMP Done
+    CheckA:
+        LDA #KEY_A
+        BIT buttons1
+        BNE :+
+        JMP CheckSelect
+        :
+        ; LDA #0
+        ; STA ::diaryEmbarkText*$1 ; TODO Test this funky syntax!!!???
+
+        ; LDA #::diaryEmbarkText+0
+        ; STA pointer
+        ; LDA #::diaryEmbarkText+1
+        ; STA pointer+1
+        ; JSR NewDiaryText
+        JMP Done
     CheckSelect:
         LDA #KEY_SELECT
         BIT buttons1

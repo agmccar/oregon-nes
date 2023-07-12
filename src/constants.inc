@@ -242,9 +242,9 @@ MENU_STORE_ITEM4        = 6 ; 4 digit general store item selection
 HUD_STATUS          = %00000001
 HUD_DIARY           = %00000010
 HUD_MAP             = %00000100
-HUD_STATUS_DIARY    = %00000011
-HUD_MAP_DIARY       = %00000110
-HUD_MAP_STATUS      = %00000101
+HUD_MAP_DIARY       = %00000110 ; map should always be at top of HUD
+HUD_MAP_STATUS      = %00000101 ;  because NTSC deletes scanlines at top/bot.
+HUD_STATUS_DIARY    = %00000011 ; status/diary can be bot.- last 2 rows blank
 ; Locations (landmarks)
 ; %00000000
 ;  |||+++++ identifier(index)
