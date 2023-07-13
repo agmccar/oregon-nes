@@ -202,7 +202,7 @@ _DOT = $FC ; ・
 
 
 ; Length (in characters) of HUD elements
-TEXT_MENU_LEN       = 7   ; main menu options
+TEXT_MAINMENU_LEN   = 7   ; main menu options
 TEXT_PACE_LEN       = 9
 TEXT_WEATHER_LEN    = 8   ; per line. total is 8 + (8*weatherTextLineCount)
 TEXT_TEMP_LEN       = 4
@@ -237,6 +237,7 @@ MENU_NEWGAME_STARTDATE  = 3 ; new game starting month selection
 MENU_STORE_ITEM1        = 4 ; 1 digit general store item selection
 MENU_STORE_ITEM2        = 5 ; 2 digit general store item selection
 MENU_STORE_ITEM4        = 6 ; 4 digit general store item selection
+MENU_MAINMENU           = 7 ; main "Map, Status, Rations.." menu
 
 ; HUD states
 HUD_STATUS          = %00000001

@@ -2272,6 +2272,116 @@ bankswitch_nosave:
     RTS
 .endproc
 
+.proc DrawHUDMainMenu
+    JSR StartBulkDrawing
+    LDA PPUSTATUS ; line 0
+    LDA #$21
+    STA PPUADDR
+    LDA #$00
+    STA PPUADDR
+    LDA #_RD
+    STA PPUDATA
+    LDX #0
+    LDA #_HR
+    :
+    STA PPUDATA
+    INX
+    CPX #11
+    BNE :-
+    LDA #_LD
+    STA PPUDATA
+    LDA PPUSTATUS ; line 1
+    LDA #$21
+    STA PPUADDR
+    LDA #$20
+    STA PPUADDR
+    JSR DrawHUDMainMenuBlankLine
+    LDA #0 ; start loop
+    STA helper
+    LDX #0
+    LDY #10
+    JSR SetPpuAddrPointerFromXY
+    LDX #0
+    MenuLoop:
+    LDA PPUSTATUS ; line 2
+    LDA pointer
+    STA PPUADDR
+    LDA pointer+1
+    STA PPUADDR
+    LDA #_VR
+    STA PPUDATA
+    LDA #___
+    STA PPUDATA
+    STA PPUDATA
+    STA PPUDATA
+    :
+    LDA hudMenu, X
+    STA PPUDATA
+    INX
+    INC helper
+    LDA helper
+    CMP #TEXT_MAINMENU_LEN
+    BNE :-
+    LDA #0
+    STA helper
+    LDA #___
+    STA PPUDATA
+    LDA #_VR
+    STA PPUDATA
+
+    TXA
+    PHA
+    LDX #0
+    INY
+    JSR SetPpuAddrPointerFromXY
+    LDA PPUSTATUS ; line 3
+    LDA pointer
+    STA PPUADDR
+    LDA pointer+1
+    STA PPUADDR
+    JSR DrawHUDMainMenuBlankLine
+    LDX #0
+    INY
+    JSR SetPpuAddrPointerFromXY
+    PLA
+    TAX
+    CPY #28
+    BNE MenuLoop
+    LDA PPUSTATUS ; bottom row
+    LDA #$23
+    STA PPUADDR
+    LDA #$80
+    STA PPUADDR
+    LDA #_RU
+    STA PPUDATA
+    LDX #0
+    LDA #_HR
+    :
+    STA PPUDATA
+    INX
+    CPX #11
+    BNE :-
+    LDA #_LU
+    STA PPUDATA
+    JSR DoneBulkDrawing
+    RTS
+.endproc
+
+.proc DrawHUDMainMenuBlankLine
+    LDA #_VR
+    STA PPUDATA
+    LDX #0
+    LDA #___
+    :
+    STA PPUDATA
+    INX
+    CPX #11
+    BNE :-
+    LDA #_VR
+    STA PPUDATA
+    RTS
+.endproc
+
 .proc DrawLandmarkImage
     RTS
 .endproc
@@ -3103,6 +3213,10 @@ bankswitch_nosave:
     PHA
     JMP StoreSubmenu
     : 
+    CMP #MENU_MAINMENU
+    BNE :+
+    JMP MainMenu
+    : 
     None:
         LDA #0
         STA fingerLastLastX
@@ -3121,6 +3235,12 @@ bankswitch_nosave:
         STA fingerAttr
         JSR RedrawFinger
         JSR LoadBgStore
+        :
+        CMP #GAMESTATE_LANDMARK
+        BNE :+
+        LDA #%00000000      ; neither finger visible
+        STA fingerAttr
+        JSR LoadBgLandmark
         :
         JMP Done
     NewGameTyping:
@@ -3158,6 +3278,10 @@ bankswitch_nosave:
         LDY fingerY
         JSR MoveFingerToSubmenu
         JMP Done
+    MainMenu:
+        LDA #%00000100      ; only finger visible, pointing right
+        STA fingerAttr
+        JSR DrawHUDMainMenu ; this isnt technically a "submenu"- no finger move
     Done:
     RTS
 .endproc
@@ -5363,7 +5487,25 @@ bankswitch_nosave:
         ; LDA #::diaryEmbarkText+1
         ; STA pointer+1
         ; JSR NewDiaryText
-        JMP Done
+        LDA menuOpen
+        CMP #MENU_NONE
+        BNE :+
+        JMP @menuNone
+        :
+        CMP #MENU_MAINMENU
+        BNE :+
+        JMP @menuMain
+        :
+        @menuNone:
+            LDA #MENU_MAINMENU
+            STA menuOpen
+            JMP Done
+        @menuMain:
+            LDA #MENU_NONE
+            STA menuOpen
+            JMP Done
+        ; @menuOther:
+        ; JSR CloseSubmenu...
     CheckSelect:
         LDA #KEY_SELECT
         BIT buttons1
@@ -5372,7 +5514,15 @@ bankswitch_nosave:
         :
         LDA hudOpen
         CMP #HUD_STATUS
+        BNE :++
+        LDA location
+        CMP #LOC_INDEPENDENCE
         BNE :+
+        LDA #HUD_MAP
+        STA hudOpen
+        JSR DrawHUD
+        JMP Done
+        :
         LDA #HUD_DIARY
         STA hudOpen
         JSR DrawHUD
@@ -5385,9 +5535,13 @@ bankswitch_nosave:
         JSR DrawHUD
         JMP Done
         :
+        CMP #HUD_MAP
+        BNE :+
         LDA #HUD_STATUS
         STA hudOpen
         JSR DrawHUD
+        JMP Done
+        :
     Done:
     RTS
 .endproc
