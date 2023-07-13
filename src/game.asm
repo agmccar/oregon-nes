@@ -3282,6 +3282,7 @@ bankswitch_nosave:
         LDA #%00000100      ; only finger visible, pointing right
         STA fingerAttr
         JSR DrawHUDMainMenu ; this isnt technically a "submenu"- no finger move
+        JSR RedrawFinger
     Done:
     RTS
 .endproc
@@ -3776,6 +3777,13 @@ bankswitch_nosave:
 .proc InitStateLandmark
     LDA #0
     STA fingerAttr      ; fingers hidden, pointing right
+    LDA #0              ; initialize cursor
+    STA fingerLastX     ; (5x,6y) tiles from top left, facing R
+    STA fingerLastY
+    LDA #2
+    STA fingerX
+    LDA #10
+    STA fingerY
     STA menuOpen        ; no menu open
     STA wagonStatus     ; stopped, at landmark, no rest remaining
     LDA #HUD_STATUS
