@@ -3813,14 +3813,23 @@ bankswitch_nosave:
     LDA dollars+1
     SBC cartDollars+1
     STA dollars+1
+    LDX #dollarsDigit
+    LDY #dollars
+    JSR SetDigitFromValue
     CLC                     ; oxen
     LDA oxenHeadcount
     ADC cartOxen
     STA oxenHeadcount
+    LDX #oxenDigit
+    LDY #oxenHeadcount
+    JSR SetDigitFromValue
     CLC                     ; clothing
     LDA clothing
     ADC cartClothing
     STA clothing
+    LDX #clothingDigit
+    LDY #clothing
+    JSR SetDigitFromValue
     LDA cartSpareParts      ; wheels
     AND #%00000011
     STA helper
@@ -3872,6 +3881,9 @@ bankswitch_nosave:
     DEX
     CPX #0
     BNE :-
+    LDX #bulletsDigit
+    LDY #bullets
+    JSR SetDigitFromValue
     LDX cartFoodLbs             ; food lbs- x10
     :
     CLC
@@ -3884,6 +3896,9 @@ bankswitch_nosave:
     DEX
     CPX #0
     BNE :-
+    LDX #foodLbsDigit
+    LDY #foodLbs
+    JSR SetDigitFromValue
     LDA #0                  ; empty cart
     STA helper
     STA helper+1
@@ -4027,6 +4042,21 @@ bankswitch_nosave:
     INX
     CPX #20
     BNE :-
+    LDX #dollarsDigit       ; reset digits
+    LDY #dollars
+    JSR SetDigitFromValue
+    LDX #foodLbsDigit
+    LDY #foodLbs
+    JSR SetDigitFromValue
+    LDX #clothingDigit
+    LDY #clothing
+    JSR SetDigitFromValue
+    LDX #bulletsDigit
+    LDY #bullets
+    JSR SetDigitFromValue
+    LDX #oxenDigit
+    LDY #oxenHeadcount
+    JSR SetDigitFromValue
     LDX #0                  ; default palette
     JSR UpdatePalette
     LDX #17
