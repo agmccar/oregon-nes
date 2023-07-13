@@ -140,7 +140,7 @@ personStatus:  .res 5   ; 1 each * 5
 
 ; %00000000
 ;  |||||+++ current (calculated/generated) temperature
-;  |||||        000:ICY!  001:COLD  010:COOL  011:FAIR 
+;  |||||        000:COLD  001:COLD  010:COOL  011:FAIR 
 ;  |||||        100:FAIR  101:WARM  110:HOT   111:HOT! 
 ;  ||||+--- unused
 ;  ++++---- current weather type

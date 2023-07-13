@@ -1792,86 +1792,89 @@ bankswitch_nosave:
     LDA gameState
     CMP #GAMESTATE_LANDMARK
     BNE Traveling
-    LDY #19
-    LDX #0
-    JSR SetPpuAddrPointerFromXY
-    LDA PPUSTATUS
-    LDA pointer
-    STA PPUADDR
-    LDA pointer+1
-    STA PPUADDR
-    JSR DrawHorizontalLine
-    LDA hudOpen
-    CMP #HUD_STATUS
-    BNE :+
-    JSR DrawHUDStatus
-    JMP Done
-    :
-    CMP #HUD_DIARY
-    BNE :+
-    JSR DrawHUDDiary
-    JMP Done
-    :
-    CMP #HUD_MAP
-    BNE :+
-    JSR DrawHUDMap
-    :
-    JMP Done
+    Landmark:
+        LDY #19
+        LDX #0
+        JSR SetPpuAddrPointerFromXY
+        LDA PPUSTATUS
+        LDA pointer
+        STA PPUADDR
+        LDA pointer+1
+        STA PPUADDR
+        JSR DrawHorizontalLine
+        LDA hudOpen
+        CMP #HUD_STATUS
+        BNE :+
+        JSR DrawHUDStatus
+        JSR BufferDrawStatus
+        JMP Done
+        :
+        CMP #HUD_DIARY
+        BNE :+
+        JSR DrawHUDDiary
+        JMP Done
+        :
+        CMP #HUD_MAP
+        BNE :+
+        JSR DrawHUDMap
+        :
+        JMP Done
     Traveling:
-    LDY #8
-    LDX #0
-    JSR SetPpuAddrPointerFromXY
-    LDA PPUSTATUS
-    LDA pointer
-    STA PPUADDR
-    LDA pointer+1
-    STA PPUADDR
-    JSR DrawHorizontalLine
-    LDA hudOpen
-    CMP #HUD_STATUS_DIARY
-    BNE :+
-    JSR DrawHUDStatus
-    LDY #19
-    LDX #0
-    JSR SetPpuAddrPointerFromXY
-    LDA PPUSTATUS
-    LDA pointer
-    STA PPUADDR
-    LDA pointer+1
-    STA PPUADDR
-    JSR DrawHorizontalLine
-    JSR DrawHUDDiary
-    JMP Done
-    :
-    CMP #HUD_MAP_STATUS
-    BNE :+
-    JSR DrawHUDMap
-    LDY #19
-    LDX #0
-    JSR SetPpuAddrPointerFromXY
-    LDA PPUSTATUS
-    LDA pointer
-    STA PPUADDR
-    LDA pointer+1
-    STA PPUADDR
-    JSR DrawHorizontalLine
-    JSR DrawHUDStatus
-    JMP Done
-    :
-    CMP #HUD_MAP_DIARY
-    BNE :+
-    JSR DrawHUDMap
-    LDY #19
-    LDX #0
-    JSR SetPpuAddrPointerFromXY
-    LDA PPUSTATUS
-    LDA pointer
-    STA PPUADDR
-    LDA pointer+1
-    STA PPUADDR
-    JSR DrawHorizontalLine
-    JSR DrawHUDDiary
-    :
+        LDY #8
+        LDX #0
+        JSR SetPpuAddrPointerFromXY
+        LDA PPUSTATUS
+        LDA pointer
+        STA PPUADDR
+        LDA pointer+1
+        STA PPUADDR
+        JSR DrawHorizontalLine
+        LDA hudOpen
+        CMP #HUD_STATUS_DIARY
+        BNE :+
+        JSR DrawHUDStatus
+        LDY #19
+        LDX #0
+        JSR SetPpuAddrPointerFromXY
+        LDA PPUSTATUS
+        LDA pointer
+        STA PPUADDR
+        LDA pointer+1
+        STA PPUADDR
+        JSR DrawHorizontalLine
+        JSR DrawHUDDiary
+        JMP Done
+        :
+        CMP #HUD_MAP_STATUS
+        BNE :+
+        JSR DrawHUDMap
+        LDY #19
+        LDX #0
+        JSR SetPpuAddrPointerFromXY
+        LDA PPUSTATUS
+        LDA pointer
+        STA PPUADDR
+        LDA pointer+1
+        STA PPUADDR
+        JSR DrawHorizontalLine
+        JSR DrawHUDStatus
+        JSR BufferDrawStatus
+        JMP Done
+        :
+        CMP #HUD_MAP_DIARY
+        BNE :+
+        JSR DrawHUDMap
+        LDY #19
+        LDX #0
+        JSR SetPpuAddrPointerFromXY
+        LDA PPUSTATUS
+        LDA pointer
+        STA PPUADDR
+        LDA pointer+1
+        STA PPUADDR
+        JSR DrawHorizontalLine
+        JSR DrawHUDDiary
+        :
     Done:
     JSR DoneBulkDrawing
     RTS
@@ -2178,7 +2181,6 @@ bankswitch_nosave:
     INX
     CPX #16
     BNE :- ; end of line 10
-
 
     RTS
 .endproc
@@ -3093,6 +3095,357 @@ bankswitch_nosave:
     RTS
 .endproc
 
+.proc BufferDrawStatus
+    CLC ; draw health
+    LDA pointer+1
+    ADC #$48
+    STA pointer+1
+    LDA pointer
+    ADC #$0
+    STA pointer
+    LDX #6
+    JSR StartBufferWrite
+        LDA #6
+        JSR WriteByteToBuffer
+        LDA pointer
+        JSR WriteByteToBuffer
+        LDA pointer+1
+        JSR WriteByteToBuffer
+
+        LDA wagonStatus
+        AND #%00001100
+        LSR
+        LSR
+        STA helper
+        LDX #0
+        LDY #0
+        STY helper+1
+        :
+        CPY helper
+        BNE :+
+        JMP :++
+        :
+        INX
+        INC helper+1
+        LDA helper+1
+        CMP #TEXT_HEALTH_LEN
+        BNE :-
+        LDA #0
+        STA helper+1
+        INY
+        CPY helper
+        BNE :--
+        :
+        LDA healthText, X
+        JSR WriteByteToBuffer
+        INX
+        CPX #TEXT_HEALTH_LEN
+        BNE :-
+    JSR EndBufferWrite
+
+    CLC ; draw food
+    LDA pointer+1
+    ADC #$40
+    STA pointer+1
+    LDA pointer
+    ADC #$0
+    STA pointer
+    LDX #6
+    JSR StartBufferWrite
+        LDA #6
+        JSR WriteByteToBuffer
+        LDA pointer
+        JSR WriteByteToBuffer
+        LDA pointer+1
+        JSR WriteByteToBuffer
+        LDX #0
+        :
+        LDA foodLbsDigit, X
+        JSR WriteByteToBuffer
+        INX
+        CPX #4
+        BNE :-
+        LDA #___
+        JSR WriteByteToBuffer
+        LDA #_LB
+        JSR WriteByteToBuffer
+    JSR EndBufferWrite
+
+    CLC ; draw Next
+    LDA pointer+1
+    ADC #$40
+    STA pointer+1
+    LDA pointer
+    ADC #$0
+    STA pointer
+    LDX #6
+    JSR StartBufferWrite
+        LDA #6
+        JSR WriteByteToBuffer
+        LDA pointer
+        JSR WriteByteToBuffer
+        LDA pointer+1
+        JSR WriteByteToBuffer
+        LDA #___
+        JSR WriteByteToBuffer
+        LDX #0
+        :
+        LDA #_QU ; TODO miles to next landmark
+        JSR WriteByteToBuffer
+        INX
+        CPX #3
+        BNE :-
+        LDA #___
+        JSR WriteByteToBuffer
+        LDA #_MI
+        JSR WriteByteToBuffer
+    JSR EndBufferWrite
+
+    CLC ; draw weather text
+    LDA weather
+    AND #$F0
+    LSR
+    LSR
+    LSR
+    LSR
+    TAX
+    LDA weatherAttributes, X
+    STA helper
+    AND #$80
+    BNE :+
+    JMP Weather1Line
+    :
+    JMP Weather2Lines
+    
+
+    Weather1Line:
+        CLC
+        LDA pointer+1
+        ADC #$29
+        STA pointer+1
+        LDA pointer
+        ADC #$0
+        STA pointer
+        LDX #TEXT_WEATHER_LEN
+        JSR StartBufferWrite
+            LDA #TEXT_WEATHER_LEN
+            JSR WriteByteToBuffer
+            LDA pointer
+            JSR WriteByteToBuffer
+            LDA pointer+1
+            JSR WriteByteToBuffer
+            LDA helper
+            AND #$0F
+            STA helper
+            LDY #0
+            LDX #0
+            STX helper+1
+            :
+            CPY helper
+            BNE :+
+            JMP :++
+            :
+            INX
+            INC helper+1
+            LDA helper+1
+            CMP #TEXT_WEATHER_LEN
+            BNE :-
+            LDA #0
+            STA helper+1
+            INY
+            JMP :--
+            :
+            LDA weatherText, X
+            JSR WriteByteToBuffer
+            INX
+            INC helper+1
+            LDA helper+1
+            CMP #TEXT_WEATHER_LEN
+            BNE :-
+        JSR EndBufferWrite
+        CLC
+        LDA pointer+1
+        ADC #$A
+        STA pointer+1
+        LDA pointer
+        ADC #$0
+        STA pointer
+        JMP WeatherTemp
+    Weather2Lines:
+        CLC
+        LDA pointer+1
+        ADC #$9
+        STA pointer+1
+        LDA pointer
+        ADC #$0
+        STA pointer
+        LDX #TEXT_WEATHER_LEN
+        JSR StartBufferWrite
+            LDA #TEXT_WEATHER_LEN
+            JSR WriteByteToBuffer
+            LDA pointer
+            JSR WriteByteToBuffer
+            LDA pointer+1
+            JSR WriteByteToBuffer
+            LDA helper
+            AND #$0F
+            STA helper
+            LDY #0
+            LDX #0
+            STX helper+1
+            :
+            CPY helper
+            BNE :+
+            JMP :++
+            :
+            INX
+            INC helper+1
+            LDA helper+1
+            CMP #TEXT_WEATHER_LEN
+            BNE :-
+            LDA #0
+            STA helper+1
+            INY
+            JMP :--
+            :
+            LDA weatherText, X
+            JSR WriteByteToBuffer
+            INX
+            INC helper+1
+            LDA helper+1
+            CMP #TEXT_WEATHER_LEN
+            BNE :-
+        JSR EndBufferWrite
+
+        CLC
+        LDA pointer+1
+        ADC #$40
+        STA pointer+1
+        LDA pointer
+        ADC #$0
+        STA pointer
+        LDX #TEXT_WEATHER_LEN
+        JSR StartBufferWrite
+            LDA #TEXT_WEATHER_LEN
+            JSR WriteByteToBuffer
+            LDA pointer
+            JSR WriteByteToBuffer
+            LDA pointer+1
+            JSR WriteByteToBuffer
+            LDA helper
+            AND #$0F
+            STA helper
+            LDY #0
+            LDX #0
+            STX helper+1
+            :
+            CPY helper
+            BNE :+
+            JMP :++
+            :
+            INX
+            INC helper+1
+            LDA helper+1
+            CMP #TEXT_WEATHER_LEN
+            BNE :-
+            LDA #0
+            STA helper+1
+            INY
+            JMP :--
+            :
+            CLC
+            TXA
+            ADC #8
+            TAX
+            :
+            LDA weatherText, X
+            JSR WriteByteToBuffer
+            INX
+            INC helper+1
+            LDA helper+1
+            CMP #TEXT_WEATHER_LEN
+            BNE :-
+        JSR EndBufferWrite
+
+        SEC
+        LDA pointer+1
+        SBC #$16
+        STA pointer+1
+        LDA pointer
+        SBC #$0
+        STA pointer
+        JMP WeatherTemp
+    WeatherTemp:
+        LDX #TEXT_TEMP_LEN
+        JSR StartBufferWrite
+            LDA #TEXT_TEMP_LEN
+            JSR WriteByteToBuffer
+            LDA pointer
+            JSR WriteByteToBuffer
+            LDA pointer+1
+            JSR WriteByteToBuffer
+            LDA weather
+            AND #$07
+            STA helper
+            LDY #0
+            LDX #0
+            STX helper+1
+            :
+            CPY helper
+            BNE :+
+            JMP :++
+            :
+            INX
+            INC helper+1
+            LDA helper+1
+            CMP #TEXT_TEMP_LEN
+            BNE :-
+            LDA #0
+            STA helper+1
+            INY
+            JMP :--
+            :
+            LDA temperatureText, X
+            JSR WriteByteToBuffer
+            INX
+            INC helper+1
+            LDA helper+1
+            CMP #TEXT_TEMP_LEN
+            BNE :-
+        JSR EndBufferWrite
+
+    Total:
+    CLC ; draw Total
+    LDA pointer+1
+    ADC #13
+    STA pointer+1
+    LDA pointer
+    ADC #$0
+    STA pointer
+    LDX #6
+    JSR StartBufferWrite
+        LDA #6
+        JSR WriteByteToBuffer
+        LDA pointer
+        JSR WriteByteToBuffer
+        LDA pointer+1
+        JSR WriteByteToBuffer
+        LDX #0
+        :
+        LDA traveledDigit, X
+        JSR WriteByteToBuffer
+        INX
+        CPX #4
+        BNE :-
+        LDA #___
+        JSR WriteByteToBuffer
+        LDA #_MI
+        JSR WriteByteToBuffer
+    JSR EndBufferWrite
+
+    RTS
+.endproc
+
 ; Game logic --------------------------
 
 .proc CheckGameState
@@ -3777,15 +4130,14 @@ bankswitch_nosave:
 .proc InitStateLandmark
     LDA #0
     STA fingerAttr      ; fingers hidden, pointing right
-    LDA #0              ; initialize cursor
-    STA fingerLastX     ; (5x,6y) tiles from top left, facing R
+    STA fingerLastX     ; initialize cursor (5x,6y) tiles from top left
     STA fingerLastY
+    STA menuOpen        ; no menu open
+    STA wagonStatus     ; stopped, at landmark, no rest remaining
     LDA #2
     STA fingerX
     LDA #10
     STA fingerY
-    STA menuOpen        ; no menu open
-    STA wagonStatus     ; stopped, at landmark, no rest remaining
     LDA #HUD_STATUS
     STA hudOpen         ; default status HUD visible
     LDA location        ; switch location

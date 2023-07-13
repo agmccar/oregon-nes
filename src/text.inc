@@ -73,28 +73,35 @@ temperatureText:          ;(Attribute)
 
 
 weatherAttributes:
-    ; %0000 ($0-$F)
-    ;  |||+ Fine- 0:cooler, 1:warmer
-    ;  ||+- Coarse- 0:colder, 1:hotter
-    ;  |+-- VCoarse- 0:cold, 1:hot
-    ;  +--- Text- 0:text is one line, 1:two lines.
-    .byte $5C ; CLEAR, PARTLY CLOUDY
-    .byte $43 ; CLOUDY, RAINY
-    .byte $B2 ; VERY RAINY, SNOWING
-    .byte $24 ; BLIZZARD, FOGGY
-    .byte $DB ; DUST STORM, THUNDER STORM
-    .byte $A0 ; HAIL STORM, unused
-    .byte $00 ; unused, unused
-    .byte $00 ; unused, unused
+    ; %00000000
+    ;  ||||++++ index of text (in lines)
+    ;  |||+---- Fine- 0:cooler, 1:warmer
+    ;  ||+----- Coarse- 0:colder, 1:hotter
+    ;  |+------ VCoarse- 0:cold, 1:hot
+    ;  +------- Text- 0:text is one line, 1:two lines.
+    .byte $50 ; CLEAR
+    .byte $C1 ; PARTLY CLOUDY
+    .byte $42 ; CLOUDY
+    .byte $34 ; RAINY
+    .byte $B3 ; VERY RAINY
+    .byte $25 ; SNOWING
+    .byte $26 ; BLIZZARD
+    .byte $47 ; FOGGY
+    .byte $D8 ; DUST STORM
+    .byte $BA ; THUNDER STORM
+    .byte $AC ; HAIL STORM
+    ; .byte $00 ; unused
+    ; .byte $00 ; unused
+    ; .byte $00 ; unused
+    ; .byte $00 ; unused
+    ; .byte $00 ; unused
 
 weatherText:
     .byte ___,_C_,_L_,_E_,_A_,_R_,___,___ ;かいせい　晴
     .byte ___,_P_,_A_,_R_,_T_,_L_,_Y_,___ ;うすぐもり　雲 (ときどき?)
-    .byte ___,_C_,_L_,_O_,_U_,_D_,_Y_,___
     .byte ___,_C_,_L_,_O_,_U_,_D_,_Y_,___ ;くもり　雲
-    .byte ___,_R_,_A_,_I_,_N_,_Y_,___,___ ;あめ　雨
     .byte ___,_V_,_E_,_R_,_Y_,___,___,___ ; どしゃぶり
-    .byte ___,_R_,_A_,_I_,_N_,_Y_,___,___ ; 
+    .byte ___,_R_,_A_,_I_,_N_,_Y_,___,___ ;あめ　雨
     .byte ___,_S_,_N_,_O_,_W_,_I_,_N_,_G_ ;ゆき
     .byte _B_,_L_,_I_,_Z_,_Z_,_A_,_R_,_D_ ;ブリザード
     .byte ___,_F_,_O_,_G_,_G_,_Y_,___,___ ;フォグ
@@ -104,13 +111,13 @@ weatherText:
     .byte ___,_S_,_T_,_O_,_R_,_M_,___,___ 
     .byte ___,_H_,_A_,_I_,_L_,___,___,___ ;ひょうのあらし
     .byte ___,_S_,_T_,_O_,_R_,_M_,___,___ 
-    .byte ___,___,___,___,___,___,___,___ ; unused
-    .byte ___,___,___,___,___,___,___,___ ; unused
-    .byte ___,___,___,___,___,___,___,___ ; unused
-    .byte ___,___,___,___,___,___,___,___ ; unused
-    .byte ___,___,___,___,___,___,___,___ ; unused
+    ; .byte ___,___,___,___,___,___,___,___ ; unused
+    ; .byte ___,___,___,___,___,___,___,___ ; unused
+    ; .byte ___,___,___,___,___,___,___,___ ; unused
+    ; .byte ___,___,___,___,___,___,___,___ ; unused
+    ; .byte ___,___,___,___,___,___,___,___ ; unused
 
-;weatherGraphics----todo
+;weatherSprites----todo
 
 
 
