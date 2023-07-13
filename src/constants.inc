@@ -253,22 +253,43 @@ HUD_STATUS_DIARY    = %00000011 ; status/diary can be bot.- last 2 rows blank
 ;  |+------ river y/n
 ;  +------- store y/n
 LOC_INDEPENDENCE        = %10000000 ; Independence, MO
+; 102 mi
 LOC_KANSASRIVER         = %01000001 ; "KANSAS RIVER CROSSING",
+; 83 mi
 LOC_BIGBLUERIVER        = %01000010 ; "BIG BLUE RIVER CROSSING",
+; 119 mi
 LOC_FORTKEARNEY         = %10000011 ; "FORT KEARNEY",
+; 250 mi
 LOC_CHIMNEYROCK         = %00000100 ; "CHIMNEY ROCK",
+; 86 mi
 LOC_FORTLARAMIE         = %10000101 ; "FORT LARAMIE",
+; 190 mi
 LOC_INDEPENDENCEROCK    = %00000110 ; "INDEPENDENCE ROCK",
+; 102 mi
 LOC_SOUTHPASS           = %00000111 ; "SOUTH PASS",
+; 57 mi
 LOC_FORTBRIDGER         = %10001000 ; "FORT BRIDGER",
+; 125 mi from South Pass
+; 162 mi from Fort Bridger
 LOC_GREENRIVER          = %01001001 ; "GREEN RIVER CROSSING",
-LOC_SODASPRINGE         = %00001010 ; "SODA SPRINGS",
+; 144 mi
+LOC_SODASPRINGS         = %00001010 ; "SODA SPRINGS",
+; 57 mi
 LOC_FORTHALL            = %10001011 ; "FORT HALL",
+; 182 mi
 LOC_SNAKERIVER          = %01001100 ; "SNAKE RIVER CROSSING",
+; 114 mi
 LOC_FORTBOISE           = %10001101 ; "FORT BOISE",
+; 160 mi
 LOC_GRANDERONDE         = %00001110 ; "GRANDE RONDE",
+; 55 mi
 LOC_FORTWALLAWALLA      = %10001111 ; "FORT WALLA WALLA",
+; 120 mi from fort walla walla
+; 125 mi from grande ronde
 LOC_THEDALLES           = %00010000 ; "THE DALLES"
+; 100 mi - toll road
+LOC_WILLAMETTE          = %00010001 ; "WILLAMETTE VALLEY"
+
 
 ; Cost
 ; %00000000

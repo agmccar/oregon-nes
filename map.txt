@@ -1,13 +1,14 @@
 Modules list:
 -------------
 game.o:
-    CODE              Offs=000000  Size=002935  Align=00001  Fill=0000
-    RODATA            Offs=000000  Size=0014BD  Align=00001  Fill=0000
+    CODE              Offs=000000  Size=00293B  Align=00001  Fill=0000
+    RODATA            Offs=000000  Size=0010DD  Align=00001  Fill=0000
     BSS               Offs=000000  Size=000196  Align=00001  Fill=0000
-    ZEROPAGE          Offs=000000  Size=00008D  Align=00001  Fill=0000
+    ZEROPAGE          Offs=000000  Size=000093  Align=00001  Fill=0000
     HEADER            Offs=000000  Size=00000D  Align=00001  Fill=0000
     VECTORS           Offs=000000  Size=000006  Align=00001  Fill=0000
     ROM0              Offs=000000  Size=004000  Align=00001  Fill=0000
+    ROM1              Offs=000000  Size=0003E0  Align=00001  Fill=0000
     ROM2              Offs=000000  Size=0003D6  Align=00001  Fill=0000
 
 
@@ -16,12 +17,13 @@ Segment list:
 Name                   Start     End    Size  Align
 ----------------------------------------------------
 HEADER                000000  00000C  00000D  00001
-ZEROPAGE              000000  00008C  00008D  00001
+ZEROPAGE              000000  000092  000093  00001
 BSS                   000300  000495  000196  00001
 ROM0                  008000  00BFFF  004000  00001
+ROM1                  008000  0083DF  0003E0  00001
 ROM2                  008000  0083D5  0003D6  00001
-RODATA                00C000  00D4BC  0014BD  00001
-CODE                  00D4BD  00FDF1  002935  00001
+RODATA                00C000  00D0DC  0010DD  00001
+CODE                  00D0DD  00FA17  00293B  00001
 VECTORS               00FFFA  00FFFF  000006  00001
 
 

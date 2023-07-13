@@ -18,7 +18,11 @@
 
 ;-------------------------------------------------------------------------------
 .segment "ROM1"
-
+.include "text.inc"
+.include "diarytext.inc"
+.include "palettes.inc"
+.include "backgrounds.inc"
+.include "sprites.inc"
 
 ;-------------------------------------------------------------------------------
 .segment "ROM2"
@@ -43,11 +47,6 @@ banktable:              ; Write to this table to switch banks.
     .byte $00, $01, $02, $03, $04, $05, $06
     .byte $07, $08, $09, $0A, $0B, $0C, $0D, $0E
 
-.include "palettes.inc"
-.include "backgrounds.inc"
-.include "diarytext.inc"
-.include "sprites.inc"
-.include "text.inc"
 
 ;-------------------------------------------------------------------------------
 .segment "CODE"
@@ -3871,6 +3870,8 @@ bankswitch_nosave:
     STA spareParts
     LDX cartBullets             ; bullets- x10
     :
+    CPX #0
+    BEQ :+
     CLC
     LDA bullets
     ADC #10
@@ -3879,13 +3880,15 @@ bankswitch_nosave:
     ADC #0
     STA bullets+1
     DEX
-    CPX #0
-    BNE :-
+    JMP :-
+    :
     LDX #bulletsDigit
     LDY #bullets
     JSR SetDigitFromValue
     LDX cartFoodLbs             ; food lbs- x10
     :
+    CPX #0
+    BEQ :+
     CLC
     LDA foodLbs
     ADC #10
@@ -3894,8 +3897,8 @@ bankswitch_nosave:
     ADC #0
     STA foodLbs+1
     DEX
-    CPX #0
-    BNE :-
+    JMP :-
+    :
     LDX #foodLbsDigit
     LDY #foodLbs
     JSR SetDigitFromValue

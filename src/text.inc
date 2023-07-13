@@ -67,7 +67,7 @@ temperatureText:          ;(Attribute)
     .byte _C_,_O_,_O_,_L_ ; $2,$A HAIL STORM, SNOWING, BLIZZARD
     .byte _F_,_A_,_I_,_R_ ; $3,$B RAINY, THUNDER STORM, VERY RAINY
     .byte _F_,_A_,_I_,_R_ ; $4,$C CLOUDY, PARTLY CLOUDY, FOGGY
-    .byte _W_,_A_,_R_,_M_ ; $5,$D CLEAR, DUST STORM
+    .byte _W_,_A_,_R_,_M_ ; $5,$D SUNNY, DUST STORM
     .byte _H_,_O_,_T_,___ ; $6,$E 
     .byte _H_,_O_,_T_,_EX ; $7,$F 
 
@@ -79,7 +79,7 @@ weatherAttributes:
     ;  ||+----- Coarse- 0:colder, 1:hotter
     ;  |+------ VCoarse- 0:cold, 1:hot
     ;  +------- Text- 0:text is one line, 1:two lines.
-    .byte $50 ; CLEAR
+    .byte $50 ; SUNNY
     .byte $C1 ; PARTLY CLOUDY
     .byte $42 ; CLOUDY
     .byte $34 ; RAINY
@@ -97,7 +97,7 @@ weatherAttributes:
     ; .byte $00 ; unused
 
 weatherText:
-    .byte ___,_C_,_L_,_E_,_A_,_R_,___,___ ;かいせい　晴
+    .byte ___,_S_,_U_,_N_,_N_,_Y_,___,___ ;かいせい　晴
     .byte ___,_P_,_A_,_R_,_T_,_L_,_Y_,___ ;うすぐもり　雲 (ときどき?)
     .byte ___,_C_,_L_,_O_,_U_,_D_,_Y_,___ ;くもり　雲
     .byte ___,_V_,_E_,_R_,_Y_,___,___,___ ; どしゃぶり

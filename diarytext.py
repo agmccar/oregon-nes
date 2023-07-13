@@ -78,6 +78,7 @@ text = {
         "xxxx GOT LOST.",
         "AN OX IS SICK.",
         "AN OX DIED.",
+        "AN OX WANDERED OFF.",
         "THE TRAIL IS IMPASSABLE.",
         "HEAVY FOG.",
         "YOU HAD A WAGON xxxxxx BREAK",
@@ -89,7 +90,9 @@ text = {
         " IN AN ABANDONED WAGON.",
         "A FIRE IN YOUR WAGON DESTROYED",
         " xxxx, xxxx, xxxx.",
-        "xxxx GOT SICK AND DIED."
+        "xxxx GOT SICK AND DIED.",
+        "AN INDIAN HELPED YOU FIND SOME",
+        " FOOD."
     ], #"##############################",
     "Affliction": [
         "xxxx HAS A FEVER.",

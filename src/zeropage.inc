@@ -27,6 +27,8 @@ oxenFrame:      .res 1 ; frame 0=$01; 1=$02; 2=$04, 3=$08, 4=$10 (a hack)
 keyboardKey:        .res 1 ; keyboard key (letter/symbol) currently selected
 nameCursor:         .res 1
 occupationCursor:   .res 1
+nextMi:             .res 2
+nextDigit:          .res 4
 traveledMi:         .res 2
 traveledDigit:      .res 4
 menuOpenLast:       .res 1
@@ -160,4 +162,4 @@ dateDay:        .res 1
 location:       .res 1 ; see: constants.inc -> Locations
 
 ;-------------------------------------------------------------------------------
-; remaining: $75
+; remaining: $6F
