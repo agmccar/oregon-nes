@@ -23,6 +23,7 @@
 .include "palettes.inc"
 .include "backgrounds.inc"
 .include "sprites.inc"
+.include "rom1.asm"
 
 ;-------------------------------------------------------------------------------
 .segment "ROM2"
