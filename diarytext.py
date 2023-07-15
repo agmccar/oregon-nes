@@ -55,7 +55,9 @@ text = {
         "> HIRE AN INDIAN TO HELP FOR",
         "   xxxxxxxxxxxxxxxx",
         "YOU CHOSE TO HAVE AN INDIAN",
-        " GUIDE HELP YOU CROSS."
+        " GUIDE HELP YOU CROSS.",
+        "> WAIT TO SEE IF CONDITIONS",
+        "   IMPROVE"
     ], #"##############################",
     "RiverResult": [
         "YOU MADE IT SAFELY ACROSS",
@@ -65,7 +67,9 @@ text = {
         " xxxx, xxxxxxx, xxxxxxx.",
         "YOUR WAGON TIPPED. FORTUNATELY",
         " NOBODY WAS INJURED AND YOU",
-        " RECOVERED ALL YOUR SUPPLIES."
+        " RECOVERED ALL YOUR SUPPLIES.",
+        "YOU BECAME STUCK IN THE MUD.",
+        " LOSE 1 DAY"
     ], #"##############################",
     "RandomEvent": [
         "A THIEF STOLE xxxxxxxxxxxxxxxx",
@@ -92,7 +96,11 @@ text = {
         " xxxx, xxxx, xxxx.",
         "xxxx GOT SICK AND DIED.",
         "AN INDIAN HELPED YOU FIND SOME",
-        " FOOD."
+        " FOOD.",
+        "YOU FOUND AN ABANDONED WAGON,",
+        " BUT THERE WAS NOTHING THERE.",
+        "YOU PASS A GRAVESITE. WOULD",
+        " YOU LIKE TO LOOK CLOSER?"
     ], #"##############################",
     "Affliction": [
         "xxxx HAS A FEVER.",

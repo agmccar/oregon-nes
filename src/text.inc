@@ -50,7 +50,8 @@ decimalDigits:
     .byte _0_,_1_,_2_,_3_,_4_,_5_,_6_,_7_,_8_,_9_
 
 hudMenu:
-    .byte _M_,_A_,_P_,___,___,___,___ ;ちず
+    ;.byte _P_,_R_,_O_,_C_,_E_,_E_,_D_ ;
+    .byte _R_,_E_,_S_,_U_,_M_,_E_,___
     .byte _S_,_T_,_A_,_T_,_U_,_S_,___ ;ステータス
     .byte _R_,_A_,_T_,_I_,_O_,_N_,_S_ ;しょくりょう
     .byte _T_,_R_,_A_,_D_,_E_,___,___ ;トレード
@@ -58,7 +59,8 @@ hudMenu:
     .byte _R_,_E_,_S_,_T_,___,___,___ ;やすみ
     .byte _P_,_A_,_C_,_E_,___,___,___ ;そくど
     .byte _H_,_U_,_N_,_T_,___,___,___ ;ハント
-    .byte _O_,_P_,_T_,_I_,_O_,_N_,_S_ ;オプション
+    .byte _S_,_H_,_O_,_P_,___,___,___
+    ;.byte _O_,_P_,_T_,_I_,_O_,_N_,_S_ ;オプション
     
 
 temperatureText:          ;(Attribute)
@@ -152,10 +154,10 @@ healthText:
 
 defaultPersonNames:
     .byte ___,___,___,___
-    .byte _E_,_M_,_M_,_A_
-    .byte _B_,_E_,_T_,_H_
-    .byte _J_,_E_,_D_,___
-    .byte _Z_,_E_,_K_,_E_
+    .byte _P_,_H_,_I_,_L_
+    .byte _C_,_H_,_A_,_R_;,_O_,_L_,_Y_,_N_
+    .byte _J_,_O_,_H_,_N_
+    .byte _S_,_H_,_I_,_R_;,_L_,_E_,_Y_
 
 personStatusText:
     .byte _F_,_E_,_V_,_E_,_R_,___,___,___,___,___

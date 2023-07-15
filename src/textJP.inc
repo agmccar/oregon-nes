@@ -1,6 +1,16 @@
 ; Dakuten:
 ; __DT or _HDT in any string should draw that dakuten above the previous letter 
 
+; PRESS A TO SIZE UP THE SITUATION
+; Aをおしてじょうきょうをはあくします
+; スタートボタンをおしてじょうきょうをはあくします
+; スタートボタンをおしてじょうきょうをはあくします
+; 状況を把握する
+; じょうきょうをはあくする
+; スタートを押して状況を把握する
+; スタート：　じょうきょうをはあくする
+; スタート：　じょうきょうをはあくします
+; じょうきょうをはあくする：スタートおす
 titleTextJP:
     .byte ___,___,___,___,__Ok,_REk,_KOk,__DT,_NNk,_DOT,_TOk,_REk,__Ik,_RUk,___,___,___,___
 

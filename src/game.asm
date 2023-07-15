@@ -1380,21 +1380,20 @@ bankswitch_nosave:
 
 .proc LoadBgLandmark
     JSR StartBulkDrawing
-    JSR DrawLandmarkTitle
     JSR DrawLandmarkImage
-    JSR DrawHUD
+    JSR DrawLandmarkTitle
+    ;JSR DrawHUD
     JSR DoneBulkDrawing
     RTS
 .endproc
 
 .proc DrawLandmarkTitle
-    LDY #1
-    JSR DrawHorizontalLine
     LDA PPUSTATUS
-    LDA #$20
+    LDA #$22
     STA PPUADDR
-    LDA #$60
+    LDA #$C0
     STA PPUADDR
+    JSR DrawBlankLine
     LDA location
     AND #%00111111  ; check location index (ie ignore river and store bits)
     STA helper
@@ -1445,8 +1444,23 @@ bankswitch_nosave:
     INY
     CPY helper2
     BNE :-
-    LDY #5
-    JSR DrawHorizontalLine
+    LDA #32
+    SEC
+    SBC helper2
+    SBC helper2+1
+    TAX
+    LDA #___
+    :
+    CPX #0
+    BNE :+
+    JMP :++
+    :
+    STA PPUDATA
+    DEX
+    JMP :--
+    :
+    JSR DrawBlankLine
+    JSR DrawBlankLine ; draw Date
     RTS
 .endproc
 
@@ -4404,7 +4418,7 @@ bankswitch_nosave:
             CMP #6
             BNE :+
             LDA #0
-            STA occupationCursor
+            STA menuCursor
             LDA #MENU_NEWGAME_OCCUPATION
             STA menuOpen
             JMP Done
@@ -4468,7 +4482,7 @@ bankswitch_nosave:
             :
             JMP Done
         @menuOccupation:
-            LDA occupationCursor
+            LDA menuCursor
             STA occupation
             JSR CloseSubmenu
             JMP Done
@@ -4673,7 +4687,7 @@ bankswitch_nosave:
             STA fingerY
             JMP Done
         @menuOccupation:
-            LDA occupationCursor
+            LDA menuCursor
             STA occupation
             JSR CloseSubmenu
             JMP Done
@@ -5086,9 +5100,9 @@ bankswitch_nosave:
             BNE :+
             LDX #21 ; wrap to bottom of menu
             LDA #8
-            STA occupationCursor
+            STA menuCursor
             :
-            DEC occupationCursor
+            DEC menuCursor
             STX fingerY
             JMP Done
         @menuStartDate:
@@ -5240,9 +5254,9 @@ bankswitch_nosave:
             BNE :+
             LDX #7 ; wrap to top of menu
             LDA #$FF
-            STA occupationCursor
+            STA menuCursor
             :
-            INC occupationCursor
+            INC menuCursor
             STX fingerY
             JMP Done
         @menuStartDate:
@@ -5893,6 +5907,8 @@ bankswitch_nosave:
         @menuNone:
             LDA #MENU_MAINMENU
             STA menuOpen
+            LDA #0
+            STA menuCursor
             JMP Done
         @menuMain:
             LDA #MENU_NONE
@@ -5900,11 +5916,12 @@ bankswitch_nosave:
             JMP Done
         ; @menuOther:
         ; JSR CloseSubmenu...
+    CheckB:
     CheckSelect:
         LDA #KEY_SELECT
         BIT buttons1
         BNE :+
-        JMP Done
+        JMP CheckStart
         :
         LDA hudOpen
         CMP #HUD_STATUS
@@ -5934,8 +5951,71 @@ bankswitch_nosave:
         LDA #HUD_STATUS
         STA hudOpen
         JSR DrawHUD
-        JMP Done
         :
+        JMP Done
+    CheckStart:
+        LDA #KEY_START
+        BIT buttons1
+        BNE :+
+        JMP CheckUp
+    CheckUp:
+        LDA #KEY_UP
+        BIT buttons1
+        BNE :+
+        JMP CheckDown
+        LDA menuOpen
+        CMP #MENU_NONE
+        BNE :+
+        JMP @menuNone
+        :
+        CMP #MENU_MAINMENU
+        BNE :+
+        JMP @menuMain
+        :
+        @menuNone:
+        @menuMain:
+            DEC menuCursor
+            LDX fingerY
+            DEX
+            DEX
+            CPX #8 ; check if fingerY is past top of menu
+            BNE :+
+            LDX #26 ; wrap to bottom of menu
+            LDA #8
+            STA menuCursor
+            :
+            STX fingerY
+            JMP Done
+    CheckDown:
+        LDA #KEY_DOWN
+        BIT buttons1
+        BNE :+
+        JMP CheckLeft
+        LDA menuOpen
+        CMP #MENU_NONE
+        BNE :+
+        JMP @menuNone
+        :
+        CMP #MENU_MAINMENU
+        BNE :+
+        JMP @menuMain
+        :
+        @menuNone:
+        @menuMain:
+            INC menuCursor
+            LDX fingerY
+            INX
+            INX
+            CPX #28 ; check if fingerY is past bottom of menu
+            BNE :+
+            LDX #10 ; wrap to top of menu
+            LDA #0
+            STA menuCursor
+            :
+            STX fingerY
+            JMP Done
+    CheckLeft:
+    CheckRight:
     Done:
     RTS
 .endproc

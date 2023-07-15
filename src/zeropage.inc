@@ -26,7 +26,7 @@ oxenFrame:      .res 1 ; frame 0=$01; 1=$02; 2=$04, 3=$08, 4=$10 (a hack)
 
 keyboardKey:        .res 1 ; keyboard key (letter/symbol) currently selected
 nameCursor:         .res 1
-occupationCursor:   .res 1
+menuCursor:   .res 1
 nextMi:             .res 2
 nextDigit:          .res 4
 traveledMi:         .res 2

@@ -24,7 +24,7 @@ KEY_LEFT    = %00000010
 KEY_RIGHT   = %00000001
 
 ; Tile indices of text characters
-___ = 32
+___ = $8E
 _A_ = 80
 _B_ = 81
 _C_ = 82
@@ -74,20 +74,20 @@ _LU = 124 ; left/up corner
 _LD = 125 ; left/down corner
 _RU = 126 ; right/up corner
 _RD = 127 ; right/down corner
-_LB = 144 ; lb
-_MI = 145 ; mi
-_DL = 146 ; $
-_00 = 147 ; .00
-_AL = 148 ; < (arrow left)
-_AR = 149 ; > (arrow right)
-_UL = 150 ; __ (underline)
-_AP = 151 ; ' (apostrophe)
-_AU = 152 ; ^ (arrow up)
-_AD = 153 ; v (arrow down)
-_3U = 154 ; ┬
-_3D = 155 ; ┴
-_3L = 156 ; ├
-_3R = 157 ; ┤
+_LB = 128 ; lb
+_MI = 129 ; mi
+_DL = 130 ; $
+_00 = 131 ; .00
+_AL = 132 ; < (arrow left)
+_AR = 133 ; > (arrow right)
+_UL = 134 ; __ (underline)
+_AP = 135 ; ' (apostrophe)
+_AU = 136 ; ^ (arrow up)
+_AD = 137 ; v (arrow down)
+_3U = 138 ; ┬
+_3D = 139 ; ┴
+_3L = 140 ; ├
+_3R = 141 ; ┤
  
 ; JP tile characters
 __WO = $50
@@ -253,43 +253,44 @@ HUD_STATUS_DIARY    = %00000011 ; status/diary can be bot.- last 2 rows blank
 ;  |+------ river y/n
 ;  +------- store y/n
 LOC_INDEPENDENCE        = %10000000 ; Independence, MO
-; 102 mi
 LOC_KANSASRIVER         = %01000001 ; "KANSAS RIVER CROSSING",
-; 83 mi
 LOC_BIGBLUERIVER        = %01000010 ; "BIG BLUE RIVER CROSSING",
-; 119 mi
 LOC_FORTKEARNEY         = %10000011 ; "FORT KEARNEY",
-; 250 mi
 LOC_CHIMNEYROCK         = %00000100 ; "CHIMNEY ROCK",
-; 86 mi
 LOC_FORTLARAMIE         = %10000101 ; "FORT LARAMIE",
-; 190 mi
 LOC_INDEPENDENCEROCK    = %00000110 ; "INDEPENDENCE ROCK",
-; 102 mi
 LOC_SOUTHPASS           = %00000111 ; "SOUTH PASS",
-; 57 mi
 LOC_FORTBRIDGER         = %10001000 ; "FORT BRIDGER",
-; 125 mi from South Pass
-; 162 mi from Fort Bridger
 LOC_GREENRIVER          = %01001001 ; "GREEN RIVER CROSSING",
-; 144 mi
 LOC_SODASPRINGS         = %00001010 ; "SODA SPRINGS",
-; 57 mi
 LOC_FORTHALL            = %10001011 ; "FORT HALL",
-; 182 mi
 LOC_SNAKERIVER          = %01001100 ; "SNAKE RIVER CROSSING",
-; 114 mi
 LOC_FORTBOISE           = %10001101 ; "FORT BOISE",
-; 160 mi
-LOC_GRANDERONDE         = %00001110 ; "GRANDE RONDE",
-; 55 mi
+LOC_GRANDERONDE         = %00001110 ; "GRANDE RONDE", (original: BLUE MOUNTAINS)
 LOC_FORTWALLAWALLA      = %10001111 ; "FORT WALLA WALLA",
-; 120 mi from fort walla walla
-; 125 mi from grande ronde
 LOC_THEDALLES           = %00010000 ; "THE DALLES"
-; 100 mi - toll road
 LOC_WILLAMETTE          = %00010001 ; "WILLAMETTE VALLEY"
 
+; Distances
+DIST_KANSASRIVER        = 102   ; Independence to Kansas River
+DIST_BIGBLUERIVER       = 83    ; Kansas River to Big Blue River
+DIST_FORTKEARNEY        = 119   ; Big Blue River to Fort Kearney
+DIST_CHIMNEYROCK        = 250   ; Fort Kearney to Chimney Rock
+DIST_FORTLARAMIE        = 86    ; Chimney Rock to Fort Laramie
+DIST_INDEPENDENCEROCK   = 190   ; Fort Laramie to Independence Rock
+DIST_SOUTHPASS          = 102   ; Independence Rock to South Pass
+DIST_FORTBRIDGER        = 57    ; South Pass to Fort Bridger
+DIST_GREENRIVER         = 162   ; Fort Bridger to Green River
+DIST_GREENRIVER_SHORTCUT = 125  ; South Pass to Green River
+DIST_SODASPRINGS        = 144   ; Green River to Soda Springs
+DIST_FORTHALL           = 57    ; Soda Springs to Fort Hall
+DIST_SNAKERIVER         = 182   ; Fort Hall to Snake River
+DIST_FORTBOISE          = 114   ; Snake River to Fort Boise
+DIST_GRANDERONDE        = 160   ; Fort Boise to Grande Ronde
+DIST_FORTWALLAWALLA     = 55    ; Grande Ronde to Fort Walla Walla
+DIST_THEDALLES          = 120   ; Fort Walla Walla to The Dalles
+DIST_THEDALLES_SHORTCUT = 125   ; Grande Ronde to The Dalles
+DIST_WILLAMETTE         = 100   ; The Dalles to WIllamette Valley (toll road)
 
 ; Cost
 ; %00000000
