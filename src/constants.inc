@@ -202,7 +202,7 @@ _DOT = $FC ; ・
 
 
 ; Length (in characters) of HUD elements
-TEXT_MAINMENU_LEN   = 7   ; main menu options
+TEXT_MAINMENU_LEN   = 19  ; main menu options
 TEXT_PACE_LEN       = 9
 TEXT_WEATHER_LEN    = 8   ; per line. total is 8 + (8*weatherTextLineCount)
 TEXT_TEMP_LEN       = 4

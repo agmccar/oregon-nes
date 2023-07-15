@@ -1409,6 +1409,9 @@ bankswitch_nosave:
 .proc LoadBgLandmark
     JSR StartBulkDrawing
     JSR DrawLandmarkImage
+    LDX #0
+    LDY #22
+    JSR SetPpuAddrPointerFromXY
     JSR DrawLandmarkTitle
     ;JSR DrawHUD
     JSR DoneBulkDrawing
@@ -1416,18 +1419,35 @@ bankswitch_nosave:
 .endproc
 
 .proc LoadBgTraveling
+    JSR ClearScreen
     JSR ClearAttributes ; default palette
     JSR StartBulkDrawing
-
+    LDA menuOpen
+    CMP #MENU_MAINMENU
+    BNE :+
+    JMP @menuMain
+    :
+    CMP #MENU_NONE
+    BNE :+
+    JMP @menuNone
+    :
+    @menuMain:
+        JSR DrawHUDMainMenu
+        JMP Done
+    @menuNone:
+        
+        JMP Done
+    Done:
     JSR DoneBulkDrawing
     RTS
 .endproc
 
 .proc DrawLandmarkTitle
+    ; pointer: ppuaddr 
     LDA PPUSTATUS   ; set footer bar location
-    LDA #$22
+    LDA pointer
     STA PPUADDR
-    LDA #$C0
+    LDA pointer+1
     STA PPUADDR
     JSR DrawBlankLine   ; start footer bar
     LDA location
@@ -2408,47 +2428,78 @@ bankswitch_nosave:
 .endproc
 
 .proc DrawHUDMainMenu
-    JSR StartBulkDrawing
-    LDA PPUSTATUS ; line 0
-    LDA #$21
+    LDA PPUSTATUS   ; set color palette (attribute table)
+    LDA #$23
     STA PPUADDR
-    LDA #$00
+    LDA #$C0
     STA PPUADDR
-    LDA #_RD
-    STA PPUDATA
+    LDA #%10101010
     LDX #0
-    LDA #_HR
     :
     STA PPUDATA
     INX
-    CPX #11
+    CPX #8
     BNE :-
-    LDA #_LD
+    LDA #%01101010
     STA PPUDATA
-    LDA PPUSTATUS ; line 1
-    LDA #$21
-    STA PPUADDR
-    LDA #$20
-    STA PPUADDR
-    JSR DrawHUDMainMenuBlankLine
-    LDA #0 ; start loop
-    STA helper
+    LDA #%01011010
     LDX #0
-    LDY #10
+    :
+    STA PPUDATA
+    INX
+    CPX #6
+    BNE :-
+    LDA #%10011010
+    STA PPUDATA
+    LDA #%10100110
+    STA PPUDATA
+    LDA #%10100101
+    LDX #0
+    :
+    STA PPUDATA
+    INX
+    CPX #6
+    BNE :-
+    LDA #%10101001
+    STA PPUDATA
+    LDA #%10101010
+    LDX #0
+    :
+    STA PPUDATA
+    INX
+    CPX #8*5
+    BNE :-
+    LDX #0  ; draw landmark text
+    LDY #1
+    JSR SetPpuAddrPointerFromXY
+    JSR DrawLandmarkTitle
+    LDX #0  ; draw health and weather box
+    LDY #6
+    JSR SetPpuAddrPointerFromXY
+    LDA PPUSTATUS
+    LDA pointer
+    STA PPUADDR
+    LDA pointer+1
+    STA PPUADDR 
+    LDX #0 
+    LDA #___
+    :
+    STA PPUDATA
+    INX
+    CPX #$80
+    BNE :-
+    LDA #0 ; start menu loop
+    STA helper
+    LDX #6
+    LDY #11
     JSR SetPpuAddrPointerFromXY
     LDX #0
     MenuLoop:
-    LDA PPUSTATUS ; line 2
+    LDA PPUSTATUS ; start menu option line
     LDA pointer
     STA PPUADDR
     LDA pointer+1
     STA PPUADDR
-    LDA #_VR
-    STA PPUDATA
-    LDA #___
-    STA PPUDATA
-    STA PPUDATA
-    STA PPUDATA
     :
     LDA hudMenu, X
     STA PPUDATA
@@ -2459,61 +2510,16 @@ bankswitch_nosave:
     BNE :-
     LDA #0
     STA helper
-    LDA #___
-    STA PPUDATA
-    LDA #_VR
-    STA PPUDATA
-
     TXA
     PHA
-    LDX #0
+    LDX #6
     INY
-    JSR SetPpuAddrPointerFromXY
-    LDA PPUSTATUS ; line 3
-    LDA pointer
-    STA PPUADDR
-    LDA pointer+1
-    STA PPUADDR
-    JSR DrawHUDMainMenuBlankLine
-    LDX #0
     INY
     JSR SetPpuAddrPointerFromXY
     PLA
     TAX
-    CPY #28
+    CPY #29
     BNE MenuLoop
-    LDA PPUSTATUS ; bottom row
-    LDA #$23
-    STA PPUADDR
-    LDA #$80
-    STA PPUADDR
-    LDA #_RU
-    STA PPUDATA
-    LDX #0
-    LDA #_HR
-    :
-    STA PPUDATA
-    INX
-    CPX #11
-    BNE :-
-    LDA #_LU
-    STA PPUDATA
-    JSR DoneBulkDrawing
-    RTS
-.endproc
-
-.proc DrawHUDMainMenuBlankLine
-    LDA #_VR
-    STA PPUDATA
-    LDX #0
-    LDA #___
-    :
-    STA PPUDATA
-    INX
-    CPX #11
-    BNE :-
-    LDA #_VR
-    STA PPUDATA
     RTS
 .endproc
 
@@ -2544,9 +2550,9 @@ bankswitch_nosave:
     INX
     CPX #8
     BNE :-
+    LDA #%10101010
     LDX #0
     :
-    LDA #%10101010
     STA PPUDATA
     INX
     CPX #8
@@ -3811,6 +3817,12 @@ bankswitch_nosave:
         STA fingerAttr
         JSR LoadBgLandmark
         :
+        CMP #GAMESTATE_TRAVELING
+        BNE :+
+        LDA #%00000000      ; neither finger visible
+        STA fingerAttr
+        JSR LoadBgTraveling
+        :
         JMP Done
     NewGameTyping:
         LDA #%00001100      ; both fingers visible, pointing right
@@ -3850,7 +3862,7 @@ bankswitch_nosave:
     MainMenu:
         LDA #%00000100      ; only finger visible, pointing right
         STA fingerAttr
-        JSR DrawHUDMainMenu ; this isnt technically a "submenu"- no finger move
+        JSR LoadBgTraveling
         JSR RedrawFinger
     Done:
     RTS
@@ -4353,8 +4365,6 @@ bankswitch_nosave:
     STA fingerX
     LDA #10
     STA fingerY
-    LDA #0
-    STA hudOpen         ; default status HUD not visible
     JSR LoadBgLandmark     ; Load background
     RTS
     RTS
@@ -4365,6 +4375,18 @@ bankswitch_nosave:
 .endproc
 
 .proc InitStateTraveling
+    LDA #%00000100      ; only finger visible, pointing right
+    STA fingerAttr
+    STA fingerLastX     ; initialize cursor (5x,6y) tiles from top left
+    STA fingerLastY
+    LDA #MENU_MAINMENU
+    STA menuOpen
+    STA wagonStatus     ; stopped, at landmark, no rest remaining
+    LDA #4
+    STA fingerX
+    LDA #11
+    STA fingerY
+
     JSR LoadBgTraveling  ; Load background
     RTS
 .endproc
@@ -6152,9 +6174,9 @@ bankswitch_nosave:
             LDX fingerY
             DEX
             DEX
-            CPX #8 ; check if fingerY is past top of menu
+            CPX #9 ; check if fingerY is past top of menu
             BNE :+
-            LDX #26 ; wrap to bottom of menu
+            LDX #27 ; wrap to bottom of menu
             LDA #8
             STA menuCursor
             :
@@ -6180,9 +6202,9 @@ bankswitch_nosave:
             LDX fingerY
             INX
             INX
-            CPX #28 ; check if fingerY is past bottom of menu
+            CPX #29 ; check if fingerY is past bottom of menu
             BNE :+
-            LDX #10 ; wrap to top of menu
+            LDX #11 ; wrap to top of menu
             LDA #0
             STA menuCursor
             :
