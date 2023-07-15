@@ -280,6 +280,24 @@ bankswitch_nosave:
     RTS
 .endproc
 
+.proc ClearAttributes
+    JSR StartBulkDrawing
+    LDA PPUSTATUS
+    LDA #$23
+    STA PPUADDR
+    LDA #$C0
+    STA PPUADDR
+    LDA #%10101010
+    LDX #0
+    :
+    STA PPUDATA
+    INX
+    CPX #0
+    BNE :-
+    JSR DoneBulkDrawing
+    RTS
+.endproc
+
 .proc DrawMenuKeyboard
     JSR StartBulkDrawing
     KBLine0:
@@ -1388,16 +1406,16 @@ bankswitch_nosave:
 .endproc
 
 .proc DrawLandmarkTitle
-    LDA PPUSTATUS
+    LDA PPUSTATUS   ; set footer bar location
     LDA #$22
     STA PPUADDR
     LDA #$C0
     STA PPUADDR
-    JSR DrawBlankLine
+    JSR DrawBlankLine   ; start footer bar
     LDA location
-    AND #%00111111  ; check location index (ie ignore river and store bits)
+    AND #%00111111  ; check landmark index (ie ignore river and store bits)
     STA helper
-    LDX #0
+    LDX #0      ; get landmark text
     LDY #0
     STX helper+1
     LDA diaryLocations, X
@@ -1421,7 +1439,7 @@ bankswitch_nosave:
     LDA diaryLocations, X
     STA helper2
     JMP :---
-    :
+    :       ; draw landmark text line
     LDA #32
     SEC
     SBC helper2
@@ -1459,8 +1477,30 @@ bankswitch_nosave:
     DEX
     JMP :--
     :
-    JSR DrawBlankLine
-    JSR DrawBlankLine ; draw Date
+    JSR DrawBlankLine   ; blank line
+    LDX #0          ; draw date text line
+    LDA #___
+    :
+    STA PPUDATA
+    INX
+    CPX #10
+    BNE :-
+    JSR DrawDateText
+    LDA #___
+    LDX #0
+    :
+    STA PPUDATA
+    INX
+    CPX #10
+    BNE :-
+    JSR DrawBlankLine ; blank line
+    LDX #0  ; draw Press Start To Continue
+    :
+    LDA pressStartText, X
+    STA PPUDATA
+    INX
+    CPX #32
+    BNE :-
     RTS
 .endproc
 
@@ -1768,6 +1808,67 @@ bankswitch_nosave:
     STA PPUDATA
     PLA
     TAX
+    RTS
+.endproc
+
+.proc DrawDateText
+    LDX #0 ; Draw date - month
+    LDY #1
+    :
+    CPY dateMonth
+    BNE :+
+    JMP :++
+    :
+    INX
+    INX
+    INX
+    INY
+    JMP :--
+    :
+    LDA monthText, X
+    STA PPUDATA
+    INX
+    LDA monthText, X
+    STA PPUDATA
+    INX
+    LDA monthText, X
+    STA PPUDATA
+    LDA #___
+    STA PPUDATA
+    LDA dateDay ; Draw date - day
+    STA helper
+    LDX #0 ; 10s place
+    :
+    LDA helper
+    CMP #10
+    BCS :+
+    LDY helper ; 1s place
+    JMP :++
+    :
+    SEC
+    SBC #10
+    STA helper
+    INX
+    JMP :--
+    :
+    LDA decimalDigits, X
+    STA PPUDATA
+    TYA
+    TAX
+    LDA decimalDigits, X
+    STA PPUDATA
+    LDA #_CM
+    STA PPUDATA
+    LDA #___
+    STA PPUDATA
+    LDA #_1_
+    STA PPUDATA
+    LDA #_8_
+    STA PPUDATA
+    LDA #_4_
+    STA PPUDATA
+    LDA #_8_    ; todo dateYear
+    STA PPUDATA
     RTS
 .endproc
 
@@ -2399,6 +2500,48 @@ bankswitch_nosave:
 .endproc
 
 .proc DrawLandmarkImage
+    LDA PPUSTATUS   ; set color palette (attribute table)
+    LDA #$23
+    STA PPUADDR
+    LDA #$C0
+    STA PPUADDR
+    LDA #%00000000
+    LDX #0
+    :
+    STA PPUDATA
+    INX
+    CPX #8*5
+    BNE :-
+    LDA #%01010000
+    LDX #0
+    :
+    STA PPUDATA
+    INX
+    CPX #8
+    BNE :-
+    LDA #%10100101
+    LDX #0
+    :
+    STA PPUDATA
+    INX
+    CPX #8
+    BNE :-
+    LDX #0
+    :
+    LDA #%10101010
+    STA PPUDATA
+    INX
+    CPX #8
+    BNE :-
+    ; LDX #0
+    ; LDA PPUSTATUS ; load second screen attr table
+    ; LDA #$27
+    ; STA PPUADDR
+    ; LDA #$E8
+    ; STA PPUADDR ; $27C0 (attribute table)
+    ; CPY #2
+    ; BNE :--- ; 2nd screen
+
     RTS
 .endproc
 
@@ -4077,6 +4220,7 @@ bankswitch_nosave:
     JSR SetDigitFromValue
     LDX #0                  ; default palette
     JSR UpdatePalette
+    JSR ClearAttributes
     LDX #17
     JSR StartBufferWrite    ; title text
         LDA #17                 
@@ -4126,6 +4270,7 @@ bankswitch_nosave:
     STA fingerX
     LDA #6
     STA fingerY
+    JSR ClearAttributes ; default palette
     JSR LoadBgNewGame   ; Load background
     RTS
 .endproc
@@ -4171,6 +4316,7 @@ bankswitch_nosave:
     ; Loc2:
     ;     JMP Done
     Done:
+    JSR ClearAttributes ; default palette
     JSR LoadBgStore     ; Load background
     RTS
 .endproc

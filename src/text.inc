@@ -4,6 +4,11 @@ titleText:
 titleOptions:
     .byte _P_,_R_,_E_,_S_,_S_,___,___,_S_,_T_,_A_,_R_,_T_
 
+pressStartText:
+    .byte ___,___,___,___,_P_,_R_,_E_,_S_,_S_,___,_S_,_T_,_A_,_R_,_T_,___,_T_,_O_,___,_C_,_O_,_N_,_T_,_I_,_N_,_U_,_E_,___,___,___,___,___
+sizeUpSituationText:
+    .byte _P_,_R_,_E_,_S_,_S_,___,_A_,___,_T_,_O_,___,_S_,_I_,_Z_,_E_,___,_U_,_P_,___,_T_,_H_,_E_,___,_S_,_I_,_T_,_U_,_A_,_T_,_I_,_O_,_N_
+
 newGameText:
     .byte _L_,_E_,_A_,_D_,_E_,_R_,_CL
     .byte _O_,_C_,_C_,_U_,_P_,_A_,_T_,_I_,_O_,_N_,_CL
