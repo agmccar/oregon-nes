@@ -658,7 +658,16 @@ bankswitch_nosave:
     RTS
 .endproc
 
+.proc LoadBgTitle
+    JSR ClearAttributes ; default palette
+    JSR StartBulkDrawing
+    JMP DrawTitleScreenText
+    JSR DoneBulkDrawing
+    RTS
+.endproc
+
 .proc LoadBgNewGame
+    JSR ClearAttributes ; default palette
     JSR StartBulkDrawing
     Leader:
         LDA PPUSTATUS       ; write "LEADER:"
@@ -882,6 +891,7 @@ bankswitch_nosave:
 .endproc
 
 .proc LoadBgStore
+    JSR ClearAttributes ; default palette
     JSR StartBulkDrawing
     LDA location            ; calculate address of store name text
     AND #%00001111
@@ -1401,6 +1411,14 @@ bankswitch_nosave:
     JSR DrawLandmarkImage
     JSR DrawLandmarkTitle
     ;JSR DrawHUD
+    JSR DoneBulkDrawing
+    RTS
+.endproc
+
+.proc LoadBgTraveling
+    JSR ClearAttributes ; default palette
+    JSR StartBulkDrawing
+
     JSR DoneBulkDrawing
     RTS
 .endproc
@@ -2762,6 +2780,47 @@ bankswitch_nosave:
         CPX #$20
         BNE :-
     JSR EndBufferWrite
+    RTS
+.endproc
+
+.proc DrawTitleScreenText
+    JSR ClearAttributes ; default palette
+    LDX #17
+    JSR StartBufferWrite    ; title text
+        LDA #17                 
+        JSR WriteByteToBuffer
+        LDA #$21                ; $2129 - title text VRAM location
+        JSR WriteByteToBuffer
+        LDA #$29
+        JSR WriteByteToBuffer
+        LDX #0
+        :                       
+        LDA titleText, X
+        JSR WriteByteToBuffer
+        INX
+        CPX #17
+        BNE :-
+    JSR EndBufferWrite
+    LDX #12
+    JSR StartBufferWrite    ; title options text
+        LDA #12
+        JSR WriteByteToBuffer 
+        LDA #$22                ; $220B - titleOptions VRAM location
+        JSR WriteByteToBuffer 
+        LDA #$0B
+        JSR WriteByteToBuffer 
+        LDX #0
+        :                       
+        LDA titleOptions, X
+        JSR WriteByteToBuffer
+        INX
+        CPX #12
+        BNE :-
+    JSR EndBufferWrite
+    LDA #%10010000
+    STA softPPUCTRL         ; Ensure NMIs are enabled
+    LDA #%00011110 
+    STA softPPUMASK         ; turn on screen
     RTS
 .endproc
 
@@ -4220,43 +4279,7 @@ bankswitch_nosave:
     JSR SetDigitFromValue
     LDX #0                  ; default palette
     JSR UpdatePalette
-    JSR ClearAttributes
-    LDX #17
-    JSR StartBufferWrite    ; title text
-        LDA #17                 
-        JSR WriteByteToBuffer
-        LDA #$21                ; $2129 - title text VRAM location
-        JSR WriteByteToBuffer
-        LDA #$29
-        JSR WriteByteToBuffer
-        LDX #0
-        :                       
-        LDA titleText, X
-        JSR WriteByteToBuffer
-        INX
-        CPX #17
-        BNE :-
-    JSR EndBufferWrite
-    LDX #12
-    JSR StartBufferWrite    ; title options text
-        LDA #12
-        JSR WriteByteToBuffer 
-        LDA #$22                ; $220B - titleOptions VRAM location
-        JSR WriteByteToBuffer 
-        LDA #$0B
-        JSR WriteByteToBuffer 
-        LDX #0
-        :                       
-        LDA titleOptions, X
-        JSR WriteByteToBuffer
-        INX
-        CPX #12
-        BNE :-
-    JSR EndBufferWrite
-    LDA #%10010000
-    STA softPPUCTRL         ; Ensure NMIs are enabled
-    LDA #%00011110 
-    STA softPPUMASK         ; turn on screen
+    JSR LoadBgTitle
     RTS
 .endproc
 
@@ -4270,7 +4293,6 @@ bankswitch_nosave:
     STA fingerX
     LDA #6
     STA fingerY
-    JSR ClearAttributes ; default palette
     JSR LoadBgNewGame   ; Load background
     RTS
 .endproc
@@ -4316,7 +4338,6 @@ bankswitch_nosave:
     ; Loc2:
     ;     JMP Done
     Done:
-    JSR ClearAttributes ; default palette
     JSR LoadBgStore     ; Load background
     RTS
 .endproc
@@ -4332,23 +4353,8 @@ bankswitch_nosave:
     STA fingerX
     LDA #10
     STA fingerY
-    LDA #HUD_STATUS
-    STA hudOpen         ; default status HUD visible
-    LDA location        ; switch location
-    CMP #LOC_INDEPENDENCE
-    BNE :+
-    JMP Independence
-    :
-    ; CMP #LOC_LOC2
-    ; BNE :+
-    ; JMP Loc2
-    ; :
-    JMP Done
-    Independence:
-        JMP Done
-    ; Loc2:
-    ;     JMP Done
-    Done:
+    LDA #0
+    STA hudOpen         ; default status HUD not visible
     JSR LoadBgLandmark     ; Load background
     RTS
     RTS
@@ -4359,6 +4365,11 @@ bankswitch_nosave:
 .endproc
 
 .proc InitStateTraveling
+    JSR LoadBgTraveling  ; Load background
+    RTS
+.endproc
+
+.proc InitStateTraveling_
     ; zero sprite
     LDA #$37         ; Y
     STA ZEROSPRITE
@@ -6025,6 +6036,23 @@ bankswitch_nosave:
 .proc ControllerLandmark
     LDA buttons1
     CMP buttons1Last
+    BNE CheckStart
+    JMP Done
+    CheckStart:
+        LDA #KEY_START
+        BIT buttons1
+        BNE :+
+        JMP Done
+        :
+        LDA #GAMESTATE_TRAVELING
+        STA gameState
+    Done:
+    RTS
+.endproc
+
+.proc ControllerTraveling
+    LDA buttons1
+    CMP buttons1Last
     BNE CheckA
     JMP Done
     CheckA:
@@ -6169,11 +6197,6 @@ bankswitch_nosave:
 .proc ControllerMap
     RTS
 .endproc
-
-.proc ControllerTraveling
-    RTS
-.endproc
-
 ;--------------------------------------
 
 .proc UpdateSprites
