@@ -80,9 +80,10 @@ cartHelperDigit:    .res 4 ; shameless hack
 ; %00000000 wagonStatus
 ;  |||||||+ Speed- 0:stopped, 1:moving
 ;  ||||||+- Trail- 0:at landmark, 1:on the trail 
-;  ||||++-- Health- 00: Good, 01: Fair, 10: Poor, 11: V.Poor
+;  ||||++-- health- 0:good, 1:fair, 2:poor, 3:v.poor
 ;  ++++---- Rest- 0-15 days remaining
 wagonStatus:    .res 1
+;wagonHealth:    .res 1 ; 0:good, 1:fair, 2:poor, 3:v.poor
 
 ; %00000000 wagonSettings
 ;  ||||||++ Pace- 00:unused, 01:steady, 10:strenuous, 11:grueling

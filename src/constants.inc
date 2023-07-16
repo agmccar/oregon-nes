@@ -238,6 +238,20 @@ MENU_STORE_ITEM1        = 4 ; 1 digit general store item selection
 MENU_STORE_ITEM2        = 5 ; 2 digit general store item selection
 MENU_STORE_ITEM4        = 6 ; 4 digit general store item selection
 MENU_MAINMENU           = 7 ; main "Map, Status, Rations.." menu
+MENU_SUPPLIES           = 8
+MENU_PACE               = 9
+MENU_RATIONS            = 10
+MENU_REST               = 11
+
+OPT_CONTINUE    = 0
+OPT_SUPPLIES    = 1
+OPT_MAP         = 2
+OPT_PACE        = 3
+OPT_RATIONS     = 4
+OPT_REST        = 5
+OPT_TRADE       = 6
+OPT_HUNT        = 7
+OPT_TALK        = 8
 
 ; HUD states
 HUD_STATUS          = %00000001

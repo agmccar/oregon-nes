@@ -36,8 +36,10 @@ hudStatusText:
     .byte _T_,_O_,_T_,_A_,_L_,_CL,___
 
 hudMenuStatusText:
-    .byte _W_,_E_,_A_,_T_,_H_,_E_,_R_,_CL
-    .byte _H_,_E_,_A_,_L_,_T_,_H_,_CL
+    .byte _W_,_E_,_A_,_T_,_H_,_E_,_R_,_CL ;0-7
+    .byte _H_,_E_,_A_,_L_,_T_,_H_,_CL ;8-14
+    .byte _P_,_A_,_C_,_E_,_CL ;15-19
+    .byte _R_,_A_,_T_,_I_,_O_,_N_,_S_,_CL ;20-27
 
 startingDateText:
     .byte _M_,_A_,_R_,_C_,_H_,___
@@ -140,6 +142,9 @@ weatherText:
 ;weatherSprites----todo
 
 
+restText:
+    .byte _R_,_E_,_S_,_T_,___,_F_,_O_,_R_,___
+    .byte ___,_D_,_A_,_Y_,_S_
 
 paceText:
     .byte _S_,_T_,_E_,_A_,_D_,_Y_,___,___,___

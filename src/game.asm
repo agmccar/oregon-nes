@@ -2687,11 +2687,11 @@ bankswitch_nosave:
     STA PPUDATA             ; write buffer data to nametable
     INX
     DEY
+    CPY #0
     BNE :-                  ; repeat until no more bytes to copy
     LDY nametableBuffer, X
     INX
-    CPX #0
-    BNE @loop               ; exit if entire buffer has been read
+    JMP @loop               ; exit if entire buffer has been read
     Done:
     RTS
 .endproc
@@ -2790,9 +2790,13 @@ bankswitch_nosave:
     :                       ; erase finger at old position (draw blank tile)
     LDA #%00010000
     BIT fingerAttr          ; check if main finger is normal or "up/down" arrows
-    BEQ :+
+    BEQ :++
     LDX fingerLastX
     LDY fingerLastY
+    CPY #0
+    BNE :+
+    JMP :+++ ; dont erase if RedrawFinger was just invoked
+    :
     LDA #___
     DEY
     JSR WriteTileToBuffer
@@ -3754,6 +3758,287 @@ bankswitch_nosave:
     RTS
 .endproc
 
+.proc DrawPaceSubmenu
+    LDX #4 ; top row of menu
+    LDY #15
+    JSR SetPpuAddrPointerFromXY
+    LDX #19
+    JSR StartBufferWrite
+        LDA #19
+        JSR WriteByteToBuffer
+        LDA pointer
+        JSR WriteByteToBuffer
+        LDA pointer+1
+        JSR WriteByteToBuffer
+        LDA #_RD
+        JSR WriteByteToBuffer
+        LDA #_HR
+        LDX #0
+        :
+        JSR WriteByteToBuffer
+        INX
+        CPX #17
+        BNE :-
+        LDA #_LD
+        JSR WriteByteToBuffer
+    JSR EndBufferWrite
+
+    LDX #4  ; vertical bars (left)
+    LDY #16
+    LDA #_VR
+    JSR WriteTileToBuffer
+    LDX #4
+    LDY #17
+    LDA #_VR
+    JSR WriteTileToBuffer
+    LDX #4
+    LDY #18
+    LDA #_VR
+    JSR WriteTileToBuffer
+    LDX #22  ; vertical bars (right)
+    LDY #16
+    LDA #_VR
+    JSR WriteTileToBuffer
+    LDX #22
+    LDY #17
+    LDA #_VR
+    JSR WriteTileToBuffer
+    LDX #22
+    LDY #18
+    LDA #_VR
+    JSR WriteTileToBuffer
+
+    LDX #4 ; bottom row of menu
+    LDY #19
+    JSR SetPpuAddrPointerFromXY
+    LDX #19
+    JSR StartBufferWrite
+        LDA #19
+        JSR WriteByteToBuffer
+        LDA pointer
+        JSR WriteByteToBuffer
+        LDA pointer+1
+        JSR WriteByteToBuffer
+        LDA #_RU
+        JSR WriteByteToBuffer
+        LDA #_HR
+        LDX #0
+        :
+        JSR WriteByteToBuffer
+        INX
+        CPX #17
+        BNE :-
+        LDA #_LU
+        JSR WriteByteToBuffer
+    JSR EndBufferWrite
+
+    LDX #6  ; "PACE: xxxxxxxxx"
+    LDY #17
+    JSR SetPpuAddrPointerFromXY
+    LDX #15
+    JSR StartBufferWrite
+        LDA #15
+        JSR WriteByteToBuffer
+        LDA pointer
+        JSR WriteByteToBuffer
+        LDA pointer+1
+        JSR WriteByteToBuffer
+        LDX #15
+        :
+        LDA hudMenuStatusText, X
+        JSR WriteByteToBuffer
+        INX
+        CPX #20
+        BNE :-
+        LDA #___
+        JSR WriteByteToBuffer
+        LDX #0
+        LDY #0
+        STY helper+1
+        LDA wagonSettings
+        AND #%00000011
+        STA helper
+        :
+        CPY helper
+        BNE :+
+        JMP :++
+        :
+        INX
+        INC helper+1
+        LDA helper+1
+        CMP #TEXT_PACE_LEN
+        BNE :-
+        LDA #0
+        STA helper+1
+        INY
+        JMP :--
+        :
+        LDA paceText, X
+        JSR WriteByteToBuffer
+        INX
+        INC helper+1
+        LDA helper+1
+        CMP #TEXT_PACE_LEN
+        BNE :-
+    JSR EndBufferWrite
+
+    RTS
+.endproc
+
+.proc DrawRationsSubmenu
+    LDX #4 ; top row of menu
+    LDY #17
+    JSR SetPpuAddrPointerFromXY
+    LDX #23
+    JSR StartBufferWrite
+        LDA #23
+        JSR WriteByteToBuffer
+        LDA pointer
+        JSR WriteByteToBuffer
+        LDA pointer+1
+        JSR WriteByteToBuffer
+        LDA #_RD
+        JSR WriteByteToBuffer
+        LDA #_HR
+        LDX #0
+        :
+        JSR WriteByteToBuffer
+        INX
+        CPX #21
+        BNE :-
+        LDA #_LD
+        JSR WriteByteToBuffer
+    JSR EndBufferWrite
+
+    LDX #4  ; vertical bars (left)
+    LDY #18
+    LDA #_VR
+    JSR WriteTileToBuffer
+    LDX #4
+    LDY #19
+    LDA #_VR
+    JSR WriteTileToBuffer
+    LDX #4
+    LDY #20
+    LDA #_VR
+    JSR WriteTileToBuffer
+    LDX #26  ; vertical bars (right)
+    LDY #18
+    LDA #_VR
+    JSR WriteTileToBuffer
+    LDX #26
+    LDY #19
+    LDA #_VR
+    JSR WriteTileToBuffer
+    LDX #26
+    LDY #20
+    LDA #_VR
+    JSR WriteTileToBuffer
+
+    LDX #4 ; bottom row of menu
+    LDY #21
+    JSR SetPpuAddrPointerFromXY
+    LDX #23
+    JSR StartBufferWrite
+        LDA #23
+        JSR WriteByteToBuffer
+        LDA pointer
+        JSR WriteByteToBuffer
+        LDA pointer+1
+        JSR WriteByteToBuffer
+        LDA #_RU
+        JSR WriteByteToBuffer
+        LDA #_HR
+        LDX #0
+        :
+        JSR WriteByteToBuffer
+        INX
+        CPX #21
+        BNE :-
+        LDA #_LU
+        JSR WriteByteToBuffer
+    JSR EndBufferWrite
+
+    LDX #6  ; "RATIONS: xxxxxxxxxx"
+    LDY #19
+    JSR SetPpuAddrPointerFromXY
+    LDX #19
+    JSR StartBufferWrite
+        LDA #19
+        JSR WriteByteToBuffer
+        LDA pointer
+        JSR WriteByteToBuffer
+        LDA pointer+1
+        JSR WriteByteToBuffer
+        LDX #20
+        :
+        LDA hudMenuStatusText, X
+        JSR WriteByteToBuffer
+        INX
+        CPX #28
+        BNE :-
+        LDA #___
+        JSR WriteByteToBuffer
+        LDX #0
+        LDY #0
+        STY helper+1
+        LDA wagonSettings
+        AND #%00001100
+        LSR
+        LSR
+        SEC
+        SBC #1
+        STA helper
+        :
+        CPY helper
+        BNE :+
+        JMP :++
+        :
+        INX
+        INC helper+1
+        LDA helper+1
+        CMP #TEXT_RATIONS_LEN
+        BNE :-
+        LDA #0
+        STA helper+1
+        INY
+        JMP :--
+        :
+        LDA rationsText, X
+        JSR WriteByteToBuffer
+        INX
+        INC helper+1
+        LDA helper+1
+        CMP #TEXT_RATIONS_LEN
+        BNE :-
+    JSR EndBufferWrite
+
+    RTS
+.endproc
+
+.proc DrawRestSubmenu
+    ; LDX #
+    ; LDY #
+    ; JSR SetPpuAddrPointerFromXY
+    ; LDX #
+    ; JSR StartBufferWrite
+    ;     LDA #
+    ;     JSR WriteByteToBuffer
+    ;     LDA pointer
+    ;     JSR WriteByteToBuffer
+    ;     LDA pointer+1
+    ;     JSR WriteByteToBuffer
+    ;     LDA #
+    ;     LDX #0
+    ;     :
+    ;     JSR WriteByteToBuffer
+    ;     INX
+    ;     CPX 
+    ;     BNE :-
+    ; JSR EndBufferWrite
+    RTS
+.endproc
+
 ; Game logic --------------------------
 
 .proc CheckGameState
@@ -3851,33 +4136,49 @@ bankswitch_nosave:
     CMP #MENU_NEWGAME_OCCUPATION
     BNE :+
     JMP NewGameOccupation
-    : 
+    :
     CMP #MENU_NEWGAME_STARTDATE
     BNE :+
     JMP NewGameStartDate
-    : 
+    :
     CMP #MENU_STORE_ITEM1
     BNE :+
     LDA #7
     PHA
     JMP StoreSubmenu
-    : 
+    :
     CMP #MENU_STORE_ITEM2
     BNE :+
     LDA #7
     PHA
     JMP StoreSubmenu
-    : 
+    :
     CMP #MENU_STORE_ITEM4
     BNE :+
     LDA #6
     PHA
     JMP StoreSubmenu
-    : 
+    :
     CMP #MENU_MAINMENU
     BNE :+
     JMP MainMenu
-    : 
+    :
+    CMP #MENU_SUPPLIES
+    BNE :+
+    JMP Supplies
+    :
+    CMP #MENU_PACE
+    BNE :+
+    JMP Pace
+    :
+    CMP #MENU_RATIONS
+    BNE :+
+    JMP Rations
+    :
+    CMP #MENU_REST
+    BNE :+
+    JMP Rest
+    :
     None:
         LDA #0
         STA fingerLastLastX
@@ -3950,6 +4251,36 @@ bankswitch_nosave:
         STA fingerAttr
         JSR LoadBgTraveling
         JSR RedrawFinger
+        JMP Done
+    Supplies:
+        JMP Done
+    Pace:
+        LDA #%00010100      ; only finger visible, up/down arrow
+        STA fingerAttr
+        LDX #15
+        LDY #17
+        JSR MoveFingerToSubmenu
+        JSR DrawPaceSubmenu
+        JSR RedrawFinger
+        JMP Done
+    Rations:
+        LDA #%00010100      ; only finger visible, up/down arrow
+        STA fingerAttr
+        LDX #19
+        LDY #19
+        JSR MoveFingerToSubmenu
+        JSR DrawRationsSubmenu
+        JSR RedrawFinger
+        JMP Done
+    Rest:
+        LDA #%00010100      ; only finger visible, up/down arrow
+        STA fingerAttr
+        LDX #15
+        LDY #21
+        JSR MoveFingerToSubmenu
+        JSR DrawRestSubmenu
+        JSR RedrawFinger
+        JMP Done
     Done:
     RTS
 .endproc
@@ -4467,8 +4798,10 @@ bankswitch_nosave:
     STA fingerLastY
     LDA #MENU_MAINMENU
     STA menuOpen
-    ; LDA #%00001100
-    ; STA wagonStatus     ; stopped, on the trail, no rest remaining
+    LDA wagonStatus
+    AND #%00001110
+    ORA #%00000010
+    STA wagonStatus     ; stopped, on the trail, no rest remaining
     LDA #4
     STA fingerX
     LDA #11
@@ -6170,14 +6503,6 @@ bankswitch_nosave:
         BNE :+
         JMP CheckSelect
         :
-        ; LDA #0
-        ; STA ::diaryEmbarkText*$1 ; TODO Test this funky syntax!!!???
-
-        ; LDA #::diaryEmbarkText+0
-        ; STA pointer
-        ; LDA #::diaryEmbarkText+1
-        ; STA pointer+1
-        ; JSR NewDiaryText
         LDA menuOpen
         CMP #MENU_NONE
         BNE :+
@@ -6187,6 +6512,18 @@ bankswitch_nosave:
         BNE :+
         JMP @menuMain
         :
+        CMP #MENU_PACE
+        BNE :+
+        JMP @menuPace
+        :
+        CMP #MENU_RATIONS
+        BNE :+
+        JMP @menuRations
+        :
+        CMP #MENU_REST
+        BNE :+
+        JMP @menuRest
+        :
         @menuNone:
             LDA #MENU_MAINMENU
             STA menuOpen
@@ -6194,7 +6531,43 @@ bankswitch_nosave:
             STA menuCursor
             JMP Done
         @menuMain:
+            LDA menuCursor
+            CMP #OPT_CONTINUE
+            BNE :+
             LDA #MENU_NONE
+            STA menuOpen
+            JMP Done
+            :
+            CMP #OPT_SUPPLIES
+            BNE :+
+            LDA #MENU_SUPPLIES
+            STA menuOpen
+            JMP Done
+            :
+            CMP #OPT_PACE
+            BNE :+
+            LDA #MENU_PACE
+            STA menuOpen
+            JMP Done
+            :
+            CMP #OPT_RATIONS
+            BNE :+
+            LDA #MENU_RATIONS
+            STA menuOpen
+            JMP Done
+            :
+            CMP #OPT_REST
+            BNE :+
+            LDA #MENU_REST
+            STA menuOpen
+            JMP Done
+            :
+            JMP Done
+        @menuPace:
+        @menuRations:
+        @menuRest:
+            JSR CloseSubmenu
+            LDA #MENU_MAINMENU
             STA menuOpen
             JMP Done
         ; @menuOther:
@@ -6206,41 +6579,14 @@ bankswitch_nosave:
         BNE :+
         JMP CheckStart
         :
-        LDA hudOpen
-        CMP #HUD_STATUS
-        BNE :++
-        LDA location
-        CMP #LOC_INDEPENDENCE
-        BNE :+
-        LDA #HUD_MAP
-        STA hudOpen
-        JSR DrawHUD
-        JMP Done
-        :
-        LDA #HUD_DIARY
-        STA hudOpen
-        JSR DrawHUD
-        JMP Done
-        :
-        CMP #HUD_DIARY
-        BNE :+
-        LDA #HUD_MAP
-        STA hudOpen
-        JSR DrawHUD
-        JMP Done
-        :
-        CMP #HUD_MAP
-        BNE :+
-        LDA #HUD_STATUS
-        STA hudOpen
-        JSR DrawHUD
-        :
         JMP Done
     CheckStart:
         LDA #KEY_START
         BIT buttons1
         BNE :+
         JMP CheckUp
+        :
+        JMP Done
     CheckUp:
         LDA #KEY_UP
         BIT buttons1
