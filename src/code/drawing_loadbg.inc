@@ -784,3 +784,30 @@
     JSR DoneBulkDrawing
     RTS
 .endproc
+
+.proc LoadBgSupplies
+    JSR ClearScreen
+    JSR ClearAttributes ; default palette
+    JSR StartBulkDrawing
+    LDX #16
+    LDY #2
+    JSR SetPpuAddrPointerFromXY
+    LDA PPUSTATUS
+    LDA pointer
+    STA PPUADDR
+    LDA pointer+1
+    STA PPUADDR
+    LDX #28
+    :
+    LDA hudMenuStatusText, X
+    STA PPUDATA
+    INX
+    CPX #41
+    BNE :-
+
+    JSR DrawPressStart
+    
+    JSR DoneBulkDrawing
+    JSR BufferDrawSupplies
+    RTS
+.endproc

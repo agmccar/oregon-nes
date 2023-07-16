@@ -36,10 +36,11 @@ hudStatusText:
     .byte _T_,_O_,_T_,_A_,_L_,_CL,___
 
 hudMenuStatusText:
-    .byte _W_,_E_,_A_,_T_,_H_,_E_,_R_,_CL ;0-7
-    .byte _H_,_E_,_A_,_L_,_T_,_H_,_CL ;8-14
-    .byte _P_,_A_,_C_,_E_,_CL ;15-19
-    .byte _R_,_A_,_T_,_I_,_O_,_N_,_S_,_CL ;20-27
+    .byte _W_,_E_,_A_,_T_,_H_,_E_,_R_,_CL ;0-8
+    .byte _H_,_E_,_A_,_L_,_T_,_H_,_CL ;8-15
+    .byte _P_,_A_,_C_,_E_,_CL ;15-20
+    .byte _R_,_A_,_T_,_I_,_O_,_N_,_S_,_CL ;20-28
+    .byte _Y_,_O_,_U_,_R_,___,_S_,_U_,_P_,_P_,_L_,_I_,_E_,_S_ ;28-41
 
 startingDateText:
     .byte _M_,_A_,_R_,_C_,_H_,___
@@ -167,7 +168,7 @@ suppliesText:
     .byte _A_,_X_,_L_,_E_,_S_,___,___
     .byte _T_,_O_,_N_,_G_,_U_,_E_,_S_
     .byte _LB,___,_F_,_O_,_O_,_D_,___
-    .byte _DL,_0_,_0_,_0_,_0_,_PD,_00
+    .byte _C_,_A_,_S_,_H_,___,___,___
 
 healthText:
     .byte ___,___,_G_,_O_,_O_,_D_

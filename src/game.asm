@@ -137,5 +137,5 @@ bankswitch_nosave:
 .include "code/game_logic.inc"
 .include "code/game_helpers.inc"
 .include "code/game_init_state.inc"
-.include "code/game_controller.inc" ; controller = gamepad
+.include "code/game_gamepad.inc"
 .include "code/sprites.inc"

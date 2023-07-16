@@ -757,6 +757,7 @@
         LDA wagonSettings
         AND #%00000011
         STA helper
+        DEC helper
         :
         CPY helper
         BNE :+
@@ -885,9 +886,8 @@
         AND #%00001100
         LSR
         LSR
-        SEC
-        SBC #1
         STA helper
+        DEC helper
         :
         CPY helper
         BNE :+
@@ -1060,6 +1060,249 @@
         INX
         CPX #12
         BNE :-
+    JSR EndBufferWrite
+    RTS
+.endproc
+
+.proc BufferDrawSupplies
+    LDX #12
+    JSR StartBufferWrite    ; oxenDigit
+        LDA #12                 
+        JSR WriteByteToBuffer
+        LDA #$20
+        JSR WriteByteToBuffer
+        LDA #$B0
+        JSR WriteByteToBuffer
+        LDX #0
+        :
+        LDA suppliesText, X
+        JSR WriteByteToBuffer
+        INX
+        CPX #TEXT_SUPPLIES_LEN
+        BNE :-
+        LDA #___
+        JSR WriteByteToBuffer
+        LDX #0
+        :
+        LDA oxenDigit, X
+        CMP #_UL
+        BNE :+
+        LDA #___
+        :
+        JSR WriteByteToBuffer
+        INX
+        CPX #4
+        BNE :--
+    JSR EndBufferWrite
+
+    LDX #12
+    JSR StartBufferWrite    ; clothingDigit
+        LDA #12                 
+        JSR WriteByteToBuffer
+        LDA #$20
+        JSR WriteByteToBuffer
+        LDA #$F0
+        JSR WriteByteToBuffer
+        LDX #TEXT_SUPPLIES_LEN
+        :
+        LDA suppliesText, X
+        JSR WriteByteToBuffer
+        INX
+        CPX #TEXT_SUPPLIES_LEN*2
+        BNE :-
+        LDA #___
+        JSR WriteByteToBuffer
+        LDX #0
+        :
+        LDA clothingDigit, X
+        CMP #_UL
+        BNE :+
+        LDA #___
+        :
+        JSR WriteByteToBuffer
+        INX
+        CPX #4
+        BNE :--
+    JSR EndBufferWrite
+
+    LDX #12
+    JSR StartBufferWrite    ; bulletsDigit
+        LDA #12                 
+        JSR WriteByteToBuffer
+        LDA #$21
+        JSR WriteByteToBuffer
+        LDA #$30
+        JSR WriteByteToBuffer
+        LDX #TEXT_SUPPLIES_LEN*2
+        :
+        LDA suppliesText, X
+        JSR WriteByteToBuffer
+        INX
+        CPX #TEXT_SUPPLIES_LEN*3
+        BNE :-
+        LDA #___
+        JSR WriteByteToBuffer
+        LDX #0
+        :
+        LDA bulletsDigit, X
+        CMP #_UL
+        BNE :+
+        LDA #___
+        :
+        JSR WriteByteToBuffer
+        INX
+        CPX #4
+        BNE :--
+    JSR EndBufferWrite
+
+    LDX #12
+    JSR StartBufferWrite    ; wagon wheels
+        LDA #12                 
+        JSR WriteByteToBuffer
+        LDA #$21
+        JSR WriteByteToBuffer
+        LDA #$70
+        JSR WriteByteToBuffer
+        LDX #TEXT_SUPPLIES_LEN*3
+        :
+        LDA suppliesText, X
+        JSR WriteByteToBuffer
+        INX
+        CPX #TEXT_SUPPLIES_LEN*4
+        BNE :-
+        LDA #___
+        JSR WriteByteToBuffer
+        JSR WriteByteToBuffer
+        JSR WriteByteToBuffer
+        JSR WriteByteToBuffer
+        LDA spareParts
+        AND #%00000011
+        CLC
+        ADC #_0_
+        JSR WriteByteToBuffer
+    JSR EndBufferWrite
+
+    LDX #12
+    JSR StartBufferWrite    ; wagon axles
+        LDA #12                 
+        JSR WriteByteToBuffer
+        LDA #$21
+        JSR WriteByteToBuffer
+        LDA #$B0
+        JSR WriteByteToBuffer
+        LDX #TEXT_SUPPLIES_LEN*4
+        :
+        LDA suppliesText, X
+        JSR WriteByteToBuffer
+        INX
+        CPX #TEXT_SUPPLIES_LEN*5
+        BNE :-
+        LDA #___
+        JSR WriteByteToBuffer
+        JSR WriteByteToBuffer
+        JSR WriteByteToBuffer
+        JSR WriteByteToBuffer
+        LDA spareParts
+        AND #%00001100
+        LSR
+        LSR
+        CLC
+        ADC #_0_
+        JSR WriteByteToBuffer
+    JSR EndBufferWrite
+
+    LDX #12
+    JSR StartBufferWrite    ; wagon tongues
+        LDA #12                 
+        JSR WriteByteToBuffer
+        LDA #$21
+        JSR WriteByteToBuffer
+        LDA #$F0
+        JSR WriteByteToBuffer
+        LDX #TEXT_SUPPLIES_LEN*5
+        :
+        LDA suppliesText, X
+        JSR WriteByteToBuffer
+        INX
+        CPX #TEXT_SUPPLIES_LEN*6
+        BNE :-
+        LDA #___
+        JSR WriteByteToBuffer
+        JSR WriteByteToBuffer
+        JSR WriteByteToBuffer
+        JSR WriteByteToBuffer
+        LDA spareParts
+        AND #%00110000
+        LSR
+        LSR
+        LSR
+        LSR
+        CLC
+        ADC #_0_
+        JSR WriteByteToBuffer
+    JSR EndBufferWrite
+
+    LDX #12
+    JSR StartBufferWrite    ; foodLbsDigit
+        LDA #12                 
+        JSR WriteByteToBuffer
+        LDA #$22
+        JSR WriteByteToBuffer
+        LDA #$30
+        JSR WriteByteToBuffer
+        LDX #TEXT_SUPPLIES_LEN*6
+        :
+        LDA suppliesText, X
+        JSR WriteByteToBuffer
+        INX
+        CPX #TEXT_SUPPLIES_LEN*7
+        BNE :-
+        LDA #___
+        JSR WriteByteToBuffer
+        LDX #0
+        :
+        LDA foodLbsDigit, X
+        CMP #_UL
+        BNE :+
+        LDA #___
+        :
+        JSR WriteByteToBuffer
+        INX
+        CPX #4
+        BNE :--
+    JSR EndBufferWrite
+
+    LDX #12
+    JSR StartBufferWrite    ; dollars
+        LDA #12                 
+        JSR WriteByteToBuffer
+        LDA #$22
+        JSR WriteByteToBuffer
+        LDA #$70
+        JSR WriteByteToBuffer
+        LDA #_C_
+        JSR WriteByteToBuffer
+        LDA #_A_
+        JSR WriteByteToBuffer
+        LDA #_S_
+        JSR WriteByteToBuffer
+        LDA #_H_
+        JSR WriteByteToBuffer
+        LDA #___
+        JSR WriteByteToBuffer
+        LDA #___
+        JSR WriteByteToBuffer
+        LDA #_DL
+        JSR WriteByteToBuffer
+        LDX #0
+        :
+        LDA dollarsDigit, X
+        JSR WriteByteToBuffer
+        INX
+        CPX #4
+        BNE :-
+        LDA #_00
+        JSR WriteByteToBuffer
     JSR EndBufferWrite
     RTS
 .endproc

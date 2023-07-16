@@ -1565,6 +1565,7 @@
         BNE :+
         JMP @menuRest
         :
+        JMP Done
         @menuNone:
             LDA #MENU_MAINMENU
             STA menuOpen
@@ -1627,7 +1628,16 @@
         BNE :+
         JMP CheckUp
         :
+        LDA menuOpen
+        CMP #MENU_SUPPLIES
+        BNE :+
+        JMP @menuSupplies
+        :
         JMP Done
+        @menuSupplies:
+            LDA #MENU_MAINMENU
+            STA menuOpen
+            JMP Done
     CheckUp:
         LDA #KEY_UP
         BIT buttons1
@@ -1655,6 +1665,7 @@
         BNE :+
         JMP @menuRest
         :
+        JMP Done
         @menuNone:
         @menuMain:
             DEC menuCursor
@@ -1670,8 +1681,73 @@
             STX fingerY
             JMP Done
         @menuPace:
+            LDA wagonSettings
+            AND #%00000011
+            STA helper
+            LDA #%11111100
+            AND wagonSettings
+            STA wagonSettings
+            INC helper
+            LDA helper
+            AND #%00000011
+            CMP #0
+            BNE :+
+            LDA #1
+            :
+            ORA wagonSettings
+            STA wagonSettings
+            JSR DrawPaceSubmenu
+            JSR RedrawFinger
+            JMP Done
         @menuRations:
+            LDA wagonSettings
+            AND #%00001100
+            LSR
+            LSR
+            STA helper
+            LDA #%11110011
+            AND wagonSettings
+            STA wagonSettings
+            INC helper
+            LDA helper
+            AND #%00000011
+            CMP #0
+            BNE :+
+            LDA #1
+            :
+            CLC
+            ROL
+            ROL
+            ORA wagonSettings
+            STA wagonSettings
+            JSR DrawRationsSubmenu
+            JSR RedrawFinger
+            JMP Done
         @menuRest:
+            LDA wagonStatus
+            LSR
+            LSR
+            LSR
+            LSR
+            ADC #_0_
+            STA helper
+            LDX #helper
+            JSR IncreaseDigit
+            LDA #%00001111
+            AND wagonStatus
+            STA wagonStatus
+            LDA helper
+            SEC
+            SBC #_0_
+            CLC
+            ROL
+            ROL
+            ROL
+            ROL
+            ORA wagonStatus
+            STA wagonStatus
+            JSR DrawRestSubmenu
+            JSR RedrawFinger
             JMP Done
     CheckDown:
         LDA #KEY_DOWN
@@ -1700,6 +1776,7 @@
         BNE :+
         JMP @menuRest
         :
+        JMP Done
         @menuNone:
         @menuMain:
             INC menuCursor
@@ -1715,8 +1792,73 @@
             STX fingerY
             JMP Done
         @menuPace:
+            LDA wagonSettings
+            AND #%00000011
+            STA helper
+            LDA #%11111100
+            AND wagonSettings
+            STA wagonSettings
+            DEC helper
+            LDA helper
+            AND #%00000011
+            CMP #0
+            BNE :+
+            LDA #3
+            :
+            ORA wagonSettings
+            STA wagonSettings
+            JSR DrawPaceSubmenu
+            JSR RedrawFinger
+            JMP Done
         @menuRations:
+            LDA wagonSettings
+            AND #%00001100
+            LSR
+            LSR
+            STA helper
+            LDA #%11110011
+            AND wagonSettings
+            STA wagonSettings
+            DEC helper
+            LDA helper
+            AND #%00000011
+            CMP #0
+            BNE :+
+            LDA #3
+            :
+            CLC
+            ROL
+            ROL
+            ORA wagonSettings
+            STA wagonSettings
+            JSR DrawRationsSubmenu
+            JSR RedrawFinger
+            JMP Done
         @menuRest:
+            LDA wagonStatus
+            LSR
+            LSR
+            LSR
+            LSR
+            ADC #_0_
+            STA helper
+            LDX #helper
+            JSR DecreaseDigit
+            LDA #%00001111
+            AND wagonStatus
+            STA wagonStatus
+            LDA helper
+            SEC
+            SBC #_0_
+            CLC
+            ROL
+            ROL
+            ROL
+            ROL
+            ORA wagonStatus
+            STA wagonStatus
+            JSR DrawRestSubmenu
+            JSR RedrawFinger
             JMP Done
     CheckLeft:
     CheckRight:

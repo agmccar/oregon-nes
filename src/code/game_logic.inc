@@ -211,6 +211,9 @@
         JSR RedrawFinger
         JMP Done
     Supplies:
+        LDA #0 ;no fingers visible
+        STA fingerAttr
+        JSR LoadBgSupplies
         JMP Done
     Pace:
         LDA #%00010100      ; only finger visible, up/down arrow

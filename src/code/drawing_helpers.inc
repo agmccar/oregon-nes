@@ -1078,3 +1078,26 @@
 
     RTS
 .endproc
+
+.proc DrawPressStart
+    LDA PPUSTATUS
+    LDA #$23
+    STA PPUADDR
+    LDA #$40
+    STA PPUADDR
+    LDA #___
+    LDX #0
+    :
+    STA PPUDATA
+    INX
+    CPX #$20
+    BNE :-
+    LDX #0
+    :
+    LDA pressStartText, X
+    STA PPUDATA
+    INX
+    CPX #$20
+    BNE :-
+    RTS
+.endproc
