@@ -152,12 +152,12 @@ paceText:
     .byte _G_,_R_,_U_,_E_,_L_,_I_,_N_,_G_,___
 
 rationsText:
-    .byte _F_,_I_,_L_,_L_,_I_,_N_,_G_,___,___,___
-        ; 3 lb food per person per day
-    .byte _M_,_E_,_A_,_G_,_E_,_R_,___,___,___,___
-        ; 2 lb food per person per day
     .byte _B_,_A_,_R_,_E_,___,_B_,_O_,_N_,_E_,_S_
         ; 1 lb food per person per day
+    .byte _M_,_E_,_A_,_G_,_E_,_R_,___,___,___,___
+        ; 2 lb food per person per day
+    .byte _F_,_I_,_L_,_L_,_I_,_N_,_G_,___,___,___
+        ; 3 lb food per person per day
 
 suppliesText:
     .byte _O_,_X_,_E_,_N_,___,___,___
