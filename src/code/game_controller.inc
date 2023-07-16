@@ -1542,7 +1542,7 @@
         LDA #KEY_A
         BIT buttons1
         BNE :+
-        JMP CheckSelect
+        JMP CheckB
         :
         LDA menuOpen
         CMP #MENU_NONE
@@ -1633,6 +1633,7 @@
         BIT buttons1
         BNE :+
         JMP CheckDown
+        :
         LDA menuOpen
         CMP #MENU_NONE
         BNE :+
@@ -1641,6 +1642,18 @@
         CMP #MENU_MAINMENU
         BNE :+
         JMP @menuMain
+        :
+        CMP #MENU_PACE
+        BNE :+
+        JMP @menuPace
+        :
+        CMP #MENU_RATIONS
+        BNE :+
+        JMP @menuRations
+        :
+        CMP #MENU_REST
+        BNE :+
+        JMP @menuRest
         :
         @menuNone:
         @menuMain:
@@ -1656,11 +1669,16 @@
             :
             STX fingerY
             JMP Done
+        @menuPace:
+        @menuRations:
+        @menuRest:
+            JMP Done
     CheckDown:
         LDA #KEY_DOWN
         BIT buttons1
         BNE :+
         JMP CheckLeft
+        :
         LDA menuOpen
         CMP #MENU_NONE
         BNE :+
@@ -1669,6 +1687,18 @@
         CMP #MENU_MAINMENU
         BNE :+
         JMP @menuMain
+        :
+        CMP #MENU_PACE
+        BNE :+
+        JMP @menuPace
+        :
+        CMP #MENU_RATIONS
+        BNE :+
+        JMP @menuRations
+        :
+        CMP #MENU_REST
+        BNE :+
+        JMP @menuRest
         :
         @menuNone:
         @menuMain:
@@ -1683,6 +1713,10 @@
             STA menuCursor
             :
             STX fingerY
+            JMP Done
+        @menuPace:
+        @menuRations:
+        @menuRest:
             JMP Done
     CheckLeft:
     CheckRight:

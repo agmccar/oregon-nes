@@ -916,25 +916,115 @@
 .endproc
 
 .proc DrawRestSubmenu
-    ; LDX #
-    ; LDY #
-    ; JSR SetPpuAddrPointerFromXY
-    ; LDX #
-    ; JSR StartBufferWrite
-    ;     LDA #
-    ;     JSR WriteByteToBuffer
-    ;     LDA pointer
-    ;     JSR WriteByteToBuffer
-    ;     LDA pointer+1
-    ;     JSR WriteByteToBuffer
-    ;     LDA #
-    ;     LDX #0
-    ;     :
-    ;     JSR WriteByteToBuffer
-    ;     INX
-    ;     CPX 
-    ;     BNE :-
-    ; JSR EndBufferWrite
+    LDX #4 ; top row of menu
+    LDY #19
+    JSR SetPpuAddrPointerFromXY
+    LDX #19
+    JSR StartBufferWrite
+        LDA #19
+        JSR WriteByteToBuffer
+        LDA pointer
+        JSR WriteByteToBuffer
+        LDA pointer+1
+        JSR WriteByteToBuffer
+        LDA #_RD
+        JSR WriteByteToBuffer
+        LDA #_HR
+        LDX #0
+        :
+        JSR WriteByteToBuffer
+        INX
+        CPX #17
+        BNE :-
+        LDA #_LD
+        JSR WriteByteToBuffer
+    JSR EndBufferWrite
+
+    LDX #4  ; vertical bars (left)
+    LDY #20
+    LDA #_VR
+    JSR WriteTileToBuffer
+    LDX #4
+    LDY #21
+    LDA #_VR
+    JSR WriteTileToBuffer
+    LDX #4
+    LDY #22
+    LDA #_VR
+    JSR WriteTileToBuffer
+    LDX #22  ; vertical bars (right)
+    LDY #20
+    LDA #_VR
+    JSR WriteTileToBuffer
+    LDX #22
+    LDY #21
+    LDA #_VR
+    JSR WriteTileToBuffer
+    LDX #22
+    LDY #22
+    LDA #_VR
+    JSR WriteTileToBuffer
+
+    LDX #4 ; bottom row of menu
+    LDY #23
+    JSR SetPpuAddrPointerFromXY
+    LDX #19
+    JSR StartBufferWrite
+        LDA #19
+        JSR WriteByteToBuffer
+        LDA pointer
+        JSR WriteByteToBuffer
+        LDA pointer+1
+        JSR WriteByteToBuffer
+        LDA #_RU
+        JSR WriteByteToBuffer
+        LDA #_HR
+        LDX #0
+        :
+        JSR WriteByteToBuffer
+        INX
+        CPX #17
+        BNE :-
+        LDA #_LU
+        JSR WriteByteToBuffer
+    JSR EndBufferWrite
+
+    LDX #6  ; "REST FOR x DAYS"
+    LDY #21
+    JSR SetPpuAddrPointerFromXY
+    LDX #15
+    JSR StartBufferWrite
+        LDA #15
+        JSR WriteByteToBuffer
+        LDA pointer
+        JSR WriteByteToBuffer
+        LDA pointer+1
+        JSR WriteByteToBuffer
+        LDX #0
+        :
+        LDA restText, X
+        JSR WriteByteToBuffer
+        INX
+        CPX #9
+        BNE :-
+        LDA wagonStatus
+        AND #%11110000
+        LSR
+        LSR
+        LSR
+        LSR
+        TAX
+        LDA decimalDigits, X
+        JSR WriteByteToBuffer
+        LDX #9
+        :
+        LDA restText, X
+        JSR WriteByteToBuffer
+        INX
+        CPX #14
+        BNE :-
+    JSR EndBufferWrite
+
     RTS
 .endproc
 

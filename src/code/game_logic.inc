@@ -215,7 +215,7 @@
     Pace:
         LDA #%00010100      ; only finger visible, up/down arrow
         STA fingerAttr
-        LDX #15
+        LDX #12
         LDY #17
         JSR MoveFingerToSubmenu
         JSR DrawPaceSubmenu
@@ -224,7 +224,7 @@
     Rations:
         LDA #%00010100      ; only finger visible, up/down arrow
         STA fingerAttr
-        LDX #19
+        LDX #15
         LDY #19
         JSR MoveFingerToSubmenu
         JSR DrawRationsSubmenu
