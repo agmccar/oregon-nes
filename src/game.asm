@@ -1,55 +1,42 @@
 .include "constants.inc"
 .include "header.inc"
-;-------------------------------------------------------------------------------
+
 .segment "VECTORS"
     .addr nmi, reset, irq
     
-;-------------------------------------------------------------------------------
 .segment "ZEROPAGE"
-.include "zeropage.inc"
+    .include "zeropage.inc"
 
-;-------------------------------------------------------------------------------
 .segment "BSS"
-.include "vars.inc"
+    .include "vars.inc"
 
-;-------------------------------------------------------------------------------
 .segment "ROM0"
-.include "tiles.asm"
+    .include "tiles.inc"
 
-;-------------------------------------------------------------------------------
 .segment "ROM1"
-.include "text.inc"
-.include "diarytext.inc"
-.include "palettes.inc"
-.include "backgrounds.inc"
-.include "sprites.inc"
-.include "rom1.asm"
+    .include "data/text.inc"
+    .include "data/diarytext.inc"
+    .include "data/palettes.inc"
+    .include "data/backgrounds.inc"
+    .include "data/sprites.inc"
+    .include "data/rom1.inc"
 
-;-------------------------------------------------------------------------------
 .segment "ROM2"
-.include "textJP.inc"
+    .include "data/textJP.inc"
 
-;-------------------------------------------------------------------------------
 .segment "ROM3"
 
-;-------------------------------------------------------------------------------
 .segment "ROM4"
 
-;-------------------------------------------------------------------------------
 .segment "ROM5"
 
-;-------------------------------------------------------------------------------
 .segment "ROM6"
 
-;-------------------------------------------------------------------------------
 .segment "RODATA" ; ROM7
+    banktable:              ; Write to this table to switch banks.
+        .byte $00, $01, $02, $03, $04, $05, $06
+        .byte $07, $08, $09, $0A, $0B, $0C, $0D, $0E
 
-banktable:              ; Write to this table to switch banks.
-    .byte $00, $01, $02, $03, $04, $05, $06
-    .byte $07, $08, $09, $0A, $0B, $0C, $0D, $0E
-
-
-;-------------------------------------------------------------------------------
 .segment "CODE"
 
 bankswitch_y:
