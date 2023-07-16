@@ -35,6 +35,10 @@ hudStatusText:
     .byte _N_,_E_,_X_,_T_,_CL,___,___
     .byte _T_,_O_,_T_,_A_,_L_,_CL,___
 
+hudMenuStatusText:
+    .byte _W_,_E_,_A_,_T_,_H_,_E_,_R_,_CL
+    .byte _H_,_E_,_A_,_L_,_T_,_H_,_CL
+
 startingDateText:
     .byte _M_,_A_,_R_,_C_,_H_,___
     .byte _J_,_U_,_N_,_E_,___,___

@@ -2473,6 +2473,7 @@ bankswitch_nosave:
     LDY #1
     JSR SetPpuAddrPointerFromXY
     JSR DrawLandmarkTitle
+
     LDX #0  ; draw health and weather box
     LDY #6
     JSR SetPpuAddrPointerFromXY
@@ -2481,12 +2482,97 @@ bankswitch_nosave:
     STA PPUADDR
     LDA pointer+1
     STA PPUADDR 
-    LDX #0 
+    LDX #0 ; blank row
     LDA #___
     :
     STA PPUDATA
     INX
-    CPX #$80
+    CPX #35
+    BNE :-
+    LDX #0 ; "WEATHER:"
+    :
+    LDA hudMenuStatusText, X
+    STA PPUDATA
+    INX
+    CPX #8
+    BNE :-
+    LDA #___ ; space
+    STA PPUDATA
+    LDX #0 ; weather text (temperature)
+    STX helper
+    LDY #0
+    :
+    CPY weather
+    BNE :+
+    JMP :++
+    :
+    INX
+    INC helper
+    LDA helper
+    CMP #4
+    BNE :-
+    LDA #0
+    STA helper
+    INY
+    JMP :--
+    :
+    LDA temperatureText, X
+    STA PPUDATA
+    INX
+    INC helper
+    LDA helper
+    CMP #4
+    BNE :-
+    LDX #0 ; blank row
+    LDA #___
+    :
+    STA PPUDATA
+    INX
+    CPX #51
+    BNE :-
+    LDX #8 ; "HEALTH:"
+    :
+    LDA hudMenuStatusText, X
+    STA PPUDATA
+    INX
+    CPX #15
+    BNE :-
+    LDA wagonStatus     ; wagon health itself
+    AND #%00001100
+    LSR
+    LSR
+    STA helper
+    LDX #0
+    STX helper+1
+    LDY #0
+    :
+    CPY helper
+    BNE :+
+    JMP :++
+    :
+    INX
+    INC helper+1
+    CPX #TEXT_HEALTH_LEN
+    BNE :-
+    LDX #0
+    INY
+    JMP :--
+    :
+    LDY #0
+    LDX helper+1
+    :
+    LDA healthText, X
+    STA PPUDATA
+    INX
+    INY
+    CPY #TEXT_HEALTH_LEN
+    BNE :-
+    LDX #0 ; blank row
+    LDA #___
+    :
+    STA PPUDATA
+    INX
+    CPX #14
     BNE :-
     LDA #0 ; start menu loop
     STA helper
@@ -4381,7 +4467,8 @@ bankswitch_nosave:
     STA fingerLastY
     LDA #MENU_MAINMENU
     STA menuOpen
-    STA wagonStatus     ; stopped, at landmark, no rest remaining
+    ; LDA #%00001100
+    ; STA wagonStatus     ; stopped, on the trail, no rest remaining
     LDA #4
     STA fingerX
     LDA #11

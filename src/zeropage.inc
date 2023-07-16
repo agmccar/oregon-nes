@@ -144,16 +144,7 @@ personStatus:  .res 5   ; 1 each * 5
 ;  |||||+++ current (calculated/generated) temperature
 ;  |||||        000:COLD  001:COLD  010:COOL  011:FAIR 
 ;  |||||        100:FAIR  101:WARM  110:HOT   111:HOT! 
-;  ||||+--- unused
-;  ++++---- current weather type
-;               0000:CLEAR        0001:PARTLY CLOUDY
-;               0010:CLOUDY       0011:RAINY
-;               0100:VERY RAINY   0101:SNOWING
-;               0110:BLIZZARD     0111:FOGGY
-;               1000:DUST STORM   1001:THUNDER STORM
-;               1010:HAIL STORM   1011:unused
-;               1100:unused       1101:unused
-;               1110:unused       1111:unused
+;  +++++--- unused
 weather:        .res 1
 
 dateYear:       .res 1 ; years since 1848
