@@ -137,14 +137,6 @@
     INX
     CPX #10
     BNE :-
-    JSR DrawBlankLine ; blank line
-    LDX #0  ; draw Press Start To Continue
-    :
-    LDA pressStartText, X
-    STA PPUDATA
-    INX
-    CPX #32
-    BNE :-
     RTS
 .endproc
 
@@ -1076,28 +1068,5 @@
     ; CPY #2
     ; BNE :--- ; 2nd screen
 
-    RTS
-.endproc
-
-.proc DrawPressStart
-    LDA PPUSTATUS
-    LDA #$23
-    STA PPUADDR
-    LDA #$40
-    STA PPUADDR
-    LDA #___
-    LDX #0
-    :
-    STA PPUDATA
-    INX
-    CPX #$20
-    BNE :-
-    LDX #0
-    :
-    LDA pressStartText, X
-    STA PPUDATA
-    INX
-    CPX #$20
-    BNE :-
     RTS
 .endproc

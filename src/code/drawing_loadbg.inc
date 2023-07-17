@@ -758,6 +758,7 @@
     JSR DrawLandmarkTitle
     ;JSR DrawHUD
     JSR DoneBulkDrawing
+    JSR BufferDrawPressStart
     RTS
 .endproc
 
@@ -804,7 +805,7 @@
         BNE :-
         JSR BufferDrawSizeUpSituation
         ;jsr DrawTravelingHUD
-        ;jsr DrawPressStart
+        JSR BufferDrawPressStart
 
 
 
@@ -835,9 +836,9 @@
     CPX #41
     BNE :-
 
-    JSR DrawPressStart
     
     JSR DoneBulkDrawing
     JSR BufferDrawSupplies
+    JSR BufferDrawPressStart
     RTS
 .endproc

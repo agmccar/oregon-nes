@@ -48,12 +48,10 @@
     INX
     INX                 ; total space needed: length + header(3) + footer(1)
     STX helper2
-    SEC
-    LDA #0
-    SBC helper2
-    STA helper2
     LDA bufferPointer
-    CMP helper2         ; buffer must have space for segment
+    CLC
+    ADC helper2
+    CMP #64         ; buffer must have space for segment
     BCC :++
     :                   ; vblankwait
     BIT PPUSTATUS

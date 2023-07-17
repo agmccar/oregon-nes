@@ -1308,9 +1308,9 @@
 .endproc
 
 .proc BufferDrawSizeUpSituation
-    LDX #$40
-    JSR StartBufferWrite    ; oxenDigit
-        LDA #$40
+    LDX #$20
+    JSR StartBufferWrite
+        LDA #$20
         JSR WriteByteToBuffer
         LDA #$22
         JSR WriteByteToBuffer
@@ -1323,9 +1323,54 @@
         INX
         CPX #$20
         BNE :-
+    JSR EndBufferWrite
+    LDX #$20
+    JSR StartBufferWrite
+        LDA #$20
+        JSR WriteByteToBuffer
+        LDA #$22
+        JSR WriteByteToBuffer
+        LDA #$20
+        JSR WriteByteToBuffer
         LDX #0
         :
         LDA sizeUpSituationText, X
+        JSR WriteByteToBuffer
+        INX
+        CPX #$20
+        BNE :-
+    JSR EndBufferWrite
+    RTS
+.endproc
+
+.proc BufferDrawPressStart
+    LDX #$20
+    JSR StartBufferWrite
+        LDA #$20
+        JSR WriteByteToBuffer
+        LDA #$23
+        JSR WriteByteToBuffer
+        LDA #$40
+        JSR WriteByteToBuffer
+        LDA #___
+        LDX #0
+        :
+        JSR WriteByteToBuffer
+        INX
+        CPX #$20
+        BNE :-
+    JSR EndBufferWrite
+    LDX #$20
+    JSR StartBufferWrite
+        LDA #$20
+        JSR WriteByteToBuffer
+        LDA #$23
+        JSR WriteByteToBuffer
+        LDA #$60
+        JSR WriteByteToBuffer
+        LDX #0
+        :
+        LDA pressStartText, X
         JSR WriteByteToBuffer
         INX
         CPX #$20
