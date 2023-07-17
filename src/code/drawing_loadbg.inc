@@ -802,7 +802,7 @@
         INX
         CPX #$C0
         BNE :-
-        ;jsr Draw Press A To Size Up The Situation
+        JSR BufferDrawSizeUpSituation
         ;jsr DrawTravelingHUD
         ;jsr DrawPressStart
 

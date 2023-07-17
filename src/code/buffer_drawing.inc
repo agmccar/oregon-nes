@@ -1306,3 +1306,30 @@
     JSR EndBufferWrite
     RTS
 .endproc
+
+.proc BufferDrawSizeUpSituation
+    LDX #$40
+    JSR StartBufferWrite    ; oxenDigit
+        LDA #$40
+        JSR WriteByteToBuffer
+        LDA #$22
+        JSR WriteByteToBuffer
+        LDA #$00
+        JSR WriteByteToBuffer
+        LDA #___
+        LDX #0
+        :
+        JSR WriteByteToBuffer
+        INX
+        CPX #$20
+        BNE :-
+        LDX #0
+        :
+        LDA sizeUpSituationText, X
+        JSR WriteByteToBuffer
+        INX
+        CPX #$20
+        BNE :-
+    JSR EndBufferWrite
+    RTS
+.endproc
