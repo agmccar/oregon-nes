@@ -778,7 +778,37 @@
         JSR DrawHUDMainMenu
         JMP Done
     @menuNone:
-        
+        LDA PPUSTATUS
+        LDA #$20
+        STA PPUADDR
+        LDA #$80
+        STA PPUADDR
+        LDX #0 ; temp- draw horizon
+        :
+        LDA #4
+        STA PPUDATA
+        INX
+        CPX #$20
+        BNE :-
+        LDA PPUSTATUS
+        LDA #$21
+        STA PPUADDR
+        LDA #$40
+        STA PPUADDR
+        LDX #0 ; draw ground
+        LDA #$14
+        :
+        STA PPUDATA
+        INX
+        CPX #$C0
+        BNE :-
+        ;jsr Draw Press A To Size Up The Situation
+        ;jsr DrawTravelingHUD
+        ;jsr DrawPressStart
+
+
+
+
         JMP Done
     Done:
     JSR DoneBulkDrawing

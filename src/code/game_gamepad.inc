@@ -1580,6 +1580,12 @@
             STA menuOpen
             JMP Done
             :
+            CMP #OPT_CONTINUE
+            BNE :+
+            LDA #MENU_NONE
+            STA menuOpen
+            JMP Done
+            :
             CMP #OPT_SUPPLIES
             BNE :+
             LDA #MENU_SUPPLIES
