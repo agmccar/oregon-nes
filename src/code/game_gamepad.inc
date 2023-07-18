@@ -1511,10 +1511,11 @@
         :
         JMP Done
         @menuNone:
-            LDA #MENU_MAINMENU
-            STA menuOpen
-            LDA #0
-            STA menuCursor
+            JMP BufferDrawTextPopup
+            ; LDA #MENU_MAINMENU
+            ; STA menuOpen
+            ; LDA #0
+            ; STA menuCursor
             JMP Done
         @menuMain:
             LDA menuCursor

@@ -3,3 +3,4 @@ game.nes
 *.nes
 *.dbg
 *.labels.txt
+map.txt

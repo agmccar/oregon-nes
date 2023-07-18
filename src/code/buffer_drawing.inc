@@ -1403,7 +1403,7 @@
 
     LDA #0
     STA helper
-    LDA #$21
+    LDA #$62
     STA helper+1
     :
     LDX #28
@@ -1441,7 +1441,7 @@
         JSR WriteByteToBuffer
         LDA #$21
         JSR WriteByteToBuffer
-        LDA #$42
+        LDA #$E2
         JSR WriteByteToBuffer
         LDA #_RU
         JSR WriteByteToBuffer
