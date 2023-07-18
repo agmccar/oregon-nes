@@ -554,12 +554,6 @@
     RTS
 .endproc
 
-.proc SpawnTextPopup
-
-    JSR BufferDrawTextPopup
-    RTS
-.endproc
-
 .proc SetOpeningBalance
     LDA #$90        ; default $400.00 dollar amount (#$190)
     STA dollars
@@ -610,5 +604,6 @@
     DEY
     CPY #0
     BNE :--
+    Done:
     RTS
 .endproc

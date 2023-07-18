@@ -76,6 +76,7 @@
     JMP Done
     :
     Done:
+    JSR Every60Frames
     JSR DrawFinger
     RTS
 .endproc
@@ -320,4 +321,20 @@
     LDA buttons1
     STA buttons1Last    ; Remember last controller inputs
     RTS
+.endproc
+
+.proc Every60Frames
+    LDA frameCounter
+    CMP #60
+    BNE Done
+    LDA #0
+    STA frameCounter
+    INC diaryTextLine1
+
+    Done:
+    RTS
+.endproc
+
+.proc TravelingEvent
+    JSR BufferDrawTextPopup
 .endproc
