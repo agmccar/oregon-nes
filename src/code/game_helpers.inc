@@ -554,35 +554,61 @@
     RTS
 .endproc
 
-.proc NewDiaryText
-    ; @param diaryTextHelper: text to add to diary 
-    LDX #0 ; shift line 2 up
+.proc SpawnTextPopup
+
+    JSR BufferDrawTextPopup
+    RTS
+.endproc
+
+.proc SetOpeningBalance
+    LDA #$90        ; default $400.00 dollar amount (#$190)
+    STA dollars
+    LDA #$01
+    STA dollars+1
+    LDA #_0_
+    STA dollarsDigit
+    STA dollarsDigit+2
+    STA dollarsDigit+3
+    LDA #_4_
+    STA dollarsDigit+1
+    LDX occupation
+    LDA occupationAttribute, X
+    LSR             ; shift occupationAttribute to only starting cash
+    LSR
+    LSR
+    LSR
+    LSR
+    LSR
+    TAY
+    CPY #0
+    BNE :+
+    JMP Done
     :
-    LDA diaryTextLine2, X
-    STA diaryTextLine1, X
-    INX
-    CPX #30
-    BNE :-
-    LDX #0 ; shift line 3 up
+    CLC
+    LDA dollarsDigit+1
+    ADC #4
+    CMP #_PD ; _8_ + 4 
+    BNE :+
+    INC dollarsDigit
+    LDA #_2_
     :
-    LDA diaryTextLine3, X
-    STA diaryTextLine2, X
-    INX
-    CPX #30
-    BNE :-
-    LDX #0 ; shift line 4 up
-    :
-    LDA diaryTextLine4, X
-    STA diaryTextLine3, X
-    INX
-    CPX #30
-    BNE :-
-    LDX #0 ; insert new line into line 4
-    :
-    LDA diaryTextHelper, X
-    STA diaryTextLine4, X
-    INX
-    CPX #30
-    BNE :-
+    STA dollarsDigit+1
+    CLC
+    LDA #$FF     ; add $400.00 (#$00FF+#$0091) to starting cash, <=4 times
+    ADC dollars
+    STA dollars
+    LDA #$00
+    ADC dollars+1
+    STA dollars+1
+    CLC
+    LDA #$91
+    ADC dollars
+    STA dollars
+    LDA #$00
+    ADC dollars+1
+    STA dollars+1
+    DEY
+    CPY #0
+    BNE :--
     RTS
 .endproc
