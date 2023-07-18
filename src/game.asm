@@ -25,6 +25,7 @@
     .include "data/textJP.inc"
 
 .segment "ROM3"
+    .include "data/titleCHR.inc"
 
 .segment "ROM4"
 

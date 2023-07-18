@@ -1378,3 +1378,82 @@
     JSR EndBufferWrite
     RTS
 .endproc
+
+.proc BufferDrawTextPopup
+    LDX #28
+    JSR StartBufferWrite
+        LDA #28
+        JSR WriteByteToBuffer
+        LDA #$21
+        JSR WriteByteToBuffer
+        LDA #$42
+        JSR WriteByteToBuffer
+        LDA #_RD
+        JSR WriteByteToBuffer
+        LDA #_HR
+        LDX #0
+        :
+        JSR WriteByteToBuffer
+        INX
+        CPX #26
+        BNE :-
+        LDA #_LD
+        JSR WriteByteToBuffer
+    JSR EndBufferWrite
+
+    LDA #0
+    STA helper
+    LDA #$21
+    STA helper+1
+    :
+    LDX #28
+    JSR StartBufferWrite
+        LDA #28
+        JSR WriteByteToBuffer
+        LDA #$21
+        JSR WriteByteToBuffer
+        LDA helper+1
+        JSR WriteByteToBuffer
+        LDA #_VR
+        JSR WriteByteToBuffer
+        LDA #___
+        LDX #0
+        :
+        JSR WriteByteToBuffer
+        INX
+        CPX #26
+        BNE :-
+        LDA #_VR
+        JSR WriteByteToBuffer
+    JSR EndBufferWrite
+    INC helper
+    LDA helper+1
+    CLC
+    ADC #$20
+    STA helper+1
+    LDA helper
+    CMP #5
+    BNE :--
+
+    LDX #28
+    JSR StartBufferWrite
+        LDA #28
+        JSR WriteByteToBuffer
+        LDA #$21
+        JSR WriteByteToBuffer
+        LDA #$42
+        JSR WriteByteToBuffer
+        LDA #_RU
+        JSR WriteByteToBuffer
+        LDA #_HR
+        LDX #0
+        :
+        JSR WriteByteToBuffer
+        INX
+        CPX #26
+        BNE :-
+        LDA #_LU
+        JSR WriteByteToBuffer
+    JSR EndBufferWrite
+    RTS
+.endproc

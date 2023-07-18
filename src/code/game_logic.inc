@@ -321,3 +321,7 @@
     STA buttons1Last    ; Remember last controller inputs
     RTS
 .endproc
+
+.proc SpawnTextPopup
+    RTS
+.endproc

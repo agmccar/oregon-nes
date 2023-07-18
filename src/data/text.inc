@@ -83,7 +83,8 @@ hudMenu:
     ; .byte _H_,_U_,_N_,_T_,___,___,___ ;ハント
     ; .byte _S_,_H_,_O_,_P_,___,___,___
     ;.byte _O_,_P_,_T_,_I_,_O_,_N_,_S_ ;オプション
-    
+
+
 
 temperatureText:          ;(Attribute)
     .byte _C_,_O_,_L_,_D_ ; $0,$8
@@ -141,7 +142,12 @@ weatherText:
     ; .byte ___,___,___,___,___,___,___,___ ; unused
     ; .byte ___,___,___,___,___,___,___,___ ; unused
 
-;weatherSprites----todo
+; rainy
+; cool
+; warm
+; hot
+; very rainy
+
 
 
 restText:
