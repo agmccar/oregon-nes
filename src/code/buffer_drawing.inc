@@ -1455,6 +1455,24 @@
         LDA #_LU
         JSR WriteByteToBuffer
     JSR EndBufferWrite
+
+    LDX #$20
+    JSR StartBufferWrite
+        LDA #$20
+        JSR WriteByteToBuffer
+        LDA #$22
+        JSR WriteByteToBuffer
+        LDA #$20
+        JSR WriteByteToBuffer
+        LDA #___
+        LDX #0
+        :
+        JSR WriteByteToBuffer
+        INX
+        CPX #$20
+        BNE :-
+    JSR EndBufferWrite
+
     RTS
 .endproc
 
@@ -1488,5 +1506,96 @@
     LDA helper
     CMP #6
     BNE :--
+    JSR BufferDrawSizeUpSituation
+    RTS
+.endproc
+
+.proc BufferDrawTravelingHUD
+    LDA #0
+    STA helper
+    LDA #$22
+    STA pointer+1
+    LDA #$40
+    STA pointer
+    :
+    LDX #$20
+    JSR StartBufferWrite
+        LDA #$20
+        JSR WriteByteToBuffer
+        LDA pointer+1
+        JSR WriteByteToBuffer
+        LDA pointer
+        JSR WriteByteToBuffer
+        LDA #___
+        LDX #0
+        :
+        JSR WriteByteToBuffer
+        INX
+        CPX #$20
+        BNE :-
+    JSR EndBufferWrite
+    CLC
+    LDA pointer
+    ADC #$20
+    STA pointer
+    LDA pointer+1
+    ADC #$0
+    STA pointer+1
+    INC helper
+    LDA helper
+    CMP #8
+    BNE :--
+
+    LDX #8
+    JSR StartBufferWrite
+        LDA #8
+        JSR WriteByteToBuffer
+        LDA #$23
+        JSR WriteByteToBuffer
+        LDA #$E0
+        JSR WriteByteToBuffer
+        LDA #%01011010
+        LDX #0
+        :
+        JSR WriteByteToBuffer
+        INX
+        CPX #8
+        BNE :-
+    JSR EndBufferWrite
+
+    LDX #8
+    JSR StartBufferWrite
+        LDA #8
+        JSR WriteByteToBuffer
+        LDA #$23
+        JSR WriteByteToBuffer
+        LDA #$E8
+        JSR WriteByteToBuffer
+        LDA #%01010101
+        LDX #0
+        :
+        JSR WriteByteToBuffer
+        INX
+        CPX #8
+        BNE :-
+    JSR EndBufferWrite
+
+    LDX #8
+    JSR StartBufferWrite
+        LDA #8
+        JSR WriteByteToBuffer
+        LDA #$23
+        JSR WriteByteToBuffer
+        LDA #$F0
+        JSR WriteByteToBuffer
+        LDA #%10100101
+        LDX #0
+        :
+        JSR WriteByteToBuffer
+        INX
+        CPX #8
+        BNE :-
+    JSR EndBufferWrite
+
     RTS
 .endproc
