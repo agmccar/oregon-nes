@@ -1457,3 +1457,36 @@
     JSR EndBufferWrite
     RTS
 .endproc
+
+.proc CloseTextPopup
+    LDA #0
+    STA helper
+    LDA #$40
+    STA helper+1
+    :
+    LDX #$20
+    JSR StartBufferWrite
+        LDA #$20
+        JSR WriteByteToBuffer
+        LDA #$21
+        JSR WriteByteToBuffer
+        LDA helper+1
+        JSR WriteByteToBuffer
+        LDA #TILE_GRASS
+        LDX #0
+        :
+        JSR WriteByteToBuffer
+        INX
+        CPX #$20
+        BNE :-
+    JSR EndBufferWrite
+    INC helper
+    LDA helper+1
+    CLC
+    ADC #$20
+    STA helper+1
+    LDA helper
+    CMP #6
+    BNE :--
+    RTS
+.endproc

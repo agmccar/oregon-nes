@@ -83,7 +83,6 @@
 
 .proc NewMenuOpened
     ; A-register should contain menuOpen.
-    STA menuOpenLast    ; reset last menu open
     CMP #MENU_NONE      ; which menu was just opened?
     BNE :+
     JMP None
@@ -138,11 +137,15 @@
     BNE :+
     JMP Rest
     :
+    CMP #MENU_TEXTPOPUP
+    BNE :+
+    JMP TextPopup
+    :
+    JMP Done
     None:
         LDA #0
         STA fingerLastLastX
         STA fingerLastLastY ; clear LastLast pos since we are NOT in a submenu.
-        JSR ClearScreen
         LDA gameState
         CMP #GAMESTATE_NEWGAME
         BNE :+
@@ -167,7 +170,11 @@
         BNE :+
         LDA #%00000000      ; neither finger visible
         STA fingerAttr
+        LDA menuOpenLast
+        CMP #MENU_TEXTPOPUP
+        BEQ :+
         JSR LoadBgTraveling
+        JMP Done
         :
         JMP Done
     NewGameTyping:
@@ -243,7 +250,13 @@
         JSR DrawRestSubmenu
         JSR RedrawFinger
         JMP Done
+    TextPopup:
+
+        JSR BufferDrawTextPopup
+        JMP Done
     Done:
+    LDA menuOpen
+    STA menuOpenLast    ; reset last menu open
     RTS
 .endproc
 
@@ -335,6 +348,6 @@
     RTS
 .endproc
 
-.proc TravelingEvent
-    JSR BufferDrawTextPopup
-.endproc
+; .proc TravelingEvent
+;     JSR BufferDrawTextPopup
+; .endproc

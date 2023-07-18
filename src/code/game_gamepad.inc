@@ -1509,9 +1509,19 @@
         BNE :+
         JMP @menuRest
         :
+        CMP #MENU_TEXTPOPUP
+        BNE :+
+        JMP @menuTextPopup
+        :
         JMP Done
+        @menuTextPopup:
+            JSR CloseTextPopup
+            LDA #MENU_NONE
+            STA menuOpen
+            JMP Done
         @menuNone:
-            JMP BufferDrawTextPopup
+            LDA #MENU_TEXTPOPUP
+            STA menuOpen
             ; LDA #MENU_MAINMENU
             ; STA menuOpen
             ; LDA #0

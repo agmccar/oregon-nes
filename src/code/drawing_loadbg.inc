@@ -10,6 +10,7 @@
 .endproc
 
 .proc LoadBgNewGame
+    JSR ClearScreen
     JSR ClearAttributes ; default palette
     JSR StartBulkDrawing
     Leader:
@@ -234,6 +235,7 @@
 .endproc
 
 .proc LoadBgStore
+    JSR ClearScreen
     JSR ClearAttributes ; default palette
     JSR StartBulkDrawing
     LDA location            ; calculate address of store name text
@@ -756,7 +758,6 @@
     LDY #22
     JSR SetPpuAddrPointerFromXY
     JSR DrawLandmarkTitle
-    ;JSR DrawHUD
     JSR DoneBulkDrawing
     JSR BufferDrawPressStart
     RTS

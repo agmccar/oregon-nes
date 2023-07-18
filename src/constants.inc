@@ -200,6 +200,9 @@ _WAk = $FA
 _NNk = $FB
 _DOT = $FC ; ・
 
+; other tiles
+TILE_GRASS = $14
+
 
 ; Length (in characters) of HUD elements
 TEXT_MAINMENU_LEN   = 19  ; main menu options
@@ -242,6 +245,7 @@ MENU_SUPPLIES           = 8
 MENU_PACE               = 9
 MENU_RATIONS            = 10
 MENU_REST               = 11
+MENU_TEXTPOPUP          = 12
 
 OPT_CONTINUE    = 0
 OPT_SUPPLIES    = 1
@@ -253,13 +257,6 @@ OPT_TRADE       = 6
 OPT_HUNT        = 7
 OPT_TALK        = 8
 
-; HUD states
-HUD_STATUS          = %00000001
-HUD_DIARY           = %00000010
-HUD_MAP             = %00000100
-HUD_MAP_DIARY       = %00000110 ; map should always be at top of HUD
-HUD_MAP_STATUS      = %00000101 ;  because NTSC deletes scanlines at top/bot.
-HUD_STATUS_DIARY    = %00000011 ; status/diary can be bot.- last 2 rows blank
 ; Locations (landmarks)
 ; %00000000
 ;  |||+++++ identifier(index)
