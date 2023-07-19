@@ -1778,3 +1778,33 @@
 
     RTS
 .endproc
+
+.proc BufferDrawTravelingHUDValues
+    LDA #$22 ; draw date
+    STA pointer
+    LDA #$71
+    STA pointer+1
+    JSR BufferDrawDateText
+    RTS
+.endproc
+
+.proc BufferDrawDateText
+    ; @param pointer: nametable location
+    LDX #TEXT_DATE_LEN
+    JSR StartBufferWrite
+        LDA #TEXT_DATE_LEN
+        JSR WriteByteToBuffer
+        LDA pointer
+        JSR WriteByteToBuffer
+        LDA pointer+1
+        JSR WriteByteToBuffer
+        LDX #0
+        :
+        LDA dateText, X
+        JSR WriteByteToBuffer
+        INX
+        CPX #TEXT_DATE_LEN
+        BNE :-
+    JSR EndBufferWrite
+    RTS
+.endproc

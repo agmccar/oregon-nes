@@ -727,5 +727,72 @@
         STA dateMonth
         INC dateYear
     Done:
+    ; store date as text
+    LDX #0 
+    LDY #1
+    :
+    CPY dateMonth
+    BNE :+
+    JMP :++
+    :
+    INX
+    INX
+    INX
+    INY
+    JMP :--
+    :
+    LDA monthText, X
+    STA dateText
+    INX
+    LDA monthText, X
+    STA dateText+1
+    INX
+    LDA monthText, X
+    STA dateText+2
+    LDA #___
+    STA dateText+3
+    LDA dateDay ; Draw date - day
+    STA helper
+    LDX #0 ; 10s place
+    :
+    LDA helper
+    CMP #10
+    BCS :+
+    LDY helper ; 1s place
+    JMP :++
+    :
+    SEC
+    SBC #10
+    STA helper
+    INX
+    JMP :--
+    :
+    LDA decimalDigits, X
+    STA dateText+4
+    TYA
+    TAX
+    LDA decimalDigits, X
+    STA dateText+5
+    LDA #_CM
+    STA dateText+6
+    LDA #___
+    STA dateText+7
+    LDA dateYear
+    CLC
+    ADC #48
+    STA helper
+    LDA #0
+    STA helper+1
+    LDX #cartHelperDigit
+    LDY #helper
+    JSR SetDigitFromValue
+    LDA #_1_
+    STA dateText+8
+    LDA #_8_
+    STA dateText+9
+    LDA cartHelperDigit+2
+    STA dateText+10
+    LDA cartHelperDigit+3
+    STA dateText+11
     RTS
 .endproc

@@ -804,7 +804,8 @@
         CPX #$C0
         BNE :-
         JSR BufferDrawSizeUpSituation
-        jsr BufferDrawTravelingHUD
+        JSR BufferDrawTravelingHUD
+        JSR BufferDrawTravelingHUDValues
         JSR BufferDrawPressStart
     
 

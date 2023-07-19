@@ -6,10 +6,11 @@
     STA weather
     LDA #3                  ; default date March 1, 1848
     STA dateMonth
-    LDA #1
-    STA dateDay
+    LDA #0
+    STA dateDay             ; date will increment after choosing start month
     LDA #$ff                ; default location (Independence, MO *minus one*)
-    STA location            ; location will increment, to start at #$ff
+    STA location            ; location will increment, so start at #$ff
+    LDX #0
     :                       ; default person names
     LDA defaultPersonNames, X
     STA personName, X

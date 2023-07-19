@@ -332,63 +332,13 @@
 .endproc
 
 .proc DrawDateText
-    LDX #0 ; Draw date - month
-    LDY #1
+    LDX #0
     :
-    CPY dateMonth
-    BNE :+
-    JMP :++
-    :
-    INX
-    INX
-    INX
-    INY
-    JMP :--
-    :
-    LDA monthText, X
+    LDA dateText, X
     STA PPUDATA
     INX
-    LDA monthText, X
-    STA PPUDATA
-    INX
-    LDA monthText, X
-    STA PPUDATA
-    LDA #___
-    STA PPUDATA
-    LDA dateDay ; Draw date - day
-    STA helper
-    LDX #0 ; 10s place
-    :
-    LDA helper
-    CMP #10
-    BCS :+
-    LDY helper ; 1s place
-    JMP :++
-    :
-    SEC
-    SBC #10
-    STA helper
-    INX
-    JMP :--
-    :
-    LDA decimalDigits, X
-    STA PPUDATA
-    TYA
-    TAX
-    LDA decimalDigits, X
-    STA PPUDATA
-    LDA #_CM
-    STA PPUDATA
-    LDA #___
-    STA PPUDATA
-    LDA #_1_
-    STA PPUDATA
-    LDA #_8_
-    STA PPUDATA
-    LDA #_4_
-    STA PPUDATA
-    LDA #_8_    ; todo dateYear
-    STA PPUDATA
+    CPX #TEXT_DATE_LEN
+    BNE :-
     RTS
 .endproc
 

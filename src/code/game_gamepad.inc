@@ -266,6 +266,7 @@
         :
         JMP CheckLeft
         @menuNone:
+            JSR IncrementDate
             JSR SetOpeningBalance
             LDA #GAMESTATE_STORE
             STA gameState
