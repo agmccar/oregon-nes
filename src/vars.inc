@@ -11,7 +11,7 @@ diaryTextLine4:     .res TEXT_DIARY_LINE_LEN
 ; healthText:         .res TEXT_HEALTH_LEN 
 ; foodText:           .res TEXT_FOOD_LEN
 ; traveledText:       .res TEXT_TRAVELED_LEN
-; dateText:           .res TEXT_DATE_LEN
+dateText:           .res TEXT_DATE_LEN
 
 
 nametableBuffer:    .res 64

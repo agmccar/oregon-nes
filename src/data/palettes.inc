@@ -3,7 +3,7 @@ palette:
     .byte $0F, $00, $10, $30 ; Black, Grey, LGrey, White
     .byte $0F, $00, $30, $0F ; Black, Grey, White, Black
     .byte $0F, $00, $0F, $30 ; Black, Grey, Black, White
-    .byte $0F, $00, $10, $30 ; Black, Grey, LGrey, White
+    .byte $0F, $00, $10, $30 ; Black, Green, Lime, White
     ; .byte $21, $19, $25, $30 ; Sky, Trees, Pink, White
     ; .byte $21, $19, $29, $30 ; Sky, Trees, Grass, White
     ; .byte $21, $06, $29, $30 ; Sky, Brown, Grass, White

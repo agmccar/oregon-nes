@@ -29,11 +29,13 @@ monthText:
     .byte _N_,_O_,_V_
     .byte _D_,_E_,_C_
 
-hudStatusText:
-    .byte _H_,_E_,_A_,_L_,_T_,_H_,_CL
-    .byte _F_,_O_,_O_,_D_,_CL,___,___
-    .byte _N_,_E_,_X_,_T_,_CL,___,___
-    .byte _T_,_O_,_T_,_A_,_L_,_CL,___
+hudText:
+    .byte _D_,_A_,_T_,_E_ ; 0-4
+    .byte _W_,_E_,_A_,_T_,_H_,_E_,_R_ ; 4-11
+    .byte _H_,_E_,_A_,_L_,_T_,_H_ ; 11-17
+    .byte _F_,_O_,_O_,_D_ ; 17-21
+    .byte _N_,_E_,_X_,_T_,___,_L_,_A_,_N_,_D_,_M_,_A_,_R_,_K_ ; 21-34
+    .byte _M_,_I_,_L_,_E_,_S_,___,_T_,_R_,_A_,_V_,_E_,_L_,_E_,_D_ ; 34-48
 
 hudMenuStatusText:
     .byte _W_,_E_,_A_,_T_,_H_,_E_,_R_,_CL ;0-8

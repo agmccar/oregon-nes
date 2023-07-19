@@ -1597,5 +1597,131 @@
         BNE :-
     JSR EndBufferWrite
 
+    LDX #6 ; draw Date:
+    JSR StartBufferWrite
+        LDA #6
+        JSR WriteByteToBuffer
+        LDA #$22
+        JSR WriteByteToBuffer
+        LDA #$6B
+        JSR WriteByteToBuffer
+        LDX #0
+        :
+        LDA hudText, X
+        JSR WriteByteToBuffer
+        INX
+        CPX #4
+        BNE :-
+        LDA #_CL
+        JSR WriteByteToBuffer
+        LDA #___
+        JSR WriteByteToBuffer
+    JSR EndBufferWrite
+
+    LDX #9 ; draw Weather:
+    JSR StartBufferWrite
+        LDA #9
+        JSR WriteByteToBuffer
+        LDA #$22
+        JSR WriteByteToBuffer
+        LDA #$88
+        JSR WriteByteToBuffer
+        LDX #4
+        :
+        LDA hudText, X
+        JSR WriteByteToBuffer
+        INX
+        CPX #11
+        BNE :-
+        LDA #_CL
+        JSR WriteByteToBuffer
+        LDA #___
+        JSR WriteByteToBuffer
+    JSR EndBufferWrite
+
+    LDX #8 ; draw Health:
+    JSR StartBufferWrite
+        LDA #8
+        JSR WriteByteToBuffer
+        LDA #$22
+        JSR WriteByteToBuffer
+        LDA #$A9
+        JSR WriteByteToBuffer
+        LDX #11
+        :
+        LDA hudText, X
+        JSR WriteByteToBuffer
+        INX
+        CPX #17
+        BNE :-
+        LDA #_CL
+        JSR WriteByteToBuffer
+        LDA #___
+        JSR WriteByteToBuffer
+    JSR EndBufferWrite
+
+    LDX #6 ; draw Food:
+    JSR StartBufferWrite
+        LDA #6
+        JSR WriteByteToBuffer
+        LDA #$22
+        JSR WriteByteToBuffer
+        LDA #$CB
+        JSR WriteByteToBuffer
+        LDX #17
+        :
+        LDA hudText, X
+        JSR WriteByteToBuffer
+        INX
+        CPX #21
+        BNE :-
+        LDA #_CL
+        JSR WriteByteToBuffer
+        LDA #___
+        JSR WriteByteToBuffer
+    JSR EndBufferWrite
+
+    LDX #15 ; draw Next Landmark:
+    JSR StartBufferWrite
+        LDA #15
+        JSR WriteByteToBuffer
+        LDA #$22
+        JSR WriteByteToBuffer
+        LDA #$E2
+        JSR WriteByteToBuffer
+        LDX #21
+        :
+        LDA hudText, X
+        JSR WriteByteToBuffer
+        INX
+        CPX #34
+        BNE :-
+        LDA #_CL
+        JSR WriteByteToBuffer
+        LDA #___
+        JSR WriteByteToBuffer
+    JSR EndBufferWrite
+
+    LDX #16 ; draw Miles traveled:
+    JSR StartBufferWrite
+        LDA #16
+        JSR WriteByteToBuffer
+        LDA #$23
+        JSR WriteByteToBuffer
+        LDA #$01
+        JSR WriteByteToBuffer
+        LDX #34
+        :
+        LDA hudText, X
+        JSR WriteByteToBuffer
+        INX
+        CPX #48
+        BNE :-
+        LDA #_CL
+        JSR WriteByteToBuffer
+        LDA #___
+        JSR WriteByteToBuffer
+    JSR EndBufferWrite
+
     RTS
 .endproc
