@@ -1552,6 +1552,8 @@
     CMP #6
     BNE :--
 
+    JSR ClearPopupText
+
     LDA #$23 ; erase "Press Start to continue"
     STA pointer
     LDA #$60

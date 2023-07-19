@@ -1520,12 +1520,12 @@
             STA menuOpen
             JMP Done
         @menuNone:
-            LDA #MENU_TEXTPOPUP
+            ; LDA #MENU_TEXTPOPUP
+            ; STA menuOpen ; testing popup window
+            LDA #MENU_MAINMENU
             STA menuOpen
-            ; LDA #MENU_MAINMENU
-            ; STA menuOpen
-            ; LDA #0
-            ; STA menuCursor
+            LDA #0
+            STA menuCursor
             JMP Done
         @menuMain:
             LDA menuCursor

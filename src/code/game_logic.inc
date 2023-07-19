@@ -57,7 +57,7 @@
     :
     CMP #GAMESTATE_TRAVELING
     BNE :+ 
-    JMP Done
+    JMP Traveling
     :
     CMP #GAMESTATE_NEWGAME
     BNE :+ 
@@ -75,6 +75,14 @@
     BNE :+
     JMP Done
     :
+    JMP Done
+    Traveling:
+        LDA menuOpen
+        CMP #MENU_NONE
+        BNE :+
+        JSR ProcessEventQueue
+        :
+        JMP Done
     Done:
     JSR Every60Frames
     JSR DrawFinger
@@ -343,13 +351,13 @@
     LDA #0
     STA frameCounter
     ; INC diaryTextLine1
-    LDA gameState ; handle event queue if traveling and no menu opened
-    CMP #GAMESTATE_TRAVELING
-    BNE Done
-    LDA menuOpen
-    CMP #MENU_NONE
-    BNE Done
-    JSR ProcessEventQueue
+    ; LDA gameState ; handle event queue if traveling and no menu opened
+    ; CMP #GAMESTATE_TRAVELING
+    ; BNE Done
+    ; LDA menuOpen
+    ; CMP #MENU_NONE
+    ; BNE Done
+    ; JSR ProcessEventQueue
 
     Done:
     RTS
@@ -378,7 +386,6 @@
     :
     JMP Done
     NextLandmark:
-        JSR ClearPopupText
         LDX #0
         :
         LDA nextLandmarkText, X ; "it is "
@@ -398,7 +405,7 @@
         INX
         CPX #18
         BNE :-
-        LDX location
+        LDX location ; "{location title}."
         INX
         JSR GetLandmarkText
         LDX helper
@@ -410,6 +417,8 @@
         INY
         CPY helper2
         BNE :-
+        LDA #_PD
+        STA popupTextLine2, Y
         LDA #MENU_TEXTPOPUP
         STA menuOpen
         JMP Done
