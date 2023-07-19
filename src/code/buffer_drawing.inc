@@ -1401,7 +1401,7 @@
 .endproc
 
 .proc BufferDrawTextPopup
-    LDX #28
+    LDX #28 ; top row
     JSR StartBufferWrite
         LDA #28
         JSR WriteByteToBuffer
@@ -1422,7 +1422,7 @@
         JSR WriteByteToBuffer
     JSR EndBufferWrite
 
-    LDA #0
+    LDA #0 ; row 1-5
     STA helper
     LDA #$62
     STA helper+1
@@ -1456,13 +1456,13 @@
     CMP #5
     BNE :--
 
-    LDX #28
+    LDX #28 ; bottom row
     JSR StartBufferWrite
         LDA #28
         JSR WriteByteToBuffer
-        LDA #$21
+        LDA #$22
         JSR WriteByteToBuffer
-        LDA #$E2
+        LDA #$02
         JSR WriteByteToBuffer
         LDA #_RU
         JSR WriteByteToBuffer
@@ -1475,6 +1475,40 @@
         BNE :-
         LDA #_LU
         JSR WriteByteToBuffer
+    JSR EndBufferWrite
+
+    LDX #TEXT_POPUP_LINE_LEN  ; popup text line 1
+    JSR StartBufferWrite
+        LDA #TEXT_POPUP_LINE_LEN
+        JSR WriteByteToBuffer
+        LDA #$21
+        JSR WriteByteToBuffer
+        LDA #$84
+        JSR WriteByteToBuffer
+        LDX #0
+        :
+        LDA popupTextLine1, X
+        JSR WriteByteToBuffer
+        INX
+        CPX #TEXT_POPUP_LINE_LEN
+        BNE :-
+    JSR EndBufferWrite
+
+    LDX #TEXT_POPUP_LINE_LEN  ; popup text line 2
+    JSR StartBufferWrite
+        LDA #TEXT_POPUP_LINE_LEN
+        JSR WriteByteToBuffer
+        LDA #$21
+        JSR WriteByteToBuffer
+        LDA #$C4
+        JSR WriteByteToBuffer
+        LDX #0
+        :
+        LDA popupTextLine2, X
+        JSR WriteByteToBuffer
+        INX
+        CPX #TEXT_POPUP_LINE_LEN
+        BNE :-
     JSR EndBufferWrite
 
     LDA #$22 ; erase "Press A to size up the situation"

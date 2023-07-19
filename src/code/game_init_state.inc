@@ -8,8 +8,8 @@
     STA dateMonth
     LDA #1
     STA dateDay
-    LDA #LOC_INDEPENDENCE   ; default location Independence, MO
-    STA location
+    LDA #$ff                ; default location (Independence, MO *minus one*)
+    STA location            ; location will increment, to start at #$ff
     :                       ; default person names
     LDA defaultPersonNames, X
     STA personName, X

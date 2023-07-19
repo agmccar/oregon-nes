@@ -343,6 +343,13 @@
     LDA #0
     STA frameCounter
     ; INC diaryTextLine1
+    LDA gameState ; handle event queue if traveling and no menu opened
+    CMP #GAMESTATE_TRAVELING
+    BNE Done
+    LDA menuOpen
+    CMP #MENU_NONE
+    BNE Done
+    JSR ProcessEventQueue
 
     Done:
     RTS
@@ -371,7 +378,42 @@
     :
     JMP Done
     NextLandmark:
-        
+        JSR ClearPopupText
+        LDX #0
+        :
+        LDA nextLandmarkText, X ; "it is "
+        STA popupTextLine1, X
+        INX
+        CPX #6
+        BNE :-
+        :
+        LDA #_X_ ; digits
+        STA popupTextLine1, X
+        INX
+        CPX #9
+        BNE :-
+        :
+        LDA nextLandmarkText, X ; " miles to "
+        STA popupTextLine1, X
+        INX
+        CPX #18
+        BNE :-
+        LDX location
+        INX
+        JSR GetLandmarkText
+        LDX helper
+        LDY #0
+        :
+        LDA diaryLocations, X
+        STA popupTextLine2, Y
+        INX
+        INY
+        CPY helper2
+        BNE :-
+        LDA #MENU_TEXTPOPUP
+        STA menuOpen
+        JMP Done
+
 
 
     Done:

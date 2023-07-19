@@ -56,34 +56,9 @@
     LDA pointer+1
     STA PPUADDR
     JSR DrawBlankLine   ; start footer bar
-    LDA location    ; check landmark index (ie ignore river and store bits)
-    STA helper
-    LDX #0      ; get landmark text
-    LDY #0
-    STX helper+1
-    LDA diaryLocations, X
-    STA helper2
-    :
-    CPY helper
-    BNE :+
-    JMP :+++
-    :
-    LDX #0
-    :
-    INX
-    CPX helper2
-    BNE :-
-    CLC
-    ADC helper+1
-    STA helper+1
-    INC helper+1
-    LDX helper+1
-    INY
-    LDA diaryLocations, X
-    STA helper2
-    JMP :---
-    :       ; draw landmark text line
-    LDA #32
+    LDX location
+    JSR GetLandmarkText
+    LDA #32 ; draw landmark text line
     SEC
     SBC helper2
     LSR
@@ -95,8 +70,7 @@
     INX
     CPX helper2+1
     BNE :-
-    LDX helper+1
-    INX
+    LDX helper
     LDY #0
     :
     LDA diaryLocations, X

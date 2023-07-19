@@ -607,3 +607,50 @@
     Done:
     RTS
 .endproc
+
+.proc ClearPopupText
+    LDA #___
+    LDX #0
+    :
+    STA popupTextLine1, X
+    STA popupTextLine2, X
+    INX
+    CPX #TEXT_POPUP_LINE_LEN
+    BNE :-
+    RTS
+.endproc
+
+.proc GetLandmarkText
+    ; @param X: location index
+    ; @return helper2: length of text
+    ; @return helper: text memory location, relative to diaryLocations
+    ; kills all registers
+    STX helper+1
+    LDX #0
+    LDY #0
+    STX helper
+    LDA diaryLocations, X
+    STA helper2
+    :
+    CPY helper+1
+    BNE :+
+    JMP :+++
+    :
+    LDX #0
+    :
+    INX
+    CPX helper2
+    BNE :-
+    CLC
+    ADC helper
+    STA helper
+    INC helper
+    LDX helper
+    INY
+    LDA diaryLocations, X
+    STA helper2
+    JMP :---
+    :
+    INC helper
+    RTS
+.endproc
