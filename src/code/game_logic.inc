@@ -342,12 +342,47 @@
     BNE Done
     LDA #0
     STA frameCounter
-    INC diaryTextLine1
+    ; INC diaryTextLine1
 
     Done:
     RTS
 .endproc
 
-; .proc TravelingEvent
-;     JSR BufferDrawTextPopup
-; .endproc
+.proc ProcessEventQueue
+    LDA eventQueue ; proceed only if an event is queued
+    CMP #EVENT_NONE
+    BNE :+
+    JMP Done
+    :
+    TAY ; stash event ID in Y register
+    LDA eventQueue+1    ; shift all queued events and decrement pointer 
+    STA eventQueue
+    LDA eventQueue+2
+    STA eventQueue+1
+    LDA eventQueue+3
+    STA eventQueue+2
+    LDA #EVENT_NONE
+    STA eventQueue+3
+    DEC eventQueuePointer
+    TYA                ; unstash event ID
+    CMP #EVENT_NEXT_LANDMARK  ; switch/case event id
+    BNE :+
+    JMP NextLandmark
+    :
+    JMP Done
+    NextLandmark:
+        
+
+
+    Done:
+    RTS
+.endproc
+
+.proc QueueEvent
+    ; A: event id to add to queue
+    ; kills X register
+    LDX eventQueuePointer
+    STA eventQueue, X
+    INC eventQueuePointer
+    RTS
+.endproc

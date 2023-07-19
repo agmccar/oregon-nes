@@ -9,6 +9,63 @@ pressStartText:
 sizeUpSituationText:
     .byte _P_,_R_,_E_,_S_,_S_,___,_A_,___,_T_,_O_,___,_S_,_I_,_Z_,_E_,___,_U_,_P_,___,_T_,_H_,_E_,___,_S_,_I_,_T_,_U_,_A_,_T_,_I_,_O_,_N_
 
+nextLandmarkText:
+    .byte _I_,_T_,___,_I_,_S_,___,___,___,___,___,_M_,_I_,_L_,_E_,_S_,___,_T_,_O_
+
+; Locations (landmarks)
+; %00000000
+;  |||+++++ location id (index)
+;  ||+----- trail divides(?) unused for now
+;  |+------ river y/n
+;  +------- store y/n
+landmarkAttr:
+    .byte %10000000 ; Independence, MO
+    .byte %01000001 ; KANSAS RIVER CROSSING
+    .byte %01000010 ; BIG BLUE RIVER CROSSING
+    .byte %10000011 ; FORT KEARNEY
+    .byte %00000100 ; CHIMNEY ROCK
+    .byte %10000101 ; FORT LARAMIE
+    .byte %00000110 ; INDEPENDENCE ROCK
+    .byte %00000111 ; SOUTH PASS
+    .byte %10001000 ; FORT BRIDGER
+    .byte %01001001 ; GREEN RIVER CROSSING
+    .byte %00001010 ; SODA SPRINGS
+    .byte %10001011 ; FORT HALL
+    .byte %01001100 ; SNAKE RIVER CROSSING
+    .byte %10001101 ; FORT BOISE
+    .byte %00001110 ; BLUE MOUNTAINS
+    .byte %10001111 ; FORT WALLA WALLA
+    .byte %00010000 ; THE DALLES
+    .byte %00010001 ; WILLAMETTE VALLEY
+
+; Distances
+; steady: 20 mi/day
+; strenuous: 30 mi/day
+; grueling: 40 mi/day
+nextLandmarkDistance:
+    .byte 102   ; Independence to Kansas River
+    .byte 83    ; Kansas River to Big Blue River
+    .byte 119   ; Big Blue River to Fort Kearney
+    .byte 250   ; Fort Kearney to Chimney Rock
+    .byte 86    ; Chimney Rock to Fort Laramie
+; steady: 12 mi/day- (10 +/-2)
+; strenuous: 18 mi/day
+; grueling: 24 mi/day
+    .byte 190   ; Fort Laramie to Independence Rock
+    .byte 102   ; Independence Rock to South Pass
+    .byte 57    ; South Pass to Fort Bridger
+    .byte 162   ; Fort Bridger to Green River
+    .byte 125  ; South Pass to Green River
+    .byte 144   ; Green River to Soda Springs
+    .byte 57    ; Soda Springs to Fort Hall
+    .byte 182   ; Fort Hall to Snake River
+    .byte 114   ; Snake River to Fort Boise
+    .byte 160   ; Fort Boise to Blue Mountains
+    .byte 55    ; Blue Mountains to Fort Walla Walla
+    .byte 120   ; Fort Walla Walla to The Dalles
+    .byte 125   ; Blue Mountains to The Dalles
+    .byte 100   ; The Dalles to WIllamette Valley (toll road)
+
 newGameText:
     .byte _L_,_E_,_A_,_D_,_E_,_R_,_CL
     .byte _O_,_C_,_C_,_U_,_P_,_A_,_T_,_I_,_O_,_N_,_CL
@@ -144,10 +201,11 @@ weatherText:
     ; .byte ___,___,___,___,___,___,___,___ ; unused
     ; .byte ___,___,___,___,___,___,___,___ ; unused
 
-; rainy
+; cold
 ; cool
 ; warm
 ; hot
+; rainy
 ; very rainy
 
 

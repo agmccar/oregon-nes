@@ -1379,6 +1379,27 @@
     RTS
 .endproc
 
+.proc BufferDrawBlankLine
+    ; pointer: nametable address
+    LDX #$20
+    JSR StartBufferWrite
+        LDA #$20
+        JSR WriteByteToBuffer
+        LDA pointer
+        JSR WriteByteToBuffer
+        LDA pointer+1
+        JSR WriteByteToBuffer
+        LDA #___
+        LDX #0
+        :
+        JSR WriteByteToBuffer
+        INX
+        CPX #$20
+        BNE :-
+    JSR EndBufferWrite
+    RTS
+.endproc
+
 .proc BufferDrawTextPopup
     LDX #28
     JSR StartBufferWrite
@@ -1456,22 +1477,12 @@
         JSR WriteByteToBuffer
     JSR EndBufferWrite
 
-    LDX #$20
-    JSR StartBufferWrite
-        LDA #$20
-        JSR WriteByteToBuffer
-        LDA #$22
-        JSR WriteByteToBuffer
-        LDA #$20
-        JSR WriteByteToBuffer
-        LDA #___
-        LDX #0
-        :
-        JSR WriteByteToBuffer
-        INX
-        CPX #$20
-        BNE :-
-    JSR EndBufferWrite
+    LDA #$22 ; erase "Press A to size up the situation"
+    STA pointer
+    LDA #$20
+    STA pointer+1
+    JSR BufferDrawBlankLine
+    JSR BufferDrawPressStart ; draw "Press start to continue"
 
     RTS
 .endproc
@@ -1506,7 +1517,13 @@
     LDA helper
     CMP #6
     BNE :--
-    JSR BufferDrawSizeUpSituation
+
+    LDA #$23 ; erase "Press Start to continue"
+    STA pointer
+    LDA #$60
+    STA pointer+1
+    JSR BufferDrawBlankLine
+    JSR BufferDrawSizeUpSituation ; draw "Press A to size up the situation"
     RTS
 .endproc
 

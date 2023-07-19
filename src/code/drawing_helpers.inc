@@ -56,8 +56,7 @@
     LDA pointer+1
     STA PPUADDR
     JSR DrawBlankLine   ; start footer bar
-    LDA location
-    AND #%00111111  ; check landmark index (ie ignore river and store bits)
+    LDA location    ; check landmark index (ie ignore river and store bits)
     STA helper
     LDX #0      ; get landmark text
     LDY #0
@@ -792,56 +791,56 @@
     RTS
 .endproc
 
-.proc DrawHUDDiary
-    JSR DrawBlankLine
-    LDA #___
-    STA PPUDATA
-    LDX #0
-    :
-    LDA diaryTextLine1, X
-    STA PPUDATA
-    INX
-    CPX #30
-    BNE :-
-    LDA #___
-    STA PPUDATA
-    JSR DrawBlankLine
-    STA PPUDATA
-    LDX #0
-    :
-    LDA diaryTextLine2, X
-    STA PPUDATA
-    INX
-    CPX #30
-    BNE :-
-    LDA #___
-    STA PPUDATA
-    JSR DrawBlankLine
-    STA PPUDATA
-    LDX #0
-    :
-    LDA diaryTextLine3, X
-    STA PPUDATA
-    INX
-    CPX #30
-    BNE :-
-    LDA #___
-    STA PPUDATA
-    JSR DrawBlankLine
-    STA PPUDATA
-    LDX #0
-    :
-    LDA diaryTextLine4, X
-    STA PPUDATA
-    INX
-    CPX #30
-    BNE :-
-    LDA #___
-    STA PPUDATA
-    JSR DrawBlankLine
-    JSR DrawBlankLine
-    RTS
-.endproc
+; .proc DrawHUDDiary
+;     JSR DrawBlankLine
+;     LDA #___
+;     STA PPUDATA
+;     LDX #0
+;     :
+;     LDA diaryTextLine1, X
+;     STA PPUDATA
+;     INX
+;     CPX #30
+;     BNE :-
+;     LDA #___
+;     STA PPUDATA
+;     JSR DrawBlankLine
+;     STA PPUDATA
+;     LDX #0
+;     :
+;     LDA diaryTextLine2, X
+;     STA PPUDATA
+;     INX
+;     CPX #30
+;     BNE :-
+;     LDA #___
+;     STA PPUDATA
+;     JSR DrawBlankLine
+;     STA PPUDATA
+;     LDX #0
+;     :
+;     LDA diaryTextLine3, X
+;     STA PPUDATA
+;     INX
+;     CPX #30
+;     BNE :-
+;     LDA #___
+;     STA PPUDATA
+;     JSR DrawBlankLine
+;     STA PPUDATA
+;     LDX #0
+;     :
+;     LDA diaryTextLine4, X
+;     STA PPUDATA
+;     INX
+;     CPX #30
+;     BNE :-
+;     LDA #___
+;     STA PPUDATA
+;     JSR DrawBlankLine
+;     JSR DrawBlankLine
+;     RTS
+; .endproc
 
 .proc DrawHUDMainMenu
     LDA PPUSTATUS   ; set color palette (attribute table)

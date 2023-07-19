@@ -217,7 +217,7 @@ TEXT_DATE_LEN       = 12
 TEXT_SUPPLIES_LEN   = 7
 TEXT_AFFLICTION_LEN = 10
 TEXT_OCCUPATION_LEN = 11
-TEXT_DIARY_LINE_LEN = 30
+TEXT_POPUP_LINE_LEN = 24
 TEXT_PERSON_LEN     = 4   ; person name
 TEXT_KEYBOARD_LEN   = 11  ; per line
 TEXT_STORENAME_LEN  = 12
@@ -282,33 +282,6 @@ LOC_FORTWALLAWALLA      = %10001111 ; FORT WALLA WALLA
 LOC_THEDALLES           = %00010000 ; THE DALLES
 LOC_WILLAMETTE          = %00010001 ; WILLAMETTE VALLEY
 
-; Distances
-; steady: 20 mi/day
-; strenuous: 30 mi/day
-; grueling: 40 mi/day
-DIST_KANSASRIVER        = 102   ; Independence to Kansas River
-DIST_BIGBLUERIVER       = 83    ; Kansas River to Big Blue River
-DIST_FORTKEARNEY        = 119   ; Big Blue River to Fort Kearney
-DIST_CHIMNEYROCK        = 250   ; Fort Kearney to Chimney Rock
-DIST_FORTLARAMIE        = 86    ; Chimney Rock to Fort Laramie
-; steady: 12 mi/day- (10 +/-2)
-; strenuous: 18 mi/day
-; grueling: 24 mi/day
-DIST_INDEPENDENCEROCK   = 190   ; Fort Laramie to Independence Rock
-DIST_SOUTHPASS          = 102   ; Independence Rock to South Pass
-DIST_FORTBRIDGER        = 57    ; South Pass to Fort Bridger
-DIST_GREENRIVER         = 162   ; Fort Bridger to Green River
-DIST_GREENRIVER_SHORTCUT = 125  ; South Pass to Green River
-DIST_SODASPRINGS        = 144   ; Green River to Soda Springs
-DIST_FORTHALL           = 57    ; Soda Springs to Fort Hall
-DIST_SNAKERIVER         = 182   ; Fort Hall to Snake River
-DIST_FORTBOISE          = 114   ; Snake River to Fort Boise
-DIST_BLUEMOUNTAINS      = 160   ; Fort Boise to Blue Mountains
-DIST_FORTWALLAWALLA     = 55    ; Blue Mountains to Fort Walla Walla
-DIST_THEDALLES          = 120   ; Fort Walla Walla to The Dalles
-DIST_THEDALLES_SHORTCUT = 125   ; Blue Mountains to The Dalles
-DIST_WILLAMETTE         = 100   ; The Dalles to WIllamette Valley (toll road)
-
 ; Cost
 ; %00000000
 ;  |+++++++ number (0-127)
@@ -318,3 +291,7 @@ COST_CLOTHES    = 10
 COST_BULLETS    = $81
 COST_PARTS      = 10
 COST_FOOD_LB    = $82
+
+; Events (stuff happens/text pops up)
+EVENT_NONE = 0
+EVENT_NEXT_LANDMARK = 1 ; "It is xxx miles to yyyy" popup

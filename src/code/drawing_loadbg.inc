@@ -239,7 +239,6 @@
     JSR ClearAttributes ; default palette
     JSR StartBulkDrawing
     LDA location            ; calculate address of store name text
-    AND #%00001111
     STA helper
     LDY #0
     LDX #0
@@ -251,8 +250,8 @@
     CPX #TEXT_STORENAME_LEN
     BNE :-
     INY
-    CPY helper
-    BNE :-
+    CPY helper  ; todo fix this section 
+    BNE :-      ; it should only count landmarks with the "store" bit set
     StoreName:
         LDA #0
         STA cartDollars

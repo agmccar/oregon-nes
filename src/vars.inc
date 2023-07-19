@@ -1,9 +1,9 @@
 ; HUD text variables
-diaryTextHelper:    .res TEXT_DIARY_LINE_LEN
-diaryTextLine1:     .res TEXT_DIARY_LINE_LEN
-diaryTextLine2:     .res TEXT_DIARY_LINE_LEN
-diaryTextLine3:     .res TEXT_DIARY_LINE_LEN
-diaryTextLine4:     .res TEXT_DIARY_LINE_LEN
+; diaryTextHelper:    .res TEXT_DIARY_LINE_LEN
+; diaryTextLine1:     .res TEXT_DIARY_LINE_LEN
+; diaryTextLine2:     .res TEXT_DIARY_LINE_LEN
+; diaryTextLine3:     .res TEXT_DIARY_LINE_LEN
+; diaryTextLine4:     .res TEXT_DIARY_LINE_LEN
 ;;;; are these necessary? or is it OK to generate them every frame?
 ; weatherTextLine1:   .res TEXT_WEATHER_LEN
 ; weatherTextLine2:   .res TEXT_WEATHER_LEN
@@ -12,7 +12,11 @@ diaryTextLine4:     .res TEXT_DIARY_LINE_LEN
 ; foodText:           .res TEXT_FOOD_LEN
 ; traveledText:       .res TEXT_TRAVELED_LEN
 dateText:           .res TEXT_DATE_LEN
+textPopupLine1:     .res TEXT_POPUP_LINE_LEN
+textPopupLine2:     .res TEXT_POPUP_LINE_LEN
 
+eventQueue:         .res 4
+eventQueuePointer:  .res 1
 
 nametableBuffer:    .res 64
 ;   byte    0 = length of data (0 = no more data)
