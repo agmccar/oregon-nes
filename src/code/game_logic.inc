@@ -350,14 +350,11 @@
     BNE Done
     LDA #0
     STA frameCounter
-    ; INC diaryTextLine1
-    ; LDA gameState ; handle event queue if traveling and no menu opened
-    ; CMP #GAMESTATE_TRAVELING
-    ; BNE Done
-    ; LDA menuOpen
-    ; CMP #MENU_NONE
-    ; BNE Done
-    ; JSR ProcessEventQueue
+    ; 1 second: animate oxen and wagon
+    ; 1 second: pause, update counters, roll for event
+    ; repeat 2-second loop
+    ; Rest - 1 day/s
+    ;
 
     Done:
     RTS

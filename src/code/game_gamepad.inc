@@ -1,11 +1,26 @@
 
 .proc ControllerTitle
-    LDA #KEY_START
-    BIT buttons1
-    BEQ :+
-    LDA #GAMESTATE_NEWGAME
-    STA gameState
-    :
+    LDA buttons1
+    CMP buttons1Last
+    BNE CheckA
+    JMP Done
+    CheckA:
+        LDA #KEY_A
+        BIT buttons1
+        BNE :+
+        JMP CheckStart
+        :
+        JSR IncrementDate
+        JMP Done
+    CheckStart:
+        LDA #KEY_START
+        BIT buttons1
+        BNE :+
+        JMP Done
+        :
+        LDA #GAMESTATE_NEWGAME
+        STA gameState
+    Done:
     RTS
 .endproc
         

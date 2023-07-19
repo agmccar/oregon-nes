@@ -654,3 +654,78 @@
     INC helper
     RTS
 .endproc
+
+.proc IncrementDate
+    INC dateDay
+
+    LDA dateDay
+    CMP #29
+    BCS :+
+    JMP Done
+    :
+    BNE :++
+    LDA dateMonth
+    CMP #2
+    BNE :+
+    LDA dateYear
+    CMP #0
+    BEQ Done ; 1848-02-29 is fine.
+    JMP IncrementMonth ; not 1848: no feb 29
+    :
+    JMP Done ; XXXX-XX-29 is fine if its not February
+    :
+    LDA dateDay
+    CMP #30
+    BNE :++
+    LDA dateMonth
+    CMP #2
+    BNE :+
+    JMP IncrementMonth
+    :
+    JMP Done ; XXXX-XX-30 is fine if its not February
+    :
+    LDA dateDay
+    CMP #31
+    BNE IncrementMonth
+    LDA dateMonth
+    CMP #1
+    BNE :+
+    JMP Done
+    :
+    CMP #3
+    BNE :+
+    JMP Done
+    :
+    CMP #5
+    BNE :+
+    JMP Done
+    :
+    CMP #7
+    BNE :+
+    JMP Done
+    :
+    CMP #8
+    BNE :+
+    JMP Done
+    :
+    CMP #10
+    BNE :+
+    JMP Done
+    :
+    CMP #12
+    BNE :+
+    JMP Done
+    :
+    IncrementMonth:
+        LDA #1
+        STA dateDay
+        INC dateMonth
+        LDA dateMonth
+        CMP #13
+        BNE Done
+        LDA #1
+        STA dateMonth
+        INC dateYear
+    Done:
+    RTS
+.endproc
