@@ -11,9 +11,12 @@
     LDA #3                  ; default date March 1, 1848
     STA dateMonth
     LDA #0
+    STA traveledMi
     STA dateDay             ; date will increment after choosing start month
     LDA #$ff                ; default location (Independence, MO *minus one*)
     STA location            ; location will increment, so start at #$ff
+    LDA nextLandmarkDistance ; default next landmark: Indep,MO to KansRivXing
+    STA nextMi
     LDX #0
     :                       ; default person names
     LDA defaultPersonNames, X
@@ -35,6 +38,12 @@
     JSR SetDigitFromValue
     LDX #oxenDigit
     LDY #oxenHeadcount
+    JSR SetDigitFromValue
+    LDX #nextDigit
+    LDY #nextMi
+    JSR SetDigitFromValue
+    LDX #traveledDigit
+    LDY #traveledMi
     JSR SetDigitFromValue
     LDX #0                  ; default palette
     JSR UpdatePalette

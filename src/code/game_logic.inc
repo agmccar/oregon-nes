@@ -401,10 +401,12 @@
         INX
         CPX #6
         BNE :-
+        LDY #1
         :
-        LDA #_X_ ; digits
+        LDA nextDigit, Y
         STA popupTextLine1, X
         INX
+        INY
         CPX #9
         BNE :-
         :

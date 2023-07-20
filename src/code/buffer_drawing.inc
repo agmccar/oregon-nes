@@ -1782,32 +1782,32 @@
 .proc BufferDrawTravelingHUDValues
     LDA #$22 ; draw date
     STA pointer
-    LDA #$71
+    LDA #$70
     STA pointer+1
     JSR BufferDrawDateText
     LDA #$22 ; draw weather
     STA pointer
-    LDA #$91
+    LDA #$90
     STA pointer+1
     JSR BufferDrawWeatherText
     LDA #$22 ; draw health
     STA pointer
-    LDA #$B1
+    LDA #$B0
     STA pointer+1
     JSR BufferDrawHealthText
     LDA #$22 ; draw food
     STA pointer
-    LDA #$D1
+    LDA #$D0
     STA pointer+1
     JSR BufferDrawFoodText
     LDA #$22 ; draw next landmark miles
     STA pointer
-    LDA #$F1
+    LDA #$F0
     STA pointer+1
     JSR BufferDrawNextText
     LDA #$23 ; draw miles traveled
     STA pointer
-    LDA #$11
+    LDA #$10
     STA pointer+1
     JSR BufferDrawTraveledText
     RTS
@@ -1951,42 +1951,60 @@
 
 .proc BufferDrawNextText
     ; @param pointer: nametable location
-    ; LDX #TEXT_DATE_LEN
-    ; JSR StartBufferWrite
-    ;     LDA #TEXT_DATE_LEN
-    ;     JSR WriteByteToBuffer
-    ;     LDA pointer
-    ;     JSR WriteByteToBuffer
-    ;     LDA pointer+1
-    ;     JSR WriteByteToBuffer
-    ;     LDX #0
-    ;     :
-    ;     LDA dateText, X
-    ;     JSR WriteByteToBuffer
-    ;     INX
-    ;     CPX #TEXT_DATE_LEN
-    ;     BNE :-
-    ; JSR EndBufferWrite
+    LDX #9 ; "XXX_MILES"
+    JSR StartBufferWrite
+        LDA #9
+        JSR WriteByteToBuffer
+        LDA pointer
+        JSR WriteByteToBuffer
+        LDA pointer+1
+        JSR WriteByteToBuffer
+        LDX #1
+        :
+        LDA nextDigit, X
+        JSR WriteByteToBuffer
+        INX
+        CPX #4
+        BNE :-
+        LDA #___
+        JSR WriteByteToBuffer
+        LDX #47
+        :
+        LDA hudMenuStatusText, X
+        JSR WriteByteToBuffer
+        INX
+        CPX #52
+        BNE :-
+    JSR EndBufferWrite
     RTS
 .endproc
 
 .proc BufferDrawTraveledText
     ; @param pointer: nametable location
-    ; LDX #TEXT_DATE_LEN
-    ; JSR StartBufferWrite
-    ;     LDA #TEXT_DATE_LEN
-    ;     JSR WriteByteToBuffer
-    ;     LDA pointer
-    ;     JSR WriteByteToBuffer
-    ;     LDA pointer+1
-    ;     JSR WriteByteToBuffer
-    ;     LDX #0
-    ;     :
-    ;     LDA dateText, X
-    ;     JSR WriteByteToBuffer
-    ;     INX
-    ;     CPX #TEXT_DATE_LEN
-    ;     BNE :-
-    ; JSR EndBufferWrite
+    LDX #10 ; "XXXX_MILES"
+    JSR StartBufferWrite
+        LDA #10
+        JSR WriteByteToBuffer
+        LDA pointer
+        JSR WriteByteToBuffer
+        LDA pointer+1
+        JSR WriteByteToBuffer
+        LDX #0
+        :
+        LDA traveledDigit, X
+        JSR WriteByteToBuffer
+        INX
+        CPX #4
+        BNE :-
+        LDA #___
+        JSR WriteByteToBuffer
+        LDX #47
+        :
+        LDA hudMenuStatusText, X
+        JSR WriteByteToBuffer
+        INX
+        CPX #52
+        BNE :-
+    JSR EndBufferWrite
     RTS
 .endproc
