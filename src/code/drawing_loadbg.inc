@@ -777,11 +777,16 @@
     :
     @menuMain:
         JSR DrawHUDMainMenu
-        LDA #$20    ; weather text (temperature)
+        LDA #$20    ; weather text
         STA pointer
         LDA #$EC
         STA pointer+1
         JSR BufferDrawWeatherText
+        LDA #$21    ; Health text
+        STA pointer
+        LDA #$2C
+        STA pointer+1
+        JSR BufferDrawHealthText
         JMP Done
     @menuNone:
         LDA PPUSTATUS

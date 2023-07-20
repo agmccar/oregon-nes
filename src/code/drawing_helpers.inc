@@ -849,42 +849,12 @@
     INX
     CPX #15
     BNE :-
-    LDA wagonStatus     ; wagon health itself
-    AND #%00001100
-    LSR
-    LSR
-    STA helper
-    LDX #0
-    STX helper+1
-    LDY #0
-    :
-    CPY helper
-    BNE :+
-    JMP :++
-    :
-    INX
-    INC helper+1
-    CPX #TEXT_HEALTH_LEN
-    BNE :-
-    LDX #0
-    INY
-    JMP :--
-    :
-    LDY #0
-    LDX helper+1
-    :
-    LDA healthText, X
-    STA PPUDATA
-    INX
-    INY
-    CPY #TEXT_HEALTH_LEN
-    BNE :-
     LDX #0 ; blank row
     LDA #___
     :
     STA PPUDATA
     INX
-    CPX #14
+    CPX #20
     BNE :-
     LDA #0 ; start menu loop
     STA helper

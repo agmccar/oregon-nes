@@ -1,4 +1,4 @@
-## Oregon Trail but for the NES!
+## Oregon Trail remake for the NES!
 
 It's a work in progress.
 

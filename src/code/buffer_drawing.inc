@@ -1785,6 +1785,31 @@
     LDA #$71
     STA pointer+1
     JSR BufferDrawDateText
+    LDA #$22 ; draw weather
+    STA pointer
+    LDA #$91
+    STA pointer+1
+    JSR BufferDrawWeatherText
+    LDA #$22 ; draw health
+    STA pointer
+    LDA #$B1
+    STA pointer+1
+    JSR BufferDrawHealthText
+    LDA #$22 ; draw food
+    STA pointer
+    LDA #$D1
+    STA pointer+1
+    JSR BufferDrawFoodText
+    LDA #$22 ; draw next landmark miles
+    STA pointer
+    LDA #$F1
+    STA pointer+1
+    JSR BufferDrawNextText
+    LDA #$23 ; draw miles traveled
+    STA pointer
+    LDA #$11
+    STA pointer+1
+    JSR BufferDrawTraveledText
     RTS
 .endproc
 
@@ -1845,5 +1870,114 @@
         CMP #TEXT_WEATHER_LEN
         BNE :-
     JSR EndBufferWrite
+    RTS
+.endproc
+
+.proc BufferDrawHealthText
+    ; @param pointer: nametable location
+    LDX #TEXT_HEALTH_LEN
+    JSR StartBufferWrite
+        LDA #TEXT_HEALTH_LEN
+        JSR WriteByteToBuffer
+        LDA pointer
+        JSR WriteByteToBuffer
+        LDA pointer+1
+        JSR WriteByteToBuffer
+        LDA wagonStatus     ; wagon health itself
+        AND #%00001100
+        LSR
+        LSR
+        STA helper
+        LDX #0
+        STX helper+1
+        LDY #0
+        :
+        CPY helper
+        BNE :+
+        JMP :++
+        :
+        INX
+        INC helper+1
+        CPX #TEXT_HEALTH_LEN
+        BNE :-
+        LDX #0
+        INY
+        JMP :--
+        :
+        LDY #0
+        STY helper
+        LDX helper+1
+        :
+        LDA healthText, X
+        JSR WriteByteToBuffer
+        INX
+        INC helper
+        LDA helper
+        CMP #TEXT_HEALTH_LEN
+        BNE :-
+    JSR EndBufferWrite
+    RTS
+.endproc
+
+.proc BufferDrawFoodText
+    ; @param pointer: nametable location
+    ; LDX #TEXT_DATE_LEN
+    ; JSR StartBufferWrite
+    ;     LDA #TEXT_DATE_LEN
+    ;     JSR WriteByteToBuffer
+    ;     LDA pointer
+    ;     JSR WriteByteToBuffer
+    ;     LDA pointer+1
+    ;     JSR WriteByteToBuffer
+    ;     LDX #0
+    ;     :
+    ;     LDA dateText, X
+    ;     JSR WriteByteToBuffer
+    ;     INX
+    ;     CPX #TEXT_DATE_LEN
+    ;     BNE :-
+    ; JSR EndBufferWrite
+    RTS
+.endproc
+
+.proc BufferDrawNextText
+    ; @param pointer: nametable location
+    ; LDX #TEXT_DATE_LEN
+    ; JSR StartBufferWrite
+    ;     LDA #TEXT_DATE_LEN
+    ;     JSR WriteByteToBuffer
+    ;     LDA pointer
+    ;     JSR WriteByteToBuffer
+    ;     LDA pointer+1
+    ;     JSR WriteByteToBuffer
+    ;     LDX #0
+    ;     :
+    ;     LDA dateText, X
+    ;     JSR WriteByteToBuffer
+    ;     INX
+    ;     CPX #TEXT_DATE_LEN
+    ;     BNE :-
+    ; JSR EndBufferWrite
+    RTS
+.endproc
+
+.proc BufferDrawTraveledText
+    ; @param pointer: nametable location
+    ; LDX #TEXT_DATE_LEN
+    ; JSR StartBufferWrite
+    ;     LDA #TEXT_DATE_LEN
+    ;     JSR WriteByteToBuffer
+    ;     LDA pointer
+    ;     JSR WriteByteToBuffer
+    ;     LDA pointer+1
+    ;     JSR WriteByteToBuffer
+    ;     LDX #0
+    ;     :
+    ;     LDA dateText, X
+    ;     JSR WriteByteToBuffer
+    ;     INX
+    ;     CPX #TEXT_DATE_LEN
+    ;     BNE :-
+    ; JSR EndBufferWrite
     RTS
 .endproc
