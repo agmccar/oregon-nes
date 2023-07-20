@@ -358,15 +358,22 @@
 .proc Every60Frames
     LDA frameCounter
     CMP #60
-    BNE Done
-    LDA #0
-    STA frameCounter
-    ; 1 second: animate oxen and wagon
-    ; 1 second: pause, update counters, roll for event
-    ; repeat 2-second loop
-    ; Rest - 1 day/s
-    ;
-
+    BNE :+
+    JMP 1second
+    :
+    CMP #120
+    BNE :+
+    JMP 2seconds
+    :
+    JMP Done
+    1second:
+        ; 1st second: animate oxen and wagon
+        JMP Done
+    2seconds:
+        ; 2nd second: pause, update counters, roll for event
+        LDA #0
+        STA frameCounter
+        JMP Done
     Done:
     RTS
 .endproc
