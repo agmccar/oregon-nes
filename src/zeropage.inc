@@ -17,6 +17,7 @@ softPPUMASK:        .res 1
 softPPUSCROLL:      .res 2
 buttons1:           .res 1  ; Controller 1 input
 buttons1Last:       .res 1
+seed:               .res 2 ; PRNG seed
 
 ; Graphics ---------------------------------------------------------------------
 

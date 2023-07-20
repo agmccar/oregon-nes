@@ -53,6 +53,15 @@
     LDA gameState
     CMP #GAMESTATE_TITLE
     BNE :+
+    ; scramble the PRNG seed while we are on the title screen.
+    JSR RandomNumberGenerator
+    STA helper
+    JSR RandomNumberGenerator
+    STA helper+1
+    LDA helper
+    STA seed
+    LDA helper+1
+    STA seed+1
     JMP Done
     :
     CMP #GAMESTATE_TRAVELING

@@ -1,5 +1,9 @@
 
 .proc InitStateTitle
+    LDA #$18
+    STA seed+1
+    LDA #$48
+    STA seed                ; set an initial seed value ($1848) arbitrarily.
     LDA #%00001101          ; default steady pace, filling rations
     STA wagonSettings
     LDA #%00000100          ; default fair weather
