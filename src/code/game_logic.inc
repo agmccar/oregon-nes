@@ -448,7 +448,7 @@
 
 .proc QueueEvent
     ; A: event id to add to queue
-    ; kills X register
+    ; clobbers X register
     LDX eventQueuePointer
     STA eventQueue, X
     INC eventQueuePointer
