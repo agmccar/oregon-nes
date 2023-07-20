@@ -203,11 +203,10 @@ _DOT = $FC ; ・
 ; other tiles
 TILE_GRASS = $14
 
-
 ; Length (in characters) of HUD elements
 TEXT_MAINMENU_LEN   = 19  ; main menu options
 TEXT_PACE_LEN       = 9
-TEXT_WEATHER_LEN    = 8   ; per line. total is 8 + (8*weatherTextLineCount)
+TEXT_WEATHER_LEN    = 10
 TEXT_TEMP_LEN       = 4
 TEXT_RATIONS_LEN    = 10
 TEXT_HEALTH_LEN     = 6

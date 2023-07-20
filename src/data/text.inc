@@ -39,18 +39,18 @@ landmarkAttr:
     .byte %00010001 ; WILLAMETTE VALLEY
 
 ; Distances
-; steady: 20 mi/day
-; strenuous: 30 mi/day
-; grueling: 40 mi/day
 nextLandmarkDistance:
+    ; steady: 20 mi/day
+    ; strenuous: 30 mi/day
+    ; grueling: 40 mi/day
     .byte 102   ; Independence to Kansas River
     .byte 83    ; Kansas River to Big Blue River
     .byte 119   ; Big Blue River to Fort Kearney
     .byte 250   ; Fort Kearney to Chimney Rock
     .byte 86    ; Chimney Rock to Fort Laramie
-; steady: 12 mi/day- (10 +/-2)
-; strenuous: 18 mi/day
-; grueling: 24 mi/day
+    ; steady: 12 mi/day- (10 +/-2)
+    ; strenuous: 18 mi/day
+    ; grueling: 24 mi/day
     .byte 190   ; Fort Laramie to Independence Rock
     .byte 102   ; Independence Rock to South Pass
     .byte 57    ; South Pass to Fort Bridger
@@ -131,84 +131,16 @@ hudMenu:
     .byte _H_,_U_,_N_,_T_,___,_F_,_O_,_R_,___,_F_,_O_,_O_,_D_,___,___,___,___,___,___
     .byte _T_,_A_,_L_,_K_,___,_T_,_O_,___,_P_,_E_,_O_,_P_,_L_,_E_,___,___,___,___,___
     .byte _B_,_U_,_Y_,___,_S_,_U_,_P_,_P_,_L_,_I_,_E_,_S_,___,___,___,___,___,___,___
-    ;.byte _P_,_R_,_O_,_C_,_E_,_E_,_D_ ;
-    ; .byte _R_,_E_,_S_,_U_,_M_,_E_,___
-    ; .byte _S_,_T_,_A_,_T_,_U_,_S_,___ ;ステータス
-    ; .byte _R_,_A_,_T_,_I_,_O_,_N_,_S_ ;しょくりょう
-    ; .byte _T_,_R_,_A_,_D_,_E_,___,___ ;トレード
-    ; .byte _T_,_A_,_L_,_K_,___,___,___ ;はなす
-    ; .byte _R_,_E_,_S_,_T_,___,___,___ ;やすみ
-    ; .byte _P_,_A_,_C_,_E_,___,___,___ ;そくど
-    ; .byte _H_,_U_,_N_,_T_,___,___,___ ;ハント
-    ; .byte _S_,_H_,_O_,_P_,___,___,___
-    ;.byte _O_,_P_,_T_,_I_,_O_,_N_,_S_ ;オプション
-
-
-
-temperatureText:          ;(Attribute)
-    .byte _C_,_O_,_L_,_D_ ; $0,$8
-    .byte _C_,_O_,_L_,_D_ ; $1,$9 
-    .byte _C_,_O_,_O_,_L_ ; $2,$A HAIL STORM, SNOWING, BLIZZARD
-    .byte _F_,_A_,_I_,_R_ ; $3,$B RAINY, THUNDER STORM, VERY RAINY
-    .byte _F_,_A_,_I_,_R_ ; $4,$C CLOUDY, PARTLY CLOUDY, FOGGY
-    .byte _W_,_A_,_R_,_M_ ; $5,$D SUNNY, DUST STORM
-    .byte _H_,_O_,_T_,___ ; $6,$E 
-    .byte _H_,_O_,_T_,_EX ; $7,$F 
-
-
-weatherAttributes:
-    ; %00000000
-    ;  ||||++++ index of text (in lines)
-    ;  |||+---- Fine- 0:cooler, 1:warmer
-    ;  ||+----- Coarse- 0:colder, 1:hotter
-    ;  |+------ VCoarse- 0:cold, 1:hot
-    ;  +------- Text- 0:text is one line, 1:two lines.
-    .byte $50 ; SUNNY
-    .byte $C1 ; PARTLY CLOUDY
-    .byte $42 ; CLOUDY
-    .byte $34 ; RAINY
-    .byte $B3 ; VERY RAINY
-    .byte $25 ; SNOWING
-    .byte $26 ; BLIZZARD
-    .byte $47 ; FOGGY
-    .byte $D8 ; DUST STORM
-    .byte $BA ; THUNDER STORM
-    .byte $AC ; HAIL STORM
-    ; .byte $00 ; unused
-    ; .byte $00 ; unused
-    ; .byte $00 ; unused
-    ; .byte $00 ; unused
-    ; .byte $00 ; unused
 
 weatherText:
-    .byte ___,_S_,_U_,_N_,_N_,_Y_,___,___ ;かいせい　晴
-    .byte ___,_P_,_A_,_R_,_T_,_L_,_Y_,___ ;うすぐもり　雲 (ときどき?)
-    .byte ___,_C_,_L_,_O_,_U_,_D_,_Y_,___ ;くもり　雲
-    .byte ___,_V_,_E_,_R_,_Y_,___,___,___ ; どしゃぶり
-    .byte ___,_R_,_A_,_I_,_N_,_Y_,___,___ ;あめ　雨
-    .byte ___,_S_,_N_,_O_,_W_,_I_,_N_,_G_ ;ゆき
-    .byte _B_,_L_,_I_,_Z_,_Z_,_A_,_R_,_D_ ;ブリザード
-    .byte ___,_F_,_O_,_G_,_G_,_Y_,___,___ ;フォグ
-    .byte ___,_D_,_U_,_S_,_T_,___,___,___ ;さじんあらし
-    .byte ___,_S_,_T_,_O_,_R_,_M_,___,___ 
-    .byte ___,_T_,_H_,_U_,_N_,_D_,_E_,_R_ ;らいう
-    .byte ___,_S_,_T_,_O_,_R_,_M_,___,___ 
-    .byte ___,_H_,_A_,_I_,_L_,___,___,___ ;ひょうのあらし
-    .byte ___,_S_,_T_,_O_,_R_,_M_,___,___ 
-    ; .byte ___,___,___,___,___,___,___,___ ; unused
-    ; .byte ___,___,___,___,___,___,___,___ ; unused
-    ; .byte ___,___,___,___,___,___,___,___ ; unused
-    ; .byte ___,___,___,___,___,___,___,___ ; unused
-    ; .byte ___,___,___,___,___,___,___,___ ; unused
-
-; cold
-; cool
-; warm
-; hot
-; rainy
-; very rainy
-
-
+    .byte _C_,_O_,_L_,_D_,___,___,___,___,___,___
+    .byte _C_,_O_,_O_,_L_,___,___,___,___,___,___
+    .byte _W_,_A_,_R_,_M_,___,___,___,___,___,___
+    .byte _H_,_O_,_T_,___,___,___,___,___,___,___
+    .byte _R_,_A_,_I_,_N_,_Y_,___,___,___,___,___
+    .byte _V_,_E_,_R_,_Y_,___,_R_,_A_,_I_,_N_,_Y_
+    .byte _S_,_N_,_O_,_W_,_Y_,___,___,___,___,___
+    .byte _V_,_E_,_R_,_Y_,___,_S_,_N_,_O_,_W_,_Y_
 
 restText:
     .byte _R_,_E_,_S_,_T_,___,_F_,_O_,_R_,___

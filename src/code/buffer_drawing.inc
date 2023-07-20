@@ -306,356 +306,356 @@
     RTS
 .endproc
 
-.proc BufferDrawStatus
-    CLC ; draw health
-    LDA pointer+1
-    ADC #$48
-    STA pointer+1
-    LDA pointer
-    ADC #$0
-    STA pointer
-    LDX #6
-    JSR StartBufferWrite
-        LDA #6
-        JSR WriteByteToBuffer
-        LDA pointer
-        JSR WriteByteToBuffer
-        LDA pointer+1
-        JSR WriteByteToBuffer
+; .proc BufferDrawStatus
+;     CLC ; draw health
+;     LDA pointer+1
+;     ADC #$48
+;     STA pointer+1
+;     LDA pointer
+;     ADC #$0
+;     STA pointer
+;     LDX #6
+;     JSR StartBufferWrite
+;         LDA #6
+;         JSR WriteByteToBuffer
+;         LDA pointer
+;         JSR WriteByteToBuffer
+;         LDA pointer+1
+;         JSR WriteByteToBuffer
 
-        LDA wagonStatus
-        AND #%00001100
-        LSR
-        LSR
-        STA helper
-        LDX #0
-        LDY #0
-        STY helper+1
-        :
-        CPY helper
-        BNE :+
-        JMP :++
-        :
-        INX
-        INC helper+1
-        LDA helper+1
-        CMP #TEXT_HEALTH_LEN
-        BNE :-
-        LDA #0
-        STA helper+1
-        INY
-        CPY helper
-        BNE :--
-        :
-        LDA healthText, X
-        JSR WriteByteToBuffer
-        INX
-        CPX #TEXT_HEALTH_LEN
-        BNE :-
-    JSR EndBufferWrite
+;         LDA wagonStatus
+;         AND #%00001100
+;         LSR
+;         LSR
+;         STA helper
+;         LDX #0
+;         LDY #0
+;         STY helper+1
+;         :
+;         CPY helper
+;         BNE :+
+;         JMP :++
+;         :
+;         INX
+;         INC helper+1
+;         LDA helper+1
+;         CMP #TEXT_HEALTH_LEN
+;         BNE :-
+;         LDA #0
+;         STA helper+1
+;         INY
+;         CPY helper
+;         BNE :--
+;         :
+;         LDA healthText, X
+;         JSR WriteByteToBuffer
+;         INX
+;         CPX #TEXT_HEALTH_LEN
+;         BNE :-
+;     JSR EndBufferWrite
 
-    CLC ; draw food
-    LDA pointer+1
-    ADC #$40
-    STA pointer+1
-    LDA pointer
-    ADC #$0
-    STA pointer
-    LDX #6
-    JSR StartBufferWrite
-        LDA #6
-        JSR WriteByteToBuffer
-        LDA pointer
-        JSR WriteByteToBuffer
-        LDA pointer+1
-        JSR WriteByteToBuffer
-        LDX #0
-        :
-        LDA foodLbsDigit, X
-        JSR WriteByteToBuffer
-        INX
-        CPX #4
-        BNE :-
-        LDA #___
-        JSR WriteByteToBuffer
-        LDA #_LB
-        JSR WriteByteToBuffer
-    JSR EndBufferWrite
+;     CLC ; draw food
+;     LDA pointer+1
+;     ADC #$40
+;     STA pointer+1
+;     LDA pointer
+;     ADC #$0
+;     STA pointer
+;     LDX #6
+;     JSR StartBufferWrite
+;         LDA #6
+;         JSR WriteByteToBuffer
+;         LDA pointer
+;         JSR WriteByteToBuffer
+;         LDA pointer+1
+;         JSR WriteByteToBuffer
+;         LDX #0
+;         :
+;         LDA foodLbsDigit, X
+;         JSR WriteByteToBuffer
+;         INX
+;         CPX #4
+;         BNE :-
+;         LDA #___
+;         JSR WriteByteToBuffer
+;         LDA #_LB
+;         JSR WriteByteToBuffer
+;     JSR EndBufferWrite
 
-    CLC ; draw Next
-    LDA pointer+1
-    ADC #$40
-    STA pointer+1
-    LDA pointer
-    ADC #$0
-    STA pointer
-    LDX #6
-    JSR StartBufferWrite
-        LDA #6
-        JSR WriteByteToBuffer
-        LDA pointer
-        JSR WriteByteToBuffer
-        LDA pointer+1
-        JSR WriteByteToBuffer
-        LDA #___
-        JSR WriteByteToBuffer
-        LDX #0
-        :
-        LDA #_QU ; TODO miles to next landmark
-        JSR WriteByteToBuffer
-        INX
-        CPX #3
-        BNE :-
-        LDA #___
-        JSR WriteByteToBuffer
-        LDA #_MI
-        JSR WriteByteToBuffer
-    JSR EndBufferWrite
+;     CLC ; draw Next
+;     LDA pointer+1
+;     ADC #$40
+;     STA pointer+1
+;     LDA pointer
+;     ADC #$0
+;     STA pointer
+;     LDX #6
+;     JSR StartBufferWrite
+;         LDA #6
+;         JSR WriteByteToBuffer
+;         LDA pointer
+;         JSR WriteByteToBuffer
+;         LDA pointer+1
+;         JSR WriteByteToBuffer
+;         LDA #___
+;         JSR WriteByteToBuffer
+;         LDX #0
+;         :
+;         LDA #_QU ; TODO miles to next landmark
+;         JSR WriteByteToBuffer
+;         INX
+;         CPX #3
+;         BNE :-
+;         LDA #___
+;         JSR WriteByteToBuffer
+;         LDA #_MI
+;         JSR WriteByteToBuffer
+;     JSR EndBufferWrite
 
-    CLC ; draw weather text
-    LDA weather
-    AND #$F0
-    LSR
-    LSR
-    LSR
-    LSR
-    TAX
-    LDA weatherAttributes, X
-    STA helper
-    AND #$80
-    BNE :+
-    JMP Weather1Line
-    :
-    JMP Weather2Lines
+;     CLC ; draw weather text
+;     LDA weather
+;     AND #$F0
+;     LSR
+;     LSR
+;     LSR
+;     LSR
+;     TAX
+;     LDA weatherAttributes, X
+;     STA helper
+;     AND #$80
+;     BNE :+
+;     JMP Weather1Line
+;     :
+;     JMP Weather2Lines
     
 
-    Weather1Line:
-        CLC
-        LDA pointer+1
-        ADC #$29
-        STA pointer+1
-        LDA pointer
-        ADC #$0
-        STA pointer
-        LDX #TEXT_WEATHER_LEN
-        JSR StartBufferWrite
-            LDA #TEXT_WEATHER_LEN
-            JSR WriteByteToBuffer
-            LDA pointer
-            JSR WriteByteToBuffer
-            LDA pointer+1
-            JSR WriteByteToBuffer
-            LDA helper
-            AND #$0F
-            STA helper
-            LDY #0
-            LDX #0
-            STX helper+1
-            :
-            CPY helper
-            BNE :+
-            JMP :++
-            :
-            INX
-            INC helper+1
-            LDA helper+1
-            CMP #TEXT_WEATHER_LEN
-            BNE :-
-            LDA #0
-            STA helper+1
-            INY
-            JMP :--
-            :
-            LDA weatherText, X
-            JSR WriteByteToBuffer
-            INX
-            INC helper+1
-            LDA helper+1
-            CMP #TEXT_WEATHER_LEN
-            BNE :-
-        JSR EndBufferWrite
-        CLC
-        LDA pointer+1
-        ADC #$A
-        STA pointer+1
-        LDA pointer
-        ADC #$0
-        STA pointer
-        JMP WeatherTemp
-    Weather2Lines:
-        CLC
-        LDA pointer+1
-        ADC #$9
-        STA pointer+1
-        LDA pointer
-        ADC #$0
-        STA pointer
-        LDX #TEXT_WEATHER_LEN
-        JSR StartBufferWrite
-            LDA #TEXT_WEATHER_LEN
-            JSR WriteByteToBuffer
-            LDA pointer
-            JSR WriteByteToBuffer
-            LDA pointer+1
-            JSR WriteByteToBuffer
-            LDA helper
-            AND #$0F
-            STA helper
-            LDY #0
-            LDX #0
-            STX helper+1
-            :
-            CPY helper
-            BNE :+
-            JMP :++
-            :
-            INX
-            INC helper+1
-            LDA helper+1
-            CMP #TEXT_WEATHER_LEN
-            BNE :-
-            LDA #0
-            STA helper+1
-            INY
-            JMP :--
-            :
-            LDA weatherText, X
-            JSR WriteByteToBuffer
-            INX
-            INC helper+1
-            LDA helper+1
-            CMP #TEXT_WEATHER_LEN
-            BNE :-
-        JSR EndBufferWrite
+;     Weather1Line:
+;         CLC
+;         LDA pointer+1
+;         ADC #$29
+;         STA pointer+1
+;         LDA pointer
+;         ADC #$0
+;         STA pointer
+;         LDX #TEXT_WEATHER_LEN
+;         JSR StartBufferWrite
+;             LDA #TEXT_WEATHER_LEN
+;             JSR WriteByteToBuffer
+;             LDA pointer
+;             JSR WriteByteToBuffer
+;             LDA pointer+1
+;             JSR WriteByteToBuffer
+;             LDA helper
+;             AND #$0F
+;             STA helper
+;             LDY #0
+;             LDX #0
+;             STX helper+1
+;             :
+;             CPY helper
+;             BNE :+
+;             JMP :++
+;             :
+;             INX
+;             INC helper+1
+;             LDA helper+1
+;             CMP #TEXT_WEATHER_LEN
+;             BNE :-
+;             LDA #0
+;             STA helper+1
+;             INY
+;             JMP :--
+;             :
+;             LDA weatherText, X
+;             JSR WriteByteToBuffer
+;             INX
+;             INC helper+1
+;             LDA helper+1
+;             CMP #TEXT_WEATHER_LEN
+;             BNE :-
+;         JSR EndBufferWrite
+;         CLC
+;         LDA pointer+1
+;         ADC #$A
+;         STA pointer+1
+;         LDA pointer
+;         ADC #$0
+;         STA pointer
+;         JMP WeatherTemp
+;     Weather2Lines:
+;         CLC
+;         LDA pointer+1
+;         ADC #$9
+;         STA pointer+1
+;         LDA pointer
+;         ADC #$0
+;         STA pointer
+;         LDX #TEXT_WEATHER_LEN
+;         JSR StartBufferWrite
+;             LDA #TEXT_WEATHER_LEN
+;             JSR WriteByteToBuffer
+;             LDA pointer
+;             JSR WriteByteToBuffer
+;             LDA pointer+1
+;             JSR WriteByteToBuffer
+;             LDA helper
+;             AND #$0F
+;             STA helper
+;             LDY #0
+;             LDX #0
+;             STX helper+1
+;             :
+;             CPY helper
+;             BNE :+
+;             JMP :++
+;             :
+;             INX
+;             INC helper+1
+;             LDA helper+1
+;             CMP #TEXT_WEATHER_LEN
+;             BNE :-
+;             LDA #0
+;             STA helper+1
+;             INY
+;             JMP :--
+;             :
+;             LDA weatherText, X
+;             JSR WriteByteToBuffer
+;             INX
+;             INC helper+1
+;             LDA helper+1
+;             CMP #TEXT_WEATHER_LEN
+;             BNE :-
+;         JSR EndBufferWrite
 
-        CLC
-        LDA pointer+1
-        ADC #$40
-        STA pointer+1
-        LDA pointer
-        ADC #$0
-        STA pointer
-        LDX #TEXT_WEATHER_LEN
-        JSR StartBufferWrite
-            LDA #TEXT_WEATHER_LEN
-            JSR WriteByteToBuffer
-            LDA pointer
-            JSR WriteByteToBuffer
-            LDA pointer+1
-            JSR WriteByteToBuffer
-            LDA helper
-            AND #$0F
-            STA helper
-            LDY #0
-            LDX #0
-            STX helper+1
-            :
-            CPY helper
-            BNE :+
-            JMP :++
-            :
-            INX
-            INC helper+1
-            LDA helper+1
-            CMP #TEXT_WEATHER_LEN
-            BNE :-
-            LDA #0
-            STA helper+1
-            INY
-            JMP :--
-            :
-            CLC
-            TXA
-            ADC #8
-            TAX
-            :
-            LDA weatherText, X
-            JSR WriteByteToBuffer
-            INX
-            INC helper+1
-            LDA helper+1
-            CMP #TEXT_WEATHER_LEN
-            BNE :-
-        JSR EndBufferWrite
+;         CLC
+;         LDA pointer+1
+;         ADC #$40
+;         STA pointer+1
+;         LDA pointer
+;         ADC #$0
+;         STA pointer
+;         LDX #TEXT_WEATHER_LEN
+;         JSR StartBufferWrite
+;             LDA #TEXT_WEATHER_LEN
+;             JSR WriteByteToBuffer
+;             LDA pointer
+;             JSR WriteByteToBuffer
+;             LDA pointer+1
+;             JSR WriteByteToBuffer
+;             LDA helper
+;             AND #$0F
+;             STA helper
+;             LDY #0
+;             LDX #0
+;             STX helper+1
+;             :
+;             CPY helper
+;             BNE :+
+;             JMP :++
+;             :
+;             INX
+;             INC helper+1
+;             LDA helper+1
+;             CMP #TEXT_WEATHER_LEN
+;             BNE :-
+;             LDA #0
+;             STA helper+1
+;             INY
+;             JMP :--
+;             :
+;             CLC
+;             TXA
+;             ADC #8
+;             TAX
+;             :
+;             LDA weatherText, X
+;             JSR WriteByteToBuffer
+;             INX
+;             INC helper+1
+;             LDA helper+1
+;             CMP #TEXT_WEATHER_LEN
+;             BNE :-
+;         JSR EndBufferWrite
 
-        SEC
-        LDA pointer+1
-        SBC #$16
-        STA pointer+1
-        LDA pointer
-        SBC #$0
-        STA pointer
-        JMP WeatherTemp
-    WeatherTemp:
-        LDX #TEXT_TEMP_LEN
-        JSR StartBufferWrite
-            LDA #TEXT_TEMP_LEN
-            JSR WriteByteToBuffer
-            LDA pointer
-            JSR WriteByteToBuffer
-            LDA pointer+1
-            JSR WriteByteToBuffer
-            LDA weather
-            AND #$07
-            STA helper
-            LDY #0
-            LDX #0
-            STX helper+1
-            :
-            CPY helper
-            BNE :+
-            JMP :++
-            :
-            INX
-            INC helper+1
-            LDA helper+1
-            CMP #TEXT_TEMP_LEN
-            BNE :-
-            LDA #0
-            STA helper+1
-            INY
-            JMP :--
-            :
-            LDA temperatureText, X
-            JSR WriteByteToBuffer
-            INX
-            INC helper+1
-            LDA helper+1
-            CMP #TEXT_TEMP_LEN
-            BNE :-
-        JSR EndBufferWrite
+;         SEC
+;         LDA pointer+1
+;         SBC #$16
+;         STA pointer+1
+;         LDA pointer
+;         SBC #$0
+;         STA pointer
+;         JMP WeatherTemp
+;     WeatherTemp:
+;         LDX #TEXT_TEMP_LEN
+;         JSR StartBufferWrite
+;             LDA #TEXT_TEMP_LEN
+;             JSR WriteByteToBuffer
+;             LDA pointer
+;             JSR WriteByteToBuffer
+;             LDA pointer+1
+;             JSR WriteByteToBuffer
+;             LDA weather
+;             AND #$07
+;             STA helper
+;             LDY #0
+;             LDX #0
+;             STX helper+1
+;             :
+;             CPY helper
+;             BNE :+
+;             JMP :++
+;             :
+;             INX
+;             INC helper+1
+;             LDA helper+1
+;             CMP #TEXT_TEMP_LEN
+;             BNE :-
+;             LDA #0
+;             STA helper+1
+;             INY
+;             JMP :--
+;             :
+;             LDA temperatureText, X
+;             JSR WriteByteToBuffer
+;             INX
+;             INC helper+1
+;             LDA helper+1
+;             CMP #TEXT_TEMP_LEN
+;             BNE :-
+;         JSR EndBufferWrite
 
-    Total:
-    CLC ; draw Total
-    LDA pointer+1
-    ADC #13
-    STA pointer+1
-    LDA pointer
-    ADC #$0
-    STA pointer
-    LDX #6
-    JSR StartBufferWrite
-        LDA #6
-        JSR WriteByteToBuffer
-        LDA pointer
-        JSR WriteByteToBuffer
-        LDA pointer+1
-        JSR WriteByteToBuffer
-        LDX #0
-        :
-        LDA traveledDigit, X
-        JSR WriteByteToBuffer
-        INX
-        CPX #4
-        BNE :-
-        LDA #___
-        JSR WriteByteToBuffer
-        LDA #_MI
-        JSR WriteByteToBuffer
-    JSR EndBufferWrite
+;     Total:
+;     CLC ; draw Total
+;     LDA pointer+1
+;     ADC #13
+;     STA pointer+1
+;     LDA pointer
+;     ADC #$0
+;     STA pointer
+;     LDX #6
+;     JSR StartBufferWrite
+;         LDA #6
+;         JSR WriteByteToBuffer
+;         LDA pointer
+;         JSR WriteByteToBuffer
+;         LDA pointer+1
+;         JSR WriteByteToBuffer
+;         LDX #0
+;         :
+;         LDA traveledDigit, X
+;         JSR WriteByteToBuffer
+;         INX
+;         CPX #4
+;         BNE :-
+;         LDA #___
+;         JSR WriteByteToBuffer
+;         LDA #_MI
+;         JSR WriteByteToBuffer
+;     JSR EndBufferWrite
 
-    RTS
-.endproc
+;     RTS
+; .endproc
 
 .proc DrawPaceSubmenu
     LDX #4 ; top row of menu
@@ -1804,6 +1804,45 @@
         JSR WriteByteToBuffer
         INX
         CPX #TEXT_DATE_LEN
+        BNE :-
+    JSR EndBufferWrite
+    RTS
+.endproc
+
+.proc BufferDrawWeatherText
+    ; @param pointer: nametable location
+    LDX #TEXT_WEATHER_LEN
+    JSR StartBufferWrite
+        LDA #TEXT_WEATHER_LEN
+        JSR WriteByteToBuffer
+        LDA pointer
+        JSR WriteByteToBuffer
+        LDA pointer+1
+        JSR WriteByteToBuffer
+        LDX #0 ; weather text (temperature)
+        STX helper
+        LDY #0
+        :
+        CPY weather
+        BNE :+
+        JMP :++
+        :
+        INX
+        INC helper
+        LDA helper
+        CMP #TEXT_WEATHER_LEN
+        BNE :-
+        LDA #0
+        STA helper
+        INY
+        JMP :--
+        :
+        LDA weatherText, X
+        JSR WriteByteToBuffer
+        INX
+        INC helper
+        LDA helper
+        CMP #TEXT_WEATHER_LEN
         BNE :-
     JSR EndBufferWrite
     RTS

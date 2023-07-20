@@ -274,6 +274,8 @@
     Done:
     LDA menuOpen
     STA menuOpenLast    ; reset last menu open
+    LDA #0
+    STA frameCounter    ; reset framecounter
     RTS
 .endproc
 

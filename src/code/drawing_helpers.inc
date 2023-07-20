@@ -835,39 +835,12 @@
     INX
     CPX #8
     BNE :-
-    LDA #___ ; space
-    STA PPUDATA
-    LDX #0 ; weather text (temperature)
-    STX helper
-    LDY #0
-    :
-    CPY weather
-    BNE :+
-    JMP :++
-    :
-    INX
-    INC helper
-    LDA helper
-    CMP #4
-    BNE :-
-    LDA #0
-    STA helper
-    INY
-    JMP :--
-    :
-    LDA temperatureText, X
-    STA PPUDATA
-    INX
-    INC helper
-    LDA helper
-    CMP #4
-    BNE :-
     LDX #0 ; blank row
     LDA #___
     :
     STA PPUDATA
     INX
-    CPX #51
+    CPX #57
     BNE :-
     LDX #8 ; "HEALTH:"
     :

@@ -144,8 +144,8 @@ personStatus:  .res 5   ; 1 each * 5
 
 ; %00000000
 ;  |||||+++ current (calculated/generated) temperature
-;  |||||        000:COLD  001:COLD  010:COOL  011:FAIR 
-;  |||||        100:FAIR  101:WARM  110:HOT   111:HOT! 
+;  |||||        000:COLD  001:COOL  010:WARM  011:HOT 
+;  |||||        100:rainy  101:very rainy  110:snowy   111:very snowy
 ;  +++++--- unused
 weather:        .res 1
 
@@ -155,4 +155,4 @@ dateDay:        .res 1
 location:       .res 1 ; see: constants.inc -> Locations
 
 ;-------------------------------------------------------------------------------
-; remaining: $6F
+; remaining: $6B

@@ -801,6 +801,10 @@
     ; Returns a random 8-bit number in A (0-255), clobbers Y (unknown).
     ; https://www.nesdev.org/wiki/Random_number_generator
 	lda seed+1
+    cmp #0
+    bne :+
+    lda #1
+    :
 	tay ; store copy of high byte
 	; compute seed+1 ($39>>1 = %11100)
 	lsr ; shift to consume zeroes on left...
