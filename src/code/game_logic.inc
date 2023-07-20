@@ -359,17 +359,17 @@
     LDA frameCounter
     CMP #60
     BNE :+
-    JMP 1second
+    JMP sec1
     :
     CMP #120
     BNE :+
-    JMP 2seconds
+    JMP sec2
     :
     JMP Done
-    1second:
+    sec1:
         ; 1st second: animate oxen and wagon
         JMP Done
-    2seconds:
+    sec2:
         ; 2nd second: pause, update counters, roll for event
         LDA #0
         STA frameCounter
