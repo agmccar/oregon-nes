@@ -100,6 +100,8 @@ hudMenuStatusText:
     .byte _P_,_A_,_C_,_E_,_CL ;15-20
     .byte _R_,_A_,_T_,_I_,_O_,_N_,_S_,_CL ;20-28
     .byte _Y_,_O_,_U_,_R_,___,_S_,_U_,_P_,_P_,_L_,_I_,_E_,_S_ ;28-41
+    .byte _P_,_O_,_U_,_N_,_D_,_S_ ;41-47
+    .byte _M_,_I_,_L_,_E_,_S_ ;47-52
 
 startingDateText:
     .byte _M_,_A_,_R_,_C_,_H_,___

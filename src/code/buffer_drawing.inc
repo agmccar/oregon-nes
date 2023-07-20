@@ -1883,7 +1883,7 @@
         JSR WriteByteToBuffer
         LDA pointer+1
         JSR WriteByteToBuffer
-        LDA wagonStatus     ; wagon health itself
+        LDA wagonStatus
         AND #%00001100
         LSR
         LSR
@@ -1921,22 +1921,31 @@
 
 .proc BufferDrawFoodText
     ; @param pointer: nametable location
-    ; LDX #TEXT_DATE_LEN
-    ; JSR StartBufferWrite
-    ;     LDA #TEXT_DATE_LEN
-    ;     JSR WriteByteToBuffer
-    ;     LDA pointer
-    ;     JSR WriteByteToBuffer
-    ;     LDA pointer+1
-    ;     JSR WriteByteToBuffer
-    ;     LDX #0
-    ;     :
-    ;     LDA dateText, X
-    ;     JSR WriteByteToBuffer
-    ;     INX
-    ;     CPX #TEXT_DATE_LEN
-    ;     BNE :-
-    ; JSR EndBufferWrite
+    LDX #11 ; "XXXX_POUNDS"
+    JSR StartBufferWrite
+        LDA #11
+        JSR WriteByteToBuffer
+        LDA pointer
+        JSR WriteByteToBuffer
+        LDA pointer+1
+        JSR WriteByteToBuffer
+        LDX #0
+        :
+        LDA foodLbsDigit, X
+        JSR WriteByteToBuffer
+        INX
+        CPX #4
+        BNE :-
+        LDA #___
+        JSR WriteByteToBuffer
+        LDX #41
+        :
+        LDA hudMenuStatusText, X
+        JSR WriteByteToBuffer
+        INX
+        CPX #47
+        BNE :-
+    JSR EndBufferWrite
     RTS
 .endproc
 
