@@ -202,7 +202,7 @@ _NNk = $FB
 _DOT = $FC ; ・
 
 ; other tiles
-TILE_GRASS = $14
+TILE_GRASS = $ff
 
 ; Length (in characters) of HUD elements
 TEXT_MAINMENU_LEN   = 19  ; main menu options

@@ -17,7 +17,7 @@
     .include "data/text.inc"
     .include "data/diarytext.inc"
     .include "data/palettes.inc"
-    ;.include "data/backgrounds.inc"
+    .include "data/backgrounds.inc"
     .include "data/sprites.inc"
     .include "data/rom1.inc"
 

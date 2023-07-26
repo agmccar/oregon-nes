@@ -17,6 +17,7 @@
     STA location            ; location will increment, so start at #$ff
     LDA nextLandmarkDistance ; default next landmark: Indep,MO to KansRivXing
     STA nextMi
+    JSR ClearPopupText      ; clear popup text
     LDX #0
     :                       ; default person names
     LDA defaultPersonNames, X

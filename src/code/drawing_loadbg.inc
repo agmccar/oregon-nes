@@ -810,9 +810,9 @@
         LDA PPUSTATUS
         LDA #$23
         STA PPUADDR
-        LDA #$D0
+        LDA #$C8
         STA PPUADDR
-        LDX #16
+        LDX #24
         LDA #%10101010
         :
         STA PPUDATA
@@ -825,10 +825,10 @@
         STA PPUADDR
         LDX #0 ; temp- draw horizon
         :
-        LDA #$ff
+        LDA bgPlains, X
         STA PPUDATA
         INX
-        CPX #$20
+        CPX #$40
         BNE :-
         LDA PPUSTATUS
         LDA #$21
@@ -836,7 +836,7 @@
         LDA #$40
         STA PPUADDR
         LDX #0 ; draw ground
-        LDA #$ff
+        LDA #TILE_GRASS
         :
         STA PPUDATA
         INX
