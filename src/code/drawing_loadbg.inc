@@ -1,4 +1,21 @@
 
+
+.proc LoadDefaultCHR
+    JSR StartBulkDrawing
+    LDY #0
+    JSR bankswitch_y
+    LDA #<tiles_chr
+    STA pointer
+    LDA #>tiles_chr
+    STA pointer+1
+    JSR CopyCHRTiles
+    LDY #1          ; switch rom bank to default image data
+    JSR bankswitch_y
+    JSR DoneBulkDrawing
+    JSR UpdatePalette
+    RTS
+.endproc
+
 .proc LoadBgTitle
     JSR ClearAttributes ; default palette
     JSR BufferDrawTitle

@@ -135,7 +135,7 @@
     STA fingerX
     LDA #11
     STA fingerY
-
+    JSR LoadDefaultCHR
     JSR LoadBgTraveling  ; Load background
     RTS
 .endproc
