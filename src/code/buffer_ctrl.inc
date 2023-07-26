@@ -76,7 +76,7 @@
 
 .proc WriteByteToBuffer
     ; write contents of A register to the nametable buffer
-    ; this will kill the contents of Y register
+    ; clobbers Y
     LDY bufferPointer
     STA nametableBuffer, Y
     INC bufferPointer
