@@ -1607,7 +1607,7 @@
         JSR WriteByteToBuffer
         LDA #$E0
         JSR WriteByteToBuffer
-        LDA #%01011010
+        LDA #%01011111
         LDX #0
         :
         JSR WriteByteToBuffer
@@ -1641,7 +1641,7 @@
         JSR WriteByteToBuffer
         LDA #$F0
         JSR WriteByteToBuffer
-        LDA #%10100101
+        LDA #%11110101
         LDX #0
         :
         JSR WriteByteToBuffer

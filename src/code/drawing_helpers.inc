@@ -378,36 +378,36 @@
     STA PPUADDR
     LDA #$C0
     STA PPUADDR
-    LDA #%10101010
+    LDA #%11111111
     LDX #0
     :
     STA PPUDATA
     INX
     CPX #8
     BNE :-
-    LDA #%01101010
+    LDA #%01111111
     STA PPUDATA
-    LDA #%01011010
+    LDA #%01011111
     LDX #0
     :
     STA PPUDATA
     INX
     CPX #6
     BNE :-
-    LDA #%10011010
+    LDA #%11011111
     STA PPUDATA
-    LDA #%10100110
+    LDA #%11110111
     STA PPUDATA
-    LDA #%10100101
+    LDA #%11110101
     LDX #0
     :
     STA PPUDATA
     INX
     CPX #6
     BNE :-
-    LDA #%10101001
+    LDA #%11111101
     STA PPUDATA
-    LDA #%10101010
+    LDA #%11111111
     LDX #0
     :
     STA PPUDATA

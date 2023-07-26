@@ -90,7 +90,7 @@
     STA PPUADDR
     LDA #$C0
     STA PPUADDR
-    LDA #%10101010
+    LDA #%11111111
     LDX #0
     :
     STA PPUDATA

@@ -808,13 +808,24 @@
         JMP Done
     @menuNone:
         LDA PPUSTATUS
+        LDA #$23
+        STA PPUADDR
+        LDA #$D0
+        STA PPUADDR
+        LDX #16
+        LDA #%10101010
+        :
+        STA PPUDATA
+        DEX
+        BNE :-
+        LDA PPUSTATUS
         LDA #$20
         STA PPUADDR
         LDA #$80
         STA PPUADDR
         LDX #0 ; temp- draw horizon
         :
-        LDA #4
+        LDA #$ff
         STA PPUDATA
         INX
         CPX #$20
@@ -825,7 +836,7 @@
         LDA #$40
         STA PPUADDR
         LDX #0 ; draw ground
-        LDA #$14
+        LDA #$ff
         :
         STA PPUDATA
         INX
