@@ -17,7 +17,7 @@
     .include "data/text.inc"
     .include "data/diarytext.inc"
     .include "data/palettes.inc"
-    .include "data/backgrounds.inc"
+    ;.include "data/backgrounds.inc"
     .include "data/sprites.inc"
     .include "data/rom1.inc"
 
@@ -28,10 +28,13 @@
     .include "data/titleCHR.inc"
 
 .segment "ROM4"
+    .include "data/landmarkImageA.inc"
 
-.segment "ROM5"
+;.segment "ROM5"
+    ;.include "data/landmarkImageB.inc"
 
-.segment "ROM6"
+;.segment "ROM6"
+    ;.include "data/landmarkImageC.inc"
 
 .segment "RODATA" ; ROM7
     banktable:              ; Write to this table to switch banks.

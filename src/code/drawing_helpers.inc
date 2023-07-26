@@ -64,7 +64,7 @@
     LSR
     STA helper2+1
     LDX #0
-    LDA #___
+    LDA #0
     :
     STA PPUDATA
     INX
@@ -84,7 +84,7 @@
     SBC helper2
     SBC helper2+1
     TAX
-    LDA #___
+    LDA #0
     :
     CPX #0
     BNE :+
@@ -96,14 +96,14 @@
     :
     JSR DrawBlankLine   ; blank line
     LDX #0          ; draw date text line
-    LDA #___
+    LDA #0
     :
     STA PPUDATA
     INX
     CPX #10
     BNE :-
     JSR DrawDateText
-    LDA #___
+    LDA #0
     LDX #0
     :
     STA PPUDATA
@@ -892,24 +892,41 @@
 .endproc
 
 .proc DrawLandmarkImage
-    LDA PPUSTATUS   ; set color palette (attribute table)
+    ; set palette
+    LDA PPUSTATUS
+    LDA #$3F
+    STA PPUADDR
+    LDA #$00
+    STA PPUADDR
+    LDX #0
+    :
+    LDA landmarkPalette, X
+    STA PPUDATA
+    INX
+    CPX #$10
+    BNE :-
+
+    LDY #4          ; switch rom bank to landmark image data
+    STY tilesBank
+    JSR bankswitch_y
+    LDA #<independenceTiles
+    STA pointer
+    LDA #>independenceTiles
+    STA pointer+1
+    JSR CopyCHRPatternB
+
+
+    LDA PPUSTATUS   ; set attribute table
     LDA #$23
     STA PPUADDR
     LDA #$C0
     STA PPUADDR
-    LDA #%00000000
     LDX #0
     :
+    LDA independenceAttr, X
     STA PPUDATA
     INX
-    CPX #8*5
-    BNE :-
-    LDA #%01010000
-    LDX #0
-    :
-    STA PPUDATA
-    INX
-    CPX #8
+    CPX #8*6
     BNE :-
     LDA #%10100101
     LDX #0
@@ -925,14 +942,35 @@
     INX
     CPX #8
     BNE :-
-    ; LDX #0
-    ; LDA PPUSTATUS ; load second screen attr table
-    ; LDA #$27
-    ; STA PPUADDR
-    ; LDA #$E8
-    ; STA PPUADDR ; $27C0 (attribute table)
-    ; CPY #2
-    ; BNE :--- ; 2nd screen
 
+    LDA PPUSTATUS   ; draw image
+    LDA #$20
+    STA PPUADDR
+    LDA #$40
+    STA PPUADDR
+    LDA #<independenceImage
+    STA pointer
+    LDA #>independenceImage
+    STA pointer+1
+    LDX #3
+    :
+    LDA (pointer), Y
+    STA PPUDATA
+    INY
+    CPX #1
+    BNE :+
+    CPY #$80
+    BNE :+
+    JMP :++
+    :
+    CPY #0
+    BNE :--
+    INC pointer+1
+    DEX
+    BNE :--
+    :
+
+    LDY #1
+    JSR bankswitch_y
     RTS
 .endproc
