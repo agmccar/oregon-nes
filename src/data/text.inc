@@ -276,7 +276,7 @@ storeTotalText:
     .byte ___,___,___,_T_,_O_,_T_,_A_,_L_,_CL
     .byte _Y_,_O_,_U_,___,_H_,_A_,_V_,_E_,_CL
 storeNameText:
-    .byte _I_,_N_,_D_,_E_,_P_,_E_,_N_,_D_,_E_,_N_,_C_,_E_
+    .byte ___,___,___,___,___,___,_M_,_A_,_T_,_T_,_AP,_S_
     .byte _F_,_O_,_R_,_T_,___,_K_,_E_,_A_,_R_,_N_,_E_,_Y_
     .byte _F_,_O_,_R_,_T_,___,_L_,_A_,_R_,_A_,_M_,_I_,_E_
     .byte _F_,_O_,_R_,_T_,___,_B_,_R_,_I_,_D_,_G_,_E_,_R_

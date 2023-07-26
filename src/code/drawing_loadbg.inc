@@ -253,22 +253,23 @@
 
 .proc LoadBgStore
     JSR ClearScreen
-    JSR ClearAttributes ; default palette
+    JSR ClearAttributes         ; default palette
     JSR StartBulkDrawing
-    LDA location            ; calculate address of store name text
-    STA helper
-    LDY #0
-    LDX #0
-    CPY helper
-    BNE :+
-    JMP StoreName
+    LDA location
+    CMP #$FF
+    BEQ :++
+    LDX #$FF                    ; calculate address of store name text
+    LDY #$FF
     :
     INX
-    CPX #TEXT_STORENAME_LEN
-    BNE :-
+    LDA landmarkAttr, X
+    BPL :-
     INY
-    CPY helper  ; todo fix this section 
-    BNE :-      ; it should only count landmarks with the "store" bit set
+    LDA landmarkAttr, X
+    CMP location
+    BEQ :+
+    JMP :-
+    :
     StoreName:
         LDA #0
         STA cartDollars
