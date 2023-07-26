@@ -64,7 +64,7 @@
     LSR
     STA helper2+1
     LDX #0
-    LDA #0
+    LDA #___
     :
     STA PPUDATA
     INX
@@ -84,7 +84,7 @@
     SBC helper2
     SBC helper2+1
     TAX
-    LDA #0
+    LDA #___
     :
     CPX #0
     BNE :+
@@ -96,14 +96,14 @@
     :
     JSR DrawBlankLine   ; blank line
     LDX #0          ; draw date text line
-    LDA #0
+    LDA #___
     :
     STA PPUDATA
     INX
     CPX #10
     BNE :-
     JSR DrawDateText
-    LDA #0
+    LDA #___
     LDX #0
     :
     STA PPUDATA
@@ -372,400 +372,6 @@
     RTS
 .endproc
 
-; .proc DrawHUDStatus
-;     LDA #___ ; line 1 (line0: horizontal line)
-;     LDX #0
-;     :
-;     STA PPUDATA
-;     INX
-;     CPX #15
-;     BNE :-
-;     LDA #_VR
-;     STA PPUDATA
-;     LDA #___
-;     STA PPUDATA
-;     STA PPUDATA
-;     LDX #0 ; Draw date - month
-;     LDY #1
-;     :
-;     CPY dateMonth
-;     BNE :+
-;     JMP :++
-;     :
-;     INX
-;     INX
-;     INX
-;     INY
-;     JMP :--
-;     :
-;     LDA monthText, X
-;     STA PPUDATA
-;     INX
-;     LDA monthText, X
-;     STA PPUDATA
-;     INX
-;     LDA monthText, X
-;     STA PPUDATA
-;     LDA #___
-;     STA PPUDATA
-;     LDA dateDay ; Draw date - day
-;     STA helper
-;     LDX #0 ; 10s place
-;     :
-;     LDA helper
-;     CMP #10
-;     BCS :+
-;     LDY helper ; 1s place
-;     JMP :++
-;     :
-;     SEC
-;     SBC #10
-;     STA helper
-;     INX
-;     JMP :--
-;     :
-;     LDA decimalDigits, X
-;     STA PPUDATA
-;     TYA
-;     TAX
-;     LDA decimalDigits, X
-;     STA PPUDATA
-;     LDA #_CM
-;     STA PPUDATA
-;     LDA #___
-;     STA PPUDATA
-;     LDA #_1_
-;     STA PPUDATA
-;     LDA #_8_
-;     STA PPUDATA
-;     LDA #_4_
-;     STA PPUDATA
-;     LDA #_8_    ; todo dateYear
-;     STA PPUDATA
-;     LDA #___
-;     STA PPUDATA
-;     STA PPUDATA ; end of line 1
-;     STA PPUDATA ; begin line 2
-;     LDX #0
-;     :
-;     LDA hudStatusText, X ; "HEALTH:"
-;     STA PPUDATA
-;     INX
-;     CPX #7
-;     BNE :-
-
-;     LDA #___    ; blank space
-;     LDX #0
-;     :
-;     STA PPUDATA
-;     INX
-;     CPX #TEXT_HEALTH_LEN
-;     BNE :-
-;     ; LDA wagonStatus     ; wagon health itself
-;     ; AND #%00001100
-;     ; LSR
-;     ; LSR
-;     ; STA helper
-;     ; LDX #0
-;     ; STX helper+1
-;     ; LDY #0
-;     ; :
-;     ; CPY helper
-;     ; BNE :+
-;     ; JMP :++
-;     ; :
-;     ; INX
-;     ; INC helper+1
-;     ; CPX #4
-;     ; BNE :-
-;     ; LDX #0
-;     ; INY
-;     ; BNE :--
-;     ; LDY #0
-;     ; LDX helper+1
-;     ; :
-;     ; LDA healthText, X
-;     ; STA PPUDATA
-;     ; INX
-;     ; INY
-;     ; CPY #TEXT_HEALTH_LEN
-;     ; BNE :-
-;     LDA #___
-;     STA PPUDATA
-;     LDA #_VR
-;     STA PPUDATA
-;     LDA #___
-;     LDX #0
-;     :
-;     STA PPUDATA
-;     INX
-;     CPX #16
-;     BNE :- ; end of line 2
-;     LDA #___ ; start line 3
-;     LDX #0
-;     :
-;     STA PPUDATA
-;     INX
-;     CPX #15
-;     BNE :-
-;     LDA #_VR
-;     STA PPUDATA
-;     LDA #___
-;     LDX #0
-;     :
-;     STA PPUDATA
-;     INX
-;     CPX #16
-;     BNE :- ; end of line 3
-;     LDA #___ ; start line 4
-;     STA PPUDATA
-;     LDX #7 ; "FOOD:"
-;     :
-;     LDA hudStatusText, X
-;     STA PPUDATA
-;     INX
-;     CPX #14
-;     BNE :-
-;     LDX #0  ; blank space
-;     LDA #___
-;     :
-;     STA PPUDATA
-;     INX
-;     CPX #TEXT_HEALTH_LEN
-;     BNE :-
-;     ; LDX #0 ; decimal text food lbs
-;     ; :
-;     ; LDA foodLbsDigit, X
-;     ; STA PPUDATA
-;     ; INX
-;     ; CPX #4
-;     ; BNE :-
-;     ; LDA #___
-;     ; STA PPUDATA
-;     ; LDA #_LB
-;     ; STA PPUDATA
-;     LDA #___
-;     STA PPUDATA
-;     LDA #_VR
-;     STA PPUDATA
-;     LDX #0
-;     LDA #___
-;     :
-;     STA PPUDATA
-;     INX
-;     CPX #16
-;     BNE :- ; end of line 4
-;     LDA #___ ; start line 5
-;     LDX #0
-;     :
-;     STA PPUDATA
-;     INX
-;     CPX #15
-;     BNE :-
-;     LDA #_VR
-;     STA PPUDATA
-;     LDA #___
-;     LDX #0
-;     :
-;     STA PPUDATA
-;     INX
-;     CPX #16
-;     BNE :- ; end of line 5
-;     LDA #___ ; start line 6
-;     STA PPUDATA
-;     LDX #14 ; "FOOD:"
-;     :
-;     LDA hudStatusText, X
-;     STA PPUDATA
-;     INX
-;     CPX #21
-;     BNE :-
-;     LDX #0  ; blank space
-;     LDA #___
-;     :
-;     STA PPUDATA
-;     INX
-;     CPX #TEXT_HEALTH_LEN
-;     BNE :-
-;     LDA #___
-;     STA PPUDATA
-;     LDA #_VR
-;     STA PPUDATA
-;     LDX #0
-;     LDA #___
-;     :
-;     STA PPUDATA
-;     INX
-;     CPX #16
-;     BNE :- ; end of line 6
-;     LDA #___ ; start line 7
-;     LDX #0
-;     :
-;     STA PPUDATA
-;     INX
-;     CPX #15
-;     BNE :-
-;     LDA #_VR
-;     STA PPUDATA
-;     LDA #___
-;     LDX #0
-;     :
-;     STA PPUDATA
-;     INX
-;     CPX #16
-;     BNE :- ; end of line 7
-;     LDA #___ ; start line 8
-;     STA PPUDATA
-;     LDX #21 ; "FOOD:"
-;     :
-;     LDA hudStatusText, X
-;     STA PPUDATA
-;     INX
-;     CPX #28
-;     BNE :-
-;     LDX #0  ; blank space
-;     LDA #___
-;     :
-;     STA PPUDATA
-;     INX
-;     CPX #TEXT_HEALTH_LEN
-;     BNE :-
-;     LDA #___
-;     STA PPUDATA
-;     LDA #_VR
-;     STA PPUDATA
-;     LDX #0
-;     LDA #___
-;     :
-;     STA PPUDATA
-;     INX
-;     CPX #16
-;     BNE :- ; end of line 8
-;     LDA #___ ; start line 9
-;     LDX #0
-;     :
-;     STA PPUDATA
-;     INX
-;     CPX #15
-;     BNE :-
-;     LDA #_VR
-;     STA PPUDATA
-;     LDA #___
-;     LDX #0
-;     :
-;     STA PPUDATA
-;     INX
-;     CPX #16
-;     BNE :- ; end of line 9
-;     LDA #___ ; start line 10
-;     LDX #0
-;     :
-;     STA PPUDATA
-;     INX
-;     CPX #15
-;     BNE :-
-;     LDA #_VR
-;     STA PPUDATA
-;     LDA #___
-;     LDX #0
-;     :
-;     STA PPUDATA
-;     INX
-;     CPX #16
-;     BNE :- ; end of line 10
-
-;     RTS
-; .endproc
-
-.proc DrawHUDMap
-    JSR DrawBlankLine
-    LDX #0
-    :
-    LDA #_B_
-    STA PPUDATA
-    INX
-    CPX #$20
-    BNE :-
-    JSR DrawBlankLine
-    LDX #0
-    :
-    LDA #_B_
-    STA PPUDATA
-    INX
-    CPX #$20
-    BNE :-
-    JSR DrawBlankLine
-    LDX #0
-    :
-    LDA #_B_
-    STA PPUDATA
-    INX
-    CPX #$20
-    BNE :-
-    JSR DrawBlankLine
-    LDX #0
-    :
-    LDA #_B_
-    STA PPUDATA
-    INX
-    CPX #$20
-    BNE :-
-    JSR DrawBlankLine
-    JSR DrawBlankLine
-    RTS
-.endproc
-
-; .proc DrawHUDDiary
-;     JSR DrawBlankLine
-;     LDA #___
-;     STA PPUDATA
-;     LDX #0
-;     :
-;     LDA diaryTextLine1, X
-;     STA PPUDATA
-;     INX
-;     CPX #30
-;     BNE :-
-;     LDA #___
-;     STA PPUDATA
-;     JSR DrawBlankLine
-;     STA PPUDATA
-;     LDX #0
-;     :
-;     LDA diaryTextLine2, X
-;     STA PPUDATA
-;     INX
-;     CPX #30
-;     BNE :-
-;     LDA #___
-;     STA PPUDATA
-;     JSR DrawBlankLine
-;     STA PPUDATA
-;     LDX #0
-;     :
-;     LDA diaryTextLine3, X
-;     STA PPUDATA
-;     INX
-;     CPX #30
-;     BNE :-
-;     LDA #___
-;     STA PPUDATA
-;     JSR DrawBlankLine
-;     STA PPUDATA
-;     LDX #0
-;     :
-;     LDA diaryTextLine4, X
-;     STA PPUDATA
-;     INX
-;     CPX #30
-;     BNE :-
-;     LDA #___
-;     STA PPUDATA
-;     JSR DrawBlankLine
-;     JSR DrawBlankLine
-;     RTS
-; .endproc
-
 .proc DrawHUDMainMenu
     LDA PPUSTATUS   ; set color palette (attribute table)
     LDA #$23
@@ -907,7 +513,6 @@
     BNE :-
 
     LDY #4          ; switch rom bank to landmark image data
-    STY tilesBank
     JSR bankswitch_y
     LDA #<independenceTiles
     STA pointer
@@ -928,14 +533,14 @@
     INX
     CPX #8*6
     BNE :-
-    LDA #%10100101
+    LDA #%11110101
     LDX #0
     :
     STA PPUDATA
     INX
     CPX #8
     BNE :-
-    LDA #%10101010
+    LDA #0
     LDX #0
     :
     STA PPUDATA

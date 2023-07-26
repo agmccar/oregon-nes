@@ -1,6 +1,5 @@
 ; Engine
 currentBank:        .res 1
-tilesBank:          .res 1
 pointer:            .res 2
 sprite0hit:         .res 1
 helper:             .res 2

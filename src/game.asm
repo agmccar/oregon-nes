@@ -83,7 +83,6 @@ bankswitch_nosave:
     BIT PPUSTATUS
     BPL :-
     LDY #0
-    STY tilesBank
     JSR bankswitch_y
     LDA #<tiles_chr
     STA pointer
