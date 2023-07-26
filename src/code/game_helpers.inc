@@ -624,7 +624,7 @@
     ; @param X: location index
     ; @return helper2: length of text
     ; @return helper: text memory location, relative to diaryLocations
-    ; kills all registers
+    ; clobbers all registers
     STX helper+1
     LDX #0
     LDY #0
