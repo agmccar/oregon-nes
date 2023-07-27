@@ -1401,6 +1401,24 @@
 .endproc
 
 .proc BufferDrawTextPopup
+
+    LDX #16  ; attributes
+    JSR StartBufferWrite
+        LDA #16
+        JSR WriteByteToBuffer
+        LDA #$23
+        JSR WriteByteToBuffer
+        LDA #$D0
+        JSR WriteByteToBuffer
+        LDX #0
+        :
+        LDA attrPopupText, X
+        JSR WriteByteToBuffer
+        INX
+        CPX #16
+        BNE :-
+    JSR EndBufferWrite
+
     LDX #28 ; top row
     JSR StartBufferWrite
         LDA #28
@@ -1522,6 +1540,29 @@
 .endproc
 
 .proc CloseTextPopup
+
+    LDX #16  ; attributes
+    JSR StartBufferWrite
+        LDA #16
+        JSR WriteByteToBuffer
+        LDA #$23
+        JSR WriteByteToBuffer
+        LDA #$D0
+        JSR WriteByteToBuffer
+        LDX #8
+        LDA #$a0
+        :
+        JSR WriteByteToBuffer
+        DEX
+        BNE :-
+        LDX #8
+        LDA #$aa
+        :
+        JSR WriteByteToBuffer
+        DEX
+        BNE :-
+    JSR EndBufferWrite
+
     LDA #0
     STA helper
     LDA #$40
@@ -2101,5 +2142,36 @@
         BNE :-
     JSR EndBufferWrite
 
+    RTS
+.endproc
+
+.proc BufferDrawTravelingAttr
+    LDX #24
+    JSR StartBufferWrite
+        LDA #24
+        JSR WriteByteToBuffer
+        LDA #$23
+        JSR WriteByteToBuffer
+        LDA #$C8
+        JSR WriteByteToBuffer
+        LDA #$0a
+        LDX #8
+        :
+        JSR WriteByteToBuffer
+        DEX
+        BNE :-
+        LDA #$a0
+        LDX #8
+        :
+        JSR WriteByteToBuffer
+        DEX
+        BNE :-
+        LDA #$aa
+        LDX #8
+        :
+        JSR WriteByteToBuffer
+        DEX
+        BNE :-
+    JSR EndBufferWrite
     RTS
 .endproc

@@ -842,6 +842,7 @@
         INX
         CPX #$C0
         BNE :-
+        JSR BufferDrawTravelingAttr
         JSR BufferDrawSizeUpSituation
         JSR BufferDrawTravelingHUD
         JSR BufferDrawTravelingHUDValues

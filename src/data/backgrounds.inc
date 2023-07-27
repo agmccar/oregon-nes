@@ -26,3 +26,7 @@ bgWagonAnim:
     
     .byte $c0,$c1,$c2,$c3,$9e,$c4,$9f,$c5,$c6 ; $2115 - $211D ; frame 3
     .byte $c7,$c8,$c9,$ca,$cb,$cc,$cd,$ce,$cf ; $2135 - $213D
+
+attrPopupText:
+    .byte $e0,$f0,$f0,$f0,$f0,$f0,$f0,$b0
+    .byte $ee,$ff,$ff,$ff,$ff,$ff,$ff,$bb
