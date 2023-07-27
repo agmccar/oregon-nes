@@ -117,7 +117,11 @@ bankswitch_nosave:
     LDA softPPUMASK
     STA PPUMASK
     JSR ProcessNametableBuffer
+    LDA bufferLoading
+    CMP #0
+    BNE :+
     INC frameCounter
+    :
     PLA
     TAY
     PLA

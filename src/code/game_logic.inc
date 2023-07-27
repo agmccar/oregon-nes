@@ -365,9 +365,32 @@
     BNE :+
     JMP sec2
     :
+    AND #$07
+    CMP #0
+    BNE :+
+    JMP animate
+    :
     JMP Done
+    animate:
+        LDA gameState ; animate oxen and wagon
+        CMP #GAMESTATE_TRAVELING
+        BNE :+
+        LDA menuOpen
+        CMP #MENU_NONE
+        BNE :+
+        JSR BufferDrawWagon
+        INC oxenFrame
+        LDA oxenFrame
+        CMP #3
+        BNE :+
+        LDA #0
+        STA oxenFrame
+        :
+        INC frameCounter
+        JMP Done
     sec1:
-        ; 1st second: animate oxen and wagon
+        ; 1st second
+        INC frameCounter
         JMP Done
     sec2:
         ; 2nd second: pause, update counters, roll for event

@@ -2008,3 +2008,98 @@
     JSR EndBufferWrite
     RTS
 .endproc
+
+.proc BufferDrawWagon
+    LDX #7
+    JSR StartBufferWrite
+        LDA #7
+        JSR WriteByteToBuffer
+        LDA #$20
+        JSR WriteByteToBuffer
+        LDA #$D8
+        JSR WriteByteToBuffer
+        LDX #0
+        :
+        LDA bgWagonTop, X
+        JSR WriteByteToBuffer
+        INX
+        CPX #7
+        BNE :-
+    JSR EndBufferWrite
+
+    LDX #7
+    JSR StartBufferWrite
+        LDA #7
+        JSR WriteByteToBuffer
+        LDA #$20
+        JSR WriteByteToBuffer
+        LDA #$F8
+        JSR WriteByteToBuffer
+        LDX #7
+        :
+        LDA bgWagonTop, X
+        JSR WriteByteToBuffer
+        INX
+        CPX #14
+        BNE :-
+    JSR EndBufferWrite
+
+    LDX #0
+    LDY oxenFrame
+    :
+    CPY #0
+    BEQ :+
+    TXA
+    CLC
+    ADC #18
+    TAX
+    DEY
+    JMP :-
+    :
+    STX helper
+
+    LDX #9
+    JSR StartBufferWrite
+        LDA #9
+        JSR WriteByteToBuffer
+        LDA #$21
+        JSR WriteByteToBuffer
+        LDA #$15
+        JSR WriteByteToBuffer
+        LDX helper
+        LDA #0
+        STA helper+1
+        :
+        LDA bgWagonAnim, X
+        JSR WriteByteToBuffer
+        INX
+        INC helper+1
+        LDA helper+1
+        CMP #9
+        BNE :-
+        STX helper
+    JSR EndBufferWrite
+
+    LDX #9
+    JSR StartBufferWrite
+        LDA #9
+        JSR WriteByteToBuffer
+        LDA #$21
+        JSR WriteByteToBuffer
+        LDA #$35
+        JSR WriteByteToBuffer
+        LDX helper
+        LDA #0
+        STA helper+1
+        :
+        LDA bgWagonAnim, X
+        JSR WriteByteToBuffer
+        INX
+        INC helper+1
+        LDA helper+1
+        CMP #9
+        BNE :-
+    JSR EndBufferWrite
+
+    RTS
+.endproc

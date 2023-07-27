@@ -846,6 +846,7 @@
         JSR BufferDrawTravelingHUD
         JSR BufferDrawTravelingHUDValues
         JSR BufferDrawPressStart
+        JSR BufferDrawWagon
     
 
 
