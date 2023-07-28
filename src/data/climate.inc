@@ -1,20 +1,26 @@
 ; Zone 1: Independence to Fort Kearney
 ;   Based on data for Kansas City, Missouri
+;   Location indices 0,1,2
 
 ; Zone 2: Fort Kearney to Fort Laramie
 ;   Based on data for North Platte, Nebraska
+;   Location indices 3,4
 
 ; Zone 3: Fort Laramie to Independence Rock
 ;   Based on data for Casper, Wyoming
+;   Location indices 5
 
 ; Zone 4: Independence Rock to Fort Hall
 ;   Based on data for Lander, Wyoming
+;   Location indices 6,7,8,9,10
 
 ; Zone 5: Fort Hall to The Dalles
 ;   Based on data for Boise, Idaho
+;   Location indices 11,12,13,14,15
 
 ; Zone 6: The Dalles to Willamette Valley
 ;   Based on data for Portland, Oregon
+;   Location indices 16,17
 
 ; source https://www.weather.gov/wrh/climate
 ; averages over date range [por,1985]
@@ -25,7 +31,7 @@ temperatureTable:
     .byte 29, 33, 43, 55, 65, 74, 79, 78, 70, 59, 44, 33 ; Zone 1
     .byte 23, 28, 36, 49, 59, 68, 75, 73, 63, 51, 37, 27 ; Zone 2
     .byte 22, 27, 32, 42, 52, 62, 71, 69, 58, 47, 33, 26 ; Zone 3
-    .byte 19, 24, 32, 43, 52, 62, 69, 67, 57, 45, 31, 21 ; Zone 4
+    .byte 20, 24, 32, 43, 52, 62, 69, 67, 57, 45, 31, 21 ; Zone 4
     .byte 29, 35, 42, 50, 58, 65, 74, 72, 62, 52, 40, 32 ; Zone 5
     .byte 39, 43, 46, 51, 57, 62, 68, 68, 63, 54, 46, 41 ; Zone 6
 
