@@ -1,0 +1,19 @@
+ -Leaving Independence, MO: Yankee Doodle.  
+-Kansas River: I Gave My Love a Cherry.  Don't know this at all, but apparently it's in Animal House.
+-Big Blue River: Oh Dear!  What Can the Matter Be?  (Johnny's So Long at the Fair.)  Love Marilyn Horne and Martin Katz performing this!  
+-Fort Kearney: The Campbells are Coming.  Here's a cool version of a drum line playing it.
+-Chimney Rock: Auld Lang Syne.
+-Fort Laramie: Billy Boy.  I barely know this song...
+-Independence Rock:  Wayfaring Stranger.  What a beautiful American folk song.  Here's Johnny Cash singing it.
+-Fort Bridger:  Where Has My Laddie Gone?  (Blue Bells of Scotland).  I've played an Arthur Pryor arrangement of this with Euphonium.
+-Green River Crossing:  All Through the Night
+-Soda Springs: Charlie Is My Darling
+-South Pass: Believe Me, Of All Those Endearing Young Charms.  Every person my age knows this from those Looney Tune cartoons where the piano is rigged to blow up.  I also know this as Fair Harvard from Bernstein's Unanswered Question lectures (A little heady, but this also gives a progression of tonality through musical history...  50:43-55:00)
+-Fort Hall: Skip to My Lou
+-Snake River Crossing: O Shenandoah.  Wish it were easier to upload audio files here; I've conducted a beautiful Erb arrangement this.  Here's a performance of it (I'm not involved with this one).
+-Fort Boise:  On Top of Old Smokey
+-Grande Ronde in the Blue Mountains: Long Long Ago
+-Fort Walla Walla:  Flow Gently Sweet Afton.  I know this as an alternate to Away in a Manger from many church jobs.
+-The Dalles: Jimmy Crack Corn (Blue Tail Fly)
+-Willamette Valley:  Viva la compangie (Viva l'amour).  How about a macaronic song as an ender?! 
+http://videogamemusicnerd.blogspot.com/2013/05/my-gaming-audio-history-oregon-trail.html

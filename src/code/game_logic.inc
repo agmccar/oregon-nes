@@ -372,6 +372,10 @@
     :
     JMP Done
     animate:
+        LDA oxenFrame
+        BPL :+
+        JMP Done
+        :
         LDA gameState ; animate oxen and wagon
         CMP #GAMESTATE_TRAVELING
         BNE :+
@@ -389,11 +393,17 @@
         INC frameCounter
         JMP Done
     sec1:
-        ; 1st second
+        ; 1st second: move wagon
+        LDA oxenFrame
+        AND #%01111111
+        STA oxenFrame
         INC frameCounter
         JMP Done
     sec2:
         ; 2nd second: pause, update counters, roll for event
+        LDA #%10000000
+        STA oxenFrame
+        JSR ElapseDay
         LDA #0
         STA frameCounter
         JMP Done
@@ -475,5 +485,9 @@
     LDX eventQueuePointer
     STA eventQueue, X
     INC eventQueuePointer
+    RTS
+.endproc
+
+.proc ElapseDay
     RTS
 .endproc
