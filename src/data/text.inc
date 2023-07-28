@@ -357,3 +357,7 @@ locationNameText:
 
 eventIndianFoodText:
     .byte 23,_I_,_N_,_D_,_I_,_A_,_N_,_S_,___,_H_,_E_,_L_,_P_,___,_F_,_I_,_N_,_D_,___,_F_,_O_,_O_,_D_,_PD
+
+eventThunderstorm:
+    .byte 20,_S_,_E_,_V_,_E_,_R_,_E_,___,_T_,_H_,_U_,_N_,_D_,_E_,_R_,_S_,_T_,_O_,_R_,_M_,_PD
+    .byte 11,_L_,_O_,_S_,_E_,___,_1_,___,_D_,_A_,_Y_,_PD
