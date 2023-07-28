@@ -635,6 +635,5 @@
     JMP Done
     : ; 70% chance for "light" precipitation
     Done:
-    ; LDA rainfallTable
     RTS
 .endproc
