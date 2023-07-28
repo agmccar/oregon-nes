@@ -1503,8 +1503,31 @@
     RTS
 .endproc
 
+.proc BufferClearTravelingHUDValue
+    LDX #12
+    JSR StartBufferWrite
+        LDA #12
+        JSR WriteByteToBuffer
+        LDA pointer
+        JSR WriteByteToBuffer
+        LDA pointer+1
+        JSR WriteByteToBuffer
+        LDX #12
+        LDA #___
+        :
+        JSR WriteByteToBuffer
+        DEX
+        BNE :-
+    JSR EndBufferWrite
+    :                   ; vblankwait for aesthetic reasons
+    BIT PPUSTATUS
+    BPL :-
+    RTS
+.endproc
+
 .proc BufferDrawDateText
     ; @param pointer: nametable location
+    JSR BufferClearTravelingHUDValue
     LDX #TEXT_DATE_LEN
     JSR StartBufferWrite
         LDA #TEXT_DATE_LEN
@@ -1521,11 +1544,15 @@
         CPX #TEXT_DATE_LEN
         BNE :-
     JSR EndBufferWrite
+    :                   ; vblankwait for aesthetic reasons
+    BIT PPUSTATUS
+    BPL :-
     RTS
 .endproc
 
 .proc BufferDrawWeatherText
     ; @param pointer: nametable location
+    JSR BufferClearTravelingHUDValue
     LDX #TEXT_WEATHER_LEN
     JSR StartBufferWrite
         LDA #TEXT_WEATHER_LEN
@@ -1560,11 +1587,15 @@
         CMP #TEXT_WEATHER_LEN
         BNE :-
     JSR EndBufferWrite
+    :                   ; vblankwait for aesthetic reasons
+    BIT PPUSTATUS
+    BPL :-
     RTS
 .endproc
 
 .proc BufferDrawHealthText
     ; @param pointer: nametable location
+    JSR BufferClearTravelingHUDValue
     LDX #TEXT_HEALTH_LEN
     JSR StartBufferWrite
         LDA #TEXT_HEALTH_LEN
@@ -1606,11 +1637,15 @@
         CMP #TEXT_HEALTH_LEN
         BNE :-
     JSR EndBufferWrite
+    :                   ; vblankwait for aesthetic reasons
+    BIT PPUSTATUS
+    BPL :-
     RTS
 .endproc
 
 .proc BufferDrawFoodText
     ; @param pointer: nametable location
+    JSR BufferClearTravelingHUDValue
     LDX #11 ; "XXXX_POUNDS"
     JSR StartBufferWrite
         LDA #11
@@ -1636,11 +1671,15 @@
         CPX #47
         BNE :-
     JSR EndBufferWrite
+    :                   ; vblankwait for aesthetic reasons
+    BIT PPUSTATUS
+    BPL :-
     RTS
 .endproc
 
 .proc BufferDrawNextText
     ; @param pointer: nametable location
+    JSR BufferClearTravelingHUDValue
     LDX #9 ; "XXX_MILES"
     JSR StartBufferWrite
         LDA #9
@@ -1666,11 +1705,15 @@
         CPX #52
         BNE :-
     JSR EndBufferWrite
+    :                   ; vblankwait for aesthetic reasons
+    BIT PPUSTATUS
+    BPL :-
     RTS
 .endproc
 
 .proc BufferDrawTraveledText
     ; @param pointer: nametable location
+    JSR BufferClearTravelingHUDValue
     LDX #10 ; "XXXX_MILES"
     JSR StartBufferWrite
         LDA #10
@@ -1696,6 +1739,9 @@
         CPX #52
         BNE :-
     JSR EndBufferWrite
+    :                   ; vblankwait for aesthetic reasons
+    BIT PPUSTATUS
+    BPL :-
     RTS
 .endproc
 

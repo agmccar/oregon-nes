@@ -408,6 +408,7 @@
         LDA #%10000000
         STA oxenFrame
         JSR ElapseDay
+        ; JSR BufferClearTravelingHUDValues
         JSR BufferDrawTravelingHUDValues
         LDA #0
         STA frameCounter
