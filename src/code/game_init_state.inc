@@ -6,7 +6,7 @@
     STA seed                ; set an initial seed value ($1848) arbitrarily.
     LDA #%00001101          ; default steady pace, filling rations
     STA wagonSettings
-    LDA #%00000100          ; default fair weather
+    LDA #2                  ; default cool weather
     STA weather
     LDA #3                  ; default date March 1, 1848
     STA dateMonth

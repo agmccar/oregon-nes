@@ -20,6 +20,7 @@
     .include "data/backgrounds.inc"
     .include "data/sprites.inc"
     .include "data/rom1.inc"
+    .include "data/climate.inc"
 
 .segment "ROM2"
     .include "data/textJP.inc"

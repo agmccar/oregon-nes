@@ -512,7 +512,129 @@
 .endproc
 
 .proc ElapseDay
-    JSR IncrementDate
+    JSR GenerateWeather
     JSR RandomEvent
+    JSR IncrementDate
+    RTS
+.endproc
+
+.proc GenerateWeather
+    ; clobbers A, helper, helper+1, helper2
+    JSR RandomNumberGenerator ; 50% chance to generate new weather
+    CMP #$80
+    BCS :+
+    JMP Done
+    :
+    LDA location    ; get current location index
+    AND #%00011111
+    CMP #3
+    BCS :+
+    LDA #0  ; Zone 1: Independence to Fort Kearney
+    JMP Generate
+    :
+    CMP #5
+    BCS :+
+    LDA #12 ; Zone 2: Fort Kearney to Fort Laramie
+    JMP Generate
+    :
+    CMP #6
+    BCS :+
+    LDA #24 ; Zone 3: Fort Laramie to Independence Rock
+    JMP Generate
+    :
+    CMP #11
+    BCS :+
+    LDA #36 ; Zone 4: Independence Rock to Fort Hall
+    JMP Generate
+    :
+    CMP #16
+    BCS :+
+    LDA #48 ; Zone 5: Fort Hall to The Dalles
+    JMP Generate
+    :
+    LDA #60 ; Zone 6: The Dalles to Willamette Valley
+    Generate:
+    CLC
+    ADC dateMonth
+    STA helper2 ; table index
+    TAX
+    LDA temperatureTable, X
+    STA helper ; this month's mean temp
+    :
+    JSR RandomNumberGenerator ; add (-20,20) degrees Fahrenheit
+    CMP #160+1
+    BCS :- ; 0 to 160
+    LSR ; 0 to 80
+    LSR ; 0 to 40
+    CMP #20
+    BCS :+
+    STA helper+1 ; -0 to -20
+    SEC
+    LDA helper
+    SBC helper+1 ; this month's mean temp minus [0 to 20]
+    JMP Temperature
+    : ; 20 to 40
+    SEC ; +0 to +20
+    SBC #20
+    STA helper+1
+    CLC
+    LDA helper
+    ADC helper+1 ; this month's mean temp plus [0 to 20]
+    Temperature:
+    CMP #10
+    BCS :+
+    LDA #0 ; very cold
+    JMP Rainfall
+    :
+    CMP #30
+    BCS :+
+    LDA #1 ; cold
+    JMP Rainfall
+    :
+    CMP #50
+    BCS :+
+    LDA #2 ; cool
+    JMP Rainfall
+    :
+    CMP #70
+    BCS :+
+    LDA #3 ; warm
+    JMP Rainfall
+    :
+    CMP #90
+    BCS :+
+    LDA #4 ; hot
+    JMP Rainfall
+    :
+    LDA #5 ; very hot
+    Rainfall:
+    STA weather
+    JSR RandomNumberGenerator
+    LDX helper2
+    CMP rainfallTable, X ; Precipitation chance
+    BCC :+
+    JMP Done ; Not precipitating
+    :
+    LDA weather ; Precipitating
+    CMP #2 ; if weather is cold/very cold, snow instead of rain
+    BCS :+
+    LDA #WEATHER_SNOWY
+    STA weather
+    JMP HeavyRainfall
+    :
+    LDA #WEATHER_RAINY
+    STA weather
+    HeavyRainfall:
+    :
+    JSR RandomNumberGenerator
+    CMP #250 ; 0 to 250
+    BCS :-
+    CMP #75 ; 30% chance for "heavy" precipitation
+    BCS :+
+    INC weather
+    JMP Done
+    : ; 70% chance for "light" precipitation
+    Done:
+    ; LDA rainfallTable
     RTS
 .endproc
