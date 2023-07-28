@@ -356,6 +356,16 @@
 .endproc
 
 .proc Every60Frames
+    LDA gameState ; only on main traveling screen
+    CMP #GAMESTATE_TRAVELING
+    BNE :+
+    LDA menuOpen
+    CMP #MENU_NONE
+    BNE :+
+    JMP :++
+    :
+    JMP Done
+    :
     LDA frameCounter
     CMP #60
     BNE :+
@@ -376,12 +386,6 @@
         BPL :+
         JMP Done
         :
-        LDA gameState ; animate oxen and wagon
-        CMP #GAMESTATE_TRAVELING
-        BNE :+
-        LDA menuOpen
-        CMP #MENU_NONE
-        BNE :+
         JSR BufferDrawWagon
         INC oxenFrame
         LDA oxenFrame
@@ -404,6 +408,7 @@
         LDA #%10000000
         STA oxenFrame
         JSR ElapseDay
+        JSR BufferDrawTravelingHUDValues
         LDA #0
         STA frameCounter
         JMP Done
@@ -431,6 +436,10 @@
     CMP #EVENT_NEXT_LANDMARK  ; switch/case event id
     BNE :+
     JMP NextLandmark
+    :
+    CMP #EVENT_INDIAN_FOOD
+    BNE :+
+    JMP IndianFood
     :
     JMP Done
     NextLandmark:
@@ -461,7 +470,7 @@
         LDX helper
         LDY #0
         :
-        LDA diaryLocations, X
+        LDA locationNameText, X
         STA popupTextLine2, Y
         INX
         INY
@@ -469,6 +478,19 @@
         BNE :-
         LDA #_PD
         STA popupTextLine2, Y
+        LDA #MENU_TEXTPOPUP
+        STA menuOpen
+        JMP Done
+    IndianFood:
+        LDX #1
+        LDY #0
+        :
+        LDA eventIndianFoodText, X
+        STA popupTextLine1, Y
+        INX
+        INY
+        CPY eventIndianFoodText
+        BNE :-
         LDA #MENU_TEXTPOPUP
         STA menuOpen
         JMP Done
@@ -489,5 +511,7 @@
 .endproc
 
 .proc ElapseDay
+    JSR IncrementDate
+    JSR RandomEvent
     RTS
 .endproc

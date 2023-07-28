@@ -73,7 +73,7 @@
     LDX helper
     LDY #0
     :
-    LDA diaryLocations, X
+    LDA locationNameText, X
     STA PPUDATA
     INX
     INY

@@ -623,13 +623,13 @@
 .proc GetLandmarkText
     ; @param X: location index
     ; @return helper2: length of text
-    ; @return helper: text memory location, relative to diaryLocations
+    ; @return helper: text memory location, relative to locationNameText
     ; clobbers all registers
     STX helper+1
     LDX #0
     LDY #0
     STX helper
-    LDA diaryLocations, X
+    LDA locationNameText, X
     STA helper2
     :
     CPY helper+1
@@ -647,7 +647,7 @@
     INC helper
     LDX helper
     INY
-    LDA diaryLocations, X
+    LDA locationNameText, X
     STA helper2
     JMP :---
     :

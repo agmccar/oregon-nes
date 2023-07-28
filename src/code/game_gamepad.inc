@@ -10,7 +10,7 @@
         BNE :+
         JMP CheckStart
         :
-        JSR IncrementDate
+        ; JSR IncrementDate
         JMP Done
     CheckStart:
         LDA #KEY_START
