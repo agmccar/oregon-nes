@@ -45,7 +45,7 @@ chimneyRockImage:
 chimneyRockAttr:
 	.byte $a0,$a0,$a0,$a0,$a0,$a0,$a0,$a0,$aa,$aa,$aa,$8a,$aa,$aa,$aa,$aa
 	.byte $aa,$aa,$2a,$08,$aa,$aa,$aa,$aa,$0a,$00,$00,$00,$20,$08,$0a,$0a
-	.byte $2a,$0a,$aa,$22,$00,$08,$0a,$02,$0a,$0a,$0a,$0a,$0a,$0a,$0a,$02
+	.byte $2a,$0a,$aa,$22,$00,$08,$0a,$02,$5a,$5a,$5a,$5a,$5a,$5a,$5a,$52
 
 fortLaramieTiles:
 	.incbin "tilesets/fortlaramie.chr"
@@ -93,7 +93,7 @@ fortLaramieImage:
 fortLaramieAttr:
 	.byte $a0,$a0,$a0,$a0,$a0,$a0,$a0,$a0,$aa,$a0,$0a,$aa,$aa,$0a,$8a,$aa
 	.byte $aa,$aa,$aa,$aa,$aa,$aa,$aa,$a2,$aa,$0a,$aa,$aa,$aa,$aa,$22,$8a
-	.byte $aa,$aa,$aa,$aa,$aa,$aa,$aa,$aa,$0a,$0a,$0a,$0a,$0a,$0a,$0a,$0a
+	.byte $aa,$aa,$aa,$aa,$aa,$aa,$aa,$aa,$5a,$5a,$5a,$5a,$5a,$5a,$5a,$5a
 
 independenceRockTiles:
 	.incbin "tilesets/independencerock.chr"
@@ -141,7 +141,7 @@ independenceRockImage:
 independenceRockAttr:
 	.byte $a0,$a0,$a0,$a0,$a0,$a0,$a0,$a0,$aa,$aa,$aa,$aa,$aa,$aa,$aa,$aa
 	.byte $aa,$aa,$aa,$aa,$aa,$aa,$aa,$aa,$aa,$aa,$aa,$aa,$aa,$aa,$aa,$aa
-	.byte $aa,$aa,$aa,$aa,$aa,$aa,$aa,$aa,$0a,$0a,$0a,$0a,$0a,$0a,$0a,$0a
+	.byte $aa,$aa,$aa,$aa,$aa,$aa,$aa,$aa,$5a,$5a,$5a,$5a,$5a,$5a,$5a,$5a
 
 southPassTiles:
 	.incbin "tilesets/southpass.chr"
@@ -189,4 +189,4 @@ southPassImage:
 southPassAttr:
 	.byte $a0,$a0,$a0,$a0,$a0,$a0,$a0,$a0,$aa,$aa,$aa,$aa,$aa,$aa,$aa,$aa
 	.byte $aa,$aa,$aa,$a2,$aa,$aa,$aa,$aa,$aa,$22,$0a,$0a,$aa,$aa,$8a,$aa
-	.byte $aa,$a2,$a8,$aa,$aa,$aa,$aa,$aa,$0a,$0a,$0a,$0a,$0a,$0a,$0a,$0a
+	.byte $aa,$a2,$a8,$aa,$aa,$aa,$aa,$aa,$5a,$5a,$5a,$5a,$5a,$5a,$5a,$5a

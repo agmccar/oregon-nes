@@ -45,7 +45,7 @@ theDallesImage:
 theDallesAttr:
 	.byte $a0,$a0,$a0,$a0,$a0,$a0,$a0,$a0,$aa,$aa,$aa,$aa,$aa,$aa,$aa,$aa
 	.byte $aa,$aa,$aa,$aa,$aa,$aa,$aa,$aa,$aa,$aa,$aa,$aa,$aa,$aa,$aa,$aa
-	.byte $aa,$aa,$aa,$aa,$aa,$aa,$aa,$aa,$0a,$0a,$0a,$0a,$0a,$0a,$0a,$0a
+	.byte $aa,$aa,$aa,$aa,$aa,$aa,$aa,$aa,$5a,$5a,$5a,$5a,$5a,$5a,$5a,$5a
 
 willametteTiles:
 	.incbin "tilesets/willamette.chr"
@@ -93,4 +93,4 @@ willametteImage:
 willametteAttr:
 	.byte $a0,$a0,$a0,$a0,$a0,$a0,$a0,$a0,$aa,$aa,$aa,$a0,$a0,$aa,$aa,$0a
 	.byte $aa,$aa,$aa,$aa,$aa,$aa,$aa,$aa,$aa,$aa,$aa,$aa,$aa,$aa,$aa,$aa
-	.byte $aa,$aa,$aa,$aa,$aa,$aa,$aa,$aa,$0a,$0a,$0a,$0a,$0a,$0a,$0a,$0a
+	.byte $aa,$aa,$aa,$aa,$aa,$aa,$aa,$aa,$5a,$5a,$5a,$5a,$5a,$5a,$5a,$5a

@@ -45,7 +45,7 @@ snakeRiverImage:
 snakeRiverAttr:
 	.byte $a0,$a0,$a0,$a0,$a0,$a0,$a0,$a0,$aa,$aa,$aa,$aa,$aa,$aa,$aa,$aa
 	.byte $22,$88,$aa,$aa,$2a,$88,$aa,$aa,$aa,$aa,$aa,$a0,$02,$88,$aa,$aa
-	.byte $a2,$a8,$aa,$aa,$00,$88,$aa,$aa,$0a,$0a,$0a,$0a,$00,$08,$0a,$0a
+	.byte $a2,$a8,$aa,$aa,$00,$88,$aa,$aa,$5a,$5a,$5a,$5a,$50,$58,$5a,$5a
 
 fortBoiseTiles:
 	.incbin "tilesets/fortboise.chr"
@@ -93,7 +93,7 @@ fortBoiseImage:
 fortBoiseAttr:
 	.byte $a0,$a0,$a0,$a0,$a0,$a0,$20,$20,$a0,$a0,$a0,$a0,$20,$00,$00,$00
 	.byte $aa,$aa,$aa,$aa,$a2,$a0,$20,$00,$aa,$2a,$22,$aa,$aa,$aa,$aa,$aa
-	.byte $2a,$02,$22,$88,$aa,$aa,$aa,$aa,$0a,$0a,$02,$08,$0a,$0a,$0a,$0a
+	.byte $2a,$02,$22,$88,$aa,$aa,$aa,$aa,$5a,$5a,$52,$58,$5a,$5a,$5a,$5a
 
 blueMountainsTiles:
 	.incbin "tilesets/bluemountains.chr"
@@ -141,7 +141,7 @@ blueMountainsImage:
 blueMountainsAttr:
 	.byte $a0,$a0,$a0,$a0,$a0,$a0,$a0,$a0,$aa,$aa,$aa,$aa,$aa,$aa,$aa,$aa
 	.byte $aa,$aa,$aa,$aa,$aa,$aa,$aa,$aa,$aa,$aa,$aa,$aa,$aa,$aa,$aa,$aa
-	.byte $aa,$aa,$aa,$aa,$aa,$aa,$aa,$aa,$0a,$0a,$0a,$0a,$0a,$0a,$0a,$0a
+	.byte $aa,$aa,$aa,$aa,$aa,$aa,$aa,$aa,$5a,$5a,$5a,$5a,$5a,$5a,$5a,$5a
 
 fortWallaWallaTiles:
 	.incbin "tilesets/fortwallawalla.chr"
@@ -189,4 +189,4 @@ fortWallaWallaImage:
 fortWallaWallaAttr:
 	.byte $a0,$a0,$a0,$a0,$a0,$a0,$a0,$a0,$0a,$00,$aa,$aa,$aa,$aa,$aa,$aa
 	.byte $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
-	.byte $00,$00,$08,$02,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
+	.byte $00,$00,$08,$02,$00,$00,$00,$00,$50,$50,$50,$50,$50,$50,$50,$50

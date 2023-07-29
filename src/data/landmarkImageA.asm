@@ -149,7 +149,7 @@ bigBlueRiverAttr:
 	.byte $aa,$aa,$aa,$aa,$aa,$aa,$aa,$aa
 	.byte $aa,$aa,$aa,$aa,$aa,$aa,$a2,$a0
 	.byte $aa,$aa,$aa,$aa,$aa,$aa,$aa,$aa
-	.byte $0a,$0a,$0a,$0a,$0a,$0a,$0a,$0a
+	.byte $5a,$5a,$5a,$5a,$5a,$5a,$5a,$5a
 
 fortKearneyTiles:
 	.incbin "tilesets/fortkearney.chr"
@@ -200,4 +200,4 @@ fortKearneyAttr:
 	.byte $00,$20,$80,$00,$08,$0a,$aa,$aa
 	.byte $00,$22,$08,$00,$22,$00,$08,$0a
 	.byte $00,$02,$00,$80,$a2,$00,$00,$00
-	.byte $00,$00,$00,$00,$00,$00,$00,$00
+	.byte $50,$50,$50,$50,$50,$50,$50,$50
