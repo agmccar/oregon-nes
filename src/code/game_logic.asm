@@ -260,6 +260,10 @@
     BNE :+
     JMP NextLandmark
     :
+    CMP #EVENT_REACHED_LANDMARK
+    BNE :+
+    JMP ReachedLandmark
+    :
     CMP #EVENT_INDIAN_FOOD
     BNE :+
     JMP IndianFood
@@ -392,6 +396,31 @@
         LDA #MENU_TEXTPOPUP
         STA menuOpen
         JMP Done
+    ReachedLandmark:
+        LDX #0
+        :
+        LDA reachedLandmarkText, X ; "you have reached"
+        STA popupTextLine1, X
+        INX
+        CPX #17
+        BNE :-
+        LDX location ; "{location title}."
+        INX
+        JSR GetLandmarkText
+        LDX helper
+        LDY #0
+        :
+        LDA locationNameText, X
+        STA popupTextLine2, Y
+        INX
+        INY
+        CPY helper2
+        BNE :-
+        LDA #_PD
+        STA popupTextLine2, Y
+        LDA #MENU_TEXTPOPUP
+        STA menuOpen
+        JMP Done
     IndianFood:
         LDX #1
         LDY #0
@@ -501,6 +530,7 @@
     JSR GenerateWeather
     JSR UpdateSupplies
     JSR UpdateHealth
+    JSR UpdateDistance
     JSR RandomEvent
     JSR IncrementDate
     RTS
@@ -767,6 +797,109 @@
     BNE :--
 
     Done:
+    RTS
+.endproc
+
+.proc UpdateDistance
+    ; standard speed: 20 miles per day
+    ; maximum speed is 40mpd, at full health, 4+ oxen, in prairie terrain
+    LDA #80 ; x0.25 mpd = 20 mpd standard
+    STA helper
+    LDA #0
+    STA helper+1
+    ; Pace
+    LDA wagonSettings
+    AND #%00000011
+    TAX
+    DEX
+    :
+    CPX #0
+    BEQ :+
+    CLC
+    LDA helper
+    ADC #40 ; strenuous: +10mpd, grueling: +20 mpd
+    STA helper
+    DEX
+    JMP :-
+    :
+    ; Mountainous terrain: x0.5
+    JSR CheckMountainousTerrain
+    CMP #1
+    BNE :+
+    LDA helper
+    LSR
+    STA helper
+    :
+    ; Oxen: x(number of healthy oxen)/4
+    ; sick or injured ox counts as 1/2 of a healthy ox
+    LDA oxenHeadcount
+    CLC
+    ROL ; x2 so we can count half-ox 
+    SEC
+    SBC oxenHealth
+    CMP #8
+    BCS Travel ; skip if 4+ healthy oxen
+    ; helper *= A / #8
+    TAX ; x: oxencount*2
+    LDA helper
+    STA cartHelperDigit ; hack, stash mpd
+    CPX #0
+    BNE :+
+    LDA #0 ; no oxen!
+    STA helper
+    JMP Travel
+    : ; multiply mpd by oxencount*2
+    CLC
+    LDA helper
+    ADC cartHelperDigit
+    STA helper
+    LDA helper+1
+    ADC #0
+    STA helper+1
+    DEX
+    BNE :-
+    ; divide by 8
+    LSR helper+1
+    ROR helper
+    LSR helper+1
+    ROR helper
+    LSR helper+1
+    ROR helper
+    Travel:
+    LSR helper ; convert from 0.25x mpd to 1x mpd (divide by 4)
+    LSR helper 
+    SEC ; subtract from distance to next landmark
+    LDA nextMi
+    STA helper+1 ; stash remaining miles in case it is less than our mpd
+    SBC helper
+    STA nextMi
+    LDA nextMi+1
+    SBC #0
+    STA nextMi+1
+    BCS :+
+    LDA #0 ; mpd > remaining miles
+    STA nextMi ; we're at the landmark: clear nextMi
+    STA nextMi+1
+    LDA #EVENT_REACHED_LANDMARK
+    JSR QueueEvent
+    LDA helper+1 ; unstash remaining miles
+    STA helper ; replace mpd with remaining miles (ie stop at the landmark) 
+    :
+    CLC ; add mpd to total distance traveled
+    LDA traveledMi
+    ADC helper
+    STA traveledMi
+    LDA traveledMi+1
+    ADC #0
+    STA traveledMi+1
+
+    LDX #traveledDigit
+    LDY #traveledMi
+    JSR SetDigitFromValue
+    LDX #nextDigit
+    LDY #nextMi
+    JSR SetDigitFromValue
+
     RTS
 .endproc
 

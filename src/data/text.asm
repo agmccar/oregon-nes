@@ -10,7 +10,9 @@ sizeUpSituationText:
     .byte _P_,_R_,_E_,_S_,_S_,___,_A_,___,_T_,_O_,___,_S_,_I_,_Z_,_E_,___,_U_,_P_,___,_T_,_H_,_E_,___,_S_,_I_,_T_,_U_,_A_,_T_,_I_,_O_,_N_
 
 nextLandmarkText: ; len:18
-    .byte _I_,_T_,___,_I_,_S_,___,0,0,0,___,_M_,_I_,_L_,_E_,_S_,___,_T_,_O_
+    .byte _I_,_T_,___,_I_,_S_,___, 0 , 0 , 0 ,___,_M_,_I_,_L_,_E_,_S_,___,_T_,_O_
+reachedLandmarkText: ; len 17
+    .byte _Y_,_O_,_U_,___,_H_,_A_,_V_,_E_,___,_R_,_E_,_A_,_C_,_H_,_E_,_D_,___
 
 ; Locations (landmarks)
 ; %00000000

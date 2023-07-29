@@ -855,3 +855,22 @@
     LDA helper
     RTS
 .endproc
+
+.proc CheckMountainousTerrain
+    ; @return A: 0:prairie, 1:mountains
+    LDA traveledMi+1
+    CMP #$03
+    BCS :+
+    LDA #0 ; traveled less than 0x300 (768) miles 
+    JMP Done
+    :
+    LDA traveledMi
+    CMP #$B6
+    BCS :+
+    LDA #0 ; traveled between 0x300 (768) and 0x3B6 (950) miles
+    JMP Done
+    :
+    LDA #1 ; traveled more than 0x3B6 (950) miles
+    Done:
+    RTS
+.endproc

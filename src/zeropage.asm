@@ -36,7 +36,7 @@ nameCursor:         .res 1
 menuCursor:         .res 1
 nextMi:             .res 2
 nextDigit:          .res 4
-traveledMi:         .res 2
+traveledMi:         .res 2 ; Prairie <950 mi, Mountainous terrain >=950 miles
 traveledDigit:      .res 4
 menuOpenLast:       .res 1
 menuOpen:           .res 1 ; see: constants.asm -> Menu states
@@ -86,6 +86,7 @@ wagonStatus:        .res 1 ; todo: deprecate
 ; 105-139: very poor health
 ; 140+: remaining party members all die within a few days
 wagonHealth:        .res 1
+oxenHealth:         .res 1 ; 0: all healthy, 1: sick or injured ox
 
 ; On each day that there is no food, or that clothing is inadequate,
 ; add 0.8 to the freeze/starve factor.
