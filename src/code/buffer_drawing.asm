@@ -1845,8 +1845,9 @@
         JSR WriteByteToBuffer
         LDA #$C8
         JSR WriteByteToBuffer
-        JSR CheckMountainousTerrain
-        BNE :++
+        LDA location
+        CMP #LOC_FORTLARAMIE
+        BCS :++
         LDA #$0a
         LDX #8
         :

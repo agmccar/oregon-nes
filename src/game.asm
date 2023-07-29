@@ -22,19 +22,20 @@
     .include "data/rom1.asm"
     .include "data/climate.asm"
 
-; .segment "ROM2"
-;     .include "data/textJP.asm"
-
-; .segment "ROM3"
-
-.segment "ROM4"
+.segment "ROM2"
     .include "data/landmarkImageA.asm"
 
-;.segment "ROM5"
-    ;.include "data/landmarkImageB.asm"
+.segment "ROM3"
+    .include "data/landmarkImageB.asm"
 
-;.segment "ROM6"
-    ;.include "data/landmarkImageC.asm"
+.segment "ROM4"
+    .include "data/landmarkImageC.asm"
+
+.segment "ROM5"
+    .include "data/landmarkImageD.asm"
+
+.segment "ROM6"
+    .include "data/landmarkImageE.asm"
 
 .segment "RODATA" ; ROM7
     banktable:              ; Write to this table to switch banks.

@@ -821,8 +821,9 @@
         LDA #$20
         STA PPUADDR
         LDX #0 ; temp- draw horizon
-        JSR CheckMountainousTerrain
-        BNE :++
+        LDA location
+        CMP #LOC_FORTLARAMIE
+        BCS :++
         LDA #$80
         STA PPUADDR
         :
