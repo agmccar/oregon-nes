@@ -134,7 +134,7 @@ personStatus:       .res 5   ; 1 each * 5
 
 ; Conditions -------------------------------------------------------------------
 
-weather:            .res 1 ; see texts.inc -> weatherText
+weather:            .res 1 ; see text.inc -> weatherText
 dateYear:           .res 1 ; years since 1848
 dateMonth:          .res 1
 dateDay:            .res 1

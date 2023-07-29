@@ -163,6 +163,9 @@
     ; Indians help find food
     ; If you are completely out of food, then there is a 5% chance each day
     ; that local Indians will give you 30 pounds of food.
+    LDA foodLbs+1
+    CMP #0
+    BNE Done
     LDA foodLbs
     CMP #0
     BEQ :+

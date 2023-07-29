@@ -513,8 +513,181 @@
 
 .proc ElapseDay
     JSR GenerateWeather
+    JSR UpdateSupplies
+    JSR UpdateHealth
     JSR RandomEvent
     JSR IncrementDate
+    RTS
+.endproc
+
+.proc UpdateSupplies
+    RTS
+.endproc
+
+.proc UpdateHealth
+    ; 0-34: good health
+    ; 35-69: fair health
+    ; 70-104: poor health
+    ; 105-139: very poor health
+    ; 140+: remaining party members all die within a few days
+    
+    ; Natural recovery process (decrement by 10%)
+    LDA wagonHealth
+    STA helper
+    LDA #0
+    STA helper+1
+    :
+    SEC
+    LDA helper
+    SBC #10
+    BCC :+
+    STA helper
+    INC helper+1
+    JMP :-
+    :
+    SEC
+    LDA wagonHealth
+    SBC helper+1
+    STA wagonHealth
+
+    ; Weather
+    LDA weather
+    @veryCold:
+        ; add 0 if 4 or more sets of clothing per person
+        ; add 4 if 0 sets of clothing per person
+        ; apply a sliding scale if between 0 and 4 sets of clothing per person
+        CMP #WEATHER_COLD
+        BCS @cold
+        LDX #5
+        LDA #0
+        STA helper2 ; alive person count
+        :
+        DEX
+        BEQ :+
+        LDA personStatus, X
+        BPL :- ; count surviving party members
+        INC helper2 ; alive person count
+        JMP :-
+        :
+        LDA clothing ; divide clothing by alive person count
+        STA helper ; clothing
+        LDA #4
+        STA helper+1 ; health loss: starts at 4 
+        :
+        SEC
+        LDA helper ; clothing
+        SBC helper2 ; alive person count
+        BCC :+
+        STA helper
+        DEC helper+1 ; -1 health loss for each set of clothing
+        BEQ :+
+        JMP :-
+        :
+        CLC
+        LDA wagonHealth 
+        ADC helper+1 ; add health loss to wagonHealth
+        STA wagonHealth
+        JMP Done
+    @cold:
+        ; add 0 if 2 or more sets of clothing per person
+        ; add 2 if 0 sets of clothing per person
+        ; apply a sliding scale if between 0 and 2 sets of clothing per person
+        CMP #WEATHER_COOL
+        BCS @cool
+        LDX #5
+        LDA #0
+        STA helper2 ; alive person count
+        :
+        DEX
+        BEQ :+
+        LDA personStatus, X
+        BPL :- ; count surviving party members
+        INC helper2 ; alive person count
+        JMP :-
+        :
+        LDA clothing ; divide clothing by alive person count
+        STA helper ; clothing
+        LDA #2
+        STA helper+1 ; health loss: starts at 2 
+        :
+        SEC
+        LDA helper ; clothing
+        SBC helper2 ; alive person count
+        BCC :+
+        STA helper
+        DEC helper+1 ; -1 health loss for each set of clothing
+        BEQ :+
+        JMP :-
+        :
+        CLC
+        LDA wagonHealth 
+        ADC helper+1 ; add health loss to wagonHealth
+        STA wagonHealth
+        JMP Done
+    @cool:
+        ; add 0; the best weather for traveling
+        CMP #WEATHER_WARM
+        BCS @warm
+        JMP Done
+    @warm:
+        ; add 0; the best weather for traveling
+        CMP #WEATHER_HOT
+        BCS @hot
+        JMP Done
+    @hot:
+        ; add 1
+        CMP #WEATHER_VERY_HOT
+        BCS @veryHot
+        INC wagonHealth
+        JMP Done
+    @veryHot:
+        ; add 2
+        CMP #WEATHER_RAINY
+        BCS @rainy
+        INC wagonHealth
+        INC wagonHealth
+        JMP Done
+    @rainy:
+    
+    ; Food rations
+    LDA foodLbs+1
+    CMP #0
+    BNE :+
+    LDA foodLbs
+    CMP #0
+    BNE :+
+    CLC ; starving: 6
+    LDA wagonHealth
+    ADC #6
+    STA wagonHealth
+    JMP @poop
+    :
+    LDA wagonSettings
+    AND #%00001100
+    LSR
+    LSR
+    CMP #2
+    BCS :+
+    CLC ; bare bones rations: 4
+    LDA wagonHealth
+    ADC #4
+    STA wagonHealth
+    JMP @poop
+    :
+    CMP #3
+    BCS :+
+    CLC ; meager rations: 2
+    LDA wagonHealth
+    ADC #2
+    STA wagonHealth
+    JMP @poop
+    : ; filling rations: 0
+    
+    ; Freeze/starve factor
+    @poop:
+
+
+    Done:
     RTS
 .endproc
 
