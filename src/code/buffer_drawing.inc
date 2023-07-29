@@ -1604,30 +1604,26 @@
         JSR WriteByteToBuffer
         LDA pointer+1
         JSR WriteByteToBuffer
-        LDA wagonStatus
-        AND #%00001100
-        LSR
-        LSR
-        STA helper
-        LDX #0
-        STX helper+1
-        LDY #0
+        LDA wagonHealth
+        CMP #35
+        BCS :+
+        LDX #TEXT_HEALTH_LEN*0 ; good health
+        JMP @text
         :
-        CPY helper
-        BNE :+
-        JMP :++
+        CMP #70
+        BCS :+
+        LDX #TEXT_HEALTH_LEN*1 ; fair health
+        JMP @text
         :
-        INX
-        INC helper+1
-        CPX #TEXT_HEALTH_LEN
-        BNE :-
-        LDX #0
-        INY
-        JMP :--
+        CMP #105
+        BCS :+
+        LDX #TEXT_HEALTH_LEN*2 ; poor health
+        JMP @text
         :
+        LDX #TEXT_HEALTH_LEN*3 ; very poor health
+        @text:
         LDY #0
         STY helper
-        LDX helper+1
         :
         LDA healthText, X
         JSR WriteByteToBuffer

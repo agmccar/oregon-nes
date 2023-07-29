@@ -442,6 +442,94 @@
     BNE :+
     JMP IndianFood
     :
+    CMP #EVENT_THUNDERSTORM
+    BNE :+
+    JMP Thunderstorm
+    :
+    CMP #EVENT_BLIZZARD
+    BNE :+
+    JMP Blizzard
+    :
+    CMP #EVENT_HEAVY_FOG
+    BNE :+
+    JMP HeavyFog
+    :
+    CMP #EVENT_HAIL_STORM
+    BNE :+
+    JMP HailStorm
+    :
+    CMP #EVENT_INJURED_OX
+    BNE :+
+    JMP InjuredOx
+    :
+    CMP #EVENT_INJURED_PERSON
+    BNE :+
+    JMP InjuredPerson
+    :
+    CMP #EVENT_SNAKE_BITE
+    BNE :+
+    JMP SnakeBite
+    :
+    CMP #EVENT_LOSE_TRAIL
+    BNE :+
+    JMP LoseTrail
+    :
+    CMP #EVENT_WRONG_TRAIL
+    BNE :+
+    JMP WrongTrail
+    :
+    CMP #EVENT_ROUGH_TRAIL
+    BNE :+
+    JMP RoughTrail
+    :
+    CMP #EVENT_IMPASSIBLE_TRAIL
+    BNE :+
+    JMP ImpassibleTrail
+    :
+    CMP #EVENT_WILD_FRUIT
+    BNE :+
+    JMP WildFruit
+    :
+    CMP #EVENT_FIRE_WAGON
+    BNE :+
+    JMP FireWagon
+    :
+    CMP #EVENT_LOST_PERSON
+    BNE :+
+    JMP LostPerson
+    :
+    CMP #EVENT_OX_WANDERS_OFF
+    BNE :+
+    JMP OxWandersOff
+    :
+    CMP #EVENT_ABANDONED_WAGON
+    BNE :+
+    JMP AbandonedWagon
+    :
+    CMP #EVENT_THIEF
+    BNE :+
+    JMP Thief
+    :
+    CMP #EVENT_BAD_WATER
+    BNE :+
+    JMP BadWater
+    :
+    CMP #EVENT_LITTLE_WATER
+    BNE :+
+    JMP LittleWater
+    :
+    CMP #EVENT_INADEQUATE_GRASS
+    BNE :+
+    JMP InadequateGrass
+    :
+    CMP #EVENT_ILLNESS
+    BNE :+
+    JMP Illness
+    :
+    CMP #EVENT_BROKEN_PART
+    BNE :+
+    JMP BrokenPart
+    :
     JMP Done
     NextLandmark:
         LDX #0
@@ -495,7 +583,83 @@
         LDA #MENU_TEXTPOPUP
         STA menuOpen
         JMP Done
-
+    Thunderstorm:
+        JMP Done
+    Blizzard:
+        JMP Done
+    HeavyFog:
+        JMP Done
+    HailStorm:
+        JMP Done
+    InjuredOx:
+        JMP Done
+    InjuredPerson:
+        JMP Done
+    SnakeBite:
+        JMP Done
+    LoseTrail:
+        JMP Done
+    WrongTrail:
+        JMP Done
+    RoughTrail:
+        LDX #1
+        LDY #0
+        :
+        LDA eventRoughTrail, X
+        STA popupTextLine1, Y
+        INX
+        INY
+        CPY eventRoughTrail
+        BNE :-
+        LDA #MENU_TEXTPOPUP
+        STA menuOpen
+        JMP Done
+    ImpassibleTrail:
+        JMP Done
+    WildFruit:
+        JMP Done
+    FireWagon:
+        JMP Done
+    LostPerson:
+        JMP Done
+    OxWandersOff:
+        JMP Done
+    AbandonedWagon:
+        JMP Done
+    Thief:
+        JMP Done
+    BadWater:
+        LDX #1
+        LDY #0
+        :
+        LDA eventBadWaterText, X
+        STA popupTextLine1, Y
+        INX
+        INY
+        CPY eventBadWaterText
+        BNE :-
+        LDA #MENU_TEXTPOPUP
+        STA menuOpen
+        JMP Done
+    LittleWater:
+        LDX #1
+        LDY #0
+        :
+        LDA eventLittleWaterText, X
+        STA popupTextLine1, Y
+        INX
+        INY
+        CPY eventLittleWaterText
+        BNE :-
+        LDA #MENU_TEXTPOPUP
+        STA menuOpen
+        JMP Done
+    InadequateGrass:
+        JMP Done
+    Illness:
+        JMP Done
+    BrokenPart:
+        JMP Done
 
 
     Done:
@@ -521,6 +685,34 @@
 .endproc
 
 .proc UpdateSupplies
+    ; eat food
+    JSR CountAlivePeople
+    STA helper
+    LDA wagonSettings
+    AND #%00001100
+    LSR
+    LSR
+    TAX
+    :
+    SEC
+    LDA foodLbs
+    SBC helper
+    STA foodLbs
+    LDA foodLbs+1
+    SBC #0
+    STA foodLbs+1
+    BCC :+
+    DEX
+    BNE :-
+    JMP Done
+    :
+    LDA #0
+    STA foodLbs
+    STA foodLbs+1
+    Done:
+    LDX #foodLbsDigit
+    LDY #foodLbs
+    JSR SetDigitFromValue
     RTS
 .endproc
 
@@ -530,6 +722,8 @@
     ; 70-104: poor health
     ; 105-139: very poor health
     ; 140+: remaining party members all die within a few days
+    LDA #0
+    STA helper2+1 ; 0:fine, 1:freezing or starving 
     
     ; Natural recovery process (decrement by 10%)
     LDA wagonHealth
@@ -558,19 +752,10 @@
         ; apply a sliding scale if between 0 and 4 sets of clothing per person
         CMP #WEATHER_COLD
         BCS @cold
-        LDX #5
-        LDA #0
-        STA helper2 ; alive person count
-        :
-        DEX
-        BEQ :+
-        LDA personStatus, X
-        BPL :- ; count surviving party members
-        INC helper2 ; alive person count
-        JMP :-
-        :
+        JSR CountAlivePeople
+        STA helper2
         LDA clothing ; divide clothing by alive person count
-        STA helper ; clothing
+        STA helper
         LDA #4
         STA helper+1 ; health loss: starts at 4 
         :
@@ -587,26 +772,27 @@
         LDA wagonHealth 
         ADC helper+1 ; add health loss to wagonHealth
         STA wagonHealth
-        JMP Done
+        LDA helper+1
+        CMP #0
+        BEQ :+
+        CLC
+        LDA wagonFreezeStarve ; freeze factor: add 0.8 (4 * 0.2)
+        ADC #4
+        STA wagonFreezeStarve
+        LDA #1
+        STA helper2+1
+        :
+        JMP Rations
     @cold:
         ; add 0 if 2 or more sets of clothing per person
         ; add 2 if 0 sets of clothing per person
         ; apply a sliding scale if between 0 and 2 sets of clothing per person
         CMP #WEATHER_COOL
         BCS @cool
-        LDX #5
-        LDA #0
-        STA helper2 ; alive person count
-        :
-        DEX
-        BEQ :+
-        LDA personStatus, X
-        BPL :- ; count surviving party members
-        INC helper2 ; alive person count
-        JMP :-
-        :
+        JSR CountAlivePeople
+        STA helper2
         LDA clothing ; divide clothing by alive person count
-        STA helper ; clothing
+        STA helper
         LDA #2
         STA helper+1 ; health loss: starts at 2 
         :
@@ -623,32 +809,43 @@
         LDA wagonHealth 
         ADC helper+1 ; add health loss to wagonHealth
         STA wagonHealth
-        JMP Done
+        LDA helper+1
+        CMP #0
+        BEQ :+
+        CLC
+        LDA wagonFreezeStarve ; freeze factor: add 0.8 (4 * 0.2)
+        ADC #4
+        STA wagonFreezeStarve
+        LDA #1
+        STA helper2+1
+        :
+        JMP Rations
     @cool:
         ; add 0; the best weather for traveling
         CMP #WEATHER_WARM
         BCS @warm
-        JMP Done
+        JMP Rations
     @warm:
         ; add 0; the best weather for traveling
         CMP #WEATHER_HOT
         BCS @hot
-        JMP Done
+        JMP Rations
     @hot:
         ; add 1
         CMP #WEATHER_VERY_HOT
         BCS @veryHot
         INC wagonHealth
-        JMP Done
+        JMP Rations
     @veryHot:
         ; add 2
         CMP #WEATHER_RAINY
         BCS @rainy
         INC wagonHealth
         INC wagonHealth
-        JMP Done
+        JMP Rations
     @rainy:
     
+    Rations:
     ; Food rations
     LDA foodLbs+1
     CMP #0
@@ -660,7 +857,13 @@
     LDA wagonHealth
     ADC #6
     STA wagonHealth
-    JMP @poop
+    CLC
+    LDA wagonFreezeStarve ; starve factor: add 0.8 (4 * 0.2)
+    ADC #4
+    STA wagonFreezeStarve
+    LDA #1
+    STA helper2+1
+    JMP FreezeStarve
     :
     LDA wagonSettings
     AND #%00001100
@@ -672,7 +875,7 @@
     LDA wagonHealth
     ADC #4
     STA wagonHealth
-    JMP @poop
+    JMP FreezeStarve
     :
     CMP #3
     BCS :+
@@ -680,12 +883,66 @@
     LDA wagonHealth
     ADC #2
     STA wagonHealth
-    JMP @poop
+    JMP FreezeStarve
     : ; filling rations: 0
     
     ; Freeze/starve factor
-    @poop:
+    FreezeStarve:
+    LDA helper2+1
+    BNE :+
+    LDA wagonFreezeStarve
+    LSR
+    STA wagonFreezeStarve ; divide by 2 if neither freezing nor starving
+    JMP Pace
+    :
+    LDA wagonFreezeStarve
+    STA helper ; wagonFreezeStarve divided by 5
+    LDA #0
+    STA helper+1
+    LDX #0
+    :
+    SEC
+    LDA helper
+    SBC #5
+    STA helper
+    LDA helper+1
+    SBC #0
+    STA helper+1
+    BCC :+
+    INX
+    JMP :-
+    :
+    CLC
+    LDA wagonHealth
+    STX helper
+    ADC helper
+    STA wagonHealth
 
+    Pace:
+    LDA wagonSettings
+    AND #%00010000
+    BEQ :+
+    JMP Illness ; resting
+    :
+    AND #%00000011
+    CLC
+    ROL
+    ADC wagonHealth
+    STA wagonHealth
+
+    Illness:
+    ; For each sick or injured person, add 1
+    LDX #0
+    STA helper
+    :
+    LDA personHealth, X
+    AND #%00000111
+    BEQ :+
+    INC wagonHealth
+    :
+    INX
+    CPX #5
+    BNE :--
 
     Done:
     RTS

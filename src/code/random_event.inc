@@ -342,7 +342,12 @@
     BCC :+
     JMP Done
     :
-
+    CLC
+    LDA wagonHealth
+    ADC #10
+    STA wagonHealth
+    LDA #EVENT_ROUGH_TRAIL
+    JSR QueueEvent
     LDA #1
     STA helper
     Done:
@@ -463,7 +468,12 @@
     BCC :+
     JMP Done
     :
-
+    CLC
+    LDA wagonHealth
+    ADC #20
+    STA wagonHealth
+    LDA #EVENT_BAD_WATER
+    JSR QueueEvent
     LDA #1
     STA helper
     Done:
@@ -478,7 +488,12 @@
     BCC :+
     JMP Done
     :
-
+    CLC
+    LDA wagonHealth
+    ADC #10
+    STA wagonHealth
+    LDA #EVENT_LITTLE_WATER
+    JSR QueueEvent
     LDA #1
     STA helper
     Done:
@@ -503,13 +518,21 @@
 .proc REIllness
     ; Illness
     ; 0% to 40% chance each day, depending upon the health of the party. The
-    ; person and the disease are chosen randomly.
+    ;   person and the disease are chosen randomly.
+    ; Add 20 to wagonHealth when the disease first strikes.
+    ; Trick: When an ill person gets another illness they 
+    ;   simply die of their existing illness.
     JSR RollRNG
     CMP #0 ; TODO
     BCC :+
     JMP Done
     :
-
+    CLC
+    LDA wagonHealth
+    ADC #20
+    STA wagonHealth
+    LDA #EVENT_ILLNESS
+    JSR QueueEvent
     LDA #1
     STA helper
     Done: 

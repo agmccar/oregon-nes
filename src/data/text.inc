@@ -186,39 +186,6 @@ defaultPersonNames:
     .byte _J_,_O_,_H_,_N_
     .byte _S_,_H_,_I_,_R_;,_L_,_E_,_Y_
 
-personStatusText:
-    .byte _F_,_E_,_V_,_E_,_R_,___,___,___,___,___
-    .byte _D_,_Y_,_S_,_E_,_N_,_T_,_E_,_R_,_Y_,___
-    .byte _M_,_E_,_A_,_S_,_L_,_E_,_S_,___,___,___
-    .byte _S_,_N_,_A_,_K_,_E_,___,_B_,_I_,_T_,_E_
-    .byte _E_,_X_,_H_,_A_,_U_,_S_,_T_,_E_,_D_,___
-    .byte _T_,_Y_,_P_,_H_,_O_,_I_,_D_,___,___,___
-    .byte _C_,_H_,_O_,_L_,_E_,_R_,_A_,___,___,___
-    .byte _B_,_R_,_O_,_K_,_E_,_N_,___,_A_,_R_,_M_
-    .byte _B_,_R_,_O_,_K_,_E_,_N_,___,_L_,_E_,_G_
-    .byte _G_,_O_,_O_,_D_,___,___,___,___,___,___
-    .byte _F_,_A_,_I_,_R_,___,___,___,___,___,___
-    .byte _P_,_O_,_O_,_R_,___,___,___,___,___,___
-    .byte _V_,_E_,_R_,_Y_,___,_P_,_O_,_O_,_R_,___
-    .byte _D_,_E_,_C_,_E_,_A_,_S_,_E_,_D_,___,___
-    ;.byte ___,___,___,___,___,___,___,___,___,___
-    ;.byte ___,___,___,___,___,___,___,___,___,___
-    ;.byte ___,___,___,___,___,___,___,___,___,___
-
-personStatusAttribute:
-    ; %0000
-    ;  |+++ unused
-    ;  +--- diaryAffliction line count
-    ;       0:text is one line  1:two lines
-    ;        
-    .byte %00000000 ; FEVER, DYSENTERY
-    .byte %00000000 ; MEASLES, SNAKE BITE
-    .byte %10001000 ; EXHAUSTION, TYPHOID
-    .byte %00000000 ; CHOLERA, BROKEN ARM
-    .byte %00000000 ; BROKEN LEG, GOOD
-    .byte %00000000 ; FAIR, POOR
-    .byte %00000000 ; VERY POOR, DECEASED
-
 occupationText:
     .byte _B_,_A_,_N_,_K_,_E_,_R_,___,___,___,___,___
     .byte _D_,_O_,_C_,_T_,_O_,_R_,___,___,___,___,___
@@ -358,6 +325,15 @@ locationNameText:
 eventIndianFoodText:
     .byte 23,_I_,_N_,_D_,_I_,_A_,_N_,_S_,___,_H_,_E_,_L_,_P_,___,_F_,_I_,_N_,_D_,___,_F_,_O_,_O_,_D_,_PD
 
-eventThunderstorm:
+eventThunderstormText:
     .byte 20,_S_,_E_,_V_,_E_,_R_,_E_,___,_T_,_H_,_U_,_N_,_D_,_E_,_R_,_S_,_T_,_O_,_R_,_M_,_PD
     .byte 11,_L_,_O_,_S_,_E_,___,_1_,___,_D_,_A_,_Y_,_PD
+
+eventBadWaterText:
+    .byte 10,_B_,_A_,_D_,___,_W_,_A_,_T_,_E_,_R_,_PD
+
+eventLittleWaterText:
+    .byte 18,_V_,_E_,_R_,_Y_,___,_L_,_I_,_T_,_T_,_L_,_E_,___,_W_,_A_,_T_,_E_,_R_,_PD
+
+eventRoughTrail:
+    .byte 12,_R_,_O_,_U_,_G_,_H_,___,_T_,_R_,_A_,_I_,_L_,_PD

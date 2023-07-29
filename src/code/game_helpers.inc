@@ -831,3 +831,27 @@
 	sta seed+0
 	rts
 .endproc
+
+.proc CountAlivePeople
+    ; @return A: alive people
+    ; clobbers X, helper
+    LDX #0
+    STX helper
+    :
+    LDA personHealth, X
+    AND #%11111000
+    CMP #%11111000
+    BNE :+
+    INX ; dead
+    CPX #5
+    BNE :-
+    JMP :++
+    : ; alive
+    INC helper
+    INX
+    CPX #5
+    BNE :-
+    :
+    LDA helper
+    RTS
+.endproc

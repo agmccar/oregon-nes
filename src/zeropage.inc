@@ -87,6 +87,13 @@ wagonStatus:        .res 1 ; todo: deprecate
 ; 140+: remaining party members all die within a few days
 wagonHealth:        .res 1
 
+; On each day that there is no food, or that clothing is inadequate,
+; add 0.8 to the freeze/starve factor.
+; On each day that there is neither any freezing or starving,
+; divide the freeze/starve factor by 2.
+; Add the freeze/starve factor to the daily general health value.
+wagonFreezeStarve:  .res 1
+
 ; %00000000 wagonSettings
 ;  ||||||++ Pace- 00:unused, 01:steady, 10:strenuous, 11:grueling
 ;  ||||++-- Rations- 00:unused, 01:bare bones, 10:meager, 11:filling
@@ -126,10 +133,9 @@ personName:         .res 20  ; 4 each * 5 people
 
 ; %00000000
 ;  |||||+++ Illness- 0:none, 1:exhaustion, 2:typhoid, 3:cholera,
-;  |||||        4:measles, 5:dysentery, 6:fever
-;  |++++--- unused
-;  +------- Deceased- 0:alive, 1:dead
-personStatus:       .res 5   ; 1 each * 5 
+;  |||||        4:measles, 5:dysentery, 6:fever, 7:broken limb
+;  +++++--- Remaining days of affliction- 0 to 30 (31: infinite; ie, deceased.)
+personHealth:       .res 5   ; 1 each * 5 
 
 
 ; Conditions -------------------------------------------------------------------
