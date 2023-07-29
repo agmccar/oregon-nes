@@ -1845,12 +1845,23 @@
         JSR WriteByteToBuffer
         LDA #$C8
         JSR WriteByteToBuffer
+        JSR CheckMountainousTerrain
+        BNE :++
         LDA #$0a
         LDX #8
         :
         JSR WriteByteToBuffer
         DEX
         BNE :-
+        JMP :+++
+        :
+        LDA #$00
+        LDX #8
+        :
+        JSR WriteByteToBuffer
+        DEX
+        BNE :-
+        :
         LDA #$a0
         LDX #8
         :

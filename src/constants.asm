@@ -277,6 +277,8 @@ LOC_FORTWALLAWALLA      = 15
 LOC_THEDALLES           = 16
 LOC_WILLAMETTE          = 17
 
+SHORTCUT_DISTANCE = 125 ; miles. South Pass to Green River and Blue Mountains to The Dalles
+
 ; Cost
 ; %00000000
 ;  |+++++++ number (0-127)

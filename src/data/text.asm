@@ -14,59 +14,6 @@ nextLandmarkText: ; len:18
 reachedLandmarkText: ; len 17
     .byte _Y_,_O_,_U_,___,_H_,_A_,_V_,_E_,___,_R_,_E_,_A_,_C_,_H_,_E_,_D_,___
 
-; Locations (landmarks)
-; %00000000
-;  |||+++++ location id (index)
-;  ||+----- trail divides(?) unused for now
-;  |+------ river y/n
-;  +------- store y/n
-landmarkAttr:
-    .byte %10000000 ; Independence, MO
-    .byte %01000001 ; KANSAS RIVER CROSSING
-    .byte %01000010 ; BIG BLUE RIVER CROSSING
-    .byte %10000011 ; FORT KEARNEY
-    .byte %00000100 ; CHIMNEY ROCK
-    .byte %10000101 ; FORT LARAMIE
-    .byte %00000110 ; INDEPENDENCE ROCK
-    .byte %00000111 ; SOUTH PASS
-    .byte %10001000 ; FORT BRIDGER
-    .byte %01001001 ; GREEN RIVER CROSSING
-    .byte %00001010 ; SODA SPRINGS
-    .byte %10001011 ; FORT HALL
-    .byte %01001100 ; SNAKE RIVER CROSSING
-    .byte %10001101 ; FORT BOISE
-    .byte %00001110 ; BLUE MOUNTAINS
-    .byte %10001111 ; FORT WALLA WALLA
-    .byte %00010000 ; THE DALLES
-    .byte %00010001 ; WILLAMETTE VALLEY
-
-; Distances
-nextLandmarkDistance:
-    ; steady: 20 mi/day
-    ; strenuous: 30 mi/day
-    ; grueling: 40 mi/day
-    .byte 102   ; Independence to Kansas River
-    .byte 83    ; Kansas River to Big Blue River
-    .byte 119   ; Big Blue River to Fort Kearney
-    .byte 250   ; Fort Kearney to Chimney Rock
-    .byte 86    ; Chimney Rock to Fort Laramie
-    ; steady: 12 mi/day- (10 +/-2)
-    ; strenuous: 18 mi/day
-    ; grueling: 24 mi/day
-    .byte 190   ; Fort Laramie to Independence Rock
-    .byte 102   ; Independence Rock to South Pass
-    .byte 57    ; South Pass to Fort Bridger
-    .byte 162   ; Fort Bridger to Green River
-    .byte 125  ; South Pass to Green River
-    .byte 144   ; Green River to Soda Springs
-    .byte 57    ; Soda Springs to Fort Hall
-    .byte 182   ; Fort Hall to Snake River
-    .byte 114   ; Snake River to Fort Boise
-    .byte 160   ; Fort Boise to Blue Mountains
-    .byte 55    ; Blue Mountains to Fort Walla Walla
-    .byte 120   ; Fort Walla Walla to The Dalles
-    .byte 125   ; Blue Mountains to The Dalles
-    .byte 100   ; The Dalles to WIllamette Valley (toll road)
 
 newGameText:
     .byte _L_,_E_,_A_,_D_,_E_,_R_,_CL
@@ -303,25 +250,74 @@ storeNameText:
 ;-----------------------------------------------------------
 
 
+; Locations (landmarks)
+; %00000000
+;  |||+++++ location id (index)
+;  ||+----- trail divides(?) unused for now
+;  |+------ river- y/n
+;  +------- store (fort)- y/n
+landmarkAttr:
+    .byte %10000000 ; Independence, MO
+    .byte %01000001 ; KANSAS RIVER CROSSING
+    .byte %01000010 ; BIG BLUE RIVER CROSSING
+    .byte %10000011 ; FORT KEARNEY
+    .byte %00000100 ; CHIMNEY ROCK
+    .byte %10000101 ; FORT LARAMIE
+    .byte %00000110 ; INDEPENDENCE ROCK
+    .byte %00000111 ; SOUTH PASS
+    .byte %10001000 ; FORT BRIDGER
+    .byte %01001001 ; GREEN RIVER CROSSING
+    .byte %00001010 ; SODA SPRINGS
+    .byte %10001011 ; FORT HALL
+    .byte %01001100 ; SNAKE RIVER CROSSING
+    .byte %10001101 ; FORT BOISE
+    .byte %00001110 ; BLUE MOUNTAINS
+    .byte %10001111 ; FORT WALLA WALLA
+    .byte %00010000 ; THE DALLES
+    .byte %00010001 ; WILLAMETTE VALLEY
+
+; Distances
+nextLandmarkDistance:
+    .byte 102   ; Independence to Kansas River
+    .byte 83    ; Kansas River to Big Blue River
+    .byte 119   ; Big Blue River to Fort Kearney
+    .byte 250   ; Fort Kearney to Chimney Rock
+    .byte 86    ; Chimney Rock to Fort Laramie
+    .byte 190   ; Fort Laramie to Independence Rock
+    .byte 102   ; Independence Rock to South Pass
+    .byte 57    ; South Pass to Fort Bridger
+    .byte 162   ; Fort Bridger to Green River
+    .byte 144   ; Green River to Soda Springs
+    .byte 57    ; Soda Springs to Fort Hall
+    .byte 182   ; Fort Hall to Snake River
+    .byte 114   ; Snake River to Fort Boise
+    .byte 160   ; Fort Boise to Grande Ronde
+    .byte 55    ; Grande Ronde to Fort Walla Walla
+    .byte 120   ; Fort Walla Walla to The Dalles
+    .byte 100   ; The Dalles to WIllamette Valley (toll road)
+
+; ___,_R_,_I_,_V_,_E_,_R_,___,_C_,_R_,_O_,_S_,_S_,_I_,_N_,_G_
+; _F_,_O_,_R_,_T_,___,
 
 locationNameText:
     .byte 22,_I_,_N_,_D_,_E_,_P_,_E_,_N_,_D_,_E_,_N_,_C_,_E_,_CM,___,_M_,_I_,_S_,_S_,_O_,_U_,_R_,_I_
-    .byte 21,_K_,_A_,_N_,_S_,_A_,_S_,___,_R_,_I_,_V_,_E_,_R_,___,_C_,_R_,_O_,_S_,_S_,_I_,_N_,_G_
-    .byte 23,_B_,_I_,_G_,___,_B_,_L_,_U_,_E_,___,_R_,_I_,_V_,_E_,_R_,___,_C_,_R_,_O_,_S_,_S_,_I_,_N_,_G_
-    .byte 12,_F_,_O_,_R_,_T_,___,_K_,_E_,_A_,_R_,_N_,_E_,_Y_
+    .byte 6,_K_,_A_,_N_,_S_,_A_,_S_
+    .byte 8,_B_,_I_,_G_,___,_B_,_L_,_U_,_E_
+    .byte 7,_K_,_E_,_A_,_R_,_N_,_E_,_Y_
     .byte 12,_C_,_H_,_I_,_M_,_N_,_E_,_Y_,___,_R_,_O_,_C_,_K_
-    .byte 12,_F_,_O_,_R_,_T_,___,_L_,_A_,_R_,_A_,_M_,_I_,_E_
+    .byte 7,_L_,_A_,_R_,_A_,_M_,_I_,_E_
     .byte 17,_I_,_N_,_D_,_E_,_P_,_E_,_N_,_D_,_E_,_N_,_C_,_E_,___,_R_,_O_,_C_,_K_
     .byte 10,_S_,_O_,_U_,_T_,_H_,___,_P_,_A_,_S_,_S_
-    .byte 12,_F_,_O_,_R_,_T_,___,_B_,_R_,_I_,_D_,_G_,_E_,_R_
-    .byte 20,_G_,_R_,_E_,_E_,_N_,___,_R_,_I_,_V_,_E_,_R_,___,_C_,_R_,_O_,_S_,_S_,_I_,_N_,_G_
+    .byte 7,_B_,_R_,_I_,_D_,_G_,_E_,_R_
+    .byte 5,_G_,_R_,_E_,_E_,_N_
     .byte 12,_S_,_O_,_D_,_A_,___,_S_,_P_,_R_,_I_,_N_,_G_,_S_
-    .byte 9,_F_,_O_,_R_,_T_,___,_H_,_A_,_L_,_L_
-    .byte 20,_S_,_N_,_A_,_K_,_E_,___,_R_,_I_,_V_,_E_,_R_,___,_C_,_R_,_O_,_S_,_S_,_I_,_N_,_G_
-    .byte 10,_F_,_O_,_R_,_T_,___,_B_,_O_,_I_,_S_,_E_
+    .byte 4,_H_,_A_,_L_,_L_
+    .byte 5,_S_,_N_,_A_,_K_,_E_
+    .byte 5,_B_,_O_,_I_,_S_,_E_
     .byte 12,_G_,_R_,_A_,_N_,_D_,_E_,___,_R_,_O_,_N_,_D_,_E_
-    .byte 16,_F_,_O_,_R_,_T_,___,_W_,_A_,_L_,_L_,_A_,___,_W_,_A_,_L_,_L_,_A_
+    .byte 11,_W_,_A_,_L_,_L_,_A_,___,_W_,_A_,_L_,_L_,_A_
     .byte 10,_T_,_H_,_E_,___,_D_,_A_,_L_,_L_,_E_,_S_
+    .byte 17,_W_,_I_,_L_,_L_,_A_,_M_,_E_,_T_,_T_,_E_,___,_V_,_A_,_L_,_L_,_E_,_Y_
     .byte 0
 
 eventIndianFoodText:

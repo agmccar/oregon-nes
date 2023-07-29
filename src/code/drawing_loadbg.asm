@@ -1,5 +1,4 @@
 
-
 .proc LoadDefaultCHR
     JSR StartBulkDrawing
     LDY #0
@@ -821,15 +820,28 @@
         LDA PPUSTATUS
         LDA #$20
         STA PPUADDR
+        LDX #0 ; temp- draw horizon
+        JSR CheckMountainousTerrain
+        BNE :++
         LDA #$80
         STA PPUADDR
-        LDX #0 ; temp- draw horizon
         :
         LDA bgPlains, X
         STA PPUDATA
         INX
         CPX #$40
         BNE :-
+        JMP :+++
+        :
+        LDA #$60
+        STA PPUADDR
+        :
+        LDA bgMountains, X
+        STA PPUDATA
+        INX
+        CPX #$60
+        BNE :-
+        :
         LDA PPUSTATUS
         LDA #$21
         STA PPUADDR

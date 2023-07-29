@@ -864,13 +864,15 @@
     LDA #0 ; traveled less than 0x300 (768) miles 
     JMP Done
     :
+    CMP #$04
+    BCS :+
     LDA traveledMi
     CMP #$B6
     BCS :+
     LDA #0 ; traveled between 0x300 (768) and 0x3B6 (950) miles
     JMP Done
     :
-    LDA #1 ; traveled more than 0x3B6 (950) miles
+    LDA #1 ; traveled more than 0x3B6 (950) or 0x400 (1024) miles
     Done:
     RTS
 .endproc

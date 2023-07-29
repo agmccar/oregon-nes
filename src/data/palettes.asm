@@ -24,3 +24,8 @@ landmarkPalette:
     .byte $0F, $00, $30, $0F ; Black, Grey, White, Black
     .byte $0F, $21, $2A, $30 ; Black, blue, green, White
     .byte $0F, $00, $0F, $30 ; Black, Grey, Black, White
+
+
+; fortKearneyPalette:
+; .byte $0f,$25,$2a,$30
+; .byte $0f,$01,$21,$31

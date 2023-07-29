@@ -103,6 +103,14 @@
     STA menuOpen        ; no menu open
     STA wagonStatus     ; stopped, at landmark, no rest remaining
     INC location        ; increment landmark (todo handle trail divide)
+    LDX location
+    LDA nextLandmarkDistance, X
+    STA nextMi
+    LDX #nextDigit
+    LDY #nextMi
+    JSR SetDigitFromValue
+
+
     LDA #EVENT_NEXT_LANDMARK
     JSR QueueEvent
 
