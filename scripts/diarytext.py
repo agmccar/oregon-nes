@@ -223,7 +223,7 @@ def bytify(text):
 
 def main():
     asm = bytify(text)
-    with open('src/diarytext.inc','w') as f:
+    with open('src/diarytext.asm','w') as f:
         f.write(';-------------------------------------------------------------------------------'+"\n")
         f.write('.SEGMENT "RODATA"'+"\n\n")
         for line in asm:

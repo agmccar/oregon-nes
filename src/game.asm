@@ -1,41 +1,41 @@
-.include "constants.inc"
-.include "header.inc"
+.include "constants.asm"
+.include "header.asm"
 
 .segment "VECTORS"
     .addr nmi, reset, irq
     
 .segment "ZEROPAGE"
-    .include "zeropage.inc"
+    .include "zeropage.asm"
 
 .segment "BSS"
-    .include "vars.inc"
+    .include "vars.asm"
 
 .segment "ROM0"
-    .include "tiles.inc"
+    .include "tiles.asm"
 
 .segment "ROM1"
-    .include "data/text.inc"
-    .include "data/diarytext.inc"
-    .include "data/palettes.inc"
-    .include "data/backgrounds.inc"
-    .include "data/sprites.inc"
-    .include "data/rom1.inc"
-    .include "data/climate.inc"
+    .include "data/text.asm"
+    .include "data/diarytext.asm"
+    .include "data/palettes.asm"
+    .include "data/backgrounds.asm"
+    .include "data/sprites.asm"
+    .include "data/rom1.asm"
+    .include "data/climate.asm"
 
-.segment "ROM2"
-    .include "data/textJP.inc"
+; .segment "ROM2"
+;     .include "data/textJP.asm"
 
 .segment "ROM3"
-    .include "data/titleCHR.inc"
+    .include "data/titleCHR.asm"
 
 .segment "ROM4"
-    .include "data/landmarkImageA.inc"
+    .include "data/landmarkImageA.asm"
 
 ;.segment "ROM5"
-    ;.include "data/landmarkImageB.inc"
+    ;.include "data/landmarkImageB.asm"
 
 ;.segment "ROM6"
-    ;.include "data/landmarkImageC.inc"
+    ;.include "data/landmarkImageC.asm"
 
 .segment "RODATA" ; ROM7
     banktable:              ; Write to this table to switch banks.
@@ -133,17 +133,17 @@ bankswitch_nosave:
 .endproc
 
 ; Code includes -----------------------
-.include "code/bank_handling.inc"
+.include "code/bank_handling.asm"
 
-.include "code/drawing_ctrl.inc"
-.include "code/drawing.inc"
-.include "code/drawing_helpers.inc"
-.include "code/drawing_loadbg.inc"
-.include "code/buffer_ctrl.inc"
-.include "code/buffer_drawing.inc"
+.include "code/drawing_ctrl.asm"
+.include "code/drawing.asm"
+.include "code/drawing_helpers.asm"
+.include "code/drawing_loadbg.asm"
+.include "code/buffer_ctrl.asm"
+.include "code/buffer_drawing.asm"
 
-.include "code/game_logic.inc"
-.include "code/game_helpers.inc"
-.include "code/game_init_state.inc"
-.include "code/game_gamepad.inc"
-.include "code/random_event.inc"
+.include "code/game_logic.asm"
+.include "code/game_helpers.asm"
+.include "code/game_init_state.asm"
+.include "code/game_gamepad.asm"
+.include "code/random_event.asm"

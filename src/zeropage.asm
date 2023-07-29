@@ -39,7 +39,7 @@ nextDigit:          .res 4
 traveledMi:         .res 2
 traveledDigit:      .res 4
 menuOpenLast:       .res 1
-menuOpen:           .res 1 ; see: constants.inc -> Menu states
+menuOpen:           .res 1 ; see: constants.asm -> Menu states
 
 ; %00000000 fingerAttr
 ;  |||||||+ Main finger direction- 0:R, 1:L
@@ -140,11 +140,11 @@ personHealth:       .res 5   ; 1 each * 5
 
 ; Conditions -------------------------------------------------------------------
 
-weather:            .res 1 ; see text.inc -> weatherText
+weather:            .res 1 ; see text.asm -> weatherText
 dateYear:           .res 1 ; years since 1848
 dateMonth:          .res 1
 dateDay:            .res 1
-location:           .res 1 ; see: constants.inc -> Locations
+location:           .res 1 ; see: constants.asm -> Locations
 
 
 ;-------------------------------------------------------------------------------
