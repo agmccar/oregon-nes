@@ -145,7 +145,15 @@ weather:            .res 1 ; see text.asm -> weatherText
 dateYear:           .res 1 ; years since 1848
 dateMonth:          .res 1
 dateDay:            .res 1
-location:           .res 1 ; see: constants.asm -> Locations
+
+; Locations (landmarks)
+; see: constants.asm -> Locations
+; %00000000
+;  |||+++++ identifier(index)
+;  ||+----- trail divides(?) unused for now
+;  |+------ river y/n
+;  +------- store y/n
+location:           .res 1
 
 
 ;-------------------------------------------------------------------------------

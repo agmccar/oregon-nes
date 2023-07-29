@@ -923,7 +923,6 @@
     JMP Done
     :
     LDA location    ; get current location index
-    AND #%00011111
     CMP #3
     BCS :+
     LDA #0  ; Zone 1: Independence to Fort Kearney

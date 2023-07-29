@@ -514,24 +514,54 @@
 
     LDY #4          ; switch rom bank to landmark image data
     JSR bankswitch_y
+
+    LDA location
+    CMP #LOC_INDEPENDENCE
+    BNE :+
     LDA #<independenceTiles
     STA pointer
     LDA #>independenceTiles
     STA pointer+1
+    LDA #<independenceAttr
+    STA helper
+    LDA #>independenceAttr
+    STA helper+1
+    LDA #<independenceImage
+    STA helper2
+    LDA #>independenceImage
+    STA helper2+1
+    JMP Attributes
+    :
+    CMP #LOC_KANSASRIVER
+    BNE :+
+    LDA #<kansasRiverTiles
+    STA pointer
+    LDA #>kansasRiverTiles
+    STA pointer+1
+    LDA #<kansasRiverAttr
+    STA helper
+    LDA #>kansasRiverAttr
+    STA helper+1
+    LDA #<kansasRiverImage
+    STA helper2
+    LDA #>kansasRiverImage
+    STA helper2+1
+    JMP Attributes
+    :
+
+    Attributes:
     JSR CopyCHRPatternB
-
-
     LDA PPUSTATUS   ; set attribute table
     LDA #$23
     STA PPUADDR
     LDA #$C0
     STA PPUADDR
-    LDX #0
+    LDY #0
     :
-    LDA independenceAttr, X
+    LDA (helper), Y
     STA PPUDATA
-    INX
-    CPX #8*6
+    INY
+    CPY #8*6
     BNE :-
     LDA #%11110101
     LDX #0
@@ -553,13 +583,11 @@
     STA PPUADDR
     LDA #$40
     STA PPUADDR
-    LDA #<independenceImage
-    STA pointer
-    LDA #>independenceImage
-    STA pointer+1
+
+    LDY #0
     LDX #3
     :
-    LDA (pointer), Y
+    LDA (helper2), Y
     STA PPUDATA
     INY
     CPX #1
@@ -570,7 +598,7 @@
     :
     CPY #0
     BNE :--
-    INC pointer+1
+    INC helper2+1
     DEX
     BNE :--
     :

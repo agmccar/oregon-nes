@@ -25,8 +25,7 @@
 ; .segment "ROM2"
 ;     .include "data/textJP.asm"
 
-.segment "ROM3"
-    .include "data/titleCHR.asm"
+; .segment "ROM3"
 
 .segment "ROM4"
     .include "data/landmarkImageA.asm"
