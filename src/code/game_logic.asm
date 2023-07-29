@@ -264,6 +264,10 @@
     BNE :+
     JMP ReachedLandmark
     :
+    CMP #EVENT_LOAD_LANDMARK
+    BNE :+
+    JMP LoadLandmark
+    :
     CMP #EVENT_INDIAN_FOOD
     BNE :+
     JMP IndianFood
@@ -420,6 +424,12 @@
         STA popupTextLine2, Y
         LDA #MENU_TEXTPOPUP
         STA menuOpen
+        JMP Done
+    LoadLandmark:
+        LDA #MENU_NONE
+        STA menuOpen
+        LDA #GAMESTATE_LANDMARK
+        STA gameState
         JMP Done
     IndianFood:
         LDX #1
@@ -881,6 +891,8 @@
     STA nextMi ; we're at the landmark: clear nextMi
     STA nextMi+1
     LDA #EVENT_REACHED_LANDMARK
+    JSR QueueEvent
+    LDA #EVENT_LOAD_LANDMARK
     JSR QueueEvent
     LDA helper+1 ; unstash remaining miles
     STA helper ; replace mpd with remaining miles (ie stop at the landmark) 
