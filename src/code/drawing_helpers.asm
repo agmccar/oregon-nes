@@ -70,12 +70,10 @@
     INX
     CPX helper2+1
     BNE :-
-    LDX helper
     LDY #0
     :
-    LDA locationNameText, X
+    LDA textLineHelper, Y
     STA PPUDATA
-    INX
     INY
     CPY helper2
     BNE :-

@@ -14,7 +14,7 @@
 dateText:           .res TEXT_DATE_LEN
 popupTextLine1:     .res TEXT_POPUP_LINE_LEN
 popupTextLine2:     .res TEXT_POPUP_LINE_LEN
-
+textLineHelper:     .res TEXT_POPUP_LINE_LEN
 eventQueue:         .res 4
 eventQueuePointer:  .res 1
 

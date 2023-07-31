@@ -296,8 +296,9 @@ nextLandmarkDistance:
     .byte 120   ; Fort Walla Walla to The Dalles
     .byte 100   ; The Dalles to WIllamette Valley (toll road)
 
-; ___,_R_,_I_,_V_,_E_,_R_,___,_C_,_R_,_O_,_S_,_S_,_I_,_N_,_G_
-; _F_,_O_,_R_,_T_,___,
+locationPrefix:
+    .byte _F_,_O_,_R_,_T_,___
+    .byte ___,_R_,_I_,_V_,_E_,_R_,___,_C_,_R_,_O_,_S_,_S_,_I_,_N_,_G_
 
 locationNameText:
     .byte 22,_I_,_N_,_D_,_E_,_P_,_E_,_N_,_D_,_E_,_N_,_C_,_E_,_CM,___,_M_,_I_,_S_,_S_,_O_,_U_,_R_,_I_
@@ -314,7 +315,7 @@ locationNameText:
     .byte 4,_H_,_A_,_L_,_L_
     .byte 5,_S_,_N_,_A_,_K_,_E_
     .byte 5,_B_,_O_,_I_,_S_,_E_
-    .byte 12,_G_,_R_,_A_,_N_,_D_,_E_,___,_R_,_O_,_N_,_D_,_E_
+    .byte 14,_B_,_L_,_U_,_E_,___,_M_,_O_,_U_,_N_,_T_,_A_,_I_,_N_,_S_
     .byte 11,_W_,_A_,_L_,_L_,_A_,___,_W_,_A_,_L_,_L_,_A_
     .byte 10,_T_,_H_,_E_,___,_D_,_A_,_L_,_L_,_E_,_S_
     .byte 17,_W_,_I_,_L_,_L_,_A_,_M_,_E_,_T_,_T_,_E_,___,_V_,_A_,_L_,_L_,_E_,_Y_

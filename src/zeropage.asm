@@ -145,6 +145,8 @@ weather:            .res 1 ; see text.asm -> weatherText
 dateYear:           .res 1 ; years since 1848
 dateMonth:          .res 1
 dateDay:            .res 1
+accumulatedRain:    .res 1 ; 0.100 inch increments - max 25.6"
+accumulatedSnow:    .res 1 ; 0.125 inch increments - max 32"
 
 ; Locations (landmarks)
 ; see: constants.asm -> Locations
@@ -157,4 +159,4 @@ location:           .res 1
 
 
 ;-------------------------------------------------------------------------------
-; remaining: $6B
+; remaining: $68

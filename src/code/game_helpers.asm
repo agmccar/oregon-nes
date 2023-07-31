@@ -623,8 +623,8 @@
 .proc GetLandmarkText
     ; @param X: location index
     ; @return helper2: length of text
-    ; @return helper: text memory location, relative to locationNameText
-    ; clobbers all registers
+    ; clobbers all registers, helper
+
     STX helper+1
     LDX #0
     LDY #0
@@ -652,6 +652,50 @@
     JMP :---
     :
     INC helper
+
+    LDY #0
+    LDX helper+1
+    LDA landmarkAttr, X
+    BPL :++ ; not a fort
+    : ; a fort
+    LDA helper+1
+    CMP #LOC_INDEPENDENCE
+    BEQ :+
+    LDA locationPrefix, Y
+    STA textLineHelper, Y
+    INY
+    CPY #5
+    BNE :-
+    CLC
+    LDA helper2
+    ADC #5
+    STA helper2
+    :
+    LDX helper
+    :
+    LDA locationNameText, X
+    STA textLineHelper, Y
+    INX
+    INY
+    CPY helper2
+    BNE :-
+    LDX helper+1 ; is it a river?
+    LDA landmarkAttr, X
+    ROL
+    BPL :++ ; not a river
+    LDX #5 ; a river
+    CLC
+    LDA helper2
+    ADC #15
+    STA helper2
+    :
+    LDA locationPrefix, X
+    STA textLineHelper, Y
+    INX
+    INY
+    CPX #20
+    BNE :-
+    :
     RTS
 .endproc
 

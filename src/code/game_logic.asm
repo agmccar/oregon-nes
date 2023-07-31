@@ -386,12 +386,10 @@
         LDX location ; "{location title}."
         INX
         JSR GetLandmarkText
-        LDX helper
         LDY #0
         :
-        LDA locationNameText, X
+        LDA textLineHelper, Y
         STA popupTextLine2, Y
-        INX
         INY
         CPY helper2
         BNE :-
@@ -411,12 +409,10 @@
         LDX location ; "{location title}."
         INX
         JSR GetLandmarkText
-        LDX helper
         LDY #0
         :
-        LDA locationNameText, X
+        LDA textLineHelper, Y
         STA popupTextLine2, Y
-        INX
         INY
         CPY helper2
         BNE :-
@@ -537,7 +533,7 @@
 .endproc
 
 .proc ElapseDay
-    JSR GenerateWeather
+    JSR UpdateWeather
     JSR UpdateSupplies
     JSR UpdateHealth
     JSR UpdateDistance
@@ -875,6 +871,8 @@
     ROR helper
     LSR helper+1
     ROR helper
+    ; TODO:  Each sick party member: 10% decrease in speed
+    ; TODO: Snow on the ground: up to 100% loss of speed at 30" of snow
     Travel:
     LSR helper ; convert from 0.25x mpd to 1x mpd (divide by 4)
     LSR helper 
@@ -887,7 +885,7 @@
     SBC #0
     STA nextMi+1
     BCS :+
-    LDA #0 ; mpd > remaining miles
+    LDA #0 ; mpd > remaining miles ; TODO: >=, not >
     STA nextMi ; we're at the landmark: clear nextMi
     STA nextMi+1
     LDA #EVENT_REACHED_LANDMARK
@@ -915,12 +913,12 @@
     RTS
 .endproc
 
-.proc GenerateWeather
-    ; clobbers A, helper, helper+1, helper2
+.proc UpdateWeather
+    ; clobbers A, helper, helper+1, helper2, pointer
     JSR RandomNumberGenerator ; 50% chance to generate new weather
     CMP #$80
     BCS :+
-    JMP Done
+    JMP MeltSnow
     :
     LDA location    ; get current location index
     CMP #3
@@ -953,7 +951,9 @@
     CLC
     ADC dateMonth
     STA helper2 ; table index
+    DEC helper2
     TAX
+    DEX
     LDA temperatureTable, X
     STA helper ; this month's mean temp
     :
@@ -1009,7 +1009,7 @@
     LDX helper2
     CMP rainfallTable, X ; Precipitation chance
     BCC :+
-    JMP Done ; Not precipitating
+    JMP MeltSnow ; Not precipitating
     :
     LDA weather ; Precipitating
     CMP #2 ; if weather is cold/very cold, snow instead of rain
@@ -1028,8 +1028,104 @@
     CMP #75 ; 30% chance for "heavy" precipitation
     BCS :+
     INC weather
-    JMP Done
+    LDA #8
+    STA helper2
+    JMP MeltSnow
     : ; 70% chance for "light" precipitation
+    LDA #2
+    STA helper2
+    MeltSnow: ; Melt snow and/or disappear/evaporate rain
+    LDA #0 ; subtract 10% of accumulated rainfall
+    STA helper
+    LDA accumulatedRain
+    STA helper+1
+    SEC
+    :
+    LDA helper+1
+    SBC #10
+    STA helper+1
+    INC helper
+    BCS :-
+    SEC
+    LDA accumulatedRain
+    SBC helper
+    BCS :+
+    LDA #0
+    :
+    STA accumulatedRain
+    LDA weather ; subtract from accumulated snowfall
+    CMP #WEATHER_WARM
+    BCS :++
+    LDA #0 ; is very cold, cold, or cool; subtract 3% snowfall
+    STA helper
+    LDA accumulatedSnow
+    STA helper+1
+    SEC
+    :
+    LDA helper+1
+    SBC #33
+    STA helper+1
+    INC helper
+    BCS :-
+    SEC
+    LDA accumulatedSnow
+    SBC helper
+    STA accumulatedSnow
+    BCS AccumulateRainfall
+    LDA #0
+    STA accumulatedSnow
+    JMP AccumulateRainfall
+    : ; it is warm+ or precipitating
+    CMP #WEATHER_SNOWY
+    BCS AccumulateRainfall ; it is snowing; do not subtract from snowfall
+    SEC ; it is not cold nor snowing; melt 5" of snow to 0.5" of water
+    LDA accumulatedSnow
+    SBC #5*8
+    STA accumulatedSnow
+    BCS :+
+    LDA #0
+    STA accumulatedSnow
+    JMP AccumulateRainfall
+    :
+    LDA accumulatedRain
+    ADC #5
+    STA accumulatedRain
+    AccumulateRainfall:
+    LDA weather
+    CMP #WEATHER_RAINY
+    BCS :+
+    JMP Done
+    :
+    CMP #WEATHER_SNOWY
+    BCS :+++
+    CMP #WEATHER_VERY_RAINY
+    BCS :+
+    LDA #2 ; 0.1" increments (+0.2" light rain)
+    STA helper2
+    JMP :++
+    :
+    LDA #8 ; 0.1" increments (+0.8" heavy rain)
+    STA helper2
+    :
+    CLC ; it is raining; accumulate rain instead of snow
+    LDA accumulatedRain
+    ADC helper2 ; 0.1" increments (+0.8" heavy rain or +0.2" light rain)
+    STA accumulatedRain
+    JMP Done
+    :
+    CMP #WEATHER_VERY_SNOWY
+    BCS :+
+    LDA #2*8 ; 0.125" increments (+2.0" light snow)
+    STA helper2
+    JMP :++
+    :
+    LDA #8*8 ; 0.125" increments (+8.0" heavy snow)
+    STA helper2
+    :
+    CLC ; it is snowing; accumulate snow instead of rain
+    LDA accumulatedSnow
+    ADC helper2
+    STA accumulatedSnow
     Done:
     RTS
 .endproc
