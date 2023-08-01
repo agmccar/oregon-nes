@@ -580,6 +580,8 @@
         CMP #%11111000
         BNE :+
         LDX #57 ; index of "DIED"
+        LDA #4
+        STA helper2
         JMP @writeIllness
         :
         AND #%00000111
@@ -605,10 +607,11 @@
         :
         PLA
         TAY
-        LDA #0
-        STA helper ; counter
         LDX helper+1
         @writeIllness:
+        LDA #0
+        STA helper ; counter
+        :
         INX
         LDA eventIllnessText, X
         STA popupTextLine1, Y
@@ -616,7 +619,7 @@
         INC helper
         LDA helper
         CMP helper2
-        BNE @writeIllness
+        BNE :-
         ; TODO word wrap for great justice
         LDA #_PD ; "."
         STA popupTextLine1, Y
