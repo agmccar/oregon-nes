@@ -255,12 +255,18 @@
 .proc REHailStorm
     ; Hail storm
     ; Before Fort Hall, 6% chance each day in which the temperature is very hot.
+    ; Does nothing?
+    LDA location
+    CMP #LOC_FORTHALL
+    BCS Done
+    LDA weather
+    CMP #WEATHER_VERY_HOT
+    BNE Done
     JSR RollRNG
     CMP #6*2
-    BCC :+
-    JMP Done
-    :
-
+    BCS Done
+    LDA #EVENT_HAIL_STORM
+    JSR QueueEvent
     LDA #1
     STA helper
     Done:
@@ -323,6 +329,7 @@
     ; Snake bite
     ; 0.7% chance each day in the original game.
     ; 0.5% chance is close enough
+    ; what does it do? injury for 10 days maybe?
     JSR RollRNG
     CMP #1
     BCC :+

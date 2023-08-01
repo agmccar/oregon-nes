@@ -470,8 +470,21 @@
         LDA #_PD
         STA popupTextLine2, Y
         :
+        LDA #MENU_TEXTPOPUP
+        STA menuOpen
         JMP Done
     HailStorm:
+        LDX #1
+        LDY #0
+        :
+        LDA eventHailStormText, X
+        STA popupTextLine1, Y
+        INX
+        INY
+        CPY eventHailStormText
+        BNE :-
+        LDA #MENU_TEXTPOPUP
+        STA menuOpen
         JMP Done
     InjuredOx:
         LDX #1

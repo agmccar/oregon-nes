@@ -325,10 +325,16 @@ eventIndianFoodText:
     .byte 23,_I_,_N_,_D_,_I_,_A_,_N_,_S_,___,_H_,_E_,_L_,_P_,___,_F_,_I_,_N_,_D_,___,_F_,_O_,_O_,_D_,_PD
 
 eventThunderstormText:
-    .byte 20,_S_,_E_,_V_,_E_,_R_,_E_,___,_T_,_H_,_U_,_N_,_D_,_E_,_R_,_S_,_T_,_O_,_R_,_M_,_PD
+    .byte 20,_S_,_E_,_V_,_E_,_R_,_E_,___,_T_,_H_,_U_,_N_,_D_,_E_,_R_,_S_,_T_,_O_,_R_,_M_,_PD ; Lose 1 day
 
 eventWrongTrailText:
-    .byte 12,_W_,_R_,_O_,_N_,_G_,___,_T_,_R_,_A_,_I_,_L_,_PD
+    .byte 12,_W_,_R_,_O_,_N_,_G_,___,_T_,_R_,_A_,_I_,_L_,_PD ; 1 5
+
+eventLoseTrailText:
+    .byte 11,_L_,_O_,_S_,_E_,___,_T_,_R_,_A_,_I_,_L_,_PD ; 2 4
+
+eventHailStormText:
+    .byte 11,_H_,_A_,_I_,_L_,___,_S_,_T_,_O_,_R_,_M_,_PD
 
 eventHeavyFogText:
     .byte 9,_H_,_E_,_A_,_V_,_Y_,___,_F_,_O_,_G_
@@ -379,3 +385,6 @@ eventInjuredOxText:
 
 ; eventImpassibleTrailText:
 ; IMPASSIBLE TRAIL. LOSE X DAYS.
+
+; IT WAS A MUDDY CROSSING, BUT YOU DID NOT GET STUCK.
+; YOUR SUPPLIES GOT WET. LOSE 1 DAY. 
