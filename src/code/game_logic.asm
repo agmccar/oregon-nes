@@ -514,8 +514,33 @@
     InadequateGrass:
         JMP Done
     Illness:
-        LDA #1
-        STA helper ; ID of person who gets illness
+        JSR RandomNumberGenerator ; select a random person
+        AND #%00000111
+        CMP #5 ; limit roll to 0-4 
+        BCS Illness
+        TAX ; check if they are alive, already sick, or dead
+        LDA personHealth, X
+        AND #%11111000
+        CMP #%11111000
+        BEQ Illness ; already dead: roll again
+        CMP #1
+        BCC :+ ; alive and healthy: become sick
+        LDA #%11111000 ; currently sick: die
+        STA personHealth, X
+        ;LDX #57 ; index of "DIED"
+        JMP @writeName
+        :
+        JSR RandomNumberGenerator
+        AND #%00000111
+        CMP #6 ; limit roll to 0-5
+        BCS :-
+        STA helper
+        INC helper ; roll is now 1-6 (disease ID)
+        LDA #%01010000 ; sick for 10 days
+        ORA helper
+        STA personHealth, X
+        @writeName:
+        STX helper ; ID of person who gets illness
         LDA #0
         STA helper+1
         LDX #0
@@ -550,28 +575,49 @@
         INY
         CPX #5
         BNE :-
-
-        ; TODO
-        ; LDX helper ; "{illness name}"
-        ; LDA personHealth, X ; ID of illness (1-6)
-        ; AND #%00000111
-        ; STA helper
-        ; LDX #5
-        ; :
-        ; CPX helper
-        
-        ; TODO word wrap for great justice
-
-        LDX #6
+        LDX helper ; "{illness name}"
+        LDA personHealth, X 
+        CMP #%11111000
+        BNE :+
+        LDX #57 ; index of "DIED"
+        JMP @writeIllness
         :
+        AND #%00000111
+        STA helper ; ID of illness (1-6)
+        LDA #5
+        STA helper+1 ; index of beginning of text segment
+        TYA
+        PHA
+        LDY #1
+        :
+        LDX helper+1
+        LDA eventIllnessText, X
+        STA helper2 ; length of text segment
+        CPY helper
+        BEQ :+
+        CLC
+        LDA helper+1
+        ADC eventIllnessText, X
+        STA helper+1
+        INC helper+1
+        INY
+        JMP :-
+        :
+        PLA
+        TAY
+        LDA #0
+        STA helper ; counter
+        LDX helper+1
+        @writeIllness:
+        INX
         LDA eventIllnessText, X
         STA popupTextLine1, Y
-        INX
         INY
-        CPX #6+10
-        BNE :-
-        
-
+        INC helper
+        LDA helper
+        CMP helper2
+        BNE @writeIllness
+        ; TODO word wrap for great justice
         LDA #_PD ; "."
         STA popupTextLine1, Y
         LDA #MENU_TEXTPOPUP

@@ -347,3 +347,4 @@ eventIllnessText:
     .byte 7,_M_,_E_,_A_,_S_,_L_,_E_,_S_
     .byte 9,_D_,_Y_,_S_,_E_,_N_,_T_,_E_,_R_,_Y_
     .byte 7,_A_,___,_F_,_E_,_V_,_E_,_R_
+    .byte _D_,_I_,_E_,_D_
