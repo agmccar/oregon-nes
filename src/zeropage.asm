@@ -97,10 +97,9 @@ wagonFreezeStarve:  .res 1
 ; %00000000 wagonSettings
 ;  ||||||++ Pace- 00:unused, 01:steady, 10:strenuous, 11:grueling
 ;  ||||++-- Rations- 00:unused, 01:bare bones, 10:meager, 11:filling
-;  |||+---- Rest- 0:not resting, 1:resting
-;  +++----- unused ; TODO use upper 4 bits as 0-15 days of rest? 
+;  ++++---- unused
 wagonSettings:      .res 1 
-; wagonRest:          .res 1 ; TODO days of rest remaining?
+wagonRest:          .res 1 ; days of rest/delay remaining. 
 
 
 ; Supplies ---------------------------------------------------------------------
@@ -159,4 +158,4 @@ location:           .res 1
 
 
 ;-------------------------------------------------------------------------------
-; remaining: $68
+; remaining: $67

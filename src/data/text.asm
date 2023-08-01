@@ -327,6 +327,12 @@ eventIndianFoodText:
 eventThunderstormText:
     .byte 20,_S_,_E_,_V_,_E_,_R_,_E_,___,_T_,_H_,_U_,_N_,_D_,_E_,_R_,_S_,_T_,_O_,_R_,_M_,_PD
 
+eventWrongTrailText:
+    .byte 12,_W_,_R_,_O_,_N_,_G_,___,_T_,_R_,_A_,_I_,_L_,_PD
+
+eventHeavyFogText:
+    .byte 9,_H_,_E_,_A_,_V_,_Y_,___,_F_,_O_,_G_
+
 eventLoseDays:
     .byte 10,_L_,_O_,_S_,_E_,___,_1_,___,_D_,_A_,_Y_
 
@@ -342,11 +348,6 @@ eventLittleWaterText:
 eventRoughTrailText:
     .byte 11,_R_,_O_,_U_,_G_,_H_,___,_T_,_R_,_A_,_I_,_L_
 
-eventHeavyFogText:
-    .byte 9,_H_,_E_,_A_,_V_,_Y_,___,_F_,_O_,_G_ ;(sometimes): _PD, LOSE 1 DAY 
-
-;  |||||+++ Illness- 0:none,    1:exhaustion, 2:typhoid, 3:cholera,
-;  |||||             4:measles, 5:dysentery,  6:fever,   7:broken limb
 eventIllnessText:
     .byte ___,_H_,_A_,_S_,___
     .byte 10,_E_,_X_,_H_,_A_,_U_,_S_,_T_,_I_,_O_,_N_
@@ -372,9 +373,6 @@ eventInjuredOxText:
 
 ; eventAbandonedWagonText:
 ; YOU FIND AN ABANDONED WAGON WITH THE FOLLOWING:
-
-; eventWrongTrailText:
-; WRONG TRAIL. LOSE X DAYS.
 
 ; eventLostPersonText:
 ; X IS LOST. LOSE X DAYS.

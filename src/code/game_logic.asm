@@ -445,6 +445,31 @@
     Blizzard:
         JMP Done
     HeavyFog:
+        LDX #1
+        LDY #0
+        :
+        LDA eventHeavyFogText, X
+        STA popupTextLine1, Y
+        INX
+        INY
+        CPY eventHeavyFogText
+        BNE :-
+        LDA wagonRest
+        BEQ :++
+        LDA #_PD
+        STA popupTextLine1, Y
+        LDY #0
+        LDX #1
+        :
+        LDA eventLoseDays, X
+        STA popupTextLine2, Y
+        INX
+        INY
+        CPY eventLoseDays
+        BNE :-
+        LDA #_PD
+        STA popupTextLine2, Y
+        :
         JMP Done
     HailStorm:
         JMP Done

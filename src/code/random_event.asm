@@ -229,12 +229,23 @@
     ; Heavy fog
     ; After Fort Hall, a 6% chance each day, except when the temperature is
     ; very hot. 50% chance of losing a day's travel.
+    LDA location
+    CMP #LOC_FORTHALL
+    BCC Done
+    LDA weather
+    CMP #WEATHER_VERY_HOT
+    BEQ Done
     JSR RollRNG
     CMP #6*2
-    BCC :+
-    JMP Done
+    BCS Done
+    JSR RandomNumberGenerator
+    AND #1
+    BNE :+
+    LDA #1 ; 50% chance to lose 1 day
+    STA wagonRest
     :
-
+    LDA #EVENT_HEAVY_FOG
+    JSR QueueEvent
     LDA #1
     STA helper
     Done:
