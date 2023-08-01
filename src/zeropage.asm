@@ -76,9 +76,7 @@ cartHelperDigit:    .res 4 ; shameless hack
 ;  ||||||+- Trail- 0:at landmark, 1:on the trail 
 ;  ||||++-- unused
 ;  ++++---- Rest- 0-15 days remaining
-wagonStatus:        .res 1 ; todo: deprecate
-
-; wagonRest:          .res 1 ; days of rest remaining
+wagonStatus:        .res 1 ; TODO: deprecate
 
 ; 0-34: good health
 ; 35-69: fair health
@@ -86,21 +84,23 @@ wagonStatus:        .res 1 ; todo: deprecate
 ; 105-139: very poor health
 ; 140+: remaining party members all die within a few days
 wagonHealth:        .res 1
-oxenHealth:         .res 1 ; 0: all healthy, 1: sick or injured ox
+oxenHealth:         .res 1 ; 0: all healthy, 1: sick or injured ox ; TODO don't waste an entire byte for a bool?
 
 ; On each day that there is no food, or that clothing is inadequate,
 ; add 0.8 to the freeze/starve factor.
 ; On each day that there is neither any freezing or starving,
 ; divide the freeze/starve factor by 2.
 ; Add the freeze/starve factor to the daily general health value.
+; Stored as a multiple of 0.2 (eg 0.8 is stored as 4)
 wagonFreezeStarve:  .res 1
 
 ; %00000000 wagonSettings
 ;  ||||||++ Pace- 00:unused, 01:steady, 10:strenuous, 11:grueling
 ;  ||||++-- Rations- 00:unused, 01:bare bones, 10:meager, 11:filling
 ;  |||+---- Rest- 0:not resting, 1:resting
-;  +++----- unused
+;  +++----- unused ; TODO use upper 4 bits as 0-15 days of rest? 
 wagonSettings:      .res 1 
+; wagonRest:          .res 1 ; TODO days of rest remaining?
 
 
 ; Supplies ---------------------------------------------------------------------
@@ -112,7 +112,7 @@ bullets:            .res 2  ; bullets in inventory
 oxenHeadcount:      .res 2  ; oxen in inventory
 cartDollars:        .res 2  ; dollar cost of entire shopping cart
 cartFoodLbs:        .res 1  ; x10 lbs of food in shopping cart
-cartClothing:       .res 1  ; sets of clothing in shopping cart
+cartClothing:       .res 1  ; sets of clothing in shopping cart TODO: Must allow more than 19 sets of clothing in cart!
 cartBullets:        .res 1  ; x10 bullets in shopping cart
 cartOxen:           .res 1  ; oxen in shopping cart
 cost:               .res 2  ; helper for calculating cost
