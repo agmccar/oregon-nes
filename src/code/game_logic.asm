@@ -460,7 +460,7 @@
         BNE :-
         LDA oxenHealth
         BEQ :++
-        LDX eventInjuredOxText, Y ;"IS INJURED"
+        LDX #16 ;"IS INJURED"
         INX
         LDY #0
         :
@@ -481,7 +481,7 @@
         INY
         CPY #4
         BNE :-
-        LDX #57 ; index of "DIED"
+        LDX #58 ; index of "DIED"
         :
         LDA eventIllnessText, X
         STA popupTextLine2, Y
@@ -583,7 +583,6 @@
         BCC :+ ; alive and healthy: become sick
         LDA #%11111000 ; currently sick: die
         STA personHealth, X
-        ;LDX #57 ; index of "DIED"
         JMP @writeName
         :
         JSR RandomNumberGenerator
@@ -635,7 +634,7 @@
         LDA personHealth, X 
         CMP #%11111000
         BNE :+
-        LDX #57 ; index of "DIED"
+        LDX #57 ; index of "DIED" minus 1
         LDA #4
         STA helper2
         JMP @writeIllness
