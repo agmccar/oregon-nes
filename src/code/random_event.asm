@@ -260,12 +260,32 @@
     ; Injured or dead ox
     ; 2% each day on the prairie; 3.5% chance each day in the mountains. If all
     ; oxen are healthy, then one becomes injured; otherwise, the sick ox dies.
+    CLC
+    LDA oxenHeadcount
+    ADC oxenHealth
+    BEQ Done
+    LDA #4
+    STA helper+1
+    JSR CheckMountainousTerrain
+    BEQ :+
+    LDA #7
+    STA helper+1
+    :
     JSR RollRNG
-    CMP #2*2
+    CMP helper+1
     BCC :+
     JMP Done
     :
-
+    LDA oxenHealth
+    BEQ :+
+    DEC oxenHeadcount ; sick ox dies
+    DEC oxenHealth
+    JMP :++
+    :
+    INC oxenHealth ; ox becomes injured
+    :
+    LDA #EVENT_INJURED_OX
+    JSR QueueEvent
     LDA #1
     STA helper
     Done:
@@ -513,7 +533,9 @@
     JSR RollRNG
     CMP #20*2
     BCS Done
-    ; Inadequate Grass event effect
+    ; Inadequate Grass event effect does nothing?
+    LDA #EVENT_INADEQUATE_GRASS
+    JSR QueueEvent
     LDA #1
     STA helper
     Done:

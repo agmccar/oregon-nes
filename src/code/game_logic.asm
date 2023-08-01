@@ -449,6 +449,9 @@
     HailStorm:
         JMP Done
     InjuredOx:
+
+        LDA #MENU_TEXTPOPUP
+        STA menuOpen
         JMP Done
     InjuredPerson:
         JMP Done
@@ -512,6 +515,17 @@
         STA menuOpen
         JMP Done
     InadequateGrass:
+        LDX #1
+        LDY #0
+        :
+        LDA eventInadequateGrassText, X
+        STA popupTextLine1, Y
+        INX
+        INY
+        CPY eventInadequateGrassText
+        BNE :-
+        LDA #MENU_TEXTPOPUP
+        STA menuOpen
         JMP Done
     Illness:
         JSR RandomNumberGenerator ; select a random person

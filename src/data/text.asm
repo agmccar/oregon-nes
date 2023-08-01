@@ -326,16 +326,21 @@ eventIndianFoodText:
 
 eventThunderstormText:
     .byte 20,_S_,_E_,_V_,_E_,_R_,_E_,___,_T_,_H_,_U_,_N_,_D_,_E_,_R_,_S_,_T_,_O_,_R_,_M_,_PD
-    .byte 11,_L_,_O_,_S_,_E_,___,_1_,___,_D_,_A_,_Y_,_PD
+
+eventLoseDays:
+    .byte 10,_L_,_O_,_S_,_E_,___,_1_,___,_D_,_A_,_Y_
 
 eventBadWaterText:
-    .byte 10,_B_,_A_,_D_,___,_W_,_A_,_T_,_E_,_R_,_PD
+    .byte 9,_B_,_A_,_D_,___,_W_,_A_,_T_,_E_,_R_
+
+eventInadequateGrassText:
+    .byte 16,_I_,_N_,_A_,_D_,_E_,_Q_,_U_,_A_,_T_,_E_,___,_G_,_R_,_A_,_S_,_S_
 
 eventLittleWaterText:
     .byte 18,_V_,_E_,_R_,_Y_,___,_L_,_I_,_T_,_T_,_L_,_E_,___,_W_,_A_,_T_,_E_,_R_,_PD
 
 eventRoughTrailText:
-    .byte 12,_R_,_O_,_U_,_G_,_H_,___,_T_,_R_,_A_,_I_,_L_,_PD
+    .byte 11,_R_,_O_,_U_,_G_,_H_,___,_T_,_R_,_A_,_I_,_L_
 
 ;  |||||+++ Illness- 0:none,    1:exhaustion, 2:typhoid, 3:cholera,
 ;  |||||             4:measles, 5:dysentery,  6:fever,   7:broken limb
@@ -348,3 +353,21 @@ eventIllnessText:
     .byte 9,_D_,_Y_,_S_,_E_,_N_,_T_,_E_,_R_,_Y_
     .byte 7,_A_,___,_F_,_E_,_V_,_E_,_R_
     .byte _D_,_I_,_E_,_D_
+
+eventOxWandersOffText:
+    .byte 15,_O_,_X_,___,_W_,_A_,_N_,_D_,_E_,_R_,_S_,___,_O_,_F_,_F_,_PD
+
+; eventThiefText:
+;     .byte A THIEF COMES DURING THE NIGHT AND STEALS 
+
+; eventWildFruitText:
+    ; .byte FIND WILD FRUIT.
+
+; eventAbandonedWagonText:
+; YOU FIND AN ABANDONED WAGON WITH THE FOLLOWING:
+
+; eventWrongTrailText:
+; WRONG TRAIL.
+
+; eventLostPersonText:
+; X IS LOST.
