@@ -17,6 +17,8 @@
     STA location            ; location will increment, so start at #$ff
     LDA nextLandmarkDistance ; default next landmark: Indep,MO to KansRivXing
     STA nextMi
+    LDA #5                  ; default 0.5" of accumulated rainfall
+    STA accumulatedRain
     JSR ClearPopupText      ; clear popup text
     LDX #0
     :                       ; default person names

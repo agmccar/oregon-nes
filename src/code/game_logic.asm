@@ -462,11 +462,11 @@
         LDX #1
         LDY #0
         :
-        LDA eventRoughTrail, X
+        LDA eventRoughTrailText, X
         STA popupTextLine1, Y
         INX
         INY
-        CPY eventRoughTrail
+        CPY eventRoughTrailText
         BNE :-
         LDA #MENU_TEXTPOPUP
         STA menuOpen
@@ -514,6 +514,68 @@
     InadequateGrass:
         JMP Done
     Illness:
+        LDA #1
+        STA helper ; ID of person who gets illness
+        LDA #0
+        STA helper+1
+        LDX #0
+        :
+        CPX helper
+        BEQ :+
+        INX
+        CLC
+        LDA helper+1
+        ADC #TEXT_PERSON_LEN
+        STA helper+1
+        JMP :-
+        :
+        LDX helper+1
+        LDY #0 ; "{person name}"
+        LDA #0
+        STA helper2
+        :
+        LDA personName, X
+        STA popupTextLine1, Y
+        INX
+        INY
+        INC helper2
+        LDA helper2
+        CMP #TEXT_PERSON_LEN
+        BNE :-
+        LDX #0 ; " HAS "
+        :
+        LDA eventIllnessText, X
+        STA popupTextLine1, Y
+        INX
+        INY
+        CPX #5
+        BNE :-
+
+        ; TODO
+        ; LDX helper ; "{illness name}"
+        ; LDA personHealth, X ; ID of illness (1-6)
+        ; AND #%00000111
+        ; STA helper
+        ; LDX #5
+        ; :
+        ; CPX helper
+        
+        ; TODO word wrap for great justice
+
+        LDX #6
+        :
+        LDA eventIllnessText, X
+        STA popupTextLine1, Y
+        INX
+        INY
+        CPX #6+10
+        BNE :-
+        
+
+        LDA #_PD ; "."
+        STA popupTextLine1, Y
+        LDA #MENU_TEXTPOPUP
+        STA menuOpen
         JMP Done
     BrokenPart:
         JMP Done

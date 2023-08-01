@@ -1190,28 +1190,6 @@
 
 .proc CloseTextPopup
 
-    LDX #16  ; attributes
-    JSR StartBufferWrite
-        LDA #16
-        JSR WriteByteToBuffer
-        LDA #$23
-        JSR WriteByteToBuffer
-        LDA #$D0
-        JSR WriteByteToBuffer
-        LDX #8
-        LDA #$a0
-        :
-        JSR WriteByteToBuffer
-        DEX
-        BNE :-
-        LDX #8
-        LDA #$aa
-        :
-        JSR WriteByteToBuffer
-        DEX
-        BNE :-
-    JSR EndBufferWrite
-
     LDA #0
     STA helper
     LDA #$40
@@ -1241,6 +1219,28 @@
     LDA helper
     CMP #6
     BNE :--
+
+    LDX #16  ; attributes
+    JSR StartBufferWrite
+        LDA #16
+        JSR WriteByteToBuffer
+        LDA #$23
+        JSR WriteByteToBuffer
+        LDA #$D0
+        JSR WriteByteToBuffer
+        LDX #8
+        LDA #$a0
+        :
+        JSR WriteByteToBuffer
+        DEX
+        BNE :-
+        LDX #8
+        LDA #$aa
+        :
+        JSR WriteByteToBuffer
+        DEX
+        BNE :-
+    JSR EndBufferWrite
 
     JSR ClearPopupText
 

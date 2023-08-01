@@ -130,11 +130,11 @@ cartSpareParts:     .res 1  ; spare parts in shopping cart
 ; Party ------------------------------------------------------------------------
 
 occupation:         .res 1   ;
-personName:         .res 20  ; 4 each * 5 people
+personName:         .res 20  ; 4 each * 5 people. TODO max name length 9
 
 ; %00000000
-;  |||||+++ Illness- 0:none, 1:exhaustion, 2:typhoid, 3:cholera,
-;  |||||        4:measles, 5:dysentery, 6:fever, 7:broken limb
+;  |||||+++ Illness- 0:none,    1:exhaustion, 2:typhoid, 3:cholera,
+;  |||||             4:measles, 5:dysentery,  6:fever,   7:broken limb
 ;  +++++--- Remaining days of affliction- 0 to 30 (31: infinite; ie, deceased.)
 personHealth:       .res 5   ; 1 each * 5 
 

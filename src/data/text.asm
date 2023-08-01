@@ -334,5 +334,16 @@ eventBadWaterText:
 eventLittleWaterText:
     .byte 18,_V_,_E_,_R_,_Y_,___,_L_,_I_,_T_,_T_,_L_,_E_,___,_W_,_A_,_T_,_E_,_R_,_PD
 
-eventRoughTrail:
+eventRoughTrailText:
     .byte 12,_R_,_O_,_U_,_G_,_H_,___,_T_,_R_,_A_,_I_,_L_,_PD
+
+;  |||||+++ Illness- 0:none,    1:exhaustion, 2:typhoid, 3:cholera,
+;  |||||             4:measles, 5:dysentery,  6:fever,   7:broken limb
+eventIllnessText:
+    .byte ___,_H_,_A_,_S_,___
+    .byte 10,_E_,_X_,_H_,_A_,_U_,_S_,_T_,_I_,_O_,_N_
+    .byte 7,_T_,_Y_,_P_,_H_,_O_,_I_,_D_
+    .byte 7,_C_,_H_,_O_,_L_,_E_,_R_,_A_
+    .byte 7,_M_,_E_,_A_,_S_,_L_,_E_,_S_
+    .byte 9,_D_,_Y_,_S_,_E_,_N_,_T_,_E_,_R_,_Y_
+    .byte 7,_A_,___,_F_,_E_,_V_,_E_,_R_

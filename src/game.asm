@@ -15,7 +15,7 @@
 
 .segment "ROM1"
     .include "data/text.asm"
-    .include "data/diarytext.asm"
+    ; .include "data/diarytext.asm"
     .include "data/palettes.asm"
     .include "data/backgrounds.asm"
     .include "data/sprites.asm"

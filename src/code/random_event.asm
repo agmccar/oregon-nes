@@ -337,6 +337,9 @@
 .proc RERoughTrail
     ; Rough trail
     ; In mountains only; 2.5% chance each day.
+    JSR CheckMountainousTerrain
+    CMP #0
+    BEQ Done
     JSR RollRNG
     CMP #5
     BCC :+
@@ -463,12 +466,12 @@
 .proc REBadWater
     ; Bad water
     ; 10% chance each day in which the accumulated rainfall is below 0.1 inch.
+    LDA accumulatedRain
+    CMP #1
+    BCS Done
     JSR RollRNG
     CMP #10*2
-    BCC :+
-    JMP Done
-    :
-    CLC
+    BCS Done
     LDA wagonHealth
     ADC #20
     STA wagonHealth
@@ -483,11 +486,12 @@
 .proc RELittleWater
     ; Very little water
     ; 20% chance each day in which the accumulated rainfall is below 0.1 inch.
+    LDA accumulatedRain
+    CMP #1
+    BCS Done
     JSR RollRNG
     CMP #20*2
-    BCC :+
-    JMP Done
-    :
+    BCS Done
     CLC
     LDA wagonHealth
     ADC #10
@@ -503,12 +507,13 @@
 .proc REInadequateGrass
     ; Inadequate grass
     ; 20% chance each day in which the accumulated rainfall is below 0.1 inch.
+    LDA accumulatedRain
+    CMP #1
+    BCS Done
     JSR RollRNG
     CMP #20*2
-    BCC :+
-    JMP Done
-    :
-
+    BCS Done
+    ; Inadequate Grass event effect
     LDA #1
     STA helper
     Done:
@@ -522,8 +527,33 @@
     ; Add 20 to wagonHealth when the disease first strikes.
     ; Trick: When an ill person gets another illness they 
     ;   simply die of their existing illness.
-    JSR RollRNG
-    CMP #0 ; TODO
+
+    ; Calculate illness chance: ((health * 128) / 175) out of 256 
+    LDA wagonHealth
+    STA helper2
+    LDA #0
+    STA helper2+1
+    CLC
+    LDX #7
+    : ; ((health * 128)
+    ROL helper2
+    ROL helper2+1
+    DEX
+    BNE :-
+    LDA #0
+    STA cartHelperDigit
+    SEC
+    : ; / 175)
+    LDA helper2
+    SBC #175
+    STA helper2
+    LDA helper2+1
+    SBC #0
+    STA helper2+1
+    INC cartHelperDigit
+    BCS :-
+    JSR RollRNG ; out of 256 
+    CMP cartHelperDigit
     BCC :+
     JMP Done
     :
