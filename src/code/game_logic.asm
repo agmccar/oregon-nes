@@ -449,7 +449,49 @@
     HailStorm:
         JMP Done
     InjuredOx:
-
+        LDX #1
+        LDY #0
+        :
+        LDA eventInjuredOxText, X ; "ONE OF THE OXEN"
+        STA popupTextLine1, Y
+        INX
+        INY
+        CPY eventInjuredOxText
+        BNE :-
+        LDA oxenHealth
+        BEQ :++
+        LDX eventInjuredOxText, Y ;"IS INJURED"
+        INX
+        LDY #0
+        :
+        LDA eventInjuredOxText, X
+        STA popupTextLine2, Y
+        INX
+        INY
+        CPY #11
+        BNE :-
+        JMP :++++
+        :
+        LDX #1
+        LDY #0
+        :
+        LDA eventIllnessText, X ; "HAS DIED"
+        STA popupTextLine2, Y
+        INX
+        INY
+        CPY #4
+        BNE :-
+        LDX #57 ; index of "DIED"
+        :
+        LDA eventIllnessText, X
+        STA popupTextLine2, Y
+        INX
+        INY
+        CPY #8
+        BNE :-
+        LDA #_PD
+        STA popupTextLine2, Y
+        :
         LDA #MENU_TEXTPOPUP
         STA menuOpen
         JMP Done
