@@ -691,6 +691,28 @@
     ; 70-104: poor health
     ; 105-139: very poor health
     ; 140+: remaining party members all die within a few days
+
+    ; decrement remaining days of illness
+    LDX #0
+    :
+    LDA personHealth, X
+    AND #%11111000
+    CMP #%11111000
+    BEQ :+
+    SEC
+    LDA personHealth, X
+    SBC #%00001000
+    BCC :+
+    STA personHealth, X
+    AND #%11111000
+    BNE :+
+    LDA #0
+    STA personHealth, X
+    :
+    INX
+    CPX #5
+    BNE :--
+
     LDA #0
     STA helper2+1 ; 0:fine, 1:freezing or starving 
     
