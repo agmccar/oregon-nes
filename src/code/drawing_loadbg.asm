@@ -897,3 +897,106 @@
     JSR BufferDrawPressStart
     RTS
 .endproc
+
+.proc LoadBgMap
+    JSR ClearScreen
+    JSR ClearAttributes
+    JSR StartBulkDrawing
+    LDA PPUSTATUS ; map palette
+    LDA #$3F
+    STA PPUADDR
+    LDA #$00
+    STA PPUADDR
+    LDX #0
+    :                       
+    LDA mapPalette, X
+    STA PPUDATA
+    INX
+    CPX #$10
+    BNE :-
+    LDY #6 ; get image data
+    JSR bankswitch_y
+    LDA #<mapTiles 
+    STA pointer
+    LDA #>mapTiles
+    STA pointer+1
+    LDA #<mapImage
+    STA helper2
+    LDA #>mapImage
+    STA helper2+1
+    JSR CopyCHRPatternB
+    LDA PPUSTATUS ; draw letterbox (top)
+    LDA #$20
+    STA PPUADDR
+    LDA #$00
+    STA PPUADDR
+    LDX #$80
+    LDA #___
+    :
+    STA PPUDATA
+    INX
+    BNE :-
+    LDA PPUSTATUS ; draw letterbox (bottom)
+    LDA #$23
+    STA PPUADDR
+    LDA #$00
+    STA PPUADDR
+    LDX #0
+    LDA #___
+    :
+    STA PPUDATA
+    INX
+    CPX #$C0
+    BNE :-
+    LDA PPUSTATUS ; attribute table
+    LDA #$23
+    STA PPUADDR
+    LDA #$C0
+    STA PPUADDR
+    LDA #%01010101
+    LDX #8
+    :
+    STA PPUDATA
+    DEX
+    BNE :-
+    LDA PPUSTATUS
+    LDA #$23
+    STA PPUADDR
+    LDA #$F0
+    STA PPUADDR
+    LDA #%01010101
+    LDX #16
+    :
+    STA PPUDATA
+    DEX
+    BNE :-
+
+    LDA PPUSTATUS   ; draw image
+    LDA #$20
+    STA PPUADDR
+    LDA #$80
+    STA PPUADDR
+    LDY #0
+    LDX #3
+    :
+    LDA (helper2), Y
+    STA PPUDATA
+    INY
+    CPX #1
+    BNE :+
+    CPY #$80
+    BNE :+
+    JMP :++
+    :
+    CPY #0
+    BNE :--
+    INC helper2+1
+    DEX
+    BNE :--
+    :
+    LDY #1
+    JSR bankswitch_y
+    JSR DoneBulkDrawing
+    JSR BufferDrawPressStart
+    RTS
+.endproc

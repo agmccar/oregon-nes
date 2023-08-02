@@ -1513,6 +1513,10 @@
         BNE :+
         JMP @menuMain
         :
+        CMP #MENU_MAP
+        BNE :+
+        JMP @menuMap
+        :
         CMP #MENU_PACE
         BNE :+
         JMP @menuPace
@@ -1551,15 +1555,15 @@
             STA menuOpen
             JMP Done
             :
-            CMP #OPT_CONTINUE
-            BNE :+
-            LDA #MENU_NONE
-            STA menuOpen
-            JMP Done
-            :
             CMP #OPT_SUPPLIES
             BNE :+
             LDA #MENU_SUPPLIES
+            STA menuOpen
+            JMP Done
+            :
+            CMP #OPT_MAP
+            BNE :+
+            LDA #MENU_MAP
             STA menuOpen
             JMP Done
             :
@@ -1582,6 +1586,7 @@
             JMP Done
             :
             JMP Done
+        @menuMap:
         @menuPace:
         @menuRations:
         @menuRest:

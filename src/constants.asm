@@ -246,6 +246,7 @@ MENU_PACE               = 9
 MENU_RATIONS            = 10
 MENU_REST               = 11
 MENU_TEXTPOPUP          = 12
+MENU_MAP                = 13
 
 OPT_CONTINUE    = 0
 OPT_SUPPLIES    = 1
