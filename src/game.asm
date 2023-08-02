@@ -15,12 +15,12 @@
 
 .segment "ROM1"
     .include "data/text.asm"
-    ; .include "data/diarytext.asm"
     .include "data/palettes.asm"
     .include "data/backgrounds.asm"
     .include "data/sprites.asm"
     .include "data/rom1.asm"
     .include "data/climate.asm"
+    .include "code/random_event.asm"
 
 .segment "ROM2"
     .include "data/landmarkImageA.asm"
@@ -36,6 +36,7 @@
 
 .segment "ROM6"
     .include "data/landmarkImageE.asm"
+    .include "data/mapImage.asm"
 
 .segment "RODATA" ; ROM7
     banktable:              ; Write to this table to switch banks.
@@ -146,4 +147,3 @@ bankswitch_nosave:
 .include "code/game_helpers.asm"
 .include "code/game_init_state.asm"
 .include "code/game_gamepad.asm"
-.include "code/random_event.asm"

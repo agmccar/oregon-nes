@@ -328,13 +328,15 @@
 .proc RESnakeBite
     ; Snake bite
     ; 0.7% chance each day in the original game.
-    ; 0.5% chance is close enough
+    ; 0.75% chance is close enough
     ; what does it do? injury for 10 days maybe?
+    JSR RandomNumberGenerator
+    AND #1 ; 50%
+    BCS Done
     JSR RollRNG
-    CMP #1
-    BCC :+
-    JMP Done
-    :
+    CMP #3 ; 50% of 1.5% = 0.75%
+    BCS Done
+    
 
     LDA #1
     STA helper
