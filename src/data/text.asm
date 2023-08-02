@@ -339,7 +339,7 @@ eventHailStormText:
 eventHeavyFogText:
     .byte 9,_H_,_E_,_A_,_V_,_Y_,___,_F_,_O_,_G_
 
-eventLoseDays:
+eventLoseDaysText:
     .byte 10,_L_,_O_,_S_,_E_,___,_1_,___,_D_,_A_,_Y_
 
 eventBadWaterText:
@@ -370,6 +370,13 @@ eventOxWandersOffText:
 eventInjuredOxText:
     .byte 15,_O_,_N_,_E_,___,_O_,_F_,___,_T_,_H_,_E_,___,_O_,_X_,_E_,_N_
     .byte 11,_I_,_S_,___,_I_,_N_,_J_,_U_,_R_,_E_,_D_,_PD
+
+eventInjuryText:
+    .byte ___,_H_,_A_,_S_,___,_A_,___
+    .byte _S_,_N_,_A_,_K_,_E_,___,_B_,_I_,_T_,_E_
+    .byte _B_,_R_,_O_,_K_,_E_,_N_,___
+    .byte _A_,_R_,_M_
+    .byte _L_,_E_,_G_
 
 ; eventThiefText:
 ;     .byte A THIEF COMES DURING THE NIGHT AND STEALS 
