@@ -793,6 +793,20 @@
     JMP @menuNone
     :
     @menuMain:
+        LDA menuOpenLast
+        CMP #MENU_MAP
+        BNE :+
+        ; reload pattern B tiles
+        LDY #0
+        JSR bankswitch_y
+        LDA #<tiles_chr
+        STA pointer
+        LDA #>tiles_chr
+        STA pointer+1
+        JSR CopyCHRTiles
+        LDY #1
+        JSR bankswitch_y
+        :
         JSR DrawHUDMainMenu
         LDA #$20    ; weather text
         STA pointer

@@ -510,7 +510,7 @@
     CPX #$10
     BNE :-
 
-    LDA location
+    LDA location ; TODO this entire subroutine is an embarassment and needs DRY
     CMP #LOC_INDEPENDENCE
     BNE :+
     LDA #<independenceTiles
