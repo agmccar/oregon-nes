@@ -1,5 +1,15 @@
 
 .proc LoadTrailSprites
+    LDX #39*4 ; map legend
+    :
+    LDA trailSprites, X
+    STA TRAILSPRITES, X
+    INX
+    CPX #63*4
+    BNE :-
+    LDY location ; trail line
+    LDA landmarkTrailSprite, Y
+    STA helper
     LDY #0
     LDX #0
     :
@@ -17,7 +27,7 @@
     :                   ; vblankwait again
     BIT PPUSTATUS
     BPL :-
-    CPX #63*4
+    CPX helper
     BNE :--
 
     ; LDA #0

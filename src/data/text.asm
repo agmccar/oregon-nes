@@ -279,6 +279,27 @@ landmarkAttr:
     .byte %00010000 ; THE DALLES
     .byte %00010001 ; WILLAMETTE VALLEY
 
+; Byte index of sprite (see sprites.asm->trailSprites)
+landmarkTrailSprite:
+    .byte 6*4 ; Independence, MO
+    .byte 8*4 ; KANSAS RIVER CROSSING
+    .byte 9*4 ; BIG BLUE RIVER CROSSING
+    .byte 12*4 ; FORT KEARNEY
+    .byte 14*4 ; CHIMNEY ROCK
+    .byte 17*4 ; FORT LARAMIE
+    .byte 20*4 ; INDEPENDENCE ROCK
+    .byte 22*4 ; SOUTH PASS
+    .byte 23*4 ; FORT BRIDGER
+    .byte 23*4 ; GREEN RIVER CROSSING ; TODO Shortcut
+    .byte 25*4 ; SODA SPRINGS
+    .byte 27*4 ; FORT HALL
+    .byte 29*4 ; SNAKE RIVER CROSSING
+    .byte 32*4 ; FORT BOISE
+    .byte 34*4 ; BLUE MOUNTAINS
+    .byte 36*4 ; FORT WALLA WALLA
+    .byte 38*4 ; THE DALLES ; TODO shortcut
+    .byte 39*4 ; WILLAMETTE VALLEY
+
 ; Distances
 nextLandmarkDistance:
     .byte 102   ; Independence to Kansas River
