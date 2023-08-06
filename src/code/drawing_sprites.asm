@@ -17,7 +17,7 @@
     :                   ; vblankwait again
     BIT PPUSTATUS
     BPL :-
-    CPX #39*4
+    CPX #63*4
     BNE :--
 
     ; LDA #0

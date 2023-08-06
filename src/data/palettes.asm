@@ -21,11 +21,11 @@ mapPalette:
     ; background palette data
     .byte C_WHITE, C_BLUE, C_GREY, C_BLACK
     .byte C_WHITE, C_BLUE, C_BLACK, C_WHITE
-    .byte C_WHITE, C_BLUE, C_GREY, C_BLACK
+    .byte C_WHITE, C_BLUE, C_WHITE, C_BLACK
     .byte C_WHITE, C_BLUE, C_GREY, C_BLACK
     ; sprite palette data
     .byte C_WHITE, C_BLUE, C_GREY, C_BLACK
-    .byte C_WHITE, C_BLACK, C_GREY, C_WHITE
+    .byte C_WHITE, C_BLACK, C_LGREY, C_WHITE
     .byte C_WHITE, C_BLUE, C_GREY, C_BLACK
     .byte C_WHITE, C_BLUE, C_GREY, C_BLACK
 

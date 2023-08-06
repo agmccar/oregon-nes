@@ -294,6 +294,7 @@
         STA menuOpen
         JMP Done
     InjuredPerson:
+         ; TODO should count as an illness in death roll
         JMP Done
     SnakeBite:
         JMP Done

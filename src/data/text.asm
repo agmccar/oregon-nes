@@ -15,7 +15,8 @@ reachedLandmarkText: ; len 17
     .byte _Y_,_O_,_U_,___,_H_,_A_,_V_,_E_,___,_R_,_E_,_A_,_C_,_H_,_E_,_D_,___
 
 mapTitleText:
-    .byte 23,_M_,_A_,_P_,___,_O_,_F_,___,_T_,_H_,_E_,___,_O_,_R_,_E_,_G_,_O_,_N_,___,_T_,_R_,_A_,_I_,_L_
+    .byte _M_,_A_,_P_,___,_O_,_F_,___,_T_,_H_,_E_
+    .byte _O_,_R_,_E_,_G_,_O_,_N_,___,_T_,_R_,_A_,_I_,_L_
 
 newGameText:
     .byte _L_,_E_,_A_,_D_,_E_,_R_,_CL
@@ -287,14 +288,16 @@ nextLandmarkDistance:
     .byte 86    ; Chimney Rock to Fort Laramie
     .byte 190   ; Fort Laramie to Independence Rock
     .byte 102   ; Independence Rock to South Pass
-    .byte 57    ; South Pass to Fort Bridger
-    .byte 162   ; Fort Bridger to Green River
+    ;.byte 125    ; South Pass to Fort Bridger ; TODO drail divides
+    .byte 57    ; South Pass to Green River
+    .byte 162   ; Fort Bridger to Soda Springs
     .byte 144   ; Green River to Soda Springs
     .byte 57    ; Soda Springs to Fort Hall
     .byte 182   ; Fort Hall to Snake River
     .byte 114   ; Snake River to Fort Boise
-    .byte 160   ; Fort Boise to Grande Ronde
-    .byte 55    ; Grande Ronde to Fort Walla Walla
+    .byte 160   ; Fort Boise to Blue Mountains
+    .byte 55    ; Blue Mountains to Fort Walla Walla
+    ;.byte 125    ; Blue Mountains to The Dalles ; TODO drail divides
     .byte 120   ; Fort Walla Walla to The Dalles
     .byte 100   ; The Dalles to WIllamette Valley (toll road)
 

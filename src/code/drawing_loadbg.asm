@@ -944,11 +944,11 @@
     STA PPUADDR
     LDA #$00
     STA PPUADDR
-    LDX #$80
+    LDX #$40
     LDA #___
     :
     STA PPUDATA
-    INX
+    DEX
     BNE :-
     LDA PPUSTATUS ; draw letterbox (bottom)
     LDA #$23
@@ -967,24 +967,25 @@
     STA PPUADDR
     LDA #$C0
     STA PPUADDR
-    LDA #%01010101
+    LDA #$05
     LDX #8
     :
     STA PPUDATA
     DEX
     BNE :-
-    LDA PPUSTATUS
-    LDA #$23
-    STA PPUADDR
-    LDA #$F0
-    STA PPUADDR
-    LDA #%01010000
+    LDA #$00
+    LDX #5*8
+    :
+    STA PPUDATA
+    DEX
+    BNE :-
+    LDA #$50
     LDX #8
     :
     STA PPUDATA
     DEX
     BNE :-
-    LDA #%01010101
+    LDA #$55
     LDX #8
     :
     STA PPUDATA
@@ -994,7 +995,7 @@
     LDA PPUSTATUS   ; draw image
     LDA #$20
     STA PPUADDR
-    LDA #$80
+    LDA #$40
     STA PPUADDR
     LDY #0
     LDX #3
@@ -1002,18 +1003,11 @@
     LDA (helper2), Y
     STA PPUDATA
     INY
-    CPX #1
-    BNE :+
-    CPY #$C0
-    BNE :+
-    JMP :++
-    :
     CPY #0
-    BNE :--
+    BNE :-
     INC helper2+1
     DEX
-    BNE :--
-    :
+    BNE :-
     LDY #1
     JSR bankswitch_y
     JSR DoneBulkDrawing

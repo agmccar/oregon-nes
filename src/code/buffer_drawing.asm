@@ -1029,22 +1029,67 @@
 .endproc
 
 .proc BufferDrawMapTitle
-    ; mapTitleText
-    LDX mapTitleText
-    STX helper
+    LDX #3 ; attributes
     JSR StartBufferWrite
-        LDA mapTitleText
+        LDA #3
+        JSR WriteByteToBuffer
+        LDA #$23
+        JSR WriteByteToBuffer
+        LDA #$C4
+        JSR WriteByteToBuffer
+        LDA #$a5
+        LDX #3
+        :
+        JSR WriteByteToBuffer
+        DEX
+        BNE :-
+    JSR EndBufferWrite
+    LDX #4
+    JSR StartBufferWrite
+        LDA #4
+        JSR WriteByteToBuffer
+        LDA #$23
+        JSR WriteByteToBuffer
+        LDA #$CC
+        JSR WriteByteToBuffer
+        LDA #$0a
+        LDX #4
+        :
+        JSR WriteByteToBuffer
+        DEX
+        BNE :-
+    JSR EndBufferWrite
+    
+    LDX #10 ; "MAP OF THE"
+    JSR StartBufferWrite
+        LDA #10
         JSR WriteByteToBuffer
         LDA #$20
         JSR WriteByteToBuffer
-        LDA #$44
+        LDA #$71
         JSR WriteByteToBuffer
-        LDX #1
+        LDX #0
         :
         LDA mapTitleText, X
         JSR WriteByteToBuffer
         INX
-        DEC helper
+        CPX #10
+        BNE :-
+    JSR EndBufferWrite
+    LDX #12 ; "OREGON TRAIL"
+    JSR StartBufferWrite
+        LDA #12
+        JSR WriteByteToBuffer
+        LDA #$20
+        JSR WriteByteToBuffer
+        LDA #$92
+        JSR WriteByteToBuffer
+        LDX #0+10
+        :
+        LDA mapTitleText, X
+        JSR WriteByteToBuffer
+        INX
+        CPX #12+10
         BNE :-
     JSR EndBufferWrite
     RTS
