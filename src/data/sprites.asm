@@ -27,6 +27,12 @@
 
 trailSprites: ; without shortcuts
     ; +Y, tile index, attributes, +X
+    .byte 20*8, $C2, 1, 29*8 ; "START"
+    .byte 20*8, $C3, 1, 30*8
+    .byte 20*8, $C4, 1, 31*8
+    .byte 13*8, $C5, 1, 0*8 ; "FINISH"
+    .byte 13*8, $C6, 1, 1*8
+    .byte 13*8, $C7, 1, 2*8
     .byte 21*8, $BE, 0, 29*8 ; Independence
     .byte 21*8, $BD, 0, 28*8
     .byte 20*8, $BC, 0, 27*8

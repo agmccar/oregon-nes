@@ -926,7 +926,7 @@
     LDA mapPalette, X
     STA PPUDATA
     INX
-    CPX #$10
+    CPX #$20
     BNE :-
     LDY #6 ; get image data
     JSR bankswitch_y
