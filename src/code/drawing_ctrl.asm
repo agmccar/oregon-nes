@@ -19,6 +19,17 @@
 
 .proc ClearScreen
     JSR StartBulkDrawing
+    LDX #0 ; clear sprites
+    LDA #$FE
+    :
+    STA $0200, X
+    INX
+    BNE :-
+    LDA #0
+    STA OAMADDR ; tell PPU to prepare for transfer to OAM starting at byte zero
+    LDA #$02
+    STA OAMDMA ; tell PPU to initiate transfer of 256 bytes $0200-$02ff into OAM
+
     LDA PPUSTATUS       ; clear first screen tiles
     LDA #$20
     STA PPUADDR
