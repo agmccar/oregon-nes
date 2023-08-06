@@ -140,6 +140,7 @@ bankswitch_nosave:
 .include "code/drawing.asm"
 .include "code/drawing_helpers.asm"
 .include "code/drawing_loadbg.asm"
+.include "code/drawing_sprites.asm"
 .include "code/buffer_ctrl.asm"
 .include "code/buffer_drawing.asm"
 

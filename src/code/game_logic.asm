@@ -357,6 +357,7 @@
         JSR MoveFingerToSubmenu
         JSR RedrawFinger
         JSR LoadBgMap
+        ;JSR DrawTrailSprites
         JMP Done
 
     Done:

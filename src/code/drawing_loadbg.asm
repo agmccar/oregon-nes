@@ -1011,6 +1011,7 @@
     LDY #1
     JSR bankswitch_y
     JSR DoneBulkDrawing
+    JSR LoadTrailSprites
     JSR BufferDrawPressStart
     RTS
 .endproc
