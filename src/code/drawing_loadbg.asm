@@ -953,14 +953,14 @@
     LDA PPUSTATUS ; draw letterbox (bottom)
     LDA #$23
     STA PPUADDR
-    LDA #$00
+    LDA #$40
     STA PPUADDR
     LDX #0
     LDA #___
     :
     STA PPUDATA
     INX
-    CPX #$C0
+    CPX #$80
     BNE :-
     LDA PPUSTATUS ; attribute table
     LDA #$23
@@ -978,8 +978,14 @@
     STA PPUADDR
     LDA #$F0
     STA PPUADDR
+    LDA #%01010000
+    LDX #8
+    :
+    STA PPUDATA
+    DEX
+    BNE :-
     LDA #%01010101
-    LDX #16
+    LDX #8
     :
     STA PPUDATA
     DEX
@@ -998,7 +1004,7 @@
     INY
     CPX #1
     BNE :+
-    CPY #$80
+    CPY #$C0
     BNE :+
     JMP :++
     :
@@ -1011,6 +1017,7 @@
     LDY #1
     JSR bankswitch_y
     JSR DoneBulkDrawing
+    JSR BufferDrawMapTitle
     JSR LoadTrailSprites
     JSR BufferDrawPressStart
     RTS

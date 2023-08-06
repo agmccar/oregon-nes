@@ -14,6 +14,8 @@ nextLandmarkText: ; len:18
 reachedLandmarkText: ; len 17
     .byte _Y_,_O_,_U_,___,_H_,_A_,_V_,_E_,___,_R_,_E_,_A_,_C_,_H_,_E_,_D_,___
 
+mapTitleText:
+    .byte 23,_M_,_A_,_P_,___,_O_,_F_,___,_T_,_H_,_E_,___,_O_,_R_,_E_,_G_,_O_,_N_,___,_T_,_R_,_A_,_I_,_L_
 
 newGameText:
     .byte _L_,_E_,_A_,_D_,_E_,_R_,_CL

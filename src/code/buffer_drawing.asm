@@ -1028,6 +1028,28 @@
     RTS
 .endproc
 
+.proc BufferDrawMapTitle
+    ; mapTitleText
+    LDX mapTitleText
+    STX helper
+    JSR StartBufferWrite
+        LDA mapTitleText
+        JSR WriteByteToBuffer
+        LDA #$20
+        JSR WriteByteToBuffer
+        LDA #$44
+        JSR WriteByteToBuffer
+        LDX #1
+        :
+        LDA mapTitleText, X
+        JSR WriteByteToBuffer
+        INX
+        DEC helper
+        BNE :-
+    JSR EndBufferWrite
+    RTS
+.endproc
+
 .proc BufferDrawBlankLine
     ; pointer: nametable address
     LDX #$20
