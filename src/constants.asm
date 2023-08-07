@@ -76,20 +76,20 @@ _LD = $FC ; left/down corner
 _RU = $FD ; right/up corner
 _RD = $FE ; right/down corner
 
-_LB = 128 ; lb
-_MI = 129 ; mi
-_DL = 130 ; $
-_00 = 131 ; .00
-_AL = 132 ; < (arrow left)
-_AR = 133 ; > (arrow right)
-_UL = 134 ; __ (underline)
-_AP = 135 ; ' (apostrophe)
-_AU = 136 ; ^ (arrow up)
-_AD = 137 ; v (arrow down)
-_3U = 138 ; ┬
-_3D = 139 ; ┴
-_3L = 140 ; ├
-_3R = 141 ; ┤
+_LB = 128+64 ; lb
+_MI = 129+64 ; mi
+_DL = 130+64 ; $
+_00 = 131+64 ; .00
+_AL = 132+64 ; < (arrow left)
+_AR = 133+64 ; > (arrow right)
+_UL = 134+64 ; __ (underline)
+_AP = 135+64 ; ' (apostrophe)
+_AU = 136+64 ; ^ (arrow up)
+_AD = 137+64 ; v (arrow down)
+_3U = 138+64 ; ┬
+_3D = 139+64 ; ┴
+_3L = 140+64 ; ├
+_3R = 141+64 ; ┤
  
 ; JP tile characters
 __WO = $50

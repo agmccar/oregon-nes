@@ -37,6 +37,7 @@
 .segment "ROM6"
     .include "data/landmarkImageE.asm"
     .include "data/mapImage.asm"
+    .include "data/suppliesImage.asm"
 
 .segment "RODATA" ; ROM7
     banktable:              ; Write to this table to switch banks.

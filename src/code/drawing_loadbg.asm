@@ -793,9 +793,9 @@
     JMP @menuNone
     :
     @menuMain:
-        LDA menuOpenLast
-        CMP #MENU_MAP
-        BNE :+
+        ;LDA menuOpenLast
+        ;CMP #MENU_MAP
+        ;BNE :+
         ; reload pattern B tiles
         LDY #0
         JSR bankswitch_y
@@ -806,7 +806,7 @@
         JSR CopyCHRTiles
         LDY #1
         JSR bankswitch_y
-        :
+        ;:
         JSR DrawHUDMainMenu
         LDA #$20    ; weather text
         STA pointer
@@ -905,7 +905,31 @@
     CPX #41
     BNE :-
 
-    
+    ; tile chr
+    LDY #6
+    JSR bankswitch_y
+    LDA #<suppliesTiles
+    STA pointer
+    LDA #>suppliesTiles
+    STA pointer+1
+    LDY #0
+    STY PPUMASK
+    LDY #$10
+    STY PPUADDR
+    LDY #$00
+    STY PPUADDR
+    LDX #$09
+    :
+    LDA (pointer), Y
+    STA PPUDATA
+    INY
+    BNE :-
+    INC pointer+1
+    DEX
+    BNE :-
+    LDY #1
+    JSR bankswitch_y
+
     JSR DoneBulkDrawing
     JSR BufferDrawSupplies
     JSR BufferDrawPressStart

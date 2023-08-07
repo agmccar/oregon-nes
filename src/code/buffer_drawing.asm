@@ -714,6 +714,75 @@
 .endproc
 
 .proc BufferDrawSupplies
+    LDX #$10 ; palette
+    JSR StartBufferWrite
+        LDA #$10                ; length of palette
+        JSR WriteByteToBuffer
+        LDA #$3F                ; $3F00 - palette VRAM location
+        JSR WriteByteToBuffer
+        LDA #$00
+        JSR WriteByteToBuffer
+        LDX #0
+        :
+        LDA suppliesPalette, X
+        JSR WriteByteToBuffer
+        INX
+        CPX #$10
+        BNE :-
+    JSR EndBufferWrite
+
+    : ; vblankwait
+    BIT PPUSTATUS
+    BPL :-
+    LDY #6 ; get image data
+    JSR bankswitch_y
+
+    LDX #7*8 ; attributes
+    JSR StartBufferWrite
+        LDA #7*8
+        JSR WriteByteToBuffer
+        LDA #$23
+        JSR WriteByteToBuffer
+        LDA #$C0
+        JSR WriteByteToBuffer
+        LDX #0
+        :
+        LDA suppliesAttr, X
+        JSR WriteByteToBuffer
+        INX
+        CPX #7*8
+        BNE :-
+    JSR EndBufferWrite
+    LDX #0 ; image
+    STX helper
+    :
+    TXA
+    PHA
+    LDA suppliesImage, X
+    TAX
+    JSR StartBufferWrite
+        PLA
+        TAX
+        LDA suppliesImage, X
+        JSR WriteByteToBuffer
+        CLC
+        LDA helper
+        ADC #3
+        ADC suppliesImage, X
+        STA helper
+        INX
+        :
+        LDA suppliesImage, X
+        JSR WriteByteToBuffer
+        INX
+        CPX helper
+        BNE :-
+    JSR EndBufferWrite
+    LDA suppliesImage, X
+    BNE :--
+    LDY #1
+    JSR bankswitch_y
+
     LDX #12
     JSR StartBufferWrite    ; oxenDigit
         LDA #12                 
