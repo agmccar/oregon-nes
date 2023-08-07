@@ -30,9 +30,9 @@ trailSprites: ; without shortcuts
     .byte 18*8, $C2, 1, 29*8 ; "START"
     .byte 18*8, $C3, 1, 30*8
     .byte 18*8, $C4, 1, 31*8
-    .byte 11*8, $C5, 1, 0*8 ; "FINISH"
-    .byte 11*8, $C6, 1, 1*8
-    .byte 11*8, $C7, 1, 2*8
+    .byte 11*8-4, $C5, 1, 0*8+5 ; "FINISH"
+    .byte 11*8-4, $C6, 1, 1*8+5
+    .byte 11*8-4, $C7, 1, 2*8+5
     .byte 19*8, $BE, 0, 29*8 ; Independence to Kansas River
     .byte 19*8, $BD, 0, 28*8
     .byte 18*8, $BC, 0, 27*8 ; Kansas River to Big Blue River
