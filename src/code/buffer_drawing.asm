@@ -969,6 +969,8 @@
         LDA #$30
         JSR WriteByteToBuffer
         LDX #TEXT_SUPPLIES_LEN*6
+        INX
+        INX
         :
         LDA suppliesText, X
         JSR WriteByteToBuffer
@@ -988,6 +990,10 @@
         INX
         CPX #4
         BNE :--
+        LDA #___
+        JSR WriteByteToBuffer
+        LDA #_LB
+        JSR WriteByteToBuffer
     JSR EndBufferWrite
 
     LDX #12
