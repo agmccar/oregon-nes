@@ -85,7 +85,8 @@
 
 ## Talk to people
 
-- [ ] text dialigue
+- [ ] text data
+- [ ] logic (text dependent on location)
 
 ## Landmark screen
 
