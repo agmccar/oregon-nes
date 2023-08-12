@@ -1,7 +1,7 @@
 # TODO
 
 
-## Title screen 
+## Title screen
 
 - [ ] title screen graphics
 - [ ] title screen options
@@ -13,7 +13,7 @@
 ## Shop screen
 
 - [ ] shop screen graphics
-- [ ] prices increase at each fort 
+- [ ] prices increase at each fort
 
 ## River crossing
 
@@ -26,7 +26,7 @@
 - [ ] rafting graphics
 - [ ] rafting logic
 
-## Traveling 
+## Traveling
 
 - [x] weather/climate data tables
 - [x] calculate weather daily
@@ -103,5 +103,5 @@
 ## Graphics (general)
 
 - [x] nametable update buffer
-- [ ] compress tile and nametable data (PackBits?)
+- [x] compress tile and nametable data (PackBits?)
 - [ ] lowercase letters
