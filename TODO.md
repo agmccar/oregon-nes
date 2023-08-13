@@ -10,8 +10,16 @@
     - [ ] 3. See the Oregon Top Ten
     - [ ] 4. Turn sound off
 
+## New game screens
+
+- [ ] choose occupation menu
+- [ ] Name party members graphics
+- [ ] decide which month to leave menu
+- [ ]
+
 ## Shop screen
 
+- [ ] Matts general store intro text/menus
 - [ ] shop screen graphics
 - [ ] prices increase at each fort
 
@@ -65,6 +73,7 @@
 - [ ] stop to rest
 - [ ] drought events don't pause the game
 - [ ] shortcuts
+- [ ] swap out menu option to hunt with Buy Supplies when appropriate
 
 ## Map screen
 
@@ -102,6 +111,7 @@
 
 ## Graphics (general)
 
+- [ ] Green Only mode
 - [x] nametable update buffer
 - [x] compress tile and nametable data (PackBits?)
 - [ ] lowercase letters
