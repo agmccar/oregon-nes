@@ -5,7 +5,7 @@ def dec2hexasm(a):
     if abs(a) > 255:
         raise Exception("int too large to convert to byte")
     if a < 0:
-        a = 80 + abs(a)
+        a = 128 + abs(a)
     return f"${hex(a)[2:].rjust(2,'0')}"
 
 def parse(a):
@@ -33,38 +33,94 @@ def parse(a):
 def pack(a):
     if 'incbin' in a:
         return a
-    b = []
     a = a.split(',')
-    repeat = 0
-    literal = 0
-    c = []
+    run, runs = [], []
     for i in range(len(a) - 1):
         if a[i] == a[i+1]:
-            repeat += 1
-            if literal:
-                c.append(literal)
-            literal = 0
+            run.append(a[i])
         else:
-            if repeat > 1:
-                c.append(-(repeat+1))
-                if repeat+1 > 127:
-                    raise Exception(f"{repeat+1} repetitions is too many")
-            else:
-                literal += 1
-            b.append(a[i])
-            repeat = 0
-    # b = [','.join(b), c]
-    d = []
-    for i in c:
-        d.append(dec2hexasm(i))
-        if i >= 0:
-            for j in range(i):
-                d.append(b.pop(0))
+            run.append(a[i])
+            runs.append(run)
+            run = []
+    if a[-2] == a[-1]:
+        run.append(a[-1])
+    else:
+        run = [a[-1]]
+    runs.append(run)
+    if ','.join(a) != ','.join([','.join(run) for run in runs]):
+        print(','.join(a))
+        print(runs)
+        raise Exception("Bad compression")
+    segment, segments = [], []
+    def addsegment(segment, segments):
+        if len(segment) >= 128:
+            batch, batches = [], []
+            i = 0
+            while len(segment) > 0:
+                batch.append(segment.pop(0))
+                i += 1
+                if i == 127:
+                    batches.append(batch)
+                    i = 0
+                    batch = []
+            batches.append(batch)
+            for batch in batches:
+                segments.append([dec2hexasm(len(batch))] + batch)
         else:
-            d.append(b.pop(0))
-    b = ','.join(d)
+            segments.append([dec2hexasm(len(segment))] + segment)
+        return segments
 
-    return b
+    for run in runs:
+        if len(run) <= 2:
+            for i in run:
+                segment.append(i)
+        else:
+            if len(segment):
+                segments = addsegment(segment, segments)
+            segments.append([dec2hexasm(-len(run)), run[0]])
+            segment = []
+    if len(segment):
+        segments = addsegment(segment, segments)
+    return ','.join([','.join(segment) for segment in segments])
+
+def verify(a, b):
+    if 'incbin' in a:
+        return True
+    c = []
+    header = 0
+    b = b.split(',')
+    a = a.split(',')
+    i = 0
+    print(f"Verifying segment, unpacked bytes: {len(a)}, Packed bytes: {len(b)}", end='')
+    if len(b) > len(a):
+        print(f"unpacked bytes: {a}")
+        input(f"Packed bytes: {b}")
+    while len(c) < len(a):
+        try:
+            header = int(b[i].replace('$',''),16)
+        except:
+            print(f"i: {i}\nlen(a): {len(a)}\nlen(b): {len(b)}\nlen(c): {len(c)}")
+            print(header)
+        i += 1
+        if header > 128:
+            header -= 128
+            for j in range(header):
+                c.append(b[i])
+            i += 1
+        else:
+            for j in range(header):
+                c.append(b[i])
+                i += 1
+        if a[:len(c)] != c:
+            print("Original:",a[:len(c)])
+            print(f"Unpacked: {c}")
+            raise Exception("Bad compression")
+    if a != c:
+        print('...Failed')
+        raise Exception("Bad compression")
+    else:
+        print('...OK')
+        return True
 
 def main():
     asm_filenames = []
@@ -89,12 +145,14 @@ def main():
                 i = label.split('\n')
                 a = parse(i[:-1])
                 asm_data[filename][asm_label] = b = pack(a)
+                verify(a, b)
                 if 'incbin' not in b:
                     original_size[asm_label] = len(a.split(','))
                     packed_size[asm_label] = len(b.split(','))
                 asm_label = i[-1]
             a = parse(text[-1].split('\n'))
             asm_data[filename][asm_label] = b = pack(a)
+            verify(a, b)
             if 'incbin' not in b:
                 original_size[asm_label] = len(a.split(','))
                 packed_size[asm_label] = len(b.split(','))
@@ -108,8 +166,12 @@ def main():
     for filename in chr_filenames:
         with open(f"{filename}", 'rb') as f:
             a = ','.join([dec2hexasm(int(i,16)) for i in f.readlines()[0].hex(',').split(',')])
+            # input(f"Original data: {a}")
             original_size[filename] = len(a.split(','))
-            a = pack(a)
+            b = pack(a)
+            # input(f"Packed data: {a}")
+            verify(a, b)
+            a = b
             packed_size[filename] = len(a.split(','))
             a = a.replace(',','').replace('$','')
             with open(f"{filename.replace('raw/','')}", 'wb') as f:

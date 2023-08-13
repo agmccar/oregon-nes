@@ -920,3 +920,22 @@
     Done:
     RTS
 .endproc
+
+.proc DecrementCounter
+    PHA
+    LDA counter
+    BNE :+
+    DEC counter+1
+    :
+    DEC counter
+    PLA
+    RTS
+.endproc
+
+.proc IncrementPointerY
+    INY
+    BNE :+
+    INC pointer+1
+    :
+    RTS
+.endproc

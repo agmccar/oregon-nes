@@ -838,18 +838,20 @@
 
     Attributes:
     JSR CopyCHRPatternB
-    LDA PPUSTATUS   ; set attribute table
+    LDA helper ; set attribute table
+    STA pointer
+    LDA helper+1
+    STA pointer+1
+    LDA #6*8
+    STA counter
+    LDA #0
+    STA counter+1
+    LDA PPUSTATUS
     LDA #$23
     STA PPUADDR
     LDA #$C0
     STA PPUADDR
-    LDY #0
-    :
-    LDA (helper), Y
-    STA PPUDATA
-    INY
-    CPY #8*6
-    BNE :-
+    JSR UnpackData
     LDA #%11110101
     LDX #0
     :
@@ -865,32 +867,98 @@
     CPX #8
     BNE :-
 
-    LDA PPUSTATUS   ; draw image
+    LDA helper2   ; draw image
+    STA pointer
+    LDA helper2+1
+    STA pointer+1
+    LDA #$80 ; 640 bytes for bg image (#$280)
+    STA counter
+    LDA #$02
+    STA counter+1
+    LDA PPUSTATUS
     LDA #$20
     STA PPUADDR
     LDA #$40
     STA PPUADDR
-
-    LDY #0
-    LDX #3
-    :
-    LDA (helper2), Y
-    STA PPUDATA
-    INY
-    CPX #1
-    BNE :+
-    CPY #$80
-    BNE :+
-    JMP :++
-    :
-    CPY #0
-    BNE :--
-    INC helper2+1
-    DEX
-    BNE :--
-    :
+    JSR UnpackData
 
     LDY #1
     JSR bankswitch_y
+    RTS
+.endproc
+
+.proc CopyCHRTiles ; copy both chr tables from ROM bank to CHR RAM
+    ; @param pointer: chr binary
+    LDY #0
+    STY PPUMASK
+    STY PPUADDR
+    STY PPUADDR
+    LDX #$20
+    :
+    LDA (pointer), Y
+    STA PPUDATA
+    INY
+    BNE :-
+    INC pointer+1
+    DEX
+    BNE :-
+    RTS
+.endproc
+
+.proc CopyCHRPatternB
+    ; copy 13 rows of 16 tiles each to Pattern B
+    ; @param pointer: location of compressed data
+    LDA #$00 ; load 13x16x16 into counter (number of bytes to copy)
+    STA counter
+    LDA #$0D
+    STA counter+1
+    LDA #0
+    STA PPUMASK
+    LDA #$10
+    STA PPUADDR
+    LDA #$00
+    STA PPUADDR
+    JSR UnpackData
+.endproc
+
+.proc UnpackData
+    ; PPUADDR should be set immediately before this subroutine
+    ; @param pointer: location of compressed data 
+    ; @param counter: total unpacked bytes to write to PPUDATA
+    LDY #0
+    NextSegment:
+    LDA counter ; break loop if counter is depleted
+    BNE :+
+    LDA counter+1
+    BNE :+
+    JMP Done
+    :
+    LDA (pointer), Y ; read header byte
+    BPL Literal
+    AND #$7f ; write repeated run of bytes
+    TAX
+    JSR IncrementPointerY
+    LDA (pointer), Y
+    :
+    STA PPUDATA
+    JSR DecrementCounter
+    DEX
+    CPX #0
+    BNE :-
+    JSR IncrementPointerY
+    JMP NextSegment
+    Literal: ; write literal bytes
+    TAX
+    JSR IncrementPointerY
+    :
+    LDA (pointer), Y
+    STA PPUDATA
+    JSR DecrementCounter
+    JSR IncrementPointerY
+    DEX
+    CPX #0
+    BNE :-
+    JMP NextSegment
+    Done:
     RTS
 .endproc

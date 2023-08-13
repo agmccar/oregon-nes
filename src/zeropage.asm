@@ -2,6 +2,7 @@
 
 currentBank:        .res 1
 pointer:            .res 2
+counter:            .res 2
 sprite0hit:         .res 1
 helper:             .res 2
 helper2:            .res 2
