@@ -85,7 +85,13 @@
 ## Hunting minigame
 
 - [ ] hunting graphics
+    - [x] tile/sprite data
+    - [ ] animation code
 - [ ] hunting logic
+    - [ ] movement
+    - [ ] shooting
+    - [ ] collisions
+    - [ ] timer
 
 ## Trade screen
 
