@@ -1016,22 +1016,21 @@
     DEX
     BNE :-
 
-    LDA PPUSTATUS   ; draw image
+    LDA helper2 ; set attribute table
+    STA pointer
+    LDA helper2+1
+    STA pointer+1
+    LDA #$00
+    STA counter
+    LDA #$03
+    STA counter+1
+    LDA PPUSTATUS
     LDA #$20
     STA PPUADDR
     LDA #$40
     STA PPUADDR
-    LDY #0
-    LDX #3
-    :
-    LDA (helper2), Y
-    STA PPUDATA
-    INY
-    CPY #0
-    BNE :-
-    INC helper2+1
-    DEX
-    BNE :-
+    JSR UnpackData
+
     LDY #1
     JSR bankswitch_y
     JSR DoneBulkDrawing
