@@ -15,7 +15,6 @@
 - [ ] choose occupation menu
 - [ ] Name party members graphics
 - [ ] decide which month to leave menu
-- [ ]
 
 ## Shop screen
 
@@ -39,7 +38,7 @@
 - [x] weather/climate data tables
 - [x] calculate weather daily
 - [ ] traveling screen graphics
-    - [ ] oxen and wagon graphics
+    - [x] oxen and wagon graphics
     - [x] animated oxen and wagon on screen
     - [x] landmark sprites
     - [ ] display landmark sprites on screen
