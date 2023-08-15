@@ -3,7 +3,13 @@ import textwrap
 import re
 
 TEXTLINE_TILES = 4*6
-PUNCT = {".":1,",":2,"!":3,"?":4}
+PUNCT = {
+    " ": 0,
+    ".": 1,
+    "@": 2, # actually a comma
+    "!": 3,
+    "?": 4
+}
 SUBSTR_LEN = 2
 LITERAL_CHAR = 210
 SPECIAL_CHAR = {
@@ -13,7 +19,7 @@ SPECIAL_CHAR = {
     ';': LITERAL_CHAR+29,
     ':': LITERAL_CHAR+30,
     '.': LITERAL_CHAR+31,
-    ',': LITERAL_CHAR+32,
+    '@': LITERAL_CHAR+32, # actually a comma
     '0': LITERAL_CHAR+33,
     '1': LITERAL_CHAR+34,
     '2': LITERAL_CHAR+35,
@@ -21,29 +27,41 @@ SPECIAL_CHAR = {
     '6': LITERAL_CHAR+37,
     '7': LITERAL_CHAR+38,
 }
+SPECIAL_CHAR_ASM = {
+    "'": "_AP",
+    "-": "_HY",
+    '"': "_QT",
+    ';': "_SC",
+    ':': "_CL",
+    '.': "_PD",
+    '@': "_CM", # actually a comma
+}
 
-def verify_seg_headers(segments,seg_headers):
-    segs = []
-    for sh in seg_headers:
-        h = sh.split(',')
-        text = h.pop()
-        seg = ""
-        p = {v: k for k, v in PUNCT.items()}[int(h.pop(0)[2:],16)]
-        h = [int(i,16) for i in ''.join(h).replace('$','')]
-        ix = 0
-        for i in h:
-            seg += text[ix:ix+i]+" "
-            ix += i
-        seg = seg.strip()
-        seg += p
-        segs.append(seg)
-    if segs != segments:
-        print(segs)
-        print(segments)
-        raise Exception("Bad segment headers")
-    return True
+def verify_segment_header(segment, header):
+    # segment example:
+    #   "SOME FOLKS SEEM TO THINK THAT TWO 
+    #    OXEN ARE ENOUGH TO GET THEM TO OREGON!"
+    # header example:
+    #   "$83,$45,$42,$54,$34,$36,$23,$42,$60"
+    header = header.split(',')
+    hbyte = [i for i in header.pop(0).replace("$","")]
+    hlen = int(hbyte[0], 16)
+    punct = {v: k for k, v in PUNCT.items()}[int(hbyte[1], 16)]
+    if len(header) != hlen:
+        e = f"Header length ({len(header)}) does not match expected ({hlen})"
+        e += f" (hbyte: {hbyte}; Header: {header}; Segment: {segment})"
+        raise Exception(e)
+    if punct != segment[-1]:
+        e = f"Header punctuation ({punct}) does not match expected ({segment[-1]})"
+        raise Exception(e)
+    wlen = [int(i,16) for i in ''.join(header).replace('$','')]
+    if wlen[-1] == 0:
+        wlen = wlen[:-1]
+    seglen = sum(wlen)+len(wlen)
+    if seglen != len(segment):
+        raise Exception(f"Bad headers: Reconstructed segment length ({seglen}) does not match original segment length ({len(segment)})")
 
-def verify_quote_bytes(qbytes, qraw, substr_dict):
+def verify_segment(qraw, qbytes, substr_dict):
     debug = []
     try:
         debug.append(f"Dict: {str(substr_dict)}")
@@ -142,223 +160,186 @@ def most_common_substring(s):
         pass
     return ''
 
-with open('../src/data/talk.txt') as f:
-    text = ''.join(f.readlines())
+def parse_raw_text(filename):
+    with open(filename) as f:
+        text = ''.join(f.readlines())
+    talk_data = {}
+    text = text.split("##")[1:]
+    for section in text:
+        a = section.split('\n\n')
+        loc = a.pop(0).strip()
+        talk_data[loc] = []
+        for n in range(len(a)):
+            if not len(a[n].strip()):
+                continue
+            speaker_raw = a[n].split(' tells you:\n')[0].strip()
+            quote_raw = a[n].split(' tells you:\n')[1].replace("\n"," ").strip()[1:-1]
+            talk_data[loc].append({
+                'speaker_raw': speaker_raw,
+                #'speaker_wrap': textwrap.wrap(speaker_raw+" tells you:", width=TEXTLINE_TILES),
+                'quote_raw': quote_raw,
+                #'quote_wrap': textwrap.wrap('"'+quote_raw+'"', width=TEXTLINE_TILES),
+            })
+    return talk_data
 
-location = {}
-text = text.split("##")[1:]
+def write_talk_tmp(filename, talk_data):
+    with open(filename,'w') as f:
+        for loc in talk_data:
+            for i in range(3):
+                f.write(talk_data[loc][i]['speaker_raw'].upper()+'\n')
+                f.write(talk_data[loc][i]['quote_raw'].upper()+'\n')
 
-for section in text:
-    a = section.split('\n\n')
-    loc = a.pop(0).strip()
-    location[loc] = []
-    for n in range(len(a)):
-        if not len(a[n].strip()):
-            continue
-        speaker_raw = a[n].split(' tells you:\n')[0].strip()
-        quote_raw = a[n].split(' tells you:\n')[1].replace("\n"," ").strip()[1:-1]
-        location[loc].append({
-            'speaker_raw': speaker_raw,
-            'speaker_wrap': textwrap.wrap(speaker_raw+" tells you:", width=TEXTLINE_TILES),
-            # 'speaker_chunks': [speaker_raw[i:i+2] for i in range(0,len(speaker_raw),2)],
-            'quote_raw': quote_raw,
-            'quote_wrap': textwrap.wrap('"'+quote_raw+'"', width=TEXTLINE_TILES),
-            # 'quote_chunks': [quote_raw[i:i+2] for i in range(0,len(quote_raw),2)]
-        })
+def compress_segment(segment, substr_dict):
+    # Header bytes, list of "$XX" hex strings
+    header_bytes = []
 
-all_words = {}
-for loc in location:
-    for i in location[loc]:
-        words = i['speaker_raw'].split(' ') + i['quote_raw'].split(' ')
-        for w in words:
-            w = re.sub("[!?,\.]$", "", w).upper()
-            if w in all_words:
-                all_words[w] += 1
-            else:
-                all_words[w] = 1
+    # Punctuation nibble (first half of first header byte)
+    header_bytes.append(f"{hex(PUNCT[segment[-1]])[2:]}")
+    s = segment[:-1]
 
-with open('../src/data/talk_tmp.txt','w') as f:
-    for loc in location:
-        for i in range(3):
-            f.write(location[loc][i]['speaker_raw'].upper()+'\n')
-            f.write(location[loc][i]['quote_raw'].upper()+'\n')
+    # Word length header bytes
+    wlen = [len(i) for i in s.split(' ')]
+    wlen = ''.join([hex(i)[2:] for i in wlen])
+    wlen = [wlen[i:i+2] for i in range(0,len(wlen),2)]
+    if len(wlen[-1]) == 1:
+        wlen[-1] = wlen[-1]+"0"
+    for w in wlen:
+        header_bytes.append(f"${hex(int(w,16))[2:]}")
 
-mass_text = ""
-for loc in location:
-    for i in range(3):
-        raw = location[loc][i]['quote_raw']+' '
-        raw = raw.replace('! ','!#')
-        raw = raw.replace('? ','?#')
-        raw = raw.replace(', ',',#')
-        raw = raw.replace('. ','.#')
-        segments = raw.split('#')[:-1]
-        seg_headers = []
-        for s in segments:
-            h = []
-            h.append(f"{hex(PUNCT[s[-1]])[2:]}")
-            s = s[:-1]
-            wlen = [len(i) for i in s.split(' ')]
-            wlen = ''.join([hex(i)[2:] for i in wlen])
-            wlen = [wlen[i:i+2] for i in range(0,len(wlen),2)]
-            if len(wlen[-1]) == 1:
-                wlen[-1] = wlen[-1]+"0"
-            for w in wlen:
-                h.append(f"${hex(int(w,16))[2:]}")
-            h.append(''.join(s.split(' ')).upper())
-            mass_text += h[-1]
-            h[0] = f"${hex(len(h[1:])-1)[2:]}"+h[0]
-            seg_headers.append(",".join(h))
-        location[loc][i]['quote_segments'] = [s.upper() for s in segments]
-        location[loc][i]['quote_seg_headers'] = seg_headers
-        verify_seg_headers(location[loc][i]['quote_segments'],location[loc][i]['quote_seg_headers'])
+    # Header length nibble (second half of first header byte)
+    header_bytes[0] = f"${hex(len(header_bytes[1:]))[2:]}"+header_bytes[0]
 
-substr_dict = {}
-m = mass_text
-for i in range(1,256):
-    # print(m)
-    # print(substr_dict)
-    # print(f"Text length {len(m)}")
-    c = most_common_substring([x for x in m.split('$') if len(x)>=2])
-    substr_dict[i] = c
-    if len(c):
-        m = m.replace(c,'$')
-# print(m)
-# print(substr_dict)
-# print(f"Text length {len(m)}")
-# input("")
-substr_dict = {k:v for k,v in substr_dict.items() if len(v)}
-
-loners = []
-for loc in location:
-    for i in range(3):
-        qbytes = []
-        shs = location[loc][i]['quote_seg_headers']
-        location[loc][i]['quote_seg_headers'] = [','.join(j.split(',')[:-1]) for j in location[loc][i]['quote_seg_headers']]
-        seg_bytes = []
-        for sh in shs:
-            text = sh.split(',')[-1]
-            qbytes += sh.split(',')[:-1]
-            for k in substr_dict:
-                text = text.replace(substr_dict[k], f",${hex(k)[2:].rjust(2,'0')},")
-            text = text.split(',')
-            text = [j for j in text if len(j)]
-            t = []
-            for j in text:
-                if '$' not in j:
-                    j = [k for k in j]
-                    t += j
-                else:
-                    t.append(j)
-            text = t
-            t = []
-            for j in text:
-                if len(j) == 1:
-                    if j not in SPECIAL_CHAR:
-                        t.append(f"${hex(LITERAL_CHAR + ord(j) - ord('A'))[2:]}")
-                    else:
-                        t.append(f"${hex(SPECIAL_CHAR[j])[2:]}")
-                        # if f"${hex(SPECIAL_CHAR[j])[2:]}" == "$f8":
-                        #     input(j)
-                        #     input(text)
-                    loners.append(j)
-                else:
-                    t.append(j)
-            text = ','.join(t)
-            qbytes += t
-            seg_bytes.append(text)
-        location[loc][i]['quote_seg_bytes'] = seg_bytes
-        location[loc][i]['quote_bytes'] = ','.join(qbytes)
-        # try:
-        verify_quote_bytes(location[loc][i]['quote_bytes'], location[loc][i]['quote_raw'].upper(), substr_dict)
-        # except:
-        #     pp.pprint(location[loc][i])
-        #     print(location[loc][i]['quote_bytes'])
-        #     print(location[loc][i]['quote_raw'].upper())
-        #     raise Exception
-
-# pp.pprint(location)
-# print({i for i in loners})
-# print(max([max([len(j['speaker_raw']) for j in location[i]]) for i in location]))
-
-# print([[len(j['quote_wrap']) for j in location[i]] for i in location])
-
-# print(substrings)
-# print(len(substrings))
-# print(sum([i[1] for i in substrings]))
-
-SPECIAL_CHAR = {
-    "'": "_AP",
-    "-": "_HY",
-    '"': "_QT",
-    ';': "_SC",
-    ':': "_CL",
-    '.': "_PD",
-    ',': "_CM",
-}
-bytes_before = 0
-bytes_after = 0
-s = [0 for i in range(256)]
-for i in substr_dict:
-    s[i] = [j for j in substr_dict[i]]
-    k = []
-    for j in s[i]:
-        if j in SPECIAL_CHAR:
-            k.append(SPECIAL_CHAR[j])
+    # Verify header bytes
+    header = ','.join(header_bytes)
+    verify_segment_header(segment, header)
+    
+    # Compressed payload bytes, list of "$XX" hex strings
+    data_bytes = []
+    text = squish_segment(segment)
+    for k in substr_dict:
+        text = text.replace(substr_dict[k], f",${hex(k)[2:].rjust(2,'0')},")
+    text = text.split(',')
+    text = [j for j in text if len(j)]
+    t = []
+    for j in text:
+        if '$' not in j:
+            j = [k for k in j]
+            t += j
         else:
-            k.append(f"_{j}_")
-    s[i] = ",".join(k)
-s = [i for i in s if i != 0]
-with open('../src/data/talk.asm','w') as f:
-    f.write(f"; First header byte:\n")
-    f.write(f"; %00000000\n")
-    f.write(f";  ||||++++ Type of punctiation- '.':1, ',':2, '!':3, '?':4\n")
-    f.write(f";  ++++---- Remaining length of header\n")
-    f.write(f"\n; (2nd - nth) header bytes:\n; Every nibble is the length of a word.\n")
-    f.write(f"; %00000000, %00000000,...\n")
-    f.write(f";  ++++--------------- Length of first word\n")
-    f.write(f";      ++++----------- Length of 2nd word\n")
-    f.write(f";             ++++---- Length of 3rd word\n")
-    f.write(f";                 ++++ Length of 4th word, etc.\n\n")
-    f.write(f"; Data segment bytes:\n; $00      : Unused\n")
-    f.write(f"; $01 - ${hex(LITERAL_CHAR)[2:]}: Dictionary\n")
-    f.write(f"; ${hex(LITERAL_CHAR+1)[2:]} - ${hex(LITERAL_CHAR+26)[2:]}: Literal A-Z\n")
-    f.write(f"; ${hex(LITERAL_CHAR+26+1)[2:]} - ${hex(LITERAL_CHAR+26+len(SPECIAL_CHAR))[2:]}: Literal special chars: {str([i for i in SPECIAL_CHAR])}\n")
-    f.write(f"; ${hex(LITERAL_CHAR+26+len(SPECIAL_CHAR)+1)[2:]} - $ff: Unused\n")
-    f.write(f"\n")
-    f.write(f"talkDictionary:\n")
-    f.write(f"    ; range: $01 - $d1\n")
-    for i in s:
-        f.write(f"    .byte {i}\n")
-    f.write("\n")
-    for loc in location:
-        for i in range(3):
-            l = loc.replace(" ","").replace("Crossing","")
-            f.write(f"talk{l}{i+1}:\n")
-            w = textwrap.wrap(location[loc][i]['quote_bytes'].replace(',',', '),width=70)
-            for j in w:
-                j = j.replace(' ','')
-                if j[-1] == ',':
-                    j = j[:-1]
-                # else:
-                #     j = j + ",$00"
-                f.write(f"    .byte {j}\n")
-            f.write("\n")
-            bytes_before += len(location[loc][i]['quote_raw'])
-            bytes_after += len(location[loc][i]['quote_bytes'].split(','))
-bytes_after += len(substr_dict)*2
-print(f"Text bytes: {bytes_before}\nCompressed: {bytes_after}\nSaved: {bytes_before-bytes_after} ({100*(bytes_before-bytes_after)/bytes_before:2.0f}%)")
+            t.append(j)
+    text = t
+    t = []
+    for j in text:
+        if len(j) == 1:
+            if j not in SPECIAL_CHAR:
+                t.append(f"${hex(LITERAL_CHAR + ord(j) - ord('A'))[2:]}")
+            else:
+                t.append(f"${hex(SPECIAL_CHAR[j])[2:]}")
+        else:
+            t.append(j)
+    data_bytes += t
 
-#print(substr_dict)
-# Word length byte - halve the space taken by spaces
-# %00000000
-#  ||||++++ word length
-#  ++++---- another word length
-# reserved: %0000: no word
-# reserved: %1111: new segment 
-# $fb: segment ending in period
-# $fc: segment ending in comma
-# $fd: segment ending in exclamation mark
-# $fe: segment ending in question mark
+    # Verify entire segment
+    bytes_full = ",".join(header_bytes + data_bytes)
+    verify_segment(segment, bytes_full, substr_dict)
 
-# 220-245: literal a-z
-# 246: literal '
+    return bytes_full
+
+def squish_segment(segment):
+    segment = segment[:-1] if segment[-1] in PUNCT else segment
+    return ''.join(segment.split(' ')).upper()
+
+def speaker_segment(text):
+    text += ' '
+    return text.replace(',','@').upper()
+
+def text_to_segments(text):
+    segments = text.replace(',','@').upper()+' '
+    for p in PUNCT:
+        segments = segments.replace(f"{p} ",f"{p}#")
+    return segments.split('#')[:-1]
+
+def create_substr_dict(mass_text):
+    substr_dict = {}
+    for i in range(1, 256):
+        c = most_common_substring([x for x in mass_text.split('$') if len(x)>=2])
+        substr_dict[i] = c
+        if len(c):
+            mass_text = mass_text.replace(c,'$')
+    return {k:v for k,v in substr_dict.items() if len(v)}
+
+def write_asm(filename, substr_dict, talk_data):
+    bytes_before = 0
+    bytes_after = 0
+    s = [0 for i in range(256)]
+    for i in substr_dict:
+        s[i] = [j for j in substr_dict[i]]
+        k = []
+        for j in s[i]:
+            if j in SPECIAL_CHAR_ASM:
+                k.append(SPECIAL_CHAR_ASM[j])
+            else:
+                k.append(f"_{j}_")
+        s[i] = ",".join(k)
+    s = [i for i in s if i != 0]
+    with open(filename,'w') as f:
+        f.write(f"; First header byte:\n")
+        f.write(f"; %00000000\n")
+        f.write(f";  ||||++++ Type of punctiation- '.':1, ',':2, '!':3, '?':4\n")
+        f.write(f";  ++++---- Remaining length of header\n")
+        f.write(f"\n; (2nd - nth) header bytes:\n; Every nibble is the length of a word.\n")
+        f.write(f"; %00000000, %00000000,...\n")
+        f.write(f";  ++++--------------- Length of first word\n")
+        f.write(f";      ++++----------- Length of 2nd word\n")
+        f.write(f";             ++++---- Length of 3rd word\n")
+        f.write(f";                 ++++ Length of 4th word, etc.\n\n")
+        f.write(f"; Data segment bytes:\n; $00      : Unused\n")
+        f.write(f"; $01 - ${hex(LITERAL_CHAR)[2:]}: Dictionary\n")
+        f.write(f"; ${hex(LITERAL_CHAR+1)[2:]} - ${hex(LITERAL_CHAR+26)[2:]}: Literal A-Z\n")
+        f.write(f"; ${hex(LITERAL_CHAR+26+1)[2:]} - ${hex(LITERAL_CHAR+26+len(SPECIAL_CHAR_ASM))[2:]}: Literal special chars: {str([i for i in SPECIAL_CHAR_ASM])}\n")
+        f.write(f"; ${hex(LITERAL_CHAR+26+len(SPECIAL_CHAR_ASM)+1)[2:]} - $ff: Unused\n")
+        f.write(f"\n")
+        f.write(f"talkDictionary:\n")
+        f.write(f"    ; range: $01 - $d1\n")
+        for i in s:
+            f.write(f"    .byte {i}\n")
+        f.write("\n")
+        for loc in talk_data:
+            for i in range(3):
+                l = loc.replace(" ","").replace("Crossing","")
+                f.write(f"talk{l}{i+1}:\n")
+                w = textwrap.wrap(talk_data[loc][i]['bytes'].replace(',',', '),width=70)
+                for j in w:
+                    j = j.replace(' ','')
+                    if j[-1] == ',':
+                        j = j[:-1]
+                    # else:
+                    #     j = j + ",$00"
+                    f.write(f"    .byte {j}\n")
+                f.write("\n")
+                bytes_before += len(talk_data[loc][i]['quote_raw'])
+                bytes_after += len(talk_data[loc][i]['bytes'].split(','))
+    bytes_after += len(substr_dict)*2
+    print(f"Text bytes: {bytes_before}\nCompressed: {bytes_after}\nSaved: {bytes_before-bytes_after} ({100*(bytes_before-bytes_after)/bytes_before:2.0f}%)")
+
+def main():
+    talk_data = parse_raw_text('../src/data/talk.txt')
+    mass_text = ""
+    for loc in talk_data:
+        for i in range(len(talk_data[loc])):
+            segments = text_to_segments(talk_data[loc][i]['quote_raw'])
+            for segment in segments:
+                mass_text += squish_segment(segment)
+    substr_dict = create_substr_dict(mass_text)
+    for loc in talk_data:
+        for i in range(len(talk_data[loc])):
+            b = []
+            segments = [speaker_segment(talk_data[loc][i]['speaker_raw'])]
+            segments += text_to_segments(talk_data[loc][i]['quote_raw'])
+            for segment in segments:
+                b.append(compress_segment(segment, substr_dict))
+            talk_data[loc][i]['bytes'] = ",".join(b)
+    write_asm('../src/data/talk.asm', substr_dict, talk_data)
+
+if __name__ == "__main__":
+    main()
