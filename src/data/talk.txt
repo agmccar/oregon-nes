@@ -177,7 +177,6 @@ he put in this blacksmith shop and small store to supply the
 overlanders. Does a big trade in horses, Jim and his partner,
 Vasquez."
 
-
 ## Green River Crossing
 
 A young boy tells you:
@@ -210,7 +209,7 @@ A young boy tells you:
 "My job every day is to find wood for the cook fire. Sometimes it's
 very hard to find enough, so I store extra pieces in a box under the
 wagon. On the prairie I gathered buffalo chips to burn when there
-wasn't any wood. "
+wasn't any wood."
 
 Miles Hendrick tells you:
 "I've heard it said that there are many cutoffs to take to shorten
