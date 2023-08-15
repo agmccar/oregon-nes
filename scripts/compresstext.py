@@ -286,15 +286,69 @@ for loc in location:
 # print(len(substrings))
 # print(sum([i[1] for i in substrings]))
 
+SPECIAL_CHAR = {
+    "'": "_AP",
+    "-": "_HY",
+    '"': "_QU",
+    ';': "_SC",
+    ':': "_CL",
+    '.': "_PD",
+    ',': "_CM",
+}
 bytes_before = 0
 bytes_after = 0
-for loc in location:
-    for i in range(3):
-        bytes_before += len(location[loc][i]['quote_raw'])
-        bytes_after += len(location[loc][i]['quote_bytes'].split(','))
+s = [0 for i in range(256)]
+for i in substr_dict:
+    s[i] = [j for j in substr_dict[i]]
+    k = []
+    for j in s[i]:
+        if j in SPECIAL_CHAR:
+            k.append(SPECIAL_CHAR[j])
+        else:
+            k.append(f"_{j}_")
+    s[i] = ",".join(k)
+s = [i for i in s if i != 0]
+with open('../src/data/talk.asm','w') as f:
+    f.write(f"; First header byte:\n")
+    f.write(f"; %00000000\n")
+    f.write(f";  ||||++++ Type of punctiation- '.':1, ',':2, '!':3, '?':4\n")
+    f.write(f";  ++++---- Remaining length of header\n")
+    f.write(f"\n; (2nd - nth) header bytes:\n; Every nibble is the length of a word.\n")
+    f.write(f"; %00000000, %00000000,...\n")
+    f.write(f";  ++++--------------- Length of first word\n")
+    f.write(f";      ++++----------- Length of 2nd word\n")
+    f.write(f";             ++++---- Length of 3rd word\n")
+    f.write(f";                 ++++ Length of 4th word, etc.\n\n")
+    f.write(f"; Data segment bytes:\n; $00      : Unused\n")
+    f.write(f"; $01 - ${hex(LITERAL_CHAR)[2:]}: Dictionary\n")
+    f.write(f"; ${hex(LITERAL_CHAR+1)[2:]} - ${hex(LITERAL_CHAR+26)[2:]}: Literal A-Z\n")
+    f.write(f"; ${hex(LITERAL_CHAR+26+1)[2:]} - ${hex(LITERAL_CHAR+26+len(SPECIAL_CHAR))[2:]}: Literal special chars: {str([i for i in SPECIAL_CHAR])}\n")
+    f.write(f"; ${hex(LITERAL_CHAR+26+len(SPECIAL_CHAR)+1)[2:]} - $ff: Unused\n")
+    f.write(f"\n")
+    f.write(f"talkDictionary:\n")
+    f.write(f"    ; range: $01 - $d1\n")
+    for i in s:
+        f.write(f"    .byte {i}\n")
+    f.write("\n")
+    for loc in location:
+        for i in range(3):
+            l = loc.replace(" ","").replace("Crossing","")
+            f.write(f"talk{l}{i+1}:\n")
+            w = textwrap.wrap(location[loc][i]['quote_bytes'].replace(',',', '),width=70)
+            for j in w:
+                j = j.replace(' ','')
+                if j[-1] == ',':
+                    j = j[:-1]
+                # else:
+                #     j = j + ",$00"
+                f.write(f"    .byte {j}\n")
+            f.write("\n")
+            bytes_before += len(location[loc][i]['quote_raw'])
+            bytes_after += len(location[loc][i]['quote_bytes'].split(','))
 bytes_after += len(substr_dict)*2
 print(f"Text bytes: {bytes_before}\nCompressed: {bytes_after}\nSaved: {bytes_before-bytes_after} ({100*(bytes_before-bytes_after)/bytes_before:2.0f}%)")
 
+#print(substr_dict)
 # Word length byte - halve the space taken by spaces
 # %00000000
 #  ||||++++ word length
