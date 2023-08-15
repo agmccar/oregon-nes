@@ -289,7 +289,7 @@ for loc in location:
 SPECIAL_CHAR = {
     "'": "_AP",
     "-": "_HY",
-    '"': "_QU",
+    '"': "_QT",
     ';': "_SC",
     ':': "_CL",
     '.': "_PD",

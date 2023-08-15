@@ -21,6 +21,7 @@
     .include "data/rom1.asm"
     .include "data/climate.asm"
     .include "code/random_event.asm"
+    .include "data/talk.asm"
 
 .segment "ROM2"
     .include "data/landmarkImageA.asm"
