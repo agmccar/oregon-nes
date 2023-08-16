@@ -36,6 +36,7 @@ SPECIAL_CHAR_ASM = {
     '.': "_PD",
     '@': "_CM", # actually a comma
 }
+HLENS = []
 
 def verify_segment_header(segment, header):
     # segment example:
@@ -43,6 +44,7 @@ def verify_segment_header(segment, header):
     #    OXEN ARE ENOUGH TO GET THEM TO OREGON!"
     # header example:
     #   "$83,$45,$42,$54,$34,$36,$23,$42,$60"
+    HLENS.append(header)
     header = header.split(',')
     hbyte = [i for i in header.pop(0).replace("$","")]
     hlen = int(hbyte[0], 16)
@@ -285,7 +287,7 @@ def write_asm(filename, substr_dict, talk_data):
     with open(filename,'w') as f:
         f.write(f"; First header byte:\n")
         f.write(f"; %00000000\n")
-        f.write(f";  ||||++++ Type of punctiation- '.':1, ',':2, '!':3, '?':4\n")
+        f.write(f";  ||||++++ Type of punctiation- '':0, '.':1, ',':2, '!':3, '?':4\n")
         f.write(f";  ++++---- Remaining length of header\n")
         f.write(f"\n; (2nd - nth) header bytes:\n; Every nibble is the length of a word.\n")
         f.write(f"; %00000000, %00000000,...\n")
@@ -293,10 +295,10 @@ def write_asm(filename, substr_dict, talk_data):
         f.write(f";      ++++----------- Length of 2nd word\n")
         f.write(f";             ++++---- Length of 3rd word\n")
         f.write(f";                 ++++ Length of 4th word, etc.\n\n")
-        f.write(f"; Data segment bytes:\n; $00      : Unused\n")
+        f.write(f"; Data segment bytes:\n; $00      : End of entire section\n")
         f.write(f"; $01 - ${hex(LITERAL_CHAR)[2:]}: Dictionary\n")
         f.write(f"; ${hex(LITERAL_CHAR+1)[2:]} - ${hex(LITERAL_CHAR+26)[2:]}: Literal A-Z\n")
-        f.write(f"; ${hex(LITERAL_CHAR+26+1)[2:]} - ${hex(LITERAL_CHAR+26+len(SPECIAL_CHAR_ASM))[2:]}: Literal special chars: {str([i for i in SPECIAL_CHAR_ASM])}\n")
+        f.write(f"; ${hex(LITERAL_CHAR+26+1)[2:]} - ${hex(LITERAL_CHAR+26+len(SPECIAL_CHAR_ASM))[2:]}: Literal special chars: {str([i.replace('@',',') for i in SPECIAL_CHAR_ASM])}\n")
         f.write(f"; ${hex(LITERAL_CHAR+26+len(SPECIAL_CHAR_ASM)+1)[2:]} - $ff: Unused\n")
         f.write(f"\n")
         f.write(f"talkDictionary:\n")
@@ -304,21 +306,25 @@ def write_asm(filename, substr_dict, talk_data):
         for i in s:
             f.write(f"    .byte {i}\n")
         f.write("\n")
+        labels = []
         for loc in talk_data:
             for i in range(3):
-                l = loc.replace(" ","").replace("Crossing","")
-                f.write(f"talk{l}{i+1}:\n")
+                label = f"talk{loc.replace(' ','').replace('Crossing','')}{i+1}"
+                labels.append(label)
+                f.write(f"{label}:\n")
+                f.write(f"    ; {len(talk_data[loc][i]['bytes'].split(','))} bytes\n")
                 w = textwrap.wrap(talk_data[loc][i]['bytes'].replace(',',', '),width=70)
                 for j in w:
                     j = j.replace(' ','')
                     if j[-1] == ',':
                         j = j[:-1]
-                    # else:
-                    #     j = j + ",$00"
                     f.write(f"    .byte {j}\n")
                 f.write("\n")
-                bytes_before += len(talk_data[loc][i]['quote_raw'])
+                bytes_before += len(talk_data[loc][i]['quote_raw'])+len(talk_data[loc][i]['speaker_raw'])
                 bytes_after += len(talk_data[loc][i]['bytes'].split(','))
+        f.write("talkPointer:\n")
+        for label in labels:
+            f.write(f"    .byte <{label},>{label}\n")
     bytes_after += len(substr_dict)*2
     print(f"Text bytes: {bytes_before}\nCompressed: {bytes_after}\nSaved: {bytes_before-bytes_after} ({100*(bytes_before-bytes_after)/bytes_before:2.0f}%)")
 
@@ -338,8 +344,10 @@ def main():
             segments += text_to_segments(talk_data[loc][i]['quote_raw'])
             for segment in segments:
                 b.append(compress_segment(segment, substr_dict))
+            b.append("$00") # end of section
             talk_data[loc][i]['bytes'] = ",".join(b)
     write_asm('../src/data/talk.asm', substr_dict, talk_data)
+    #print(HLENS[HLENS.index(max([i for i in HLENS]))])
 
 if __name__ == "__main__":
     main()
