@@ -1182,7 +1182,6 @@
 
 
 
-
     INC talkOption ; increment talkOption
     LDA talkOption
     CMP #3
