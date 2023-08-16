@@ -1115,3 +1115,80 @@
     Done:
     RTS
 .endproc
+
+.proc BufferDrawTalkText
+    LDA location ; get memory location of compressed talk text
+    ASL
+    CLC
+    ADC talkOption
+    ADC talkOption
+    TAX
+    LDA talkPointer, X
+    STA pointer
+    INX
+    LDA talkPointer, X
+    STA pointer+1
+    
+    LDY #0 ; decompress and draw talk text
+    Segment:
+    LDA (pointer), Y ; read first header byte
+    AND #$0f
+    STA helper ; punctuation type
+    LDA (pointer), Y
+    LSR
+    LSR
+    LSR
+    LSR
+    STA helper+1 ; remaining header length
+    INY
+    LDX #0 ; read word length header bytes
+    STX helper2 ; talkTextBuffer index
+    :
+    TXA
+    PHA
+    LDA (pointer), Y
+    LSR
+    LSR
+    LSR
+    LSR
+    LDX helper2
+    STA talkTextBuffer, X ; stash word lengths
+    INC helper2
+    INX
+    LDA (pointer), Y
+    AND #$0f
+    STA talkTextBuffer, X
+    INC helper2
+    PLA
+    TAX
+    INY
+    INX
+    CPX helper+1
+    BNE :-
+    LDX #0 ; begin decompress segment payload
+    Word:
+    LDA talkTextBuffer, X
+    STA helper+1 ; character length of next word
+    TXA
+    PHA
+    LDX #0
+    :
+    LDA (pointer), Y
+    CMP #210
+    BCC :+
+    ; literal character
+    :
+    ; dictionary lookup
+
+
+
+
+    INC talkOption ; increment talkOption
+    LDA talkOption
+    CMP #3
+    BNE Done
+    LDA #0
+    STA talkOption
+    Done:
+    RTS
+.endproc

@@ -52,8 +52,11 @@
     CLC
     ADC helper2
     CMP #64         ; buffer must have space for segment
-    BCC :++
+    BCC :+++
     :                   ; vblankwait
+    BIT PPUSTATUS
+    BPL :-
+    :                   ; vblankwait2 i still dont understand NMI 
     BIT PPUSTATUS
     BPL :-
     :

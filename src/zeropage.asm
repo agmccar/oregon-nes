@@ -141,6 +141,7 @@ personHealth:       .res 5   ; 1 each * 5
 
 ; Conditions -------------------------------------------------------------------
 
+talkOption:         .res 1 ; which "Talk to people" text to display
 weather:            .res 1 ; see text.asm -> weatherText
 dateYear:           .res 1 ; years since 1848
 dateMonth:          .res 1
@@ -159,4 +160,4 @@ location:           .res 1
 
 
 ;-------------------------------------------------------------------------------
-; remaining: $67
+; remaining: $66
