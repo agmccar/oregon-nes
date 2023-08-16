@@ -99,7 +99,7 @@
 
 ## Talk to people
 
-- [ ] text data
+- [x] text data
 - [ ] logic (text dependent on location)
 
 ## Landmark screen
