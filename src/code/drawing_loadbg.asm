@@ -1066,6 +1066,13 @@
     DEX
     BNE :-
     LDA PPUSTATUS
+    LDA #$3F
+    STA PPUADDR
+    LDA #$02
+    STA PPUADDR
+    LDA #C_BLUE
+    STA PPUDATA
+    LDA PPUSTATUS
     LDA #$20
     STA PPUADDR
     LDA #$60
