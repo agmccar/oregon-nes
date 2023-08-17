@@ -24,5 +24,5 @@ eventQueuePointer:  .res 1
 ;   length=5
 nametableBuffer:    .res 64
 
-; talk text header buffer, word lengths
-talkTextBuffer:     .res 32
+talkTextBuffer:     .res 32 ; buffer to store talk text word lengths
+wordBuffer:         .res 16

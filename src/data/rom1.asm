@@ -1133,28 +1133,33 @@
     INX
     LDA talkPointer, X
     STA pointer+1
-    LDA #$21 ; PPU address - start at top left
+    LDA #$20 ; PPU address - start at top left
     STA cartHelperDigit
-    LDA #$04
+    LDA #$E4
     STA cartHelperDigit+1
     LDY #0 ; decompress and draw talk text
     STY counter
-    LDA #0 ; clear talkTextBuffer
+    STY textLineHelper+3
+    LDA #0 ; clear talkTextBuffer, textLineHelper
     LDX #0
     :
     STA talkTextBuffer, X
+    STA textLineHelper, X
     INX
     CPX #32
     BNE :-
-    LDX #0 ; clear textLineHelper
+    LDX #0 ; clear popupTextLine1
+    LDA #___
     :
-    STA textLineHelper, X
+    STA popupTextLine1, X
     INX
     CPX #TEXT_POPUP_LINE_LEN
     BNE :-
+    LDA #0
+    STA textLineHelper ; reset index of char in word
     NextSegment:
     LDX #0
-    STX counter+1 ; talkTextBuffer index
+    STX counter+1 ; reset talkTextBuffer index
     LDA (pointer), Y ; read first header byte
     BNE :+
     JMP Done
@@ -1210,21 +1215,51 @@
     CLC
     ADC #_CM-1
     JSR WriteTalkTextChar ; replace last space with punctuation mark
-    JMP :+++
+    JMP NewSpace
     :
     TYA ; "tells you:"
     PHA
-    LDY #0
     LDX counter
+    LDA #___
+    :
+    JSR WriteTalkTextChar
+    INX
+    CPX #TEXT_POPUP_LINE_LEN
+    BNE :-
+    DEC counter
+    LDY #0
     :
     LDA talkTellsYou, Y
     JSR WriteTalkTextChar
+    LDA talkTellsYou, Y
     INY
     CPY #10
     BNE :-
+    LDX counter
+    LDA #___
+    :
+    JSR WriteTalkTextChar
+    INX
+    CPX #TEXT_POPUP_LINE_LEN
+    BNE :-
+    DEC counter
+    LDX counter
+    LDA #___
+    :
+    JSR WriteTalkTextChar
+    INX
+    CPX #TEXT_POPUP_LINE_LEN
+    BNE :-
+    LDA #1
+    STA textLineHelper+3 ; flag for 1 literal char
+    LDA #_QT
+    JSR WriteTalkTextChar
     PLA
     TAY
-    :
+    PLA
+    TAX ; unstash talkTextBuffer index
+    JMP NextSegment
+    NewSpace:
     LDA #___
     JSR WriteTalkTextChar ; write new space
     PLA
@@ -1320,6 +1355,10 @@
     JMP NextDataByte
     
     Done:
+    LDA #1
+    STA textLineHelper+3 ; flag for 1 literal char
+    LDA #_QT
+    JSR WriteTalkTextChar
     LDX counter
     JSR StartBufferWrite
         LDA counter
@@ -1330,7 +1369,7 @@
         JSR WriteByteToBuffer
         LDX #0
         :
-        LDA textLineHelper, X
+        LDA popupTextLine1, X
         JSR WriteByteToBuffer
         INX
         CPX counter
@@ -1348,15 +1387,38 @@
 .endproc
 
 .proc WriteTalkTextChar
-    STA textLineHelper, X
-    INX
+    PHA
+    STX textLineHelper+2 ; stash x
+    LDA textLineHelper+3 ; check single char flag
+    BEQ :+
+    LDA #0
+    STA textLineHelper+3
+    PLA
+    DEC counter
+    LDX counter
+    STA popupTextLine1, X
     INC counter
-    LDA counter
-    CMP #TEXT_POPUP_LINE_LEN
-    BNE Done
-    TYA
+    JMP Done
+    :
+    PLA
+    LDX textLineHelper ; index of char in word
+    STA wordBuffer, X
+    INC textLineHelper
+    CMP #___ ; check if there are more characters to write
+    BEQ :+
+    DEC helper+1 ; remaining chars in word
+    JMP Done
+    :
+    LDA counter ; word is done
+    CLC
+    ADC textLineHelper ; add length of word to length of text line
+    CMP #TEXT_POPUP_LINE_LEN ; check if there is space in text line for word
+    BCS :+
+    JMP WordToLine
+    :
+    TYA ; no more room in line
     PHA ; stash Y
-    LDX #TEXT_POPUP_LINE_LEN
+    LDX #TEXT_POPUP_LINE_LEN ; write line to screen
     JSR StartBufferWrite
         LDA #TEXT_POPUP_LINE_LEN
         JSR WriteByteToBuffer
@@ -1366,7 +1428,7 @@
         JSR WriteByteToBuffer
         LDX #0
         :
-        LDA textLineHelper, X
+        LDA popupTextLine1, X
         JSR WriteByteToBuffer
         INX
         CPX #TEXT_POPUP_LINE_LEN
@@ -1374,7 +1436,7 @@
     JSR EndBufferWrite
     PLA ; unstash Y
     TAY
-    CLC
+    CLC ; write a "carriage return" to screen
     LDA cartHelperDigit+1
     ADC #$20
     STA cartHelperDigit+1
@@ -1382,8 +1444,38 @@
     ADC #0
     STA cartHelperDigit
     LDX #0
-    STX counter
+    STX counter ; reset index of char in line
+    LDA #___
+    :
+    STA popupTextLine1, X ; clear popupTextLine1
+    INX
+    CPX #TEXT_POPUP_LINE_LEN
+    BNE :-
+    WordToLine: ; write finished word to line
+    LDX #0
+    :
+    TXA
+    PHA
+    LDA wordBuffer, X
+    LDX counter
+    STA popupTextLine1, X
+    INC counter
+    PLA
+    TAX
+    INX
+    CPX textLineHelper
+    BNE :-
+    ClearWordBuffer:
+    LDA #0
+    STA textLineHelper ; reset index of char in word
+    LDA #___
+    LDX #0
+    :
+    STA wordBuffer, X
+    INX
+    CPX #16
+    BNE :-
     Done:
-    DEC helper+1
+    LDX textLineHelper+2 ; unstash x
     RTS
 .endproc
