@@ -5,8 +5,8 @@ import re
 TEXTLINE_TILES = 4*6
 PUNCT = {
     " ": 0,
-    ".": 1,
-    "@": 2, # actually a comma
+    "@": 1, # actually a comma
+    ".": 2,
     "!": 3,
     "?": 4
 }
@@ -287,7 +287,8 @@ def write_asm(filename, substr_dict, talk_data):
     with open(filename,'w') as f:
         f.write(f"; First header byte:\n")
         f.write(f"; %00000000\n")
-        f.write(f";  ||||++++ Type of punctiation- '':0, '.':1, ',':2, '!':3, '?':4\n")
+        p = {k.replace('@',','):v for k,v in PUNCT.items()}
+        f.write(f";  ||||++++ Type of punctiation- {p}\n")
         f.write(f";  ++++---- Remaining length of header\n")
         f.write(f"\n; (2nd - nth) header bytes:\n; Every nibble is the length of a word.\n")
         f.write(f"; %00000000, %00000000,...\n")
@@ -296,11 +297,13 @@ def write_asm(filename, substr_dict, talk_data):
         f.write(f";             ++++---- Length of 3rd word\n")
         f.write(f";                 ++++ Length of 4th word, etc.\n\n")
         f.write(f"; Data segment bytes:\n; $00      : End of entire section\n")
-        f.write(f"; $01 - ${hex(LITERAL_CHAR)[2:]}: Dictionary\n")
-        f.write(f"; ${hex(LITERAL_CHAR+1)[2:]} - ${hex(LITERAL_CHAR+26)[2:]}: Literal A-Z\n")
-        f.write(f"; ${hex(LITERAL_CHAR+26+1)[2:]} - ${hex(LITERAL_CHAR+26+len(SPECIAL_CHAR_ASM))[2:]}: Literal special chars: {str([i.replace('@',',') for i in SPECIAL_CHAR_ASM])}\n")
-        f.write(f"; ${hex(LITERAL_CHAR+26+len(SPECIAL_CHAR_ASM)+1)[2:]} - $ff: Unused\n")
+        f.write(f"; $01 - ${hex(LITERAL_CHAR-1)[2:]}: Dictionary\n")
+        f.write(f"; ${hex(LITERAL_CHAR)[2:]} - ${hex(LITERAL_CHAR+26-1)[2:]}: Literal A-Z\n")
+        f.write(f"; ${hex(LITERAL_CHAR+26)[2:]} - ${hex(LITERAL_CHAR+26+len(SPECIAL_CHAR_ASM)-1)[2:]}: Literal special chars: {str([i.replace('@',',') for i in SPECIAL_CHAR_ASM])}\n")
+        f.write(f"; ${hex(LITERAL_CHAR+26+len(SPECIAL_CHAR_ASM))[2:]} - $ff: Unused\n")
         f.write(f"\n")
+        f.write(f"talkTellsYou:\n")
+        f.write(f"    .byte {','.join(['_'+i+'_' for i in 'TELLS_YOU'])},_CL\n\n")
         f.write(f"talkDictionary:\n")
         f.write(f"    ; range: $01 - $d1\n")
         for i in s:
@@ -313,7 +316,8 @@ def write_asm(filename, substr_dict, talk_data):
                 labels.append(label)
                 f.write(f"{label}:\n")
                 f.write(f"    ; {len(talk_data[loc][i]['bytes'].split(','))} bytes\n")
-                w = textwrap.wrap(talk_data[loc][i]['bytes'].replace(',',', '),width=70)
+                #w = textwrap.wrap(talk_data[loc][i]['bytes'].replace(',',', '),width=70)
+                w = talk_data[loc][i]['quote_byte_segments']
                 for j in w:
                     j = j.replace(' ','')
                     if j[-1] == ',':
@@ -329,11 +333,12 @@ def write_asm(filename, substr_dict, talk_data):
     print(f"Text bytes: {bytes_before}\nCompressed: {bytes_after}\nSaved: {bytes_before-bytes_after} ({100*(bytes_before-bytes_after)/bytes_before:2.0f}%)")
 
 def main():
-    talk_data = parse_raw_text('../src/data/talk.txt')
+    talk_data = parse_raw_text('src/data/talk.txt')
     mass_text = ""
     for loc in talk_data:
         for i in range(len(talk_data[loc])):
             segments = text_to_segments(talk_data[loc][i]['quote_raw'])
+            talk_data[loc][i]['quote_segments'] = segments
             for segment in segments:
                 mass_text += squish_segment(segment)
     substr_dict = create_substr_dict(mass_text)
@@ -342,11 +347,15 @@ def main():
             b = []
             segments = [speaker_segment(talk_data[loc][i]['speaker_raw'])]
             segments += text_to_segments(talk_data[loc][i]['quote_raw'])
+            talk_data[loc][i]['quote_byte_segments'] = []
             for segment in segments:
-                b.append(compress_segment(segment, substr_dict))
-            b.append("$00") # end of section
+                bs = compress_segment(segment, substr_dict)
+                talk_data[loc][i]['quote_byte_segments'].append(bs)
+                b.append(bs)
+            talk_data[loc][i]['quote_byte_segments'].append("$00") # end of section
+            b.append("$00") 
             talk_data[loc][i]['bytes'] = ",".join(b)
-    write_asm('../src/data/talk.asm', substr_dict, talk_data)
+    write_asm('src/data/talk.asm', substr_dict, talk_data)
     #print(HLENS[HLENS.index(max([i for i in HLENS]))])
 
 if __name__ == "__main__":

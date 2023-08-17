@@ -251,6 +251,7 @@ MENU_RATIONS            = 10
 MENU_REST               = 11
 MENU_TEXTPOPUP          = 12
 MENU_MAP                = 13
+MENU_TALK               = 14
 
 OPT_CONTINUE    = 0
 OPT_SUPPLIES    = 1
@@ -345,3 +346,5 @@ C_BLUE = $21
 C_GREEN = $2A
 C_LGREY = $10
 
+; talk text 
+LITERAL_CHAR = 210

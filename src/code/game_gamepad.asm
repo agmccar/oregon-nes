@@ -1529,6 +1529,10 @@
         BNE :+
         JMP @menuRest
         :
+        CMP #MENU_TALK
+        BNE :+
+        JMP @menuTalk
+        :
         CMP #MENU_TEXTPOPUP
         BNE :+
         JMP @menuTextPopup
@@ -1585,12 +1589,24 @@
             STA menuOpen
             JMP Done
             :
+            CMP #OPT_TALK
+            BNE :+
+            LDA #MENU_TALK
+            STA menuOpen
+            JMP Done
+            :
             JMP Done
         @menuMap:
         @menuPace:
         @menuRations:
         @menuRest:
             JSR CloseSubmenu
+            LDA #MENU_MAINMENU
+            STA menuOpen
+            JMP Done
+        @menuTalk:
+
+            ;JSR CloseSubmenu
             LDA #MENU_MAINMENU
             STA menuOpen
             JMP Done

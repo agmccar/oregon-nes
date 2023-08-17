@@ -39,7 +39,7 @@
 .endproc
 
 .proc StartBufferWrite
-    ; X: length of segment
+    ; @param X: length of segment
     ; A: not affected
     ; Y: not affected
     PHA
@@ -47,6 +47,8 @@
     INX
     INX
     INX                 ; total space needed: length + header(3) + footer(1)
+    LDA helper2
+    PHA
     STX helper2
     LDA bufferPointer
     CLC
@@ -63,16 +65,22 @@
     LDA #1
     STA bufferLoading
     PLA
+    STA helper2
+    PLA
     RTS
 .endproc
 
 .proc EndBufferWrite
+    PHA
+    TYA
     PHA
     LDA #0
     LDY bufferPointer
     STA nametableBuffer, Y
     LDA #0
     STA bufferLoading
+    PLA
+    TAY
     PLA
     RTS
 .endproc

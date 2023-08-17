@@ -1116,6 +1116,11 @@
     RTS
 .endproc
 
+; .proc IncrementPPUAddrTalkText
+
+;     RTS
+; .endproc
+
 .proc BufferDrawTalkText
     LDA location ; get memory location of compressed talk text
     ASL
@@ -1128,10 +1133,32 @@
     INX
     LDA talkPointer, X
     STA pointer+1
-    
+    LDA #$21 ; PPU address - start at top left
+    STA cartHelperDigit
+    LDA #$04
+    STA cartHelperDigit+1
     LDY #0 ; decompress and draw talk text
-    Segment:
+    STY counter
+    LDA #0 ; clear talkTextBuffer
+    LDX #0
+    :
+    STA talkTextBuffer, X
+    INX
+    CPX #32
+    BNE :-
+    LDX #0 ; clear textLineHelper
+    :
+    STA textLineHelper, X
+    INX
+    CPX #TEXT_POPUP_LINE_LEN
+    BNE :-
+    NextSegment:
+    LDX #0
+    STX counter+1 ; talkTextBuffer index
     LDA (pointer), Y ; read first header byte
+    BNE :+
+    JMP Done
+    :
     AND #$0f
     STA helper ; punctuation type
     LDA (pointer), Y
@@ -1140,9 +1167,9 @@
     LSR
     LSR
     STA helper+1 ; remaining header length
-    INY
+    JSR IncrementPointerY
     LDX #0 ; read word length header bytes
-    STX helper2 ; talkTextBuffer index
+    STX counter+1 ; talkTextBuffer index
     :
     TXA
     PHA
@@ -1151,43 +1178,212 @@
     LSR
     LSR
     LSR
-    LDX helper2
+    LDX counter+1
     STA talkTextBuffer, X ; stash word lengths
-    INC helper2
+    INC counter+1
     INX
     LDA (pointer), Y
     AND #$0f
     STA talkTextBuffer, X
-    INC helper2
+    INC counter+1
     PLA
     TAX
-    INY
+    JSR IncrementPointerY
     INX
     CPX helper+1
     BNE :-
+    LDA #0
+    LDX counter+1
+    STA talkTextBuffer, X
     LDX #0 ; begin decompress segment payload
-    Word:
+    STX helper2 ; storage for extra letter. starts empty
+    NextWord:
     LDA talkTextBuffer, X
     STA helper+1 ; character length of next word
-    TXA
+    BNE SameSegment
+    TXA ; done with segment
+    PHA ; stash talkTextBuffer index
+    LDA helper
+    BEQ :+
+    DEC counter ; punctuation
+    LDX counter
+    CLC
+    ADC #_CM-1
+    JSR WriteTalkTextChar ; replace last space with punctuation mark
+    JMP :+++
+    :
+    TYA ; "tells you:"
     PHA
-    LDX #0
+    LDY #0
+    LDX counter
     :
+    LDA talkTellsYou, Y
+    JSR WriteTalkTextChar
+    INY
+    CPY #10
+    BNE :-
+    PLA
+    TAY
+    :
+    LDA #___
+    JSR WriteTalkTextChar ; write new space
+    PLA
+    TAX ; unstash talkTextBuffer index
+    JMP NextSegment
+    SameSegment:
+    TXA
+    PHA ; stash talkTextBuffer index
+    LDX counter
+    LDA helper2 ; check if extra letter is stashed
+    BEQ NextDataByte
+    JSR WriteTalkTextChar
+    LDA #0
+    STA helper2
+    LDA helper+1
+    BNE NextDataByte
+    JMP Space
+    NextDataByte:
     LDA (pointer), Y
-    CMP #210
-    BCC :+
-    ; literal character
+    CMP #LITERAL_CHAR
+    BCC DictLookup
+    CMP #LITERAL_CHAR+26
+    BCC LiteralAZ
+    LDA #_DL ; literal special character TODO
+    JSR WriteTalkTextChar
+    JSR IncrementPointerY
+    JMP Space
+    LiteralAZ:
+    SEC ; literal A-Z character
+    SBC #LITERAL_CHAR
+    JSR LetterNumToTileIndex
+    JSR WriteTalkTextChar
+    JSR IncrementPointerY
+    JMP Space
+
+    DictLookup: ; dictionary lookup
+    STA helper2+1 ; stash (dictionary index+1)
+    DEC helper2+1 ; dictionary index+0
+    TYA
+    PHA ; stash Y
+    LDA pointer ; stash pointer
+    STA cartHelperDigit+2
+    LDA pointer+1
+    STA cartHelperDigit+3
+    LDA #<talkDictionary ; location of dictionary
+    STA pointer
+    LDA #>talkDictionary
+    STA pointer+1
+    LDY #0 ; get location of dictionary lookup result
     :
-    ; dictionary lookup
-
-
+    CLC
+    LDA pointer
+    ADC helper2+1
+    STA pointer
+    LDA pointer+1
+    ADC #0
+    STA pointer+1
+    INY
+    CPY #2
+    BNE :-
+    LDY #0
+    LDA (pointer), Y ; first char of dict lookup result
+    JSR WriteTalkTextChar
+    JSR IncrementPointerY
+    LDA helper+1
+    BNE :+
+    LDA (pointer), Y ; stash 2nd char for next word, done with this word
+    STA helper2
+    JMP :++
+    :
+    LDA (pointer), Y ; second char of dict lookup result
+    JSR WriteTalkTextChar
+    :
+    PLA ; unstash Y
+    TAY
+    LDA cartHelperDigit+2 ; unstash pointer
+    STA pointer
+    LDA cartHelperDigit+3
+    STA pointer+1
+    JSR IncrementPointerY
+    ;JMP Space
+    Space:
+    LDA helper+1
+    CMP #0
+    BNE :+
+    LDA #___
+    JSR WriteTalkTextChar
+    PLA
+    TAX ; unstash talkTextBuffer index
+    INX
+    JMP NextWord
+    :
+    JMP NextDataByte
+    
+    Done:
+    LDX counter
+    JSR StartBufferWrite
+        LDA counter
+        JSR WriteByteToBuffer
+        LDA cartHelperDigit
+        JSR WriteByteToBuffer
+        LDA cartHelperDigit+1
+        JSR WriteByteToBuffer
+        LDX #0
+        :
+        LDA textLineHelper, X
+        JSR WriteByteToBuffer
+        INX
+        CPX counter
+        BNE :-
+    JSR EndBufferWrite
 
     INC talkOption ; increment talkOption
     LDA talkOption
     CMP #3
-    BNE Done
+    BNE :+
     LDA #0
     STA talkOption
+    :
+    RTS
+.endproc
+
+.proc WriteTalkTextChar
+    STA textLineHelper, X
+    INX
+    INC counter
+    LDA counter
+    CMP #TEXT_POPUP_LINE_LEN
+    BNE Done
+    TYA
+    PHA ; stash Y
+    LDX #TEXT_POPUP_LINE_LEN
+    JSR StartBufferWrite
+        LDA #TEXT_POPUP_LINE_LEN
+        JSR WriteByteToBuffer
+        LDA cartHelperDigit
+        JSR WriteByteToBuffer
+        LDA cartHelperDigit+1
+        JSR WriteByteToBuffer
+        LDX #0
+        :
+        LDA textLineHelper, X
+        JSR WriteByteToBuffer
+        INX
+        CPX #TEXT_POPUP_LINE_LEN
+        BNE :-
+    JSR EndBufferWrite
+    PLA ; unstash Y
+    TAY
+    CLC
+    LDA cartHelperDigit+1
+    ADC #$20
+    STA cartHelperDigit+1
+    LDA cartHelperDigit
+    ADC #0
+    STA cartHelperDigit
+    LDX #0
+    STX counter
     Done:
+    DEC helper+1
     RTS
 .endproc

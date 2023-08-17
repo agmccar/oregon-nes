@@ -230,6 +230,10 @@
     BNE :+
     JMP Rest
     :
+    CMP #MENU_TALK
+    BNE :+
+    JMP Talk
+    :
     CMP #MENU_TEXTPOPUP
     BNE :+
     JMP TextPopup
@@ -358,6 +362,11 @@
         JSR RedrawFinger
         JSR LoadBgMap
         ;JSR DrawTrailSprites
+        JMP Done
+    Talk:
+        LDA #0 ;no fingers visible
+        STA fingerAttr
+        JSR LoadBgTalk
         JMP Done
 
     Done:

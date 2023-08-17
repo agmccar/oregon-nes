@@ -1,6 +1,6 @@
 
 suppliesTiles:
-    .incbin "tilesets/supplies.chr"
+    .incbin "tilesets/raw/supplies.chr" ; TODO decompress
 
 ; <Length>, <Location>, <Location+1>, <Data>  
 suppliesImage: 

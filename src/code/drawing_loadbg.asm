@@ -1039,3 +1039,10 @@
     JSR BufferDrawPressStart
     RTS
 .endproc
+
+.proc LoadBgTalk
+    JSR ClearScreen
+    JSR ClearAttributes
+    JSR BufferDrawTalkText
+    RTS
+.endproc

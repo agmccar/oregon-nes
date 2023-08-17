@@ -939,3 +939,20 @@
     :
     RTS
 .endproc
+
+.proc LetterNumToTileIndex
+    PHP
+    CLC
+    ADC #_A_
+    CMP #_A_+14
+    BCC Done
+    BEQ :+
+    SEC
+    SBC #1
+    JMP Done
+    :
+    LDA #_O_
+    Done:
+    PLP
+    RTS
+.endproc
