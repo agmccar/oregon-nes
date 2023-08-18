@@ -18,6 +18,9 @@
 ; $ec - $f2: Literal special chars: ["'", '-', '"', ';', ':', '.', ',']
 ; $f3 - $ff: Unused
 
+talkSpecialChar:
+    .byte _AP,_HY,_QT,_SC,_CL,_PD,_CM,_0_,_1_,_2_,_4_,_6_,_7_
+
 talkTellsYou:
     .byte _T_,_E_,_L_,_L_,_S_,___,_Y_,_O_,_U_,_CL
 

@@ -1116,11 +1116,6 @@
     RTS
 .endproc
 
-; .proc IncrementPPUAddrTalkText
-
-;     RTS
-; .endproc
-
 .proc BufferDrawTalkText
     LDA location ; get memory location of compressed talk text
     ASL
@@ -1219,22 +1214,21 @@
     :
     TYA ; "tells you:"
     PHA
+
     LDX counter
     LDA #___
-    :
     JSR WriteTalkTextChar
-    INX
-    CPX #TEXT_POPUP_LINE_LEN
-    BNE :-
     DEC counter
     LDY #0
     :
     LDA talkTellsYou, Y
     JSR WriteTalkTextChar
     LDA talkTellsYou, Y
+    INX
     INY
     CPY #10
     BNE :-
+
     LDX counter
     LDA #___
     :
@@ -1242,6 +1236,7 @@
     INX
     CPX #TEXT_POPUP_LINE_LEN
     BNE :-
+
     DEC counter
     LDX counter
     LDA #___
@@ -1250,6 +1245,7 @@
     INX
     CPX #TEXT_POPUP_LINE_LEN
     BNE :-
+    
     LDA #1
     STA textLineHelper+3 ; flag for 1 literal char
     LDA #_QT
@@ -1283,7 +1279,10 @@
     BCC DictLookup
     CMP #LITERAL_CHAR+26
     BCC LiteralAZ
-    LDA #_DL ; literal special character TODO
+    SEC
+    SBC #LITERAL_CHAR+26
+    TAX
+    LDA talkSpecialChar, X
     JSR WriteTalkTextChar
     JSR IncrementPointerY
     JMP Space

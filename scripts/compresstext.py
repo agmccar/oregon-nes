@@ -302,6 +302,14 @@ def write_asm(filename, substr_dict, talk_data):
         f.write(f"; ${hex(LITERAL_CHAR+26)[2:]} - ${hex(LITERAL_CHAR+26+len(SPECIAL_CHAR_ASM)-1)[2:]}: Literal special chars: {str([i.replace('@',',') for i in SPECIAL_CHAR_ASM])}\n")
         f.write(f"; ${hex(LITERAL_CHAR+26+len(SPECIAL_CHAR_ASM))[2:]} - $ff: Unused\n")
         f.write(f"\n")
+        f.write(f"talkSpecialChar:\n")
+        sc = [i for i in SPECIAL_CHAR]
+        for i in range(len(sc)):
+            if sc[i] in SPECIAL_CHAR_ASM:
+                sc[i] = SPECIAL_CHAR_ASM[sc[i]]
+            else:
+                sc[i] = f"_{sc[i].replace('@',',')}_"
+        f.write(f"    .byte {','.join(sc)}\n\n")
         f.write(f"talkTellsYou:\n")
         f.write(f"    .byte {','.join(['_'+i+'_' for i in 'TELLS_YOU'])},_CL\n\n")
         f.write(f"talkDictionary:\n")
