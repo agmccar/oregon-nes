@@ -33,7 +33,13 @@
 - [ ] rafting graphics
 - [ ] rafting logic
 
-## Traveling
+## Traveling main menu
+
+- [ ] fix double reload bug
+- [ ] fix palette glitch
+- [ ] Conditional options: Talk to people, Hunt, Buy supplies
+
+## Traveling screen
 
 - [x] weather/climate data tables
 - [x] calculate weather daily
@@ -109,6 +115,24 @@
 - [x] landmark screen logic
 - [ ] fix fort kearney color palette
 - [ ] Music for each landmark
+    - [X] Independence, MO: Yankee Doodle. 
+    - [ ] Kansas River: I Gave My Love a Cherry
+    - [ ] Big Blue River: Oh Dear!  What Can the Matter Be?
+    - [ ] Fort Kearney: The Campbells are Coming.
+    - [ ] Chimney Rock: Auld Lang Syne.
+    - [ ] Fort Laramie: Billy Boy.
+    - [ ] Independence Rock:  Wayfaring Stranger.
+    - [ ] Fort Bridger:  Where Has My Laddie Gone?  (Blue Bells of Scotland).
+    - [ ] Green River Crossing:  All Through the Night
+    - [ ] Soda Springs: Charlie Is My Darling
+    - [ ] South Pass: Believe Me, Of All Those Endearing Young Charms.
+    - [ ] Fort Hall: Skip to My Lou
+    - [ ] Snake River Crossing: O Shenandoah.
+    - [ ] Fort Boise:  On Top of Old Smokey
+    - [ ] Grande Ronde in the Blue Mountains: Long Long Ago
+    - [ ] Fort Walla Walla:  Flow Gently Sweet Afton.
+    - [ ] The Dalles: Jimmy Crack Corn (Blue Tail Fly)
+    - [ ] Willamette Valley:  Viva la compangie (Viva l'amour).
 
 ## Supplies screen
 
