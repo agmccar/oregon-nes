@@ -344,6 +344,8 @@
         JSR RedrawFinger
         JMP Done
     Rest:
+        LDA #1
+        STA wagonRest
         LDA #%00010100      ; only finger visible, up/down arrow
         STA fingerAttr
         LDX #15
@@ -380,12 +382,7 @@
 .proc Every60Frames
     LDA gameState ; only on main traveling screen
     CMP #GAMESTATE_TRAVELING
-    BNE :+
-    LDA menuOpen
-    CMP #MENU_NONE
-    BNE :+
-    JMP :++
-    :
+    BEQ :+
     JMP Done
     :
     LDA frameCounter
@@ -404,6 +401,10 @@
     :
     JMP Done
     animate:
+        LDA wagonRest
+        BEQ :+
+        JMP :+++
+        :
         LDA oxenFrame
         BPL :+
         JMP Done
@@ -430,7 +431,8 @@
         LDA #%10000000
         STA oxenFrame
         JSR ElapseDay
-        ; JSR BufferClearTravelingHUDValues
+        JSR BufferDrawMainMenuHUDValues
+        JSR RestOneDay
         JSR BufferDrawTravelingHUDValues
         LDA #0
         STA frameCounter

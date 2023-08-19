@@ -1606,7 +1606,37 @@
     RTS
 .endproc
 
+.proc BufferDrawMainMenuHUDValues
+    LDA menuOpen
+    CMP #MENU_MAINMENU
+    BNE Done
+    LDA wagonRest
+    BEQ Done
+    LDA #$20 ; draw date
+    STA pointer
+    LDA #$8A
+    STA pointer+1
+    JSR BufferDrawDateText
+    LDA #$20 ; draw weather
+    STA pointer
+    LDA #$EC
+    STA pointer+1
+    JSR BufferDrawWeatherText
+    LDA #$21 ; draw health
+    STA pointer
+    LDA #$2C
+    STA pointer+1
+    JSR BufferDrawHealthText
+    Done:
+    RTS 
+.endproc
+
 .proc BufferDrawTravelingHUDValues
+    LDA menuOpen
+    CMP #MENU_NONE
+    BEQ :+
+    JMP Done
+    :
     LDA #$22 ; draw date
     STA pointer
     LDA #$70
@@ -1637,6 +1667,7 @@
     LDA #$10
     STA pointer+1
     JSR BufferDrawTraveledText
+    Done:
     RTS
 .endproc
 
@@ -1879,6 +1910,11 @@
 .endproc
 
 .proc BufferDrawWagon
+    LDA menuOpen
+    CMP #MENU_NONE
+    BEQ :+
+    JMP Done
+    :
     LDX #7
     JSR StartBufferWrite
         LDA #7
@@ -1969,7 +2005,7 @@
         CMP #9
         BNE :-
     JSR EndBufferWrite
-
+    Done:
     RTS
 .endproc
 

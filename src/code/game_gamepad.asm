@@ -1494,6 +1494,17 @@
 .endproc
 
 .proc ControllerTraveling
+    LDA menuOpen
+    CMP #MENU_MAINMENU
+    BEQ :+
+    CMP #MENU_NONE
+    BEQ :+
+    JMP :++
+    :
+    LDA wagonRest ; wait until no longer resting
+    BEQ :+
+    JMP Done
+    :
     LDA buttons1
     CMP buttons1Last
     BNE CheckA
@@ -1599,19 +1610,9 @@
         @menuMap:
         @menuPace:
         @menuRations:
-            JSR CloseSubmenu
-            LDA #MENU_MAINMENU
-            STA menuOpen
-            JMP Done
         @menuRest:
-
             JSR CloseSubmenu
-            LDA #MENU_MAINMENU
-            STA menuOpen
-            JMP Done
         @menuTalk:
-
-            ;JSR CloseSubmenu
             LDA #MENU_MAINMENU
             STA menuOpen
             JMP Done

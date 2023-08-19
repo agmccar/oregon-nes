@@ -498,12 +498,35 @@
 .endproc
 
 .proc ElapseDay
+    LDA menuOpen
+    CMP #MENU_NONE
+    BEQ Elapse
+    CMP #MENU_MAINMENU
+    BNE Done
+    LDA wagonRest
+    BEQ Done
+    Elapse:
     JSR UpdateWeather
     JSR UpdateSupplies
     JSR UpdateHealth
     JSR UpdateDistance
     JSR RandomEvent
     JSR IncrementDate
+    Done:
+    RTS
+.endproc
+
+.proc RestOneDay
+    LDA menuOpen
+    CMP #MENU_NONE
+    BEQ Rest
+    CMP #MENU_MAINMENU
+    BNE Done
+    Rest:
+    LDA wagonRest
+    BEQ Done
+    DEC wagonRest
+    Done:
     RTS
 .endproc
 
@@ -795,6 +818,10 @@
 .proc UpdateDistance
     ; standard speed: 20 miles per day
     ; maximum speed is 40mpd, at full health, 4+ oxen, in prairie terrain
+    LDA wagonRest ; no distance if resting
+    BEQ :+
+    JMP Done
+    :
     LDA #80 ; x0.25 mpd = 20 mpd standard
     STA helper
     LDA #0
@@ -895,7 +922,7 @@
     LDX #nextDigit
     LDY #nextMi
     JSR SetDigitFromValue
-
+    Done:
     RTS
 .endproc
 

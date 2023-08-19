@@ -5,6 +5,10 @@
     ; probability. However, if one of the events does indeed occur, then the
     ; random event engine halts. As a result, no more than one random event 
     ; occurs in a single day.
+    LDA wagonRest ; no random event if resting
+    BEQ :+
+    JMP Done
+    :
     LDA #0
     STA helper ; flag to halt the random event engine: 1 is done
 
