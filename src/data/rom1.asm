@@ -362,7 +362,125 @@
         STA menuOpen
         JMP Done
     InjuredPerson:
-         ; TODO should count as an illness in death roll
+        JSR RandomNumberGenerator ; select a random person
+        AND #%00000111
+        CMP #5 ; limit roll to 0-4 
+        BCS InjuredPerson
+        TAX ; check if they are alive, already sick, or dead
+        LDA personHealth, X
+        AND #%11111000
+        CMP #%11111000
+        BEQ InjuredPerson ; already dead: roll again
+        CMP #1
+        BCC :+ ; alive and healthy: become injured
+        LDA #%11111000 ; currently sick: die
+        STA personHealth, X
+        JMP @writeName
+        :
+        JSR RandomNumberGenerator
+        LDA #%11110111 ; broken limb for 30 days
+        STA personHealth, X
+        @writeName:
+        STX helper ; ID of person who gets illness
+        LDA #0
+        STA helper+1
+        LDX #0
+        :
+        CPX helper
+        BEQ :+
+        INX
+        CLC
+        LDA helper+1
+        ADC #TEXT_PERSON_LEN
+        STA helper+1
+        JMP :-
+        :
+        LDX helper+1
+        LDY #0 ; "{person name}"
+        LDA #0
+        STA helper2
+        :
+        LDA personName, X
+        STA popupTextLine1, Y
+        INX
+        INY
+        INC helper2
+        LDA helper2
+        CMP #TEXT_PERSON_LEN
+        BNE :-
+        LDX #0 ; " HAS "
+        :
+        LDA eventIllnessText, X
+        STA popupTextLine1, Y
+        INX
+        INY
+        CPX #5
+        BNE :-
+        LDX helper ; "{illness name}"
+        LDA personHealth, X 
+        CMP #%11111000
+        BNE @BrokenLimb
+        LDX #57 ; index of "DIED" minus 1
+        LDA #4
+        STA helper2
+        LDA #0
+        STA helper ; counter
+        :
+        INX
+        LDA eventIllnessText, X
+        STA popupTextLine1, Y
+        INY
+        INC helper
+        LDA helper
+        CMP helper2
+        BNE :-
+        JMP @writeIllness
+        @BrokenLimb:
+        LDA #_A_
+        STA popupTextLine1, Y
+        INY
+        LDA #___
+        STA popupTextLine1, Y
+        INY
+        LDX #10 ; index of "BROKEN"
+        :
+        LDA eventInjuryText, X
+        STA popupTextLine1, Y
+        INY
+        INX
+        CPX #16 ; index of "ARM"
+        BNE :-
+        LDA #19 ; index of "LEG"
+        STA helper
+        TYA
+        PHA
+        JSR RandomNumberGenerator
+        AND #1
+        BNE :+
+        INC helper
+        INC helper
+        INC helper
+        INX
+        INX
+        INX
+        :
+        PLA
+        TAY
+        LDA #___
+        STA popupTextLine1, Y
+        INY
+        :
+        LDA eventInjuryText, X
+        STA popupTextLine1, Y
+        INY
+        INX
+        CPX helper
+        BNE :-
+        @writeIllness:
+        LDA #_PD
+        STA popupTextLine1, Y
+        LDA #MENU_TEXTPOPUP
+        STA menuOpen
         JMP Done
     SnakeBite:
         JMP Done

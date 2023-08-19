@@ -343,12 +343,24 @@
     ; Injured party member (broken arm or leg)
     ; 2% chance each day on the prairie; 3.5% chance each day in the mountains.
     ; The person who gets injured is chosen randomly.
-    JSR RollRNG
-    CMP #2*2
-    BCC :+
+    JSR CheckMountainousTerrain
+    BEQ :+
+    JSR RollRNG ; mountains
+    CMP #7
+    BCC AlmostDone
     JMP Done
     :
-
+    JSR RollRNG ; prairie
+    CMP #2*2
+    BCC AlmostDone
+    JMP Done
+    AlmostDone:
+    ; CLC
+    ; LDA wagonHealth
+    ; ADC #20
+    ; STA wagonHealth ; no mention of wagon health from Bouchard
+    LDA #EVENT_INJURED_PERSON
+    JSR QueueEvent
     LDA #1
     STA helper
     Done:

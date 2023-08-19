@@ -54,10 +54,10 @@
   - [x] Indians help find food
   - [x] Severe thunderstorm
   - [x] Severe blizzard
-  - [ ] Heavy fog
-  - [ ] Hail storm
+  - [x] Heavy fog
+  - [x] Hail storm
   - [x] Injured or dead ox
-  - [ ] Injured party member (broken arm or leg)
+  - [x] Injured party member (broken arm or leg)
   - [ ] Snake bite
   - [ ] Lose trail
   - [ ] Wrong trail
