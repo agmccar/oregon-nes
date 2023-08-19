@@ -1599,7 +1599,12 @@
         @menuMap:
         @menuPace:
         @menuRations:
+            JSR CloseSubmenu
+            LDA #MENU_MAINMENU
+            STA menuOpen
+            JMP Done
         @menuRest:
+
             JSR CloseSubmenu
             LDA #MENU_MAINMENU
             STA menuOpen
@@ -1722,28 +1727,19 @@
             JSR RedrawFinger
             JMP Done
         @menuRest:
-            LDA wagonStatus
-            LSR
-            LSR
-            LSR
-            LSR
-            ADC #_0_
-            STA helper
-            LDX #helper
-            JSR IncreaseDigit
-            LDA #%00001111
-            AND wagonStatus
-            STA wagonStatus
-            LDA helper
-            SEC
-            SBC #_0_
+            INC wagonRest
+            LDA wagonRest
+            CMP #10
+            BNE :+
+            LDA #1
+            STA wagonRest
+            :
+            LDA wagonRest
             CLC
-            ROL
-            ROL
-            ROL
-            ROL
-            ORA wagonStatus
-            STA wagonStatus
+            ADC #_0_
+            LDX fingerX
+            LDY fingerY
+            JSR WriteTileToBuffer
             JSR DrawRestSubmenu
             JSR RedrawFinger
             JMP Done
@@ -1833,28 +1829,18 @@
             JSR RedrawFinger
             JMP Done
         @menuRest:
-            LDA wagonStatus
-            LSR
-            LSR
-            LSR
-            LSR
-            ADC #_0_
-            STA helper
-            LDX #helper
-            JSR DecreaseDigit
-            LDA #%00001111
-            AND wagonStatus
-            STA wagonStatus
-            LDA helper
-            SEC
-            SBC #_0_
+            DEC wagonRest
+            LDA wagonRest
+            BNE :+
+            LDA #9
+            STA wagonRest
+            :
+            LDA wagonRest
             CLC
-            ROL
-            ROL
-            ROL
-            ROL
-            ORA wagonStatus
-            STA wagonStatus
+            ADC #_0_
+            LDX fingerX
+            LDY fingerY
+            JSR WriteTileToBuffer
             JSR DrawRestSubmenu
             JSR RedrawFinger
             JMP Done

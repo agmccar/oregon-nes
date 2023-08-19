@@ -656,12 +656,7 @@
         INX
         CPX #9
         BNE :-
-        LDA wagonStatus
-        AND #%11110000
-        LSR
-        LSR
-        LSR
-        LSR
+        LDA wagonRest
         TAX
         LDA decimalDigits, X
         JSR WriteByteToBuffer
