@@ -75,7 +75,7 @@
   - [x] Illness
   - [ ] Broken wagon part
 - [ ] grass color
-- [ ] stop to rest
+- [x] stop to rest
 - [ ] drought events don't pause the game
 - [ ] shortcuts
 - [ ] swap out menu option to hunt with Buy Supplies when appropriate
@@ -115,7 +115,7 @@
 - [x] landmark screen logic
 - [ ] fix fort kearney color palette
 - [ ] Music for each landmark
-    - [X] Independence, MO: Yankee Doodle.
+    - [x] Independence, MO: Yankee Doodle.
     - [ ] Kansas River: I Gave My Love a Cherry
     - [ ] Big Blue River: Oh Dear!  What Can the Matter Be?
     - [ ] Fort Kearney: The Campbells are Coming.
