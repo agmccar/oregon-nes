@@ -60,7 +60,7 @@
   - [x] Injured party member (broken arm or leg)
   - [x] Snake bite
   - [x] Lose trail
-  - [ ] Wrong trail
+  - [x] Wrong trail
   - [x] Rough trail
   - [ ] Impassible trail
   - [ ] Find wild fruit
