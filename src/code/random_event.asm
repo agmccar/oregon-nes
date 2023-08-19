@@ -230,12 +230,21 @@
 .proc REBlizzard
     ; Severe blizzard
     ; "15% chance each day in which the temperature is either cold or very cold."
+    LDA weather
+    CMP #WEATHER_COLD
+    BEQ :+
+    CMP #WEATHER_VERY_COLD
+    BEQ :+
+    JMP Done
+    :
     JSR RollRNG
     CMP #15*2
     BCC :+
     JMP Done
     :
-
+    INC wagonRest ; lose 1 day
+    LDA #EVENT_BLIZZARD
+    JSR QueueEvent
     LDA #1
     STA helper
     Done:

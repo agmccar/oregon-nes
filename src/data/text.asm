@@ -353,6 +353,9 @@ eventIndianFoodText:
 eventThunderstormText:
     .byte 20,_S_,_E_,_V_,_E_,_R_,_E_,___,_T_,_H_,_U_,_N_,_D_,_E_,_R_,_S_,_T_,_O_,_R_,_M_,_PD ; Lose 1 day
 
+eventBlizzardText:
+    .byte 16,_S_,_E_,_V_,_E_,_R_,_E_,___,_B_,_L_,_I_,_Z_,_Z_,_A_,_R_,_D_,_PD ; Lose 1 day
+
 eventWrongTrailText:
     .byte 12,_W_,_R_,_O_,_N_,_G_,___,_T_,_R_,_A_,_I_,_L_,_PD ; 1 5
 

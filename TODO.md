@@ -53,7 +53,7 @@
 - [ ] random events (sans graphics)
   - [x] Indians help find food
   - [x] Severe thunderstorm
-  - [ ] Severe blizzard
+  - [x] Severe blizzard
   - [ ] Heavy fog
   - [ ] Hail storm
   - [x] Injured or dead ox
@@ -115,7 +115,7 @@
 - [x] landmark screen logic
 - [ ] fix fort kearney color palette
 - [ ] Music for each landmark
-    - [X] Independence, MO: Yankee Doodle. 
+    - [X] Independence, MO: Yankee Doodle.
     - [ ] Kansas River: I Gave My Love a Cherry
     - [ ] Big Blue River: Oh Dear!  What Can the Matter Be?
     - [ ] Fort Kearney: The Campbells are Coming.
