@@ -267,8 +267,7 @@
     JSR RandomNumberGenerator
     AND #1
     BNE :+
-    LDA #1 ; 50% chance to lose 1 day
-    STA wagonRest
+    INC wagonRest ; 50% chance to lose 1 day
     :
     LDA #EVENT_HEAVY_FOG
     JSR QueueEvent
