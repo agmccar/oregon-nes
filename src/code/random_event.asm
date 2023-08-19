@@ -5,7 +5,7 @@
     ; probability. However, if one of the events does indeed occur, then the
     ; random event engine halts. As a result, no more than one random event 
     ; occurs in a single day.
-    LDA wagonRest ; no random event if resting
+    LDA wagonRest ; no random event if resting? TODO confirm
     BEQ :+
     JMP Done
     :
@@ -165,8 +165,8 @@
 
 .proc REIndianFood
     ; Indians help find food
-    ; If you are completely out of food, then there is a 5% chance each day
-    ; that local Indians will give you 30 pounds of food.
+    ; "If you are completely out of food, then there is a 5% chance each day
+    ; that local Indians will give you 30 pounds of food."
     LDA foodLbs+1
     CMP #0
     BNE Done
@@ -200,14 +200,27 @@
 
 .proc REThunderstorm
     ; Severe thunderstorm
-    ; The probability is based on the average precipitation for your current
-    ; location and current month.
+    ; "The probability is based on the average precipitation for your current
+    ; location and current month."
+    ; lets say 10% if it's currently rainy, 25% if it's currently very rainy
+    LDA weather
+    CMP #WEATHER_RAINY
+    BNE :+
     JSR RollRNG
-    CMP #0 ; TODO
-    BCC :+
+    CMP #10*2
+    BCC AlmostDone
     JMP Done
     :
-
+    CMP #WEATHER_VERY_RAINY
+    BNE Done
+    JSR RollRNG
+    CMP #25*2
+    BCC AlmostDone
+    JMP Done
+    AlmostDone:
+    INC wagonRest ; lose 1 day
+    LDA #EVENT_THUNDERSTORM
+    JSR QueueEvent
     LDA #1
     STA helper
     Done:
@@ -216,7 +229,7 @@
 
 .proc REBlizzard
     ; Severe blizzard
-    ; 15% chance each day in which the temperature is either cold or very cold.
+    ; "15% chance each day in which the temperature is either cold or very cold."
     JSR RollRNG
     CMP #15*2
     BCC :+

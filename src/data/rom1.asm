@@ -201,6 +201,28 @@
         STA menuOpen
         JMP Done
     Thunderstorm:
+        LDX #1
+        LDY #0
+        :
+        LDA eventThunderstormText, X
+        STA popupTextLine1, Y
+        INX
+        INY
+        CPY eventThunderstormText
+        BNE :-
+        LDX #1
+        LDY #0
+        :
+        LDA eventLoseDaysText, X
+        STA popupTextLine2, Y
+        INX
+        INY
+        CPY eventLoseDaysText
+        BNE :-
+        LDA #_PD
+        STA popupTextLine2, Y
+        LDA #MENU_TEXTPOPUP
+        STA menuOpen
         JMP Done
     Blizzard:
         JMP Done

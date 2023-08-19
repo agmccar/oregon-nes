@@ -50,9 +50,9 @@
     - [ ] display landmark sprites on screen
 - [ ] gravestones
 - [x] event queue
-- [ ] random events
+- [ ] random events (sans graphics)
   - [x] Indians help find food
-  - [ ] Severe thunderstorm
+  - [x] Severe thunderstorm
   - [ ] Severe blizzard
   - [ ] Heavy fog
   - [ ] Hail storm
