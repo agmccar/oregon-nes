@@ -420,8 +420,8 @@ eventInjuryText:
 ; eventLostPersonText:
 ; X IS LOST. LOSE X DAYS.
 
-; eventImpassibleTrailText:
-; IMPASSIBLE TRAIL. LOSE X DAYS.
+eventImpassibleTrailText:
+    .byte 17,_I_,_M_,_P_,_A_,_S_,_S_,_I_,_B_,_L_,_E_,___,_T_,_R_,_A_,_I_,_L_,_PD ; LOSE X DAYS.
 
 ; IT WAS A MUDDY CROSSING, BUT YOU DID NOT GET STUCK.
 ; YOUR SUPPLIES GOT WET. LOSE 1 DAY. 

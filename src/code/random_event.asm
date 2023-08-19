@@ -462,12 +462,22 @@
 .proc REImpassibleTrail
     ; Impassible trail
     ; In mountains only; 2.5% chance each day.
+    ; lose 1-8 days?
     JSR RollRNG
     CMP #5
     BCC :+
     JMP Done
     :
-
+    JSR RandomNumberGenerator
+    AND #7
+    TAX
+    INX
+    :
+    INC wagonRest
+    DEX
+    BNE :-
+    LDA #EVENT_IMPASSIBLE_TRAIL
+    JSR QueueEvent
     LDA #1
     STA helper
     Done:
