@@ -723,6 +723,17 @@
         STA menuOpen
         JMP Done
     WildFruit:
+        LDX #1
+        LDY #0
+        :
+        LDA eventWildFruitText, X
+        STA popupTextLine1, Y
+        INX
+        INY
+        CPY eventWildFruitText
+        BNE :-
+        LDA #MENU_TEXTPOPUP
+        STA menuOpen
         JMP Done
     FireWagon:
         JMP Done

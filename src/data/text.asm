@@ -409,8 +409,8 @@ eventInjuryText:
 ; eventThiefText:
 ;     .byte A THIEF COMES DURING THE NIGHT AND STEALS 
 
-; eventWildFruitText:
-    ; .byte FIND WILD FRUIT.
+eventWildFruitText:
+    .byte 16,_F_,_I_,_N_,_D_,___,_W_,_I_,_L_,_D_,___,_F_,_R_,_U_,_I_,_T_,_PD
 
 ; eventAbandonedWagonText:
 ; YOU FIND AN ABANDONED WAGON 

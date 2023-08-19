@@ -63,7 +63,7 @@
   - [x] Wrong trail
   - [x] Rough trail
   - [x] Impassible trail
-  - [ ] Find wild fruit
+  - [x] Find wild fruit
   - [ ] Fire in the wagon
   - [ ] Lost party member
   - [ ] Ox wanders off

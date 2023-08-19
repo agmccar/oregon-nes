@@ -486,14 +486,33 @@
 
 .proc REWildFruit
     ; Finding wild fruit
-    ; May to September only; 4% chance each day. The food supply is increased
-    ; by 20 pounds.
+    ; "May to September only; 4% chance each day. The food supply is increased
+    ; by 20 pounds."
+    LDA dateMonth
+    CMP #5
+    BCC Done
+    CMP #10
+    BCS Done
     JSR RollRNG
     CMP #4*2
     BCC :+
     JMP Done
     :
-
+    CLC
+    LDA foodLbs
+    ADC #20
+    STA foodLbs
+    LDA foodLbs+1
+    ADC #0
+    STA foodLbs+1
+    BCC :+
+    LDA #$d0
+    STA foodLbs
+    LDA #$07
+    STA foodLbs+1 ; max 2000 lb
+    :
+    LDA #EVENT_WILD_FRUIT
+    JSR QueueEvent
     LDA #1
     STA helper
     Done:
