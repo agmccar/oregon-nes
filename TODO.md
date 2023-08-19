@@ -58,7 +58,7 @@
   - [x] Hail storm
   - [x] Injured or dead ox
   - [x] Injured party member (broken arm or leg)
-  - [ ] Snake bite
+  - [x] Snake bite
   - [ ] Lose trail
   - [ ] Wrong trail
   - [x] Rough trail
