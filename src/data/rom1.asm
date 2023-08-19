@@ -577,8 +577,49 @@
         LDA #MENU_TEXTPOPUP
         STA menuOpen
         JMP Done
-        JMP Done
     LoseTrail:
+        LDX #1
+        LDY #0
+        :
+        LDA eventLoseTrailText, X
+        STA popupTextLine1, Y
+        INX
+        INY
+        CPY eventLoseTrailText
+        BNE :-
+        LDY #0
+        LDX #1
+        :
+        LDA eventLoseDaysText, X
+        STA popupTextLine2, Y
+        INX
+        INY
+        CPY eventLoseDaysText
+        BNE :-
+        TYA
+        PHA
+        DEY ; replace 1 day with X day(s)
+        DEY
+        DEY
+        DEY
+        DEY
+        CLC
+        LDA wagonRest
+        ADC #_0_
+        STA popupTextLine2, Y
+        PLA
+        TAY
+        LDA wagonRest
+        CMP #1
+        BEQ :+
+        LDA #_S_
+        STA popupTextLine2, Y
+        INY
+        :
+        LDA #_PD
+        STA popupTextLine2, Y
+        LDA #MENU_TEXTPOPUP
+        STA menuOpen
         JMP Done
     WrongTrail:
         JMP Done

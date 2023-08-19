@@ -388,13 +388,23 @@
 
 .proc RELoseTrail
     ; Lose trail
-    ; 2% chance each day.
+    ; "2% chance each day."
+    ; lose 1-8 days?
     JSR RollRNG
     CMP #2*2
     BCC :+
     JMP Done
     :
-
+    JSR RandomNumberGenerator
+    AND #7
+    TAX
+    INX
+    :
+    INC wagonRest
+    DEX
+    BNE :-
+    LDA #EVENT_LOSE_TRAIL
+    JSR QueueEvent
     LDA #1
     STA helper
     Done:

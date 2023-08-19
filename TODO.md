@@ -59,7 +59,7 @@
   - [x] Injured or dead ox
   - [x] Injured party member (broken arm or leg)
   - [x] Snake bite
-  - [ ] Lose trail
+  - [x] Lose trail
   - [ ] Wrong trail
   - [x] Rough trail
   - [ ] Impassible trail
