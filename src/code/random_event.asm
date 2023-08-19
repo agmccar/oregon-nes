@@ -253,8 +253,8 @@
 
 .proc REHeavyFog
     ; Heavy fog
-    ; After Fort Hall, a 6% chance each day, except when the temperature is
-    ; very hot. 50% chance of losing a day's travel.
+    ; "After Fort Hall, a 6% chance each day, except when the temperature is
+    ; very hot. 50% chance of losing a day's travel."
     LDA location
     CMP #LOC_FORTHALL
     BCC Done
@@ -279,8 +279,8 @@
 
 .proc REHailStorm
     ; Hail storm
-    ; Before Fort Hall, 6% chance each day in which the temperature is very hot.
-    ; Does nothing?
+    ; "Before Fort Hall, 6% chance each day in which the temperature is very hot.""
+    ; +50% chance of losing a day's travel
     LDA location
     CMP #LOC_FORTHALL
     BCS Done
@@ -290,6 +290,11 @@
     JSR RollRNG
     CMP #6*2
     BCS Done
+    JSR RandomNumberGenerator
+    AND #1
+    BNE :+
+    INC wagonRest ; 50% chance to lose 1 day
+    :
     LDA #EVENT_HAIL_STORM
     JSR QueueEvent
     LDA #1

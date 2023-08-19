@@ -262,6 +262,10 @@
         BEQ :++
         LDA #_PD
         STA popupTextLine1, Y
+        LDA wagonRest
+        BNE :+
+        JMP :+++
+        :
         LDY #0
         LDX #1
         :
@@ -287,6 +291,26 @@
         INY
         CPY eventHailStormText
         BNE :-
+        LDA wagonRest
+        BEQ :++
+        LDA #_PD
+        STA popupTextLine1, Y
+        LDA wagonRest
+        BNE :+
+        JMP :+++
+        :
+        LDY #0
+        LDX #1
+        :
+        LDA eventLoseDaysText, X
+        STA popupTextLine2, Y
+        INX
+        INY
+        CPY eventLoseDaysText
+        BNE :-
+        LDA #_PD
+        STA popupTextLine2, Y
+        :
         LDA #MENU_TEXTPOPUP
         STA menuOpen
         JMP Done
