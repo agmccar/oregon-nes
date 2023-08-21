@@ -28,6 +28,10 @@
     BNE :+
     JMP LoadLandmark
     :
+    CMP #EVENT_LOOK_AROUND
+    BNE :+
+    JMP LookAround
+    :
     CMP #EVENT_INDIAN_FOOD
     BNE :+
     JMP IndianFood
@@ -179,6 +183,27 @@
         LDA #_PD
         STA popupTextLine2, Y
         LDA #MENU_TEXTPOPUP
+        STA menuOpen
+        JMP Done
+    LookAround:
+        LDX #0
+        :
+        LDA eventLookAroundText, X ; "Would you like to"
+        STA popupTextLine1, X
+        INX
+        CPX #17
+        BNE :-
+        LDY #0
+        :
+        LDA eventLookAroundText, X  ; "look around? <YES>"
+        STA popupTextLine2, Y
+        INX
+        INY
+        CPY #12
+        BNE :-
+        LDA #___
+        STA popupTextLine2, Y
+        LDA #MENU_TEXTPOPUP_YN
         STA menuOpen
         JMP Done
     LoadLandmark:
@@ -1319,7 +1344,7 @@
     STA nextMi+1
     LDA #EVENT_REACHED_LANDMARK
     JSR QueueEvent
-    LDA #EVENT_LOAD_LANDMARK
+    LDA #EVENT_LOOK_AROUND
     JSR QueueEvent
     LDA helper+1 ; unstash remaining miles
     STA helper ; replace mpd with remaining miles (ie stop at the landmark) 

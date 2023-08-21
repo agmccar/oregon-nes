@@ -1548,12 +1548,23 @@
         BNE :+
         JMP @menuTextPopup
         :
+        CMP #MENU_TEXTPOPUP_YN
+        BNE :+
+        JMP @menuTextPopupYN
         JMP Done
         @menuTextPopup:
             JSR CloseTextPopup
             LDA #MENU_NONE
             STA menuOpen
             JMP Done
+        @menuTextPopupYN:
+            JSR CloseTextPopup
+            LDA #MENU_NONE
+            STA menuOpen
+            LDA #EVENT_LOAD_LANDMARK ; if yes selected
+            JSR QueueEvent
+            JMP Done
+            
         @menuNone:
             ; LDA #MENU_TEXTPOPUP
             ; STA menuOpen ; testing popup window

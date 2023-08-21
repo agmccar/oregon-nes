@@ -141,6 +141,7 @@ MENU_REST               = 11
 MENU_TEXTPOPUP          = 12
 MENU_MAP                = 13
 MENU_TALK               = 14
+MENU_TEXTPOPUP_YN       = 15 ; text pop up with Yes or No options
 
 OPT_CONTINUE    = 0
 OPT_SUPPLIES    = 1
@@ -188,6 +189,7 @@ COST_FOOD_LB    = $82
 EVENT_NONE              = 0
 EVENT_NEXT_LANDMARK     = 1 ; "It is xxx miles to yyyy"
 EVENT_REACHED_LANDMARK  = 2 ; "you have reached yyyy"
+EVENT_LOOK_AROUND       = 27 ; "Would you like to look around"
 EVENT_LOAD_LANDMARK     = 26 ; change game state
 EVENT_INDIAN_FOOD       = 3
 EVENT_THUNDERSTORM      = 4

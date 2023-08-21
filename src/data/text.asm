@@ -406,6 +406,9 @@ eventInjuryText:
     .byte _A_,_R_,_M_
     .byte _L_,_E_,_G_
 
+eventLookAroundText:
+    .byte _W_,_O_,_U_,_L_,_D_,___,_Y_,_O_,_U_,___,_L_,_I_,_K_,_E_,___,_T_,_O_
+    .byte _L_,_O_,_O_,_K_,___,_A_,_R_,_O_,_U_,_N_,_D_,_QU
 ; eventThiefText:
 ;     .byte A THIEF COMES DURING THE NIGHT AND STEALS 
 

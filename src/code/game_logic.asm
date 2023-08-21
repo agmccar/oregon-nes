@@ -238,6 +238,10 @@
     BNE :+
     JMP TextPopup
     :
+    CMP #MENU_TEXTPOPUP_YN
+    BNE :+
+    JMP TextPopupYN
+    :
     CMP #MENU_MAP
     BNE :+
     JMP Map
@@ -354,9 +358,12 @@
         JSR DrawRestSubmenu
         JSR RedrawFinger
         JMP Done
+    TextPopupYN:
     TextPopup:
         JSR BufferDrawTextPopup
         JMP Done
+        ; JSR BufferDrawTextPopup
+        ; JMP Done
     Map:
         LDA #0      ; no finger visible
         STA fingerAttr
