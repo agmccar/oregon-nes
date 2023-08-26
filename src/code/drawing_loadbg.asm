@@ -950,21 +950,24 @@
     JSR ClearScreen
     JSR ClearAttributes
     JSR StartBulkDrawing
-    LDA colorMono
-    BNE :++
     LDA PPUSTATUS ; map palette
     LDA #$3F
     STA PPUADDR
     LDA #$00
     STA PPUADDR
     LDX #0
-    :                       
+    :
+    LDA colorMono
+    BNE :+
     LDA mapPalette, X
+    JMP :++
+    :
+    LDA mapPaletteMono, X
+    :
     STA PPUDATA
     INX
     CPX #$20
-    BNE :-
-    :
+    BNE :---
     LDY #6 ; get image data
     JSR bankswitch_y
     LDA #<mapTiles 

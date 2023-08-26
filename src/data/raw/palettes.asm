@@ -13,7 +13,7 @@ palette:
 paletteMono:
     ; background palette data
     .byte C_BLACK, C_MONO+$10, C_MONO+$20, C_MONO+$30
-    .byte C_BLACK, C_MONO+$10, C_MONO+$30, C_MONO
+    .byte C_BLACK, C_MONO+$10, C_MONO+$30, C_BLACK
     .byte C_BLACK, C_MONO+$10, C_MONO+$20, C_MONO+$30
     .byte C_BLACK, C_MONO+$10, C_BLACK, C_MONO+$30
     ; sprite palette data
@@ -40,6 +40,18 @@ mapPalette:
     .byte C_WHITE, C_BLACK, C_LGREY, C_WHITE
     .byte C_WHITE, C_BLUE, C_GREY, C_BLACK
     .byte C_WHITE, C_BLUE, C_GREY, C_BLACK
+
+mapPaletteMono:
+    ; background palette data
+    .byte C_MONO+$30, C_MONO+$10, C_MONO+$20, C_BLACK
+    .byte C_MONO+$30, C_MONO+$10, C_BLACK, C_MONO+$30
+    .byte C_MONO+$30, C_MONO+$10, C_MONO+$30, C_BLACK
+    .byte C_MONO+$30, C_MONO+$10, C_MONO+$20, C_BLACK
+    ; sprite palette data
+    .byte C_MONO+$30, C_MONO+$10, C_MONO+$20, C_BLACK
+    .byte C_MONO+$30, C_BLACK, C_MONO+$20, C_MONO+$30
+    .byte C_MONO+$30, C_MONO+$10, C_MONO+$20, C_BLACK
+    .byte C_MONO+$30, C_MONO+$10, C_MONO+$20, C_BLACK
 
 ; TODO fortKearneyPalette:
 ; .byte C_BLACK,$25,$2a,C_WHITE
