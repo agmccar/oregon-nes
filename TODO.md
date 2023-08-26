@@ -3,9 +3,9 @@
 
 ## Title screen
 
-- [ ] title screen graphics
+- [x] title screen graphics
 - [ ] title screen options
-    - [ ] 1. Travel the trail
+    - [x] 1. Travel the trail
     - [ ] 2. Learn about the trail
     - [ ] 3. See the Oregon Top Ten
     - [ ] 4. Turn sound off
