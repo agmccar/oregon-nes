@@ -983,15 +983,7 @@
     INC pointer+1
     DEX
     BNE :-
-
-    LDA PPUSTATUS ; ensure palette color that we need is blue 
-    LDA #$3F
-    STA PPUADDR
-    LDA #$02
-    STA PPUADDR
-    LDA #C_BLUE
-    STA PPUDATA
-
+    
     LDA gameState ; decide where to draw first adornment
     CMP #GAMESTATE_TITLE
     BNE :+
@@ -1102,11 +1094,18 @@
     LDA #$C0
     STA PPUADDR
     LDX #0
+    LDA #$0f
+    :
+    STA PPUDATA
+    INX
+    CPX #8
+    BNE :-
+    LDX #0
     LDA #$00
     :
     STA PPUDATA
     INX
-    CPX #16
+    CPX #8
     BNE :-
 
     RTS

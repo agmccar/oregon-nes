@@ -50,6 +50,16 @@
     JSR SetDigitFromValue
     LDX #0                  ; default palette
     JSR UpdatePalette
+    JSR BufferSetPaletteBlue ; shameless hack
+    LDA #%00000100      ; main fingers visible, pointing right
+    STA fingerAttr
+    LDA #0              ; initialize cursor
+    STA fingerLastX     ; (5x,6y) tiles from top left, facing R
+    STA fingerLastY
+    LDA #4
+    STA fingerX
+    LDA #12
+    STA fingerY
     JSR LoadBgTitle
     RTS
 .endproc

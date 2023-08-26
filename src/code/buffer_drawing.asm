@@ -672,6 +672,21 @@
     RTS
 .endproc
 
+.proc BufferSetPaletteBlue
+    LDX #1
+    JSR StartBufferWrite
+    LDA #1
+    JSR WriteByteToBuffer
+    LDA #$3F
+    JSR WriteByteToBuffer
+    LDA #$02
+    JSR WriteByteToBuffer
+    LDA #C_BLUE
+    JSR WriteByteToBuffer
+    JSR EndBufferWrite
+    RTS
+.endproc
+
 .proc BufferDrawTitleOptions
     LDX whatIsYourChoiceText ; draw "You may:"
     JSR StartBufferWrite

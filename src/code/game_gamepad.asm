@@ -10,16 +10,71 @@
         BNE :+
         JMP CheckStart
         :
-        ; JSR IncrementDate
         JMP Done
     CheckStart:
         LDA #KEY_START
         BIT buttons1
         BNE :+
-        JMP Done
+        JMP CheckSelect
         :
+        LDA fingerY
+        CMP #12 ; Travel the trail
+        BNE :+
         LDA #GAMESTATE_NEWGAME
         STA gameState
+        JMP Done
+        :
+        CMP #14 ; Learn about the trail
+        BNE :+
+
+        :
+        CMP #16 ; See the Oregon Top Ten
+        BNE :+
+
+        :
+        CMP #18 ; Turn sound [off|on]
+        BNE :+
+
+        :
+        JMP Done
+    CheckSelect:
+        LDA #KEY_SELECT
+        BIT buttons1
+        BNE :+
+        JMP CheckDown
+        :
+        JMP :+ ; hack
+        JMP Done
+    CheckDown:
+        LDA #KEY_DOWN
+        BIT buttons1
+        BNE :+
+        JMP CheckUp
+        :
+        LDX fingerY
+        INX
+        INX
+        CPX #20 ; check if fingerY is past bottom of menu
+        BNE :+
+        LDX #12 ; wrap to top of menu
+        :
+        STX fingerY
+        JMP Done
+    CheckUp:
+        LDA #KEY_UP
+        BIT buttons1
+        BNE :+
+        JMP Done
+        :
+        LDX fingerY
+        DEX
+        DEX
+        CPX #10 ; check if fingerY is past top of menu
+        BNE :+
+        LDX #18 ; wrap to bottom of menu
+        :
+        STX fingerY
+        JMP Done
     Done:
     RTS
 .endproc

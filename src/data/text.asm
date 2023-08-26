@@ -3,7 +3,9 @@ titleOptionsText:
     .byte 16,_T_,_R_,_A_,_V_,_E_,_L_,___,_T_,_H_,_E_,___,_T_,_R_,_A_,_I_,_L_
     .byte 21,_L_,_E_,_A_,_R_,_N_,___,_A_,_B_,_O_,_U_,_T_,___,_T_,_H_,_E_,___,_T_,_R_,_A_,_I_,_L_
     .byte 22,_S_,_E_,_E_,___,_T_,_H_,_E_,___,_O_,_R_,_E_,_G_,_O_,_N_,___,_T_,_O_,_P_,___,_T_,_E_,_N_
-    .byte 14,_T_,_U_,_R_,_N_,___,_S_,_O_,_U_,_N_,_D_,___,_O_,_F_,_F_
+    .byte 11,_T_,_U_,_R_,_N_,___,_S_,_O_,_U_,_N_,_D_,___
+    .byte _O_,_F_,_F_
+    .byte _O_,_N_
 
 whatIsYourChoiceText:
     .byte 8,_Y_,_O_,_U_,___,_M_,_A_,_Y_,_CL
