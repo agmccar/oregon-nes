@@ -5,6 +5,10 @@ titleOptionsText:
     .byte 22,_S_,_E_,_E_,___,_T_,_H_,_E_,___,_O_,_R_,_E_,_G_,_O_,_N_,___,_T_,_O_,_P_,___,_T_,_E_,_N_
     .byte 14,_T_,_U_,_R_,_N_,___,_S_,_O_,_U_,_N_,_D_,___,_O_,_F_,_F_
 
+whatIsYourChoiceText:
+    .byte 8,_Y_,_O_,_U_,___,_M_,_A_,_Y_,_CL
+    .byte 20,_W_,_H_,_A_,_T_,___,_I_,_S_,___,_Y_,_O_,_U_,_R_,___,_C_,_H_,_O_,_I_,_C_,_E_,_QU
+
 pressStartText:
     .byte ___,___,___,___,_P_,_R_,_E_,_S_,_S_,___,_S_,_T_,_A_,_R_,_T_,___,_T_,_O_,___,_C_,_O_,_N_,_T_,_I_,_N_,_U_,_E_,___,___,___,___,___
 sizeUpSituationText:

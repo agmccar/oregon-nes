@@ -673,7 +673,26 @@
 .endproc
 
 .proc BufferDrawTitleOptions
-    LDA #$21
+    LDX whatIsYourChoiceText ; draw "You may:"
+    JSR StartBufferWrite
+        LDA whatIsYourChoiceText
+        STA helper
+        JSR WriteByteToBuffer
+        LDA #$21
+        JSR WriteByteToBuffer
+        LDA #$24
+        JSR WriteByteToBuffer
+        INC helper
+        LDX #1
+        :
+        LDA whatIsYourChoiceText, X
+        JSR WriteByteToBuffer
+        INX
+        CPX helper
+        BNE :-
+    JSR EndBufferWrite
+    
+    LDA #$21 ; draw options
     STA helper
     LDA #$86
     STA helper+1
@@ -722,6 +741,23 @@
     TAY
     DEY
     BNE Option
+
+    LDX #20 ; draw "What is your choice?"
+    JSR StartBufferWrite
+        LDA #20
+        JSR WriteByteToBuffer
+        LDA #$22
+        JSR WriteByteToBuffer
+        LDA #$A4
+        JSR WriteByteToBuffer
+        LDX #10
+        :
+        LDA whatIsYourChoiceText, X
+        JSR WriteByteToBuffer
+        INX
+        CPX #30
+        BNE :-
+    JSR EndBufferWrite
     RTS
 .endproc
 
