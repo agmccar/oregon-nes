@@ -695,7 +695,7 @@
         JSR WriteByteToBuffer
         LDA #$21
         JSR WriteByteToBuffer
-        LDA #$24
+        LDA #$44
         JSR WriteByteToBuffer
         INC helper
         LDX #1
@@ -709,7 +709,7 @@
     
     LDA #$21 ; draw options
     STA helper
-    LDA #$86
+    LDA #$A6
     STA helper+1
     LDA #0 ; index of byte in titleOptionsText
     STA helper2
@@ -763,7 +763,7 @@
         JSR WriteByteToBuffer
         LDA #$22
         JSR WriteByteToBuffer
-        LDA #$A4
+        LDA #$C4
         JSR WriteByteToBuffer
         LDX #10
         :

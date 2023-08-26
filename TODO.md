@@ -158,3 +158,4 @@
 - [x] nametable update buffer
 - [x] compress tile and nametable data (PackBits?)
 - [ ] lowercase letters
+- [ ] cursor/finger icon blinks 

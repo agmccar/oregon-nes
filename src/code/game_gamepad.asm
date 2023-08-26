@@ -18,21 +18,21 @@
         JMP CheckSelect
         :
         LDA fingerY
-        CMP #12 ; Travel the trail
+        CMP #13 ; Travel the trail
         BNE :+
         LDA #GAMESTATE_NEWGAME
         STA gameState
         JMP Done
         :
-        CMP #14 ; Learn about the trail
+        CMP #15 ; Learn about the trail
         BNE :+
 
         :
-        CMP #16 ; See the Oregon Top Ten
+        CMP #17 ; See the Oregon Top Ten
         BNE :+
 
         :
-        CMP #18 ; Turn sound [off|on]
+        CMP #19 ; Turn sound [off|on]
         BNE :+
 
         :
@@ -54,9 +54,9 @@
         LDX fingerY
         INX
         INX
-        CPX #20 ; check if fingerY is past bottom of menu
+        CPX #21 ; check if fingerY is past bottom of menu
         BNE :+
-        LDX #12 ; wrap to top of menu
+        LDX #13 ; wrap to top of menu
         :
         STX fingerY
         JMP Done
@@ -69,9 +69,9 @@
         LDX fingerY
         DEX
         DEX
-        CPX #10 ; check if fingerY is past top of menu
+        CPX #11 ; check if fingerY is past top of menu
         BNE :+
-        LDX #18 ; wrap to bottom of menu
+        LDX #19 ; wrap to bottom of menu
         :
         STX fingerY
         JMP Done

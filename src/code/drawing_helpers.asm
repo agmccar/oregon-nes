@@ -983,11 +983,11 @@
     INC pointer+1
     DEX
     BNE :-
-    
+
     LDA gameState ; decide where to draw first adornment
     CMP #GAMESTATE_TITLE
     BNE :+
-    LDX #$C0 ; under the title logo
+    LDX #$E0 ; under the title logo
     JMP :++
     :
     LDX #$60 ; tippy top of screen
@@ -1025,14 +1025,15 @@
     LDA gameState ; where is it?
     CMP #GAMESTATE_TITLE
     BNE :+
-    LDX #$C8 ; below title logo
+    LDX #$D0 ; below title logo
+    LDA #$f0
     JMP :++
     :
     LDX #$C0 ; tippy top of screen
+    LDA #$0f
     :
     STX PPUADDR
     LDX #0
-    LDA #$0f
     :
     STA PPUDATA
     INX
@@ -1078,7 +1079,7 @@
     LDA PPUSTATUS ; draw title logo
     LDA #$20
     STA PPUADDR
-    LDA #$40
+    LDA #$60
     STA PPUADDR
     LDX #0
     :

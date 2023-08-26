@@ -58,7 +58,7 @@
     STA fingerLastY
     LDA #4
     STA fingerX
-    LDA #12
+    LDA #13
     STA fingerY
     JSR LoadBgTitle
     RTS
