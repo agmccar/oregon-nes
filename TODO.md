@@ -8,7 +8,7 @@
     - [x] 1. Travel the trail
     - [ ] 2. Learn about the trail
     - [ ] 3. See the Oregon Top Ten
-    - [ ] 4. Turn sound off
+    - [ ] 4. Turn sound on|off
 
 ## New game screens
 
