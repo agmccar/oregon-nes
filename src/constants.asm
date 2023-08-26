@@ -236,6 +236,7 @@ C_GREY = $00
 C_BLUE = $21
 C_GREEN = $2A
 C_LGREY = $10
+C_MONO = $0B
 
 ; talk text 
 LITERAL_CHAR = 210

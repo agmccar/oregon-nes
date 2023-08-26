@@ -497,6 +497,8 @@
 
 .proc DrawLandmarkImage
     ; set palette
+    LDA colorMono
+    BNE :++
     LDA PPUSTATUS
     LDA #$3F
     STA PPUADDR
@@ -509,7 +511,7 @@
     INX
     CPX #$10
     BNE :-
-
+    :
     LDA location ; TODO this entire subroutine needs DRY
     CMP #LOC_INDEPENDENCE
     BNE :+

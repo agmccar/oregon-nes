@@ -878,7 +878,6 @@
         :
         STA PPUDATA
         INX
-        CPX #$C0
         BNE :-
         JSR BufferDrawTravelingAttr
         JSR BufferDrawSizeUpSituation
@@ -951,6 +950,8 @@
     JSR ClearScreen
     JSR ClearAttributes
     JSR StartBulkDrawing
+    LDA colorMono
+    BNE :++
     LDA PPUSTATUS ; map palette
     LDA #$3F
     STA PPUADDR
@@ -963,6 +964,7 @@
     INX
     CPX #$20
     BNE :-
+    :
     LDY #6 ; get image data
     JSR bankswitch_y
     LDA #<mapTiles 

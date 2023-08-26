@@ -28,6 +28,7 @@ seed:               .res 2 ; PRNG seed
 ;  |+++++-- unused
 ;  +------- stopped- 1:stopped 0:moving
 oxenFrame:          .res 1 
+colorMono:          .res 1 ; 0:full color, 1:monochrome
 
 
 ; HUD --------------------------------------------------------------------------

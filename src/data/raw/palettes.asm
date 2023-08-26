@@ -10,6 +10,18 @@ palette:
     .byte C_BLACK, C_GREY, C_LGREY, C_WHITE
     .byte C_BLACK, C_GREY, C_LGREY, C_WHITE
 
+paletteMono:
+    ; background palette data
+    .byte C_BLACK, C_MONO+$10, C_MONO+$20, C_MONO+$30
+    .byte C_BLACK, C_MONO+$10, C_MONO+$30, C_MONO
+    .byte C_BLACK, C_MONO+$10, C_MONO+$20, C_MONO+$30
+    .byte C_BLACK, C_MONO+$10, C_BLACK, C_MONO+$30
+    ; sprite palette data
+    .byte C_BLACK, C_MONO+$10, C_MONO+$20, C_MONO+$30
+    .byte C_BLACK, C_MONO+$10, C_MONO+$20, C_MONO+$30
+    .byte C_BLACK, C_MONO+$10, C_MONO+$20, C_MONO+$30
+    .byte C_BLACK, C_MONO+$10, C_MONO+$20, C_MONO+$30
+
 landmarkPalette:
     ; background palette data
     .byte C_BLACK, C_PINK, C_ORANGE, C_WHITE

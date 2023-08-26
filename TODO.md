@@ -80,6 +80,7 @@
   - [x] Inadequate grass
   - [x] Illness
   - [ ] Broken wagon part
+  - [ ] Snow bound
 - [ ] random events graphics
   - [ ] Severe thunderstorm
   - [ ] Severe blizzard
@@ -87,6 +88,7 @@
   - [ ] Fire in the wagon
   - [ ] Thief comes during the night
   - [ ] Broken wagon part
+  - [ ] Snow bound
 - [ ] grass color
 - [x] stop to rest
 - [ ] drought events don't pause the game
