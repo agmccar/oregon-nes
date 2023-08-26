@@ -672,39 +672,8 @@
     RTS
 .endproc
 
-.proc BufferDrawTitle
-    LDX #17
-    JSR StartBufferWrite    ; title text
-        LDA #17                 
-        JSR WriteByteToBuffer
-        LDA #$21
-        JSR WriteByteToBuffer
-        LDA #$29
-        JSR WriteByteToBuffer
-        LDX #0
-        :                       
-        LDA titleText, X
-        JSR WriteByteToBuffer
-        INX
-        CPX #17
-        BNE :-
-    JSR EndBufferWrite
-    LDX #12
-    JSR StartBufferWrite    ; title options text
-        LDA #12
-        JSR WriteByteToBuffer 
-        LDA #$22
-        JSR WriteByteToBuffer 
-        LDA #$0B
-        JSR WriteByteToBuffer 
-        LDX #0
-        :                       
-        LDA titleOptions, X
-        JSR WriteByteToBuffer
-        INX
-        CPX #12
-        BNE :-
-    JSR EndBufferWrite
+.proc BufferDrawTitleOptions
+    
     RTS
 .endproc
 

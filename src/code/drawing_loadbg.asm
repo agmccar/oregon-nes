@@ -17,7 +17,18 @@
 
 .proc LoadBgTitle
     JSR ClearAttributes ; default palette
-    JSR BufferDrawTitle
+    ;JSR BufferDrawTitle
+
+    JSR StartBulkDrawing ; draw adornments
+    LDY #6
+    JSR bankswitch_y
+    JSR DrawAdornments
+    JSR DrawTitleLogo
+    LDY #1
+    JSR bankswitch_y
+    JSR DoneBulkDrawing
+    JSR BufferDrawTitleOptions
+
     LDA #%10010000
     STA softPPUCTRL         ; Ensure NMIs are enabled
     LDA #%00011110 
@@ -1046,86 +1057,7 @@
     JSR StartBulkDrawing
     LDY #6
     JSR bankswitch_y
-    LDA #<adornmentTiles
-    STA pointer
-    LDA #>adornmentTiles
-    STA pointer+1
-    LDY #0
-    STY PPUMASK
-    LDY #$10
-    STY PPUADDR
-    LDY #$00
-    STY PPUADDR
-    LDX #$02
-    :
-    LDA (pointer), Y
-    STA PPUDATA
-    INY
-    BNE :-
-    INC pointer+1
-    DEX
-    BNE :-
-    LDA PPUSTATUS
-    LDA #$3F
-    STA PPUADDR
-    LDA #$02
-    STA PPUADDR
-    LDA #C_BLUE
-    STA PPUDATA
-    LDA PPUSTATUS
-    LDA #$20
-    STA PPUADDR
-    LDA #$60
-    STA PPUADDR
-    LDX #0
-    :
-    LDA adornmentImage, X
-    STA PPUDATA
-    INX
-    CPX #$40
-    BNE :-
-    LDA PPUSTATUS
-    LDA #$23
-    STA PPUADDR
-    LDA #$00
-    STA PPUADDR
-    LDX #0
-    :
-    LDA adornmentImage, X
-    STA PPUDATA
-    INX
-    CPX #$40
-    BNE :-
-    LDA PPUSTATUS
-    LDA #$23
-    STA PPUADDR
-    LDA #$C0
-    STA PPUADDR
-    LDX #0
-    LDA #$0f
-    :
-    STA PPUDATA
-    INX
-    CPX #8
-    BNE :-
-    LDA #$f0
-    :
-    STA PPUDATA
-    INX
-    CPX #16
-    BNE :-
-    LDA PPUSTATUS
-    LDA #$23
-    STA PPUADDR
-    LDA #$F0
-    STA PPUADDR
-    LDX #0
-    LDA #$f0
-    :
-    STA PPUDATA
-    INX
-    CPX #8
-    BNE :-
+    JSR DrawAdornments
     LDY #1
     JSR bankswitch_y
     JSR DoneBulkDrawing

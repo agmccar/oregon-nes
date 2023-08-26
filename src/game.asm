@@ -40,6 +40,7 @@
     .include "data/mapImage.asm"
     .include "data/suppliesImage.asm"
     .include "data/raw/adornmentImage.asm"
+    .include "data/raw/titleLogoImage.asm"
 
 .segment "RODATA" ; ROM7
     banktable:              ; Write to this table to switch banks.

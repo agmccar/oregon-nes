@@ -74,6 +74,13 @@
   - [x] Inadequate grass
   - [x] Illness
   - [ ] Broken wagon part
+- [ ] random events graphics
+  - [ ] Severe thunderstorm
+  - [ ] Severe blizzard
+  - [ ] Find wild fruit
+  - [ ] Fire in the wagon
+  - [ ] Thief comes during the night
+  - [ ] Broken wagon part
 - [ ] grass color
 - [x] stop to rest
 - [ ] drought events don't pause the game
@@ -107,6 +114,7 @@
 
 - [x] text data
 - [x] logic (text dependent on location)
+- [ ] move text data to banks 2-6 + move decompression code to bank 7
 
 ## Landmark screen
 

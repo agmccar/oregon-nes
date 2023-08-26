@@ -962,3 +962,152 @@
     Done:
     RTS
 .endproc
+
+.proc DrawAdornments
+    LDA #<adornmentTiles ; load tiles into pattern B
+    STA pointer
+    LDA #>adornmentTiles
+    STA pointer+1
+    LDY #0
+    STY PPUMASK
+    LDY #$10
+    STY PPUADDR
+    LDY #$00
+    STY PPUADDR
+    LDX #$02
+    :
+    LDA (pointer), Y
+    STA PPUDATA
+    INY
+    BNE :-
+    INC pointer+1
+    DEX
+    BNE :-
+
+    LDA PPUSTATUS ; ensure palette color that we need is blue 
+    LDA #$3F
+    STA PPUADDR
+    LDA #$02
+    STA PPUADDR
+    LDA #C_BLUE
+    STA PPUDATA
+
+    LDA gameState ; decide where to draw first adornment
+    CMP #GAMESTATE_TITLE
+    BNE :+
+    LDX #$C0 ; under the title logo
+    JMP :++
+    :
+    LDX #$60 ; tippy top of screen
+    :
+    LDA PPUSTATUS
+    LDA #$20
+    STA PPUADDR
+    STX PPUADDR
+
+    DrawThem:
+    LDX #0
+    :
+    LDA adornmentImage, X ; draw first adornment
+    STA PPUDATA
+    INX
+    CPX #$40
+    BNE :-
+
+    LDA PPUSTATUS ; screen location of bottom adornment is always the same 
+    LDA #$23
+    STA PPUADDR
+    LDA #$00
+    STA PPUADDR
+    LDX #0
+    :
+    LDA adornmentImage, X ; draw second adornment
+    STA PPUDATA
+    INX
+    CPX #$40
+    BNE :-
+
+    LDA PPUSTATUS ; color adornments
+    LDA #$23 ; top adornment
+    STA PPUADDR
+    LDA gameState ; where is it?
+    CMP #GAMESTATE_TITLE
+    BNE :+
+    LDX #$C8 ; below title logo
+    JMP :++
+    :
+    LDX #$C0 ; tippy top of screen
+    :
+    STX PPUADDR
+    LDX #0
+    LDA #$0f
+    :
+    STA PPUDATA
+    INX
+    CPX #8
+    BNE :-
+
+    LDA PPUSTATUS
+    LDA #$23
+    STA PPUADDR
+    LDA #$F0 ; bottom adornment
+    STA PPUADDR
+    LDX #0
+    LDA #$f0
+    :
+    STA PPUDATA
+    INX
+    CPX #8
+    BNE :-
+    RTS
+.endproc
+
+.proc DrawTitleLogo
+    LDA #<titleLogoTiles ; load tiles into pattern B
+    STA pointer
+    LDA #>titleLogoTiles
+    STA pointer+1
+    LDY #0
+    STY PPUMASK
+    LDY #$12
+    STY PPUADDR
+    LDY #$00
+    STY PPUADDR
+    LDX #$03
+    :
+    LDA (pointer), Y
+    STA PPUDATA
+    INY
+    BNE :-
+    INC pointer+1
+    DEX
+    BNE :-
+
+    LDA PPUSTATUS ; draw title logo
+    LDA #$20
+    STA PPUADDR
+    LDA #$40
+    STA PPUADDR
+    LDX #0
+    :
+    LDA titleLogoImage, X
+    STA PPUDATA
+    INX
+    CPX #$80
+    BNE :-
+
+    LDA PPUSTATUS ; color title logo
+    LDA #$23
+    STA PPUADDR
+    LDA #$C0
+    STA PPUADDR
+    LDX #0
+    LDA #$00
+    :
+    STA PPUDATA
+    INX
+    CPX #16
+    BNE :-
+
+    RTS
+.endproc
