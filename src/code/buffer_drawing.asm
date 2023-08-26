@@ -1298,6 +1298,59 @@
         CPX #16
         BNE :-
     JSR EndBufferWrite
+    
+    LDA #$22 ; erase "Press A to size up the situation"
+    STA pointer
+    LDA #$00
+    STA pointer+1
+    LDX #2
+    :
+    TXA
+    PHA
+    LDX #$20
+    JSR StartBufferWrite
+        LDA #$20
+        JSR WriteByteToBuffer
+        LDA pointer
+        JSR WriteByteToBuffer
+        LDA pointer+1
+        JSR WriteByteToBuffer
+        LDA #TILE_GRASS
+        LDX #0
+        :
+        JSR WriteByteToBuffer
+        INX
+        CPX #$20
+        BNE :-
+    JSR EndBufferWrite
+    CLC
+    LDA pointer+1
+    ADC #$20
+    STA pointer+1
+    LDA pointer
+    ADC #0
+    STA pointer
+    PLA
+    TAX
+    DEX
+    BNE :--
+    LDX #8 ; grass color
+    JSR StartBufferWrite
+        LDA #8
+        JSR WriteByteToBuffer
+        LDA #$23
+        JSR WriteByteToBuffer
+        LDA #$E0
+        JSR WriteByteToBuffer
+        LDA #$5A
+        LDX #0
+        :
+        JSR WriteByteToBuffer
+        INX
+        CPX #8
+        BNE :-
+    JSR EndBufferWrite
+
 
     LDX #28 ; top row
     JSR StartBufferWrite
@@ -1410,57 +1463,6 @@
         BNE :-
     JSR EndBufferWrite
 
-    LDA #$22 ; erase "Press A to size up the situation"
-    STA pointer
-    LDA #$00
-    STA pointer+1
-    LDX #2
-    :
-    TXA
-    PHA
-    LDX #$20
-    JSR StartBufferWrite
-        LDA #$20
-        JSR WriteByteToBuffer
-        LDA pointer
-        JSR WriteByteToBuffer
-        LDA pointer+1
-        JSR WriteByteToBuffer
-        LDA #TILE_GRASS
-        LDX #0
-        :
-        JSR WriteByteToBuffer
-        INX
-        CPX #$20
-        BNE :-
-    JSR EndBufferWrite
-    CLC
-    LDA pointer+1
-    ADC #$20
-    STA pointer+1
-    LDA pointer
-    ADC #0
-    STA pointer
-    PLA
-    TAX
-    DEX
-    BNE :--
-    LDX #8 ; grass color
-    JSR StartBufferWrite
-        LDA #8
-        JSR WriteByteToBuffer
-        LDA #$23
-        JSR WriteByteToBuffer
-        LDA #$E0
-        JSR WriteByteToBuffer
-        LDA #$5A
-        LDX #0
-        :
-        JSR WriteByteToBuffer
-        INX
-        CPX #8
-        BNE :-
-    JSR EndBufferWrite
     JSR BufferDrawPressStart ; draw "Press start to continue"
 
     RTS
