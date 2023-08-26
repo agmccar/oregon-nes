@@ -673,7 +673,55 @@
 .endproc
 
 .proc BufferDrawTitleOptions
-    
+    LDA #$21
+    STA helper
+    LDA #$86
+    STA helper+1
+    LDA #0 ; index of byte in titleOptionsText
+    STA helper2
+    LDA titleOptionsText ; length of option string
+    STA helper2+1
+    LDY #4 ; amount of options
+    Option:
+    INC helper2
+    LDX helper2+1
+    TYA
+    PHA
+    JSR StartBufferWrite
+        LDA helper2+1
+        JSR WriteByteToBuffer
+        LDA helper
+        JSR WriteByteToBuffer
+        LDA helper+1
+        JSR WriteByteToBuffer
+        LDX #0
+        :
+        TXA
+        PHA
+        LDX helper2
+        LDA titleOptionsText, X
+        JSR WriteByteToBuffer
+        PLA
+        TAX
+        INX
+        INC helper2
+        CPX helper2+1
+        BNE :-
+    JSR EndBufferWrite
+    CLC
+    LDA helper+1
+    ADC #$40
+    STA helper+1
+    LDA helper
+    ADC #0
+    STA helper
+    LDX helper2
+    LDA titleOptionsText, X
+    STA helper2+1
+    PLA
+    TAY
+    DEY
+    BNE Option
     RTS
 .endproc
 
