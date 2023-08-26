@@ -1,5 +1,6 @@
 import os
 import pprint as pp
+import argparse
 
 def dec2hexasm(a):
     if abs(a) > 255:
@@ -83,7 +84,7 @@ def pack(a):
         segments = addsegment(segment, segments)
     return ','.join([','.join(segment) for segment in segments])
 
-def verify(a, b):
+def verify(a, b, verbose):
     if 'incbin' in a:
         return True
     c = []
@@ -91,16 +92,16 @@ def verify(a, b):
     b = b.split(',')
     a = a.split(',')
     i = 0
-    print(f"Verifying segment, unpacked bytes: {len(a)}, Packed bytes: {len(b)}", end='')
+    if verbose: print(f"Verifying segment, unpacked bytes: {len(a)}, Packed bytes: {len(b)}", end='')
     if len(b) > len(a):
-        print(f"unpacked bytes: {a}")
+        if verbose: print(f"unpacked bytes: {a}")
         input(f"Packed bytes: {b}")
     while len(c) < len(a):
         try:
             header = int(b[i].replace('$',''),16)
         except:
-            print(f"i: {i}\nlen(a): {len(a)}\nlen(b): {len(b)}\nlen(c): {len(c)}")
-            print(header)
+            if verbose: print(f"i: {i}\nlen(a): {len(a)}\nlen(b): {len(b)}\nlen(c): {len(c)}")
+            if verbose: print(header)
         i += 1
         if header > 128:
             header -= 128
@@ -112,24 +113,25 @@ def verify(a, b):
                 c.append(b[i])
                 i += 1
         if a[:len(c)] != c:
-            print("Original:",a[:len(c)])
-            print(f"Unpacked: {c}")
+            if verbose: print("Original:",a[:len(c)])
+            if verbose: print(f"Unpacked: {c}")
             raise Exception("Bad compression")
     if a != c:
-        print('...Failed')
+        if verbose: print('...Failed')
         raise Exception("Bad compression")
     else:
-        print('...OK')
+        if verbose: print('...OK')
         return True
 
-def main():
+def main(args):
+    verbose = args.verbose
     asm_filenames = []
     chr_filenames = []
     for filename in os.listdir('src/data/raw/image'):
         asm_filenames.append('src/data/raw/image/'+filename)
     for filename in os.listdir('src/data/raw/chr'):
         chr_filenames.append('src/data/raw/chr/'+filename)
-    # print(asm_filenames)
+    # if verbose: print(asm_filenames)
     asm_data = {filename:{} for filename in asm_filenames}
     # pp.pprint(asm_data)
     original_size = {}
@@ -139,20 +141,20 @@ def main():
             lines = f.readlines()
             if "TODO compress" not in ''.join(lines):
                 text = '\n'.join([line.split(';')[0] for line in lines]).split(':')
-                # print(f"{filename} labels: {len(text)}")
+                # if verbose: print(f"{filename} labels: {len(text)}")
                 asm_label = text[0].strip()
                 for label in text[1:-1]:
                     i = label.split('\n')
                     a = parse(i[:-1])
                     asm_data[filename][asm_label] = b = pack(a)
-                    verify(a, b)
+                    verify(a, b, verbose)
                     if 'incbin' not in b:
                         original_size[asm_label] = len(a.split(','))
                         packed_size[asm_label] = len(b.split(','))
                     asm_label = i[-1]
                 a = parse(text[-1].split('\n'))
                 asm_data[filename][asm_label] = b = pack(a)
-                verify(a, b)
+                verify(a, b, verbose)
                 if 'incbin' not in b:
                     original_size[asm_label] = len(a.split(','))
                     packed_size[asm_label] = len(b.split(','))
@@ -163,9 +165,9 @@ def main():
                             f.write(f"\t.byte {asm_data[filename][label]}\n")
                         else:
                             f.write(f"\t{asm_data[filename][label]}\n")
-                    print(f"Compressed {filename}")
+                    if verbose: print(f"Compressed {filename}")
             else:
-                print(f"Skipped {filename}")
+                if verbose: print(f"Skipped {filename}")
     for filename in chr_filenames:
         with open(f"{filename}", 'rb') as f:
             try:
@@ -174,24 +176,32 @@ def main():
                 original_size[filename] = len(a.split(','))
                 b = pack(a)
                 # input(f"Packed data: {a}")
-                verify(a, b)
+                verify(a, b, verbose)
                 a = b
                 packed_size[filename] = len(a.split(','))
                 a = a.replace(',','').replace('$','')
                 with open(f"{filename.replace('raw/','compressed/')}", 'wb') as f:
                     f.write(bytearray.fromhex(a))
-                    print(f"Compressed {filename}")
+                    if verbose: print(f"Compressed {filename}")
             except:
-                print(f"WARN: Skipped {filename}")
+                if verbose: print(f"WARN: Skipped {filename}")
     # pp.pprint(asm_data,indent=4)
     # pp.pprint(original_size, indent=4)
     # pp.pprint(packed_size, indent=4)
     o = sum([original_size[i] for i in original_size])
     p = sum([packed_size[i] for i in packed_size])
-    print(f"Bytes to pack: {o}")
-    print(f"Compressed size: {p}")
-    print(f"Saved {o-p} bytes (~{(o-p)/1024:.0f}K, {100*(o-p)/o:.0f}%)")
+    print(f"Image/CHR\n* bytes to pack: {o}")
+    print(f"* Compressed size: {p}")
+    print(f"* Saved {o-p} bytes (~{(o-p)/1024:.0f}K, {100*(o-p)/o:.0f}%)")
     return asm_data
 
 if __name__ == "__main__":
-    main()
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "-v",
+        "--verbose",
+        help="increase output verbosity",
+        action="store_true"
+    )
+    args = parser.parse_args()
+    main(args)

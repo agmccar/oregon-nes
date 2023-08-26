@@ -1,6 +1,7 @@
 import pprint as pp
 import textwrap
 import re
+import argparse
 
 TEXTLINE_TILES = 4*6
 PUNCT = {
@@ -338,9 +339,13 @@ def write_asm(filename, substr_dict, talk_data):
         for label in labels:
             f.write(f"    .byte <{label},>{label}\n")
     bytes_after += len(substr_dict)*2
-    print(f"Text bytes: {bytes_before}\nCompressed: {bytes_after}\nSaved: {bytes_before-bytes_after} ({100*(bytes_before-bytes_after)/bytes_before:2.0f}%)")
 
-def main():
+    print(f"Text\n* bytes to pack: {bytes_before}")
+    print(f"* Compressed size: {bytes_after}")
+    print(f"* Saved {bytes_before-bytes_after} bytes (~{(bytes_before-bytes_after)/1024:.0f}K, {100*(bytes_before-bytes_after)/bytes_before:.0f}%)")
+
+def main(args):
+    verbose = args.verbose
     talk_data = parse_raw_text('src/data/raw/text/talk.txt')
     mass_text = ""
     for loc in talk_data:
@@ -367,4 +372,12 @@ def main():
     #print(HLENS[HLENS.index(max([i for i in HLENS]))])
 
 if __name__ == "__main__":
-    main()
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "-v",
+        "--verbose",
+        help="increase output verbosity",
+        action="store_true"
+    )
+    args = parser.parse_args()
+    main(args)

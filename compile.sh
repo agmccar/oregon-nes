@@ -8,3 +8,4 @@ python3 scripts/packbits.py
 python3 scripts/compresstext.py
 ca65 src/game.asm -g -o game.o --verbose
 ld65 -o game.nes -m map.txt -C memory.cfg game.o --dbgfile game.dbg -Ln game.labels.txt
+echo "Compile OK"
