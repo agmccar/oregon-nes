@@ -341,7 +341,7 @@ def write_asm(filename, substr_dict, talk_data):
     print(f"Text bytes: {bytes_before}\nCompressed: {bytes_after}\nSaved: {bytes_before-bytes_after} ({100*(bytes_before-bytes_after)/bytes_before:2.0f}%)")
 
 def main():
-    talk_data = parse_raw_text('src/data/talk.txt')
+    talk_data = parse_raw_text('src/data/raw/text/talk.txt')
     mass_text = ""
     for loc in talk_data:
         for i in range(len(talk_data[loc])):
@@ -363,7 +363,7 @@ def main():
             talk_data[loc][i]['quote_byte_segments'].append("$00") # end of section
             b.append("$00") 
             talk_data[loc][i]['bytes'] = ",".join(b)
-    write_asm('src/data/talk.asm', substr_dict, talk_data)
+    write_asm('src/data/compressed/text/talk.asm', substr_dict, talk_data)
     #print(HLENS[HLENS.index(max([i for i in HLENS]))])
 
 if __name__ == "__main__":

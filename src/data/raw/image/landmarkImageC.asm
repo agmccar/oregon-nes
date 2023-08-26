@@ -1,6 +1,6 @@
 
 fortBridgerTiles:
-	.incbin "tilesets/fortbridger.chr"
+	.incbin "../chr/fortbridger.chr"
 fortBridgerImage:
 	.byte $02,$02,$02,$02,$02,$02,$02,$02,$02,$02,$02,$02,$02,$1d,$1e,$1f
 	.byte $20,$1e,$1f,$0d,$21,$21,$21,$0d,$22,$02,$02,$1e,$0d,$0d,$23,$23
@@ -48,7 +48,7 @@ fortBridgerAttr:
 	.byte $aa,$aa,$aa,$aa,$aa,$aa,$2a,$0a,$5a,$5a,$5a,$5a,$5a,$5a,$5a,$5a
 
 greenRiverTiles:
-	.incbin "tilesets/greenriver.chr"
+	.incbin "../chr/greenriver.chr"
 greenRiverImage:
 	.byte $01,$01,$01,$01,$02,$03,$04,$04,$04,$05,$06,$04,$05,$05,$07,$08
 	.byte $09,$08,$01,$01,$01,$01,$01,$02,$0a,$01,$01,$01,$01,$01,$01,$01
@@ -96,7 +96,7 @@ greenRiverAttr:
 	.byte $aa,$aa,$aa,$aa,$aa,$aa,$2a,$08,$5a,$5a,$5a,$5a,$5a,$5a,$5a,$50
 
 sodaSpringsTiles:
-	.incbin "tilesets/sodasprings.chr"
+	.incbin "../chr/sodasprings.chr"
 sodaSpringsImage:
 	.byte $01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01
 	.byte $01,$01,$01,$0f,$10,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01
@@ -144,7 +144,7 @@ sodaSpringsAttr:
 	.byte $00,$a0,$00,$00,$aa,$aa,$2a,$00,$58,$5a,$52,$50,$5a,$5a,$5a,$5a
 
 fortHallTiles:
-	.incbin "tilesets/forthall.chr"
+	.incbin "../chr/forthall.chr"
 fortHallImage:
 	.byte $02,$02,$02,$02,$02,$02,$02,$02,$02,$02,$02,$02,$02,$02,$02,$02
 	.byte $02,$02,$02,$02,$02,$02,$02,$02,$02,$02,$02,$02,$02,$02,$02,$02

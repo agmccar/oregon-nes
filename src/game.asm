@@ -14,33 +14,34 @@
     .include "tiles.asm"
 
 .segment "ROM1"
-    .include "data/text.asm"
-    .include "data/palettes.asm"
-    .include "data/backgrounds.asm"
-    .include "data/sprites.asm"
-    .include "data/rom1.asm"
-    .include "data/climate.asm"
+    .include "code/rom1.asm"
     .include "code/random_event.asm"
-    .include "data/talk.asm"
+    .include "data/raw/palettes.asm"
+    .include "data/raw/backgrounds.asm"
+    .include "data/raw/sprites.asm"
+    .include "data/raw/climate.asm"
+    ;.include "data/raw/rivers.asm"
+    .include "data/raw/text/text.asm"
+    .include "data/compressed/text/talk.asm"
 
 .segment "ROM2"
-    .include "data/landmarkImageA.asm"
+    .include "data/compressed/image/landmarkImageA.asm"
 
 .segment "ROM3"
-    .include "data/landmarkImageB.asm"
+    .include "data/compressed/image/landmarkImageB.asm"
 
 .segment "ROM4"
-    .include "data/landmarkImageC.asm"
+    .include "data/compressed/image/landmarkImageC.asm"
 
 .segment "ROM5"
-    .include "data/landmarkImageD.asm"
+    .include "data/compressed/image/landmarkImageD.asm"
 
 .segment "ROM6"
-    .include "data/landmarkImageE.asm"
-    .include "data/mapImage.asm"
-    .include "data/suppliesImage.asm"
-    .include "data/raw/adornmentImage.asm"
-    .include "data/raw/titleLogoImage.asm"
+    .include "data/compressed/image/landmarkImageE.asm"
+    .include "data/compressed/image/mapImage.asm"
+    .include "data/raw/image/suppliesImage.asm"
+    .include "data/raw/image/adornmentImage.asm"
+    .include "data/raw/image/titleLogoImage.asm"
 
 .segment "RODATA" ; ROM7
     banktable:              ; Write to this table to switch banks.

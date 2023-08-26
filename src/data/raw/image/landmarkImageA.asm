@@ -1,5 +1,5 @@
 independenceTiles:
-    .incbin "tilesets/independence.chr"
+    .incbin "../chr/independence.chr"
 independenceImage:
 	.byte $0a,$0b,$01,$01,$01,$0c,$0d,$0e,$0f,$10,$03,$0d,$11,$0e,$0e,$11
 	.byte $0f,$12,$13,$14,$15,$16,$12,$11,$17,$18,$01,$0d,$11,$11,$19,$1a
@@ -50,7 +50,7 @@ independenceAttr:
 	.byte $50,$50,$50,$50,$50,$50,$50,$50
 
 kansasRiverTiles:
-	.incbin "tilesets/kansasriver.chr"
+	.incbin "../chr/kansasriver.chr"
 kansasRiverImage:
 	.byte $01,$01,$01,$02,$03,$03,$04,$03,$05,$01,$01,$01,$06,$07,$08,$09
 	.byte $0a,$0b,$0c,$05,$01,$01,$0d,$0e,$07,$0f,$0f,$07,$09,$09,$0a,$10
@@ -101,7 +101,7 @@ kansasRiverAttr:
 	.byte $5a,$5a,$5a,$5a,$5a,$5a,$5a,$5a
 
 bigBlueRiverTiles:
-	.incbin "tilesets/bigblueriver.chr"
+	.incbin "../chr/bigblueriver.chr"
 bigBlueRiverImage:
 	.byte $01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01
 	.byte $01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01
@@ -152,7 +152,7 @@ bigBlueRiverAttr:
 	.byte $5a,$5a,$5a,$5a,$5a,$5a,$5a,$5a
 
 fortKearneyTiles:
-	.incbin "tilesets/fortkearney.chr"
+	.incbin "../chr/fortkearney.chr"
 fortKearneyImage:
 	.byte $01,$01,$01,$01,$01,$02,$02,$02,$01,$01,$01,$01,$01,$03,$04,$03
 	.byte $05,$05,$05,$06,$01,$07,$08,$01,$09,$09,$09,$09,$04,$05,$0a,$0a

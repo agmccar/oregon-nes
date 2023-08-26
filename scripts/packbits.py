@@ -125,12 +125,10 @@ def verify(a, b):
 def main():
     asm_filenames = []
     chr_filenames = []
-    for filename in os.listdir('src/data/raw'):
-        if '.asm' in filename:
-            asm_filenames.append('src/data/raw/'+filename)
-    for filename in os.listdir('src/data/tilesets/raw'):
-        if '.chr' in filename:
-            chr_filenames.append('src/data/tilesets/raw/'+filename)
+    for filename in os.listdir('src/data/raw/image'):
+        asm_filenames.append('src/data/raw/image/'+filename)
+    for filename in os.listdir('src/data/raw/chr'):
+        chr_filenames.append('src/data/raw/chr/'+filename)
     # print(asm_filenames)
     asm_data = {filename:{} for filename in asm_filenames}
     # pp.pprint(asm_data)
@@ -138,44 +136,53 @@ def main():
     packed_size = {}
     for filename in asm_filenames:
         with open(f"{filename}", 'r') as f:
-            text = '\n'.join([line.split(';')[0] for line in f.readlines()]).split(':')
-            # print(f"{filename} labels: {len(text)}")
-            asm_label = text[0].strip()
-            for label in text[1:-1]:
-                i = label.split('\n')
-                a = parse(i[:-1])
+            lines = f.readlines()
+            if "TODO compress" not in ''.join(lines):
+                text = '\n'.join([line.split(';')[0] for line in lines]).split(':')
+                # print(f"{filename} labels: {len(text)}")
+                asm_label = text[0].strip()
+                for label in text[1:-1]:
+                    i = label.split('\n')
+                    a = parse(i[:-1])
+                    asm_data[filename][asm_label] = b = pack(a)
+                    verify(a, b)
+                    if 'incbin' not in b:
+                        original_size[asm_label] = len(a.split(','))
+                        packed_size[asm_label] = len(b.split(','))
+                    asm_label = i[-1]
+                a = parse(text[-1].split('\n'))
                 asm_data[filename][asm_label] = b = pack(a)
                 verify(a, b)
                 if 'incbin' not in b:
                     original_size[asm_label] = len(a.split(','))
                     packed_size[asm_label] = len(b.split(','))
-                asm_label = i[-1]
-            a = parse(text[-1].split('\n'))
-            asm_data[filename][asm_label] = b = pack(a)
-            verify(a, b)
-            if 'incbin' not in b:
-                original_size[asm_label] = len(a.split(','))
-                packed_size[asm_label] = len(b.split(','))
-            with open(f"{filename.replace('raw/','')}", 'w') as f:
-                for label in asm_data[filename]:
-                    f.write(f"{label}:\n")
-                    if 'incbin' not in asm_data[filename][label]:
-                        f.write(f"\t.byte {asm_data[filename][label]}\n")
-                    else:
-                        f.write(f"\t{asm_data[filename][label]}\n")
+                with open(f"{filename.replace('raw/','compressed/')}", 'w') as f:
+                    for label in asm_data[filename]:
+                        f.write(f"{label}:\n")
+                        if 'incbin' not in asm_data[filename][label]:
+                            f.write(f"\t.byte {asm_data[filename][label]}\n")
+                        else:
+                            f.write(f"\t{asm_data[filename][label]}\n")
+                    print(f"Compressed {filename}")
+            else:
+                print(f"Skipped {filename}")
     for filename in chr_filenames:
         with open(f"{filename}", 'rb') as f:
-            a = ','.join([dec2hexasm(int(i,16)) for i in f.readlines()[0].hex(',').split(',')])
-            # input(f"Original data: {a}")
-            original_size[filename] = len(a.split(','))
-            b = pack(a)
-            # input(f"Packed data: {a}")
-            verify(a, b)
-            a = b
-            packed_size[filename] = len(a.split(','))
-            a = a.replace(',','').replace('$','')
-            with open(f"{filename.replace('raw/','')}", 'wb') as f:
-                f.write(bytearray.fromhex(a))
+            try:
+                a = ','.join([dec2hexasm(int(i,16)) for i in f.readlines()[0].hex(',').split(',')])
+                # input(f"Original data: {a}")
+                original_size[filename] = len(a.split(','))
+                b = pack(a)
+                # input(f"Packed data: {a}")
+                verify(a, b)
+                a = b
+                packed_size[filename] = len(a.split(','))
+                a = a.replace(',','').replace('$','')
+                with open(f"{filename.replace('raw/','compressed/')}", 'wb') as f:
+                    f.write(bytearray.fromhex(a))
+                    print(f"Compressed {filename}")
+            except:
+                print(f"WARN: Skipped {filename}")
     # pp.pprint(asm_data,indent=4)
     # pp.pprint(original_size, indent=4)
     # pp.pprint(packed_size, indent=4)

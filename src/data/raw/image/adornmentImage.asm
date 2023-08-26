@@ -1,6 +1,7 @@
+; TODO compress
 
 adornmentTiles:
-    .incbin "../tilesets/raw/adornment.chr" ; TODO decompress
+    .incbin "../chr/adornment.chr"
 
 adornmentImage:
     .byte $01,$02,$03,$04,$04,$04,$04,$04,$05,$06,$04,$04,$04,$04,$07,$08

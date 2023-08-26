@@ -1,4 +1,4 @@
 adornmentTiles:
-	.incbin "../tilesets/raw/adornment.chr"
+	.incbin "../chr/adornment.chr"
 adornmentImage:
 	.byte $03,$01,$02,$03,$85,$04,$02,$05,$06,$84,$04,$04,$07,$08,$09,$0a,$84,$04,$02,$0b,$0c,$85,$04,$03,$0d,$0e,$0f,$89,$00,$0e,$10,$11,$12,$13,$14,$15,$16,$17,$18,$14,$19,$1a,$11,$1b,$89,$00

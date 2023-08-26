@@ -1,6 +1,6 @@
 
 theDallesTiles:
-	.incbin "tilesets/thedalles.chr"
+	.incbin "../chr/thedalles.chr"
 theDallesImage:
 	.byte $1a,$1b,$1c,$1c,$1d,$1d,$1c,$1e,$1e,$1f,$1f,$20,$20,$1b,$1f,$1f
 	.byte $21,$21,$21,$22,$02,$02,$23,$24,$25,$14,$26,$13,$27,$28,$29,$13
@@ -48,7 +48,7 @@ theDallesAttr:
 	.byte $aa,$aa,$aa,$aa,$aa,$aa,$aa,$aa,$5a,$5a,$5a,$5a,$5a,$5a,$5a,$5a
 
 willametteTiles:
-	.incbin "tilesets/willamette.chr"
+	.incbin "../chr/willamette.chr"
 willametteImage:
 	.byte $01,$02,$02,$02,$02,$02,$02,$02,$02,$03,$04,$04,$05,$06,$05,$07
 	.byte $08,$01,$02,$09,$09,$0a,$05,$04,$02,$02,$02,$02,$04,$0b,$0a,$04

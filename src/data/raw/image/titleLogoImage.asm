@@ -1,6 +1,7 @@
+; TODO compress
 
 titleLogoTiles:
-    .incbin "../tilesets/raw/titleLogo.chr" ; TODO compress
+    .incbin "../chr/titleLogo.chr"
 
 titleLogoImage:
 	.byte $20,$21,$22,$23,$00,$00,$00,$00,$24,$25,$26,$00,$00,$00,$00,$00
