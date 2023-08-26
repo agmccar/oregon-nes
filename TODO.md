@@ -5,10 +5,16 @@
 
 - [x] title screen graphics
 - [ ] title screen options
-    - [x] 1. Travel the trail
+    - [x] 1. Travel the trail (new game)
     - [ ] 2. Learn about the trail
+        - [x] raw text
+        - [ ] pages
     - [ ] 3. See the Oregon Top Ten
+        - [x] raw text
+        - [ ] Top Ten list
+        - [ ] explanation pages 
     - [ ] 4. Turn sound on|off
+        - [ ] explanation page
 
 ## New game screens
 
