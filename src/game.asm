@@ -73,7 +73,7 @@ bankswitch_nosave:
     :                   ; vblankwait
     BIT PPUSTATUS
     BPL :-
-    :                   ; clear memory
+    :                   ; clear memory. TODO: preserve "Oregon Top Ten" data.
     LDA #$00
     STA $0000, X
     STA $0100, X
