@@ -256,11 +256,17 @@
         STA fingerLastLastX
         STA fingerLastLastY ; clear LastLast pos since we are NOT in a submenu.
         LDA gameState
+        CMP #GAMESTATE_TITLE
+        BNE :+
+        JSR InitStateTitle
+        JMP Done
+        :
         CMP #GAMESTATE_NEWGAME
         BNE :+
         LDA #%00001100      ; both fingers visible, normal, pointing right
         STA fingerAttr
         JSR LoadBgNewGame
+        JMP Done
         :
         CMP #GAMESTATE_STORE
         BNE :+
@@ -268,12 +274,14 @@
         STA fingerAttr
         JSR RedrawFinger
         JSR LoadBgStore
+        JMP Done
         :
         CMP #GAMESTATE_LANDMARK
         BNE :+
         LDA #%00000000      ; neither finger visible
         STA fingerAttr
         JSR LoadBgLandmark
+        JMP Done
         :
         CMP #GAMESTATE_TRAVELING
         BNE :+

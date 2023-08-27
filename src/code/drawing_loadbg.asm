@@ -16,9 +16,12 @@
 .endproc
 
 .proc LoadBgTitle
-    ;JSR ClearScreen
+    JSR ClearScreen
     JSR ClearAttributes ; default palette
     ;JSR BufferDrawTitle
+    LDX #0                  ; default palette
+    JSR UpdatePalette
+    JSR BufferSetPaletteBlue ; shameless hack
 
     JSR StartBulkDrawing ; draw adornments
     LDY #6
@@ -36,21 +39,6 @@
     STA softPPUMASK         ; turn on screen
     RTS
 .endproc
-
-; .proc LoadBgTitleLearn
-;     JSR ClearScreen
-;     JSR ClearAttributes
-;     JSR StartBulkDrawing
-;     LDY #6
-;     JSR bankswitch_y
-;     JSR DrawAdornments
-;     JSR DrawTitleLogo
-;     LDY #1
-;     JSR bankswitch_y
-
-;     JSR DoneBulkDrawing
-;     RTS
-; .endproc
 
 .proc LoadBgNewGame
     JSR ClearScreen

@@ -17,27 +17,51 @@
         BNE :+
         JMP CheckSelect
         :
-        LDA fingerY
-        CMP #13 ; Travel the trail
+        LDA menuOpen
+        CMP #MENU_NONE
         BNE :+
-        LDA #GAMESTATE_NEWGAME
-        STA gameState
-        JMP Done
+        JMP @menuNone
         :
-        CMP #15 ; Learn about the trail
+        CMP #MENU_TITLE_LEARN
         BNE :+
-        LDA #MENU_TITLE_LEARN
-        STA menuOpen
-        :
-        CMP #17 ; See the Oregon Top Ten
-        BNE :+
-
-        :
-        CMP #19 ; Turn sound [off|on]
-        BNE :+
-
+        JMP @menuTitleLearn
         :
         JMP Done
+        @menuNone:
+            LDA fingerY
+            CMP #13 ; Travel the trail
+            BNE :+
+            LDA #GAMESTATE_NEWGAME
+            STA gameState
+            JMP Done
+            :
+            CMP #15 ; Learn about the trail
+            BNE :+
+            LDA #MENU_TITLE_LEARN
+            STA menuOpen
+            :
+            CMP #17 ; See the Oregon Top Ten
+            BNE :+
+
+            :
+            CMP #19 ; Turn sound [off|on]
+            BNE :+
+
+            :
+            JMP Done
+        @menuTitleLearn:
+            INC menuCursor
+            LDA menuCursor
+            CMP #7
+            BEQ :+
+            JSR BufferDrawTitleLearn
+            JMP Done
+            :
+            LDA #0
+            STA menuCursor
+            LDA #MENU_NONE
+            STA menuOpen
+            JMP Done
     CheckSelect:
         LDA #KEY_SELECT
         BIT buttons1

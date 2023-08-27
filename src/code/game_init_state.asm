@@ -50,9 +50,6 @@
     LDX #traveledDigit
     LDY #traveledMi
     JSR SetDigitFromValue
-    LDX #0                  ; default palette
-    JSR UpdatePalette
-    JSR BufferSetPaletteBlue ; shameless hack
     LDA #%00000100      ; main fingers visible, pointing right
     STA fingerAttr
     LDA #0              ; initialize cursor

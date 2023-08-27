@@ -606,7 +606,7 @@
 .endproc
 
 .proc BufferDrawTitleOptions
-    
+
     LDA whatIsYourChoiceText
     STA helper ; draw "You may:"
     BufferStart whatIsYourChoiceText, #$21, #$44
@@ -619,7 +619,7 @@
         CPX helper
         BNE :-
     JSR EndBufferWrite
-    
+
     LDA #$21 ; draw options
     STA helper
     LDA #$A6
@@ -664,6 +664,24 @@
     DEY
     BNE Option
 
+    BufferStart #3, #$22, #$71 ; sound On or Off
+        LDA #_O_
+        JSR WriteByteToBuffer
+        LDA gameSettings
+        BPL :+
+        LDA #_N_
+        JSR WriteByteToBuffer
+        LDA #___
+        JSR WriteByteToBuffer
+        JMP :++
+        :
+        LDA #_F_
+        JSR WriteByteToBuffer
+        LDA #_F_
+        JSR WriteByteToBuffer
+        :
+    JSR EndBufferWrite
+
     ; draw "What is your choice?"
     BufferStart #20, #$22, #$C4
         LDX #10
@@ -707,6 +725,24 @@
     DEX
     BNE Line
 
+    BufferStart #6, #$21, #$84 ; placeholder
+        LDA #_P_
+        JSR WriteByteToBuffer
+        LDA #_A_
+        JSR WriteByteToBuffer
+        LDA #_G_
+        JSR WriteByteToBuffer
+        LDA #_E_
+        JSR WriteByteToBuffer
+        LDA #___
+        JSR WriteByteToBuffer
+        CLC
+        LDA #_1_
+        ADC menuCursor
+        JSR WriteByteToBuffer
+    JSR EndBufferWrite
+
+    JSR BufferDrawPressStart
     RTS
 .endproc
 
