@@ -14,7 +14,7 @@ Check out R. Philip Bouchard's website and book:
 
 ![traveling](graphics/scratch/game_009.png?raw=true)
 
-![traveling](graphics/scratch/game_010.png?raw=true)
+![traveling](graphics/scratch/game_012.png?raw=true)
 
 ![supplies screen](graphics/scratch/game_001.png?raw=true)
 
