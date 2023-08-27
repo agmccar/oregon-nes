@@ -131,6 +131,7 @@
 - [x] landmark screen graphics
 - [x] landmark screen logic
 - [ ] fix fort kearney color palette
+- [ ] sound engine
 - [ ] Music for each landmark
     - [x] Independence, MO: Yankee Doodle.
     - [ ] Kansas River: I Gave My Love a Cherry

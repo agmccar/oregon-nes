@@ -957,7 +957,8 @@
     STA PPUADDR
     LDX #0
     :
-    LDA colorMono
+    LDA gameSettings
+    AND #1
     BNE :+
     LDA mapPalette, X
     JMP :++

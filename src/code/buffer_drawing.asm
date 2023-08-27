@@ -93,7 +93,8 @@
         JSR WriteByteToBuffer
         LDX #0
         :
-        LDA colorMono
+        LDA gameSettings
+        AND #1
         BNE :+
         LDA palette, X
         JMP :++
@@ -677,7 +678,8 @@
 .endproc
 
 .proc BufferSetPaletteBlue
-    LDA colorMono
+    LDA gameSettings
+    AND #1
     BNE Done
     LDX #1
     JSR StartBufferWrite
@@ -784,7 +786,8 @@
 .endproc
 
 .proc BufferDrawSupplies
-    LDA colorMono
+    LDA gameSettings
+    AND #1
     BNE :++
     LDX #$10 ; palette
     JSR StartBufferWrite

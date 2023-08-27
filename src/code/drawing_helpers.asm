@@ -497,7 +497,8 @@
 
 .proc DrawLandmarkImage
     ; set palette
-    LDA colorMono
+    LDA gameSettings
+    AND #1
     BNE :++
     LDA PPUSTATUS
     LDA #$3F
