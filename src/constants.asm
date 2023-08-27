@@ -1,6 +1,6 @@
 ; Memory addresses
 ZEROSPRITE      = $0200
-TRAILSPRITES    = ZEROSPRITE+4
+TRAILSPRITES    = ZEROSPRITE+4 ; TODO: don't hardcode OAM addresses: https://www.nesdev.org/wiki/Don%27t_hardcode_OAM_addresses
 ; OXENSPRITES     = ZEROSPRITE+4
 ; WAGONSPRITES    = OXENSPRITES+40
 PPUCTRL     = $2000
