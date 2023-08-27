@@ -8,6 +8,9 @@ Check out R. Philip Bouchard's website and book:
 - http://died-of-dysentery.com
 - https://www.amazon.com/You-Have-Died-Dysentery-educational-ebook/dp/B01B8JMKMC
 
+Play the original:
+- https://www.scullinsteel.com/apple2/#oregon_trail_1|oregon_trail_2
+
 ### Screenshots
 
 ![title screen](graphics/scratch/game_011.png?raw=true)
