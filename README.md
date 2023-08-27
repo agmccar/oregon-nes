@@ -8,6 +8,8 @@ Check out R. Philip Bouchard's website and book:
 - http://died-of-dysentery.com
 - https://www.amazon.com/You-Have-Died-Dysentery-educational-ebook/dp/B01B8JMKMC
 
+### Screenshots
+
 ![title screen](graphics/scratch/game_011.png?raw=true)
 
 ![landmark screen](graphics/scratch/game_000.png?raw=true)
