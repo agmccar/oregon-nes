@@ -180,6 +180,10 @@
     BNE :+
     JMP None
     :
+    CMP #MENU_TITLE_LEARN
+    BNE :+
+    JMP TitleLearn
+    :
     CMP #MENU_NEWGAME_TYPING
     BNE :+
     JMP NewGameTyping
@@ -281,6 +285,12 @@
         JSR LoadBgTraveling
         JMP Done
         :
+        JMP Done
+    TitleLearn:
+        LDA #0 ;no fingers visible
+        STA fingerAttr
+        STA menuCursor ; use menuCursor to denote page number (0-6)
+        JSR BufferDrawTitleLearn
         JMP Done
     NewGameTyping:
         LDA #%00001100      ; both fingers visible, pointing right

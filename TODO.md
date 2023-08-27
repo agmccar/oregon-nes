@@ -123,7 +123,6 @@
 
 - [x] text data
 - [x] logic (text dependent on location)
-- [ ] move text data to banks 2-6 + move decompression code to bank 7
 
 ## Landmark screen
 
@@ -155,6 +154,10 @@
 ## Supplies screen
 
 - [x] supplies graphics
+
+## Housekeeping
+
+- [ ] move text data to banks 2-6 + move decompression code to bank 7
 
 ## Graphics (general)
 

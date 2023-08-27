@@ -127,6 +127,7 @@ GAMESTATE_TRAVELING = 5 ; main game state - traveling the trail
 
 ; Menu states
 MENU_NONE               = 0 ; all menus closed
+MENU_TITLE_LEARN        = 16 ; "Learn about the trail" menu
 MENU_NEWGAME_TYPING     = 1 ; new game name input 
 MENU_NEWGAME_OCCUPATION = 2 ; new game occupation selection 
 MENU_NEWGAME_STARTDATE  = 3 ; new game starting month selection

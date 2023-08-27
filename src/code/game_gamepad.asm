@@ -26,7 +26,8 @@
         :
         CMP #15 ; Learn about the trail
         BNE :+
-
+        LDA #MENU_TITLE_LEARN
+        STA menuOpen
         :
         CMP #17 ; See the Oregon Top Ten
         BNE :+
@@ -78,7 +79,7 @@
     Done:
     RTS
 .endproc
-        
+
 .proc ControllerNewGame
     LDA buttons1
     CMP buttons1Last
@@ -927,7 +928,7 @@
     Done:
     RTS
 .endproc
-        
+
 .proc ControllerStore
     LDA buttons1
     CMP buttons1Last
@@ -1530,7 +1531,7 @@
     Done:
     RTS
 .endproc
-        
+
 .proc ControllerLandmark
     LDA buttons1
     CMP buttons1Last
@@ -1916,7 +1917,7 @@
     Done:
     RTS
 .endproc
-        
+
 .proc ControllerMap
     RTS
 .endproc

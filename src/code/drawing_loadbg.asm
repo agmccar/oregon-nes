@@ -16,6 +16,7 @@
 .endproc
 
 .proc LoadBgTitle
+    ;JSR ClearScreen
     JSR ClearAttributes ; default palette
     ;JSR BufferDrawTitle
 
@@ -35,6 +36,21 @@
     STA softPPUMASK         ; turn on screen
     RTS
 .endproc
+
+; .proc LoadBgTitleLearn
+;     JSR ClearScreen
+;     JSR ClearAttributes
+;     JSR StartBulkDrawing
+;     LDY #6
+;     JSR bankswitch_y
+;     JSR DrawAdornments
+;     JSR DrawTitleLogo
+;     LDY #1
+;     JSR bankswitch_y
+
+;     JSR DoneBulkDrawing
+;     RTS
+; .endproc
 
 .proc LoadBgNewGame
     JSR ClearScreen

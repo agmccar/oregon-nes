@@ -677,6 +677,39 @@
     RTS
 .endproc
 
+.proc BufferDrawTitleLearn
+    LDX #14 ; clear 14 rows of tiles
+    LDA #$21
+    STA pointer+1
+    LDA #$40
+    STA pointer
+    Line:
+    TXA
+    PHA
+    BufferStart #$20, pointer+1, pointer
+        LDX #0
+        LDA #___
+        :
+        JSR WriteByteToBuffer
+        INX
+        CPX #$20
+        BNE :-
+    JSR EndBufferWrite
+    CLC
+    LDA pointer
+    ADC #$20
+    STA pointer
+    LDA pointer+1
+    ADC #0
+    STA pointer+1
+    PLA
+    TAX
+    DEX
+    BNE Line
+
+    RTS
+.endproc
+
 .proc BufferDrawSupplies
     LDA gameSettings
     AND #1
