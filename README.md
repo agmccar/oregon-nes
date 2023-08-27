@@ -12,7 +12,7 @@ Check out R. Philip Bouchard's website and book:
 
 ![landmark screen](graphics/scratch/game_000.png?raw=true)
 
-![traveling](graphics/scratch/game_002.png?raw=true)
+![traveling](graphics/scratch/game_009.png?raw=true)
 
 ![traveling](graphics/scratch/game_003.png?raw=true)
 
