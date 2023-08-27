@@ -1,4 +1,4 @@
-## Oregon Trail remake for the NES!
+## Oregon Trail remake for the NES
 
 Re-write of the original Oregon Trail for the Apple II. It's a work in progress. 
 
