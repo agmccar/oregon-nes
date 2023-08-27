@@ -83,14 +83,7 @@
 .endproc
 
 .proc UpdatePalette
-    LDX #$20
-    JSR StartBufferWrite
-        LDA #$20                ; length of palette
-        JSR WriteByteToBuffer
-        LDA #$3F                ; $3F00 - palette VRAM location
-        JSR WriteByteToBuffer
-        LDA #$00
-        JSR WriteByteToBuffer
+    BufferStart #$20, #$3f, #$00
         LDX #0
         :
         LDA gameSettings
@@ -116,14 +109,7 @@
     DEY
     DEY
     JSR SetPpuAddrPointerFromXY
-    LDX #16
-    JSR StartBufferWrite
-        LDA #16
-        JSR WriteByteToBuffer
-        LDA pointer
-        JSR WriteByteToBuffer
-        LDA pointer+1
-        JSR WriteByteToBuffer
+    BufferStart #16, pointer, pointer+1
         LDA #_RD
         JSR WriteByteToBuffer
         LDA #_HR
@@ -170,14 +156,7 @@
     INY
     INY
     JSR SetPpuAddrPointerFromXY
-    LDX #16
-    JSR StartBufferWrite
-        LDA #16
-        JSR WriteByteToBuffer
-        LDA pointer
-        JSR WriteByteToBuffer
-        LDA pointer+1
-        JSR WriteByteToBuffer
+    BufferStart #16, pointer, pointer+1
         LDA #_RU
         JSR WriteByteToBuffer
         LDA #_HR
@@ -315,14 +294,7 @@
     LDX #4 ; top row of menu
     LDY #15
     JSR SetPpuAddrPointerFromXY
-    LDX #19
-    JSR StartBufferWrite
-        LDA #19
-        JSR WriteByteToBuffer
-        LDA pointer
-        JSR WriteByteToBuffer
-        LDA pointer+1
-        JSR WriteByteToBuffer
+    BufferStart #19, pointer, pointer+1
         LDA #_RD
         JSR WriteByteToBuffer
         LDA #_HR
@@ -364,14 +336,7 @@
     LDX #4 ; bottom row of menu
     LDY #19
     JSR SetPpuAddrPointerFromXY
-    LDX #19
-    JSR StartBufferWrite
-        LDA #19
-        JSR WriteByteToBuffer
-        LDA pointer
-        JSR WriteByteToBuffer
-        LDA pointer+1
-        JSR WriteByteToBuffer
+    BufferStart #19, pointer, pointer+1
         LDA #_RU
         JSR WriteByteToBuffer
         LDA #_HR
@@ -388,14 +353,7 @@
     LDX #6  ; "PACE: xxxxxxxxx"
     LDY #17
     JSR SetPpuAddrPointerFromXY
-    LDX #15
-    JSR StartBufferWrite
-        LDA #15
-        JSR WriteByteToBuffer
-        LDA pointer
-        JSR WriteByteToBuffer
-        LDA pointer+1
-        JSR WriteByteToBuffer
+    BufferStart #15, pointer, pointer+1
         LDX #15
         :
         LDA hudMenuStatusText, X
@@ -443,14 +401,7 @@
     LDX #4 ; top row of menu
     LDY #17
     JSR SetPpuAddrPointerFromXY
-    LDX #23
-    JSR StartBufferWrite
-        LDA #23
-        JSR WriteByteToBuffer
-        LDA pointer
-        JSR WriteByteToBuffer
-        LDA pointer+1
-        JSR WriteByteToBuffer
+    BufferStart #23, pointer, pointer+1
         LDA #_RD
         JSR WriteByteToBuffer
         LDA #_HR
@@ -492,14 +443,7 @@
     LDX #4 ; bottom row of menu
     LDY #21
     JSR SetPpuAddrPointerFromXY
-    LDX #23
-    JSR StartBufferWrite
-        LDA #23
-        JSR WriteByteToBuffer
-        LDA pointer
-        JSR WriteByteToBuffer
-        LDA pointer+1
-        JSR WriteByteToBuffer
+    BufferStart #23, pointer, pointer+1
         LDA #_RU
         JSR WriteByteToBuffer
         LDA #_HR
@@ -516,14 +460,7 @@
     LDX #6  ; "RATIONS: xxxxxxxxxx"
     LDY #19
     JSR SetPpuAddrPointerFromXY
-    LDX #19
-    JSR StartBufferWrite
-        LDA #19
-        JSR WriteByteToBuffer
-        LDA pointer
-        JSR WriteByteToBuffer
-        LDA pointer+1
-        JSR WriteByteToBuffer
+    BufferStart 19, pointer, pointer+1
         LDX #20
         :
         LDA hudMenuStatusText, X
@@ -573,14 +510,7 @@
     LDX #4 ; top row of menu
     LDY #19
     JSR SetPpuAddrPointerFromXY
-    LDX #19
-    JSR StartBufferWrite
-        LDA #19
-        JSR WriteByteToBuffer
-        LDA pointer
-        JSR WriteByteToBuffer
-        LDA pointer+1
-        JSR WriteByteToBuffer
+    BufferStart #19, pointer, pointer+1
         LDA #_RD
         JSR WriteByteToBuffer
         LDA #_HR
@@ -622,14 +552,7 @@
     LDX #4 ; bottom row of menu
     LDY #23
     JSR SetPpuAddrPointerFromXY
-    LDX #19
-    JSR StartBufferWrite
-        LDA #19
-        JSR WriteByteToBuffer
-        LDA pointer
-        JSR WriteByteToBuffer
-        LDA pointer+1
-        JSR WriteByteToBuffer
+    BufferStart #19, pointer, pointer+1
         LDA #_RU
         JSR WriteByteToBuffer
         LDA #_HR
@@ -646,14 +569,7 @@
     LDX #6  ; "REST FOR x DAYS"
     LDY #21
     JSR SetPpuAddrPointerFromXY
-    LDX #15
-    JSR StartBufferWrite
-        LDA #15
-        JSR WriteByteToBuffer
-        LDA pointer
-        JSR WriteByteToBuffer
-        LDA pointer+1
-        JSR WriteByteToBuffer
+    BufferStart #15, pointer, pointer+1
         LDX #0
         :
         LDA restText, X
@@ -681,31 +597,19 @@
     LDA gameSettings
     AND #1
     BNE Done
-    LDX #1
-    JSR StartBufferWrite
-    LDA #1
-    JSR WriteByteToBuffer
-    LDA #$3F
-    JSR WriteByteToBuffer
-    LDA #$02
-    JSR WriteByteToBuffer
-    LDA #C_BLUE
-    JSR WriteByteToBuffer
+    BufferStart #1, #$3f, #$02
+        LDA #C_BLUE
+        JSR WriteByteToBuffer
     JSR EndBufferWrite
     Done:
     RTS
 .endproc
 
 .proc BufferDrawTitleOptions
-    LDX whatIsYourChoiceText ; draw "You may:"
-    JSR StartBufferWrite
-        LDA whatIsYourChoiceText
-        STA helper
-        JSR WriteByteToBuffer
-        LDA #$21
-        JSR WriteByteToBuffer
-        LDA #$44
-        JSR WriteByteToBuffer
+    
+    LDA whatIsYourChoiceText
+    STA helper ; draw "You may:"
+    BufferStart whatIsYourChoiceText, #$21, #$44
         INC helper
         LDX #1
         :
@@ -730,13 +634,7 @@
     LDX helper2+1
     TYA
     PHA
-    JSR StartBufferWrite
-        LDA helper2+1
-        JSR WriteByteToBuffer
-        LDA helper
-        JSR WriteByteToBuffer
-        LDA helper+1
-        JSR WriteByteToBuffer
+    BufferStart helper2+1, helper, helper+1
         LDX #0
         :
         TXA
@@ -766,14 +664,8 @@
     DEY
     BNE Option
 
-    LDX #20 ; draw "What is your choice?"
-    JSR StartBufferWrite
-        LDA #20
-        JSR WriteByteToBuffer
-        LDA #$22
-        JSR WriteByteToBuffer
-        LDA #$C4
-        JSR WriteByteToBuffer
+    ; draw "What is your choice?"
+    BufferStart #20, #$22, #$C4
         LDX #10
         :
         LDA whatIsYourChoiceText, X
@@ -789,14 +681,7 @@
     LDA gameSettings
     AND #1
     BNE :++
-    LDX #$10 ; palette
-    JSR StartBufferWrite
-        LDA #$10                ; length of palette
-        JSR WriteByteToBuffer
-        LDA #$3F                ; $3F00 - palette VRAM location
-        JSR WriteByteToBuffer
-        LDA #$00
-        JSR WriteByteToBuffer
+    BufferStart #$10, #$3f, #$00
         LDX #0
         :
         LDA suppliesPalette, X
@@ -812,14 +697,7 @@
     LDY #6 ; get image data
     JSR bankswitch_y
 
-    LDX #7*8 ; attributes
-    JSR StartBufferWrite
-        LDA #7*8
-        JSR WriteByteToBuffer
-        LDA #$23
-        JSR WriteByteToBuffer
-        LDA #$C0
-        JSR WriteByteToBuffer
+    BufferStart #7*8, #$23, #$C0 ; attributes
         LDX #0
         :
         LDA suppliesAttr, X
@@ -858,14 +736,7 @@
     LDY #1
     JSR bankswitch_y
 
-    LDX #12
-    JSR StartBufferWrite    ; oxenDigit
-        LDA #12                 
-        JSR WriteByteToBuffer
-        LDA #$20
-        JSR WriteByteToBuffer
-        LDA #$B0
-        JSR WriteByteToBuffer
+    BufferStart #12, #$20, #$B0 ; oxenDigit
         LDX #0
         :
         LDA suppliesText, X
@@ -888,14 +759,7 @@
         BNE :--
     JSR EndBufferWrite
 
-    LDX #12
-    JSR StartBufferWrite    ; clothingDigit
-        LDA #12                 
-        JSR WriteByteToBuffer
-        LDA #$20
-        JSR WriteByteToBuffer
-        LDA #$F0
-        JSR WriteByteToBuffer
+    BufferStart #12, #$20, #$F0 ; clothingDigit
         LDX #TEXT_SUPPLIES_LEN
         :
         LDA suppliesText, X
@@ -918,14 +782,7 @@
         BNE :--
     JSR EndBufferWrite
 
-    LDX #12
-    JSR StartBufferWrite    ; bulletsDigit
-        LDA #12                 
-        JSR WriteByteToBuffer
-        LDA #$21
-        JSR WriteByteToBuffer
-        LDA #$30
-        JSR WriteByteToBuffer
+    BufferStart #12, #$21, #$30 ; bulletsDigit
         LDX #TEXT_SUPPLIES_LEN*2
         :
         LDA suppliesText, X
@@ -948,14 +805,7 @@
         BNE :--
     JSR EndBufferWrite
 
-    LDX #12
-    JSR StartBufferWrite    ; wagon wheels
-        LDA #12                 
-        JSR WriteByteToBuffer
-        LDA #$21
-        JSR WriteByteToBuffer
-        LDA #$70
-        JSR WriteByteToBuffer
+    BufferStart #12, #$21, #$70 ; wagon wheels
         LDX #TEXT_SUPPLIES_LEN*3
         :
         LDA suppliesText, X
@@ -975,14 +825,7 @@
         JSR WriteByteToBuffer
     JSR EndBufferWrite
 
-    LDX #12
-    JSR StartBufferWrite    ; wagon axles
-        LDA #12                 
-        JSR WriteByteToBuffer
-        LDA #$21
-        JSR WriteByteToBuffer
-        LDA #$B0
-        JSR WriteByteToBuffer
+    BufferStart #12, #$21, #$b0 ; wagon axles
         LDX #TEXT_SUPPLIES_LEN*4
         :
         LDA suppliesText, X
@@ -1004,14 +847,7 @@
         JSR WriteByteToBuffer
     JSR EndBufferWrite
 
-    LDX #12
-    JSR StartBufferWrite    ; wagon tongues
-        LDA #12                 
-        JSR WriteByteToBuffer
-        LDA #$21
-        JSR WriteByteToBuffer
-        LDA #$F0
-        JSR WriteByteToBuffer
+    BufferStart #12, #$21, #$F0 ; wagon tongues
         LDX #TEXT_SUPPLIES_LEN*5
         :
         LDA suppliesText, X
@@ -1035,14 +871,7 @@
         JSR WriteByteToBuffer
     JSR EndBufferWrite
 
-    LDX #12
-    JSR StartBufferWrite    ; foodLbsDigit
-        LDA #12                 
-        JSR WriteByteToBuffer
-        LDA #$22
-        JSR WriteByteToBuffer
-        LDA #$30
-        JSR WriteByteToBuffer
+    BufferStart #12, #$22, #$30 ; foodLbsDigit
         LDX #TEXT_SUPPLIES_LEN*6
         INX
         INX
@@ -1071,14 +900,7 @@
         JSR WriteByteToBuffer
     JSR EndBufferWrite
 
-    LDX #12
-    JSR StartBufferWrite    ; dollars
-        LDA #12                 
-        JSR WriteByteToBuffer
-        LDA #$22
-        JSR WriteByteToBuffer
-        LDA #$70
-        JSR WriteByteToBuffer
+    BufferStart #12, #$22, #$70 ; dollars
         LDA #_C_
         JSR WriteByteToBuffer
         LDA #_A_
@@ -1107,14 +929,7 @@
 .endproc
 
 .proc BufferDrawSizeUpSituation
-    LDX #$20
-    JSR StartBufferWrite
-        LDA #$20
-        JSR WriteByteToBuffer
-        LDA #$22
-        JSR WriteByteToBuffer
-        LDA #$00
-        JSR WriteByteToBuffer
+    BufferStart #$20, #$22, #$00
         LDA #___
         LDX #0
         :
@@ -1123,14 +938,7 @@
         CPX #$20
         BNE :-
     JSR EndBufferWrite
-    LDX #$20
-    JSR StartBufferWrite
-        LDA #$20
-        JSR WriteByteToBuffer
-        LDA #$22
-        JSR WriteByteToBuffer
-        LDA #$20
-        JSR WriteByteToBuffer
+    BufferStart #$20, #$22, #$20
         LDX #0
         :
         LDA sizeUpSituationText, X
@@ -1140,14 +948,7 @@
         BNE :-
     JSR EndBufferWrite
 
-    LDX #8
-    JSR StartBufferWrite
-        LDA #8
-        JSR WriteByteToBuffer
-        LDA #$23
-        JSR WriteByteToBuffer
-        LDA #$E0
-        JSR WriteByteToBuffer
+    BufferStart #8, #$23, #$E0
         LDA #$5f
         LDX #0
         :
@@ -1160,14 +961,7 @@
 .endproc
 
 .proc BufferDrawPressStart
-    LDX #$20
-    JSR StartBufferWrite
-        LDA #$20
-        JSR WriteByteToBuffer
-        LDA #$23
-        JSR WriteByteToBuffer
-        LDA #$40
-        JSR WriteByteToBuffer
+    BufferStart #$20, #$23, #$40
         LDA #___
         LDX #0
         :
@@ -1176,14 +970,7 @@
         CPX #$20
         BNE :-
     JSR EndBufferWrite
-    LDX #$20
-    JSR StartBufferWrite
-        LDA #$20
-        JSR WriteByteToBuffer
-        LDA #$23
-        JSR WriteByteToBuffer
-        LDA #$60
-        JSR WriteByteToBuffer
+    BufferStart #$20, #$23, #$60
         LDX #0
         :
         LDA pressStartText, X
@@ -1196,14 +983,7 @@
 .endproc
 
 .proc BufferDrawMapTitle
-    LDX #3 ; attributes
-    JSR StartBufferWrite
-        LDA #3
-        JSR WriteByteToBuffer
-        LDA #$23
-        JSR WriteByteToBuffer
-        LDA #$C4
-        JSR WriteByteToBuffer
+    BufferStart #3, #$23, #$C4 ; attributes
         LDA #$a5
         LDX #3
         :
@@ -1211,14 +991,7 @@
         DEX
         BNE :-
     JSR EndBufferWrite
-    LDX #4
-    JSR StartBufferWrite
-        LDA #4
-        JSR WriteByteToBuffer
-        LDA #$23
-        JSR WriteByteToBuffer
-        LDA #$CC
-        JSR WriteByteToBuffer
+    BufferStart #4, #$23, #$CC
         LDA #$0a
         LDX #4
         :
@@ -1227,14 +1000,7 @@
         BNE :-
     JSR EndBufferWrite
     
-    LDX #10 ; "MAP OF THE"
-    JSR StartBufferWrite
-        LDA #10
-        JSR WriteByteToBuffer
-        LDA #$20
-        JSR WriteByteToBuffer
-        LDA #$71
-        JSR WriteByteToBuffer
+    BufferStart #10, #$20, #$71 ; "MAP OF THE"
         LDX #0
         :
         LDA mapTitleText, X
@@ -1243,14 +1009,7 @@
         CPX #10
         BNE :-
     JSR EndBufferWrite
-    LDX #12 ; "OREGON TRAIL"
-    JSR StartBufferWrite
-        LDA #12
-        JSR WriteByteToBuffer
-        LDA #$20
-        JSR WriteByteToBuffer
-        LDA #$92
-        JSR WriteByteToBuffer
+    BufferStart #12, #$20, #$92 ; "OREGON TRAIL"
         LDX #0+10
         :
         LDA mapTitleText, X
@@ -1264,14 +1023,7 @@
 
 .proc BufferDrawBlankLine
     ; pointer: nametable address
-    LDX #$20
-    JSR StartBufferWrite
-        LDA #$20
-        JSR WriteByteToBuffer
-        LDA pointer
-        JSR WriteByteToBuffer
-        LDA pointer+1
-        JSR WriteByteToBuffer
+    BufferStart #$20, pointer, pointer+1
         LDA #___
         LDX #0
         :
@@ -1285,14 +1037,7 @@
 
 .proc BufferDrawTextPopup
 
-    LDX #16  ; attributes
-    JSR StartBufferWrite
-        LDA #16
-        JSR WriteByteToBuffer
-        LDA #$23
-        JSR WriteByteToBuffer
-        LDA #$D0
-        JSR WriteByteToBuffer
+    BufferStart #16, #$23, #$D0 ; attributes
         LDX #0
         :
         LDA attrPopupText, X
@@ -1310,14 +1055,7 @@
     :
     TXA
     PHA
-    LDX #$20
-    JSR StartBufferWrite
-        LDA #$20
-        JSR WriteByteToBuffer
-        LDA pointer
-        JSR WriteByteToBuffer
-        LDA pointer+1
-        JSR WriteByteToBuffer
+    BufferStart #$20, pointer, pointer+1
         LDA #TILE_GRASS
         LDX #0
         :
@@ -1337,14 +1075,7 @@
     TAX
     DEX
     BNE :--
-    LDX #8 ; grass color
-    JSR StartBufferWrite
-        LDA #8
-        JSR WriteByteToBuffer
-        LDA #$23
-        JSR WriteByteToBuffer
-        LDA #$E0
-        JSR WriteByteToBuffer
+    BufferStart #8, #$23, #$E0 ; grass color
         LDA #$5A
         LDX #0
         :
@@ -1355,14 +1086,7 @@
     JSR EndBufferWrite
 
 
-    LDX #28 ; top row
-    JSR StartBufferWrite
-        LDA #28
-        JSR WriteByteToBuffer
-        LDA #$21
-        JSR WriteByteToBuffer
-        LDA #$42
-        JSR WriteByteToBuffer
+    BufferStart #28, #$21, #$42 ; top row
         LDA #_RD
         JSR WriteByteToBuffer
         LDA #_HR
@@ -1382,14 +1106,7 @@
     :
     TXA
     PHA
-    LDX #28
-    JSR StartBufferWrite
-        LDA #28
-        JSR WriteByteToBuffer
-        LDA #$21
-        JSR WriteByteToBuffer
-        LDA helper+1
-        JSR WriteByteToBuffer
+    BufferStart #28, #$21, helper+1
         LDA #_VR
         JSR WriteByteToBuffer
         LDA #___
@@ -1411,14 +1128,7 @@
     DEX
     BNE :--
 
-    LDX #28 ; bottom row
-    JSR StartBufferWrite
-        LDA #28
-        JSR WriteByteToBuffer
-        LDA #$21
-        JSR WriteByteToBuffer
-        LDA #$E2
-        JSR WriteByteToBuffer
+    BufferStart #28, #$21, #$E2 ; bottom row
         LDA #_RU
         JSR WriteByteToBuffer
         LDA #_HR
@@ -1432,14 +1142,7 @@
         JSR WriteByteToBuffer
     JSR EndBufferWrite
 
-    LDX #TEXT_POPUP_LINE_LEN  ; popup text line 1
-    JSR StartBufferWrite
-        LDA #TEXT_POPUP_LINE_LEN
-        JSR WriteByteToBuffer
-        LDA #$21
-        JSR WriteByteToBuffer
-        LDA #$84
-        JSR WriteByteToBuffer
+    BufferStart #TEXT_POPUP_LINE_LEN, #$21, #$84 ; popup text line 1
         LDX #0
         :
         LDA popupTextLine1, X
@@ -1449,14 +1152,7 @@
         BNE :-
     JSR EndBufferWrite
 
-    LDX #TEXT_POPUP_LINE_LEN  ; popup text line 2
-    JSR StartBufferWrite
-        LDA #TEXT_POPUP_LINE_LEN
-        JSR WriteByteToBuffer
-        LDA #$21
-        JSR WriteByteToBuffer
-        LDA #$A4
-        JSR WriteByteToBuffer
+    BufferStart #TEXT_POPUP_LINE_LEN, #$21, #$A4 ; popup text line 2
         LDX #0
         :
         LDA popupTextLine2, X
@@ -1478,14 +1174,7 @@
     LDA #$40
     STA helper+1
     :
-    LDX #$20
-    JSR StartBufferWrite
-        LDA #$20
-        JSR WriteByteToBuffer
-        LDA #$21
-        JSR WriteByteToBuffer
-        LDA helper+1
-        JSR WriteByteToBuffer
+    BufferStart #$20, #$21, helper+1
         LDA #TILE_GRASS
         LDX #0
         :
@@ -1503,14 +1192,7 @@
     CMP #6
     BNE :--
 
-    LDX #16  ; attributes
-    JSR StartBufferWrite
-        LDA #16
-        JSR WriteByteToBuffer
-        LDA #$23
-        JSR WriteByteToBuffer
-        LDA #$D0
-        JSR WriteByteToBuffer
+    BufferStart #16, #$23, #$D0 ; attributes
         LDX #8
         LDA #$a0
         :
@@ -1544,14 +1226,7 @@
     LDA #$40
     STA pointer
     :
-    LDX #$20
-    JSR StartBufferWrite
-        LDA #$20
-        JSR WriteByteToBuffer
-        LDA pointer+1
-        JSR WriteByteToBuffer
-        LDA pointer
-        JSR WriteByteToBuffer
+    BufferStart #$20, pointer+1, pointer
         LDA #___
         LDX #0
         :
@@ -1572,14 +1247,7 @@
     CMP #8
     BNE :--
 
-    LDX #8
-    JSR StartBufferWrite
-        LDA #8
-        JSR WriteByteToBuffer
-        LDA #$23
-        JSR WriteByteToBuffer
-        LDA #$E0
-        JSR WriteByteToBuffer
+    BufferStart #8, #$23, #$E0
         LDA #%01011111
         LDX #0
         :
@@ -1589,14 +1257,7 @@
         BNE :-
     JSR EndBufferWrite
 
-    LDX #8
-    JSR StartBufferWrite
-        LDA #8
-        JSR WriteByteToBuffer
-        LDA #$23
-        JSR WriteByteToBuffer
-        LDA #$E8
-        JSR WriteByteToBuffer
+    BufferStart #8, #$23, #$E8
         LDA #%01010101
         LDX #0
         :
@@ -1606,14 +1267,7 @@
         BNE :-
     JSR EndBufferWrite
 
-    LDX #8
-    JSR StartBufferWrite
-        LDA #8
-        JSR WriteByteToBuffer
-        LDA #$23
-        JSR WriteByteToBuffer
-        LDA #$F0
-        JSR WriteByteToBuffer
+    BufferStart #8, #$23, #$F0
         LDA #%11110101
         LDX #0
         :
@@ -1623,14 +1277,7 @@
         BNE :-
     JSR EndBufferWrite
 
-    LDX #6 ; draw Date:
-    JSR StartBufferWrite
-        LDA #6
-        JSR WriteByteToBuffer
-        LDA #$22
-        JSR WriteByteToBuffer
-        LDA #$6B
-        JSR WriteByteToBuffer
+    BufferStart #6, #$22, #$6B ; draw Date:
         LDX #0
         :
         LDA hudText, X
@@ -1644,14 +1291,7 @@
         JSR WriteByteToBuffer
     JSR EndBufferWrite
 
-    LDX #9 ; draw Weather:
-    JSR StartBufferWrite
-        LDA #9
-        JSR WriteByteToBuffer
-        LDA #$22
-        JSR WriteByteToBuffer
-        LDA #$88
-        JSR WriteByteToBuffer
+    BufferStart #9, #$22, #$88 ; draw Weather:
         LDX #4
         :
         LDA hudText, X
@@ -1665,14 +1305,7 @@
         JSR WriteByteToBuffer
     JSR EndBufferWrite
 
-    LDX #8 ; draw Health:
-    JSR StartBufferWrite
-        LDA #8
-        JSR WriteByteToBuffer
-        LDA #$22
-        JSR WriteByteToBuffer
-        LDA #$A9
-        JSR WriteByteToBuffer
+    BufferStart #8, #$22, #$A9 ; draw Health:
         LDX #11
         :
         LDA hudText, X
@@ -1686,14 +1319,7 @@
         JSR WriteByteToBuffer
     JSR EndBufferWrite
 
-    LDX #6 ; draw Food:
-    JSR StartBufferWrite
-        LDA #6
-        JSR WriteByteToBuffer
-        LDA #$22
-        JSR WriteByteToBuffer
-        LDA #$CB
-        JSR WriteByteToBuffer
+    BufferStart #6, #$22, #$CB ; draw Food:
         LDX #17
         :
         LDA hudText, X
@@ -1707,14 +1333,7 @@
         JSR WriteByteToBuffer
     JSR EndBufferWrite
 
-    LDX #15 ; draw Next Landmark:
-    JSR StartBufferWrite
-        LDA #15
-        JSR WriteByteToBuffer
-        LDA #$22
-        JSR WriteByteToBuffer
-        LDA #$E2
-        JSR WriteByteToBuffer
+    BufferStart #15, #$22, #$E2 ; draw Next Landmark:
         LDX #21
         :
         LDA hudText, X
@@ -1728,14 +1347,7 @@
         JSR WriteByteToBuffer
     JSR EndBufferWrite
 
-    LDX #16 ; draw Miles traveled:
-    JSR StartBufferWrite
-        LDA #16
-        JSR WriteByteToBuffer
-        LDA #$23
-        JSR WriteByteToBuffer
-        LDA #$01
-        JSR WriteByteToBuffer
+    BufferStart #16, #$23, #$01 ; draw Miles traveled:
         LDX #34
         :
         LDA hudText, X
@@ -1818,14 +1430,7 @@
 .endproc
 
 .proc BufferClearTravelingHUDValue
-    LDX #12
-    JSR StartBufferWrite
-        LDA #12
-        JSR WriteByteToBuffer
-        LDA pointer
-        JSR WriteByteToBuffer
-        LDA pointer+1
-        JSR WriteByteToBuffer
+    BufferStart #12, pointer, pointer+1
         LDX #12
         LDA #___
         :
@@ -1842,14 +1447,7 @@
 .proc BufferDrawDateText
     ; @param pointer: nametable location
     JSR BufferClearTravelingHUDValue
-    LDX #TEXT_DATE_LEN
-    JSR StartBufferWrite
-        LDA #TEXT_DATE_LEN
-        JSR WriteByteToBuffer
-        LDA pointer
-        JSR WriteByteToBuffer
-        LDA pointer+1
-        JSR WriteByteToBuffer
+    BufferStart #TEXT_DATE_LEN, pointer, pointer+1
         LDX #0
         :
         LDA dateText, X
@@ -1867,14 +1465,7 @@
 .proc BufferDrawWeatherText
     ; @param pointer: nametable location
     JSR BufferClearTravelingHUDValue
-    LDX #TEXT_WEATHER_LEN
-    JSR StartBufferWrite
-        LDA #TEXT_WEATHER_LEN
-        JSR WriteByteToBuffer
-        LDA pointer
-        JSR WriteByteToBuffer
-        LDA pointer+1
-        JSR WriteByteToBuffer
+    BufferStart #TEXT_WEATHER_LEN, pointer, pointer+1
         LDX #0 ; weather text (temperature)
         STX helper
         LDY #0
@@ -1910,14 +1501,7 @@
 .proc BufferDrawHealthText
     ; @param pointer: nametable location
     JSR BufferClearTravelingHUDValue
-    LDX #TEXT_HEALTH_LEN
-    JSR StartBufferWrite
-        LDA #TEXT_HEALTH_LEN
-        JSR WriteByteToBuffer
-        LDA pointer
-        JSR WriteByteToBuffer
-        LDA pointer+1
-        JSR WriteByteToBuffer
+    BufferStart #TEXT_HEALTH_LEN, pointer, pointer+1
         LDA wagonHealth
         CMP #35
         BCS :+
@@ -1956,14 +1540,7 @@
 .proc BufferDrawFoodText
     ; @param pointer: nametable location
     JSR BufferClearTravelingHUDValue
-    LDX #11 ; "XXXX_POUNDS"
-    JSR StartBufferWrite
-        LDA #11
-        JSR WriteByteToBuffer
-        LDA pointer
-        JSR WriteByteToBuffer
-        LDA pointer+1
-        JSR WriteByteToBuffer
+    BufferStart #11, pointer, pointer+1 ; "XXXX_POUNDS"
         LDX #0
         :
         LDA foodLbsDigit, X
@@ -1990,14 +1567,7 @@
 .proc BufferDrawNextText
     ; @param pointer: nametable location
     JSR BufferClearTravelingHUDValue
-    LDX #9 ; "XXX_MILES"
-    JSR StartBufferWrite
-        LDA #9
-        JSR WriteByteToBuffer
-        LDA pointer
-        JSR WriteByteToBuffer
-        LDA pointer+1
-        JSR WriteByteToBuffer
+    BufferStart #9, pointer, pointer+1 ; "XXX_MILES"
         LDX #1
         :
         LDA nextDigit, X
@@ -2024,14 +1594,7 @@
 .proc BufferDrawTraveledText
     ; @param pointer: nametable location
     JSR BufferClearTravelingHUDValue
-    LDX #10 ; "XXXX_MILES"
-    JSR StartBufferWrite
-        LDA #10
-        JSR WriteByteToBuffer
-        LDA pointer
-        JSR WriteByteToBuffer
-        LDA pointer+1
-        JSR WriteByteToBuffer
+    BufferStart #10, pointer, pointer+1 ; "XXXX_MILES"
         LDX #0
         :
         LDA traveledDigit, X
@@ -2061,14 +1624,7 @@
     BEQ :+
     JMP Done
     :
-    LDX #7
-    JSR StartBufferWrite
-        LDA #7
-        JSR WriteByteToBuffer
-        LDA #$20
-        JSR WriteByteToBuffer
-        LDA #$D8
-        JSR WriteByteToBuffer
+    BufferStart #7, #$20, #$D8
         LDX #0
         :
         LDA bgWagonTop, X
@@ -2078,14 +1634,7 @@
         BNE :-
     JSR EndBufferWrite
 
-    LDX #7
-    JSR StartBufferWrite
-        LDA #7
-        JSR WriteByteToBuffer
-        LDA #$20
-        JSR WriteByteToBuffer
-        LDA #$F8
-        JSR WriteByteToBuffer
+    BufferStart #7, #$20, #$F8
         LDX #7
         :
         LDA bgWagonTop, X
@@ -2109,14 +1658,7 @@
     :
     STX helper
 
-    LDX #9
-    JSR StartBufferWrite
-        LDA #9
-        JSR WriteByteToBuffer
-        LDA #$21
-        JSR WriteByteToBuffer
-        LDA #$15
-        JSR WriteByteToBuffer
+    BufferStart #9, #$21, #$15
         LDX helper
         LDA #0
         STA helper+1
@@ -2131,14 +1673,7 @@
         STX helper
     JSR EndBufferWrite
 
-    LDX #9
-    JSR StartBufferWrite
-        LDA #9
-        JSR WriteByteToBuffer
-        LDA #$21
-        JSR WriteByteToBuffer
-        LDA #$35
-        JSR WriteByteToBuffer
+    BufferStart #9, #$21, #$35
         LDX helper
         LDA #0
         STA helper+1
@@ -2156,14 +1691,7 @@
 .endproc
 
 .proc BufferDrawTravelingAttr
-    LDX #24
-    JSR StartBufferWrite
-        LDA #24
-        JSR WriteByteToBuffer
-        LDA #$23
-        JSR WriteByteToBuffer
-        LDA #$C8
-        JSR WriteByteToBuffer
+    BufferStart #24, #$23, #$C8
         LDA location
         CMP #LOC_FORTLARAMIE
         BCS :++

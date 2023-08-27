@@ -38,6 +38,17 @@
     RTS
 .endproc
 
+.macro BufferStart len, addrHi, addrLo
+    LDX len
+    JSR StartBufferWrite
+    LDA len
+    JSR WriteByteToBuffer
+    LDA addrHi
+    JSR WriteByteToBuffer
+    LDA addrLo
+    JSR WriteByteToBuffer
+.endmacro
+
 .proc StartBufferWrite
     ; @param X: length of segment
     ; A: not affected
