@@ -71,3 +71,24 @@
   sta CurrentBank
   rts
 .endproc
+
+; 
+; jroweboy
+;  — 
+; Today at 6:46 PM
+; if it helps, here a macro like this one to define a "null" terminated string
+
+TEXT_END = $ff
+.macro STR label, string
+.ident (label):
+  .byte string, TEXT_END
+.export .ident(label)
+.endmacro
+
+; or if you wanted a length prefixed string you can do
+
+.macro STR label, string
+.ident (label):
+  .byte .strlen(string), string
+.export .ident(label)
+.endmacro
