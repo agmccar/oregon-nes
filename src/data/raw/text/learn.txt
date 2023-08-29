@@ -1,26 +1,40 @@
+## Page 1
+
 Try taking a journey by covered wagon across 2000 miles of plains, rivers,
 and mountains. Try! On the plains, will you slosh your oxen through mud and
 water-filled ruts or will you plop through dust six inches deep?
+
+## Page 2
 
 How will you cross the rivers? If you have money, you might take a ferry (if
 there is a ferry.) Or, you can ford the river and hope you and your wagon
 aren't swallowed alive!
 
+## Page 3
+
 What about supplies? Well, if you're low on food you can hunt. You might get
-a buffalo...you might. And there are bear in the mountains.
+a buffalo…you might. And there are bear in the mountains.
+
+## Page 4
 
 At the Dalles, you can try navigating the Columbia River, but if running the
 rapids with a makeshift raft makes you queasy, better take the Barlow Road.
 
+## Page 5
+
 If for some reason you don't survive -- your wagon burns, or thieves steal
 your oxen, or you run out of provisions, or you die of cholera -- don't give
-up! Try again...and again...until your name is up with the others on The
+up! Try again…and again…until your name is up with the others on The
 Oregon Top Ten.
+
+## Page 6
 
 # TODO
 # You may use these colors to adjust your monitor or television.
 # Orange Green Blue Violet
 
-# TODO select?
+## Page 7
+
+# TODO SELECT? key combo like START+SELECT?
 # Control-S key
 # You may turn the sound on or off during the program by pressing Control-S.

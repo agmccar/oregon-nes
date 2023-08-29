@@ -93,6 +93,9 @@ _AD = 137+64 ; v (arrow down)
 _HY = 202 ; -
 _QT = 203 ; "
 _SC = 204 ; ;
+_EL = 205 ; …
+_OP = 206 ; (
+_CP = 207 ; )
  
 ; other tiles
 TILE_GRASS = $ff

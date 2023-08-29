@@ -22,6 +22,7 @@
     .include "data/raw/climate.asm"
     ;.include "data/raw/rivers.asm"
     .include "data/raw/text/text.asm"
+    .include "data/compressed/text/dictionary.asm"
     .include "data/compressed/text/talk.asm"
 
 .segment "ROM2"

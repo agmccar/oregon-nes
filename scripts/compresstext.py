@@ -27,6 +27,9 @@ SPECIAL_CHAR = {
     '4': LITERAL_CHAR+36,
     '6': LITERAL_CHAR+37,
     '7': LITERAL_CHAR+38,
+    '…': LITERAL_CHAR+39,
+    '(': LITERAL_CHAR+40,
+    ')': LITERAL_CHAR+41,
 }
 SPECIAL_CHAR_ASM = {
     "'": "_AP",
@@ -36,6 +39,9 @@ SPECIAL_CHAR_ASM = {
     ':': "_CL",
     '.': "_PD",
     '@': "_CM", # actually a comma
+    '…': "_EL",
+    '(': "_OP",
+    ')': "_CP"
 }
 HLENS = []
 
@@ -169,28 +175,28 @@ def parse_raw_text(filename):
     talk_data = {}
     text = text.split("##")[1:]
     for section in text:
+        # remove comments
+        section = '\n'.join([line for line in section.split('\n') if not line.startswith('#')])
         a = section.split('\n\n')
         loc = a.pop(0).strip()
-        talk_data[loc] = []
-        for n in range(len(a)):
-            if not len(a[n].strip()):
-                continue
-            speaker_raw = a[n].split(' tells you:\n')[0].strip()
-            quote_raw = a[n].split(' tells you:\n')[1].replace("\n"," ").strip()[1:-1]
-            talk_data[loc].append({
-                'speaker_raw': speaker_raw,
-                #'speaker_wrap': textwrap.wrap(speaker_raw+" tells you:", width=TEXTLINE_TILES),
-                'quote_raw': quote_raw,
-                #'quote_wrap': textwrap.wrap('"'+quote_raw+'"', width=TEXTLINE_TILES),
-            })
+        if len(''.join([i.strip() for i in a])):
+            talk_data[loc] = []
+            for n in range(len(a)):
+                if not len(a[n].strip()):
+                    continue
+                if 'talk' in filename:
+                    speaker_raw = a[n].split(' tells you:\n')[0].strip()
+                    quote_raw = a[n].split(' tells you:\n')[1].replace("\n"," ").strip()[1:-1]
+                else:
+                    speaker_raw = ''
+                    quote_raw = a[n].replace("\n"," ").strip()
+                talk_data[loc].append({
+                    'speaker_raw': speaker_raw,
+                    #'speaker_wrap': textwrap.wrap(speaker_raw+" tells you:", width=TEXTLINE_TILES),
+                    'quote_raw': quote_raw,
+                    #'quote_wrap': textwrap.wrap('"'+quote_raw+'"', width=TEXTLINE_TILES),
+                })
     return talk_data
-
-def write_talk_tmp(filename, talk_data):
-    with open(filename,'w') as f:
-        for loc in talk_data:
-            for i in range(3):
-                f.write(talk_data[loc][i]['speaker_raw'].upper()+'\n')
-                f.write(talk_data[loc][i]['quote_raw'].upper()+'\n')
 
 def compress_segment(segment, substr_dict):
     # Header bytes, list of "$XX" hex strings
@@ -264,14 +270,16 @@ def text_to_segments(text):
 
 def create_substr_dict(mass_text):
     substr_dict = {}
-    for i in range(1, 256):
+    for c in SPECIAL_CHAR:
+        mass_text = mass_text.replace(c, '$')
+    for i in range(1, LITERAL_CHAR):
         c = most_common_substring([x for x in mass_text.split('$') if len(x)>=2])
         substr_dict[i] = c
         if len(c):
             mass_text = mass_text.replace(c,'$')
     return {k:v for k,v in substr_dict.items() if len(v)}
 
-def write_asm(filename, substr_dict, talk_data):
+def write_asm(filename, substr_dict, data=None):
     bytes_before = 0
     bytes_after = 0
     s = [0 for i in range(256)]
@@ -303,50 +311,57 @@ def write_asm(filename, substr_dict, talk_data):
         f.write(f"; ${hex(LITERAL_CHAR+26)[2:]} - ${hex(LITERAL_CHAR+26+len(SPECIAL_CHAR_ASM)-1)[2:]}: Literal special chars: {str([i.replace('@',',') for i in SPECIAL_CHAR_ASM])}\n")
         f.write(f"; ${hex(LITERAL_CHAR+26+len(SPECIAL_CHAR_ASM))[2:]} - $ff: Unused\n")
         f.write(f"\n")
-        f.write(f"talkSpecialChar:\n")
-        sc = [i for i in SPECIAL_CHAR]
-        for i in range(len(sc)):
-            if sc[i] in SPECIAL_CHAR_ASM:
-                sc[i] = SPECIAL_CHAR_ASM[sc[i]]
-            else:
-                sc[i] = f"_{sc[i].replace('@',',')}_"
-        f.write(f"    .byte {','.join(sc)}\n\n")
-        f.write(f"talkTellsYou:\n")
-        f.write(f"    .byte {','.join(['_'+i+'_' for i in 'TELLS_YOU'])},_CL\n\n")
-        f.write(f"talkDictionary:\n")
-        f.write(f"    ; range: $01 - $d1\n")
-        for i in s:
-            f.write(f"    .byte {i}\n")
-        f.write("\n")
-        labels = []
-        for loc in talk_data:
-            for i in range(3):
-                label = f"talk{loc.replace(' ','').replace('Crossing','')}{i+1}"
-                labels.append(label)
-                f.write(f"{label}:\n")
-                f.write(f"    ; {len(talk_data[loc][i]['bytes'].split(','))} bytes\n")
-                #w = textwrap.wrap(talk_data[loc][i]['bytes'].replace(',',', '),width=70)
-                w = talk_data[loc][i]['quote_byte_segments']
-                for j in w:
-                    j = j.replace(' ','')
-                    if j[-1] == ',':
-                        j = j[:-1]
-                    f.write(f"    .byte {j}\n")
-                f.write("\n")
-                bytes_before += len(talk_data[loc][i]['quote_raw'])+len(talk_data[loc][i]['speaker_raw'])
-                bytes_after += len(talk_data[loc][i]['bytes'].split(','))
-        f.write("talkPointer:\n")
-        for label in labels:
-            f.write(f"    .byte <{label},>{label}\n")
-    bytes_after += len(substr_dict)*2
-
-    print(f"Text\n* bytes to pack: {bytes_before}")
-    print(f"* Compressed size: {bytes_after}")
-    print(f"* Saved {bytes_before-bytes_after} bytes (~{(bytes_before-bytes_after)/1024:.0f}K, {100*(bytes_before-bytes_after)/bytes_before:.0f}%)")
+        if data == None:
+            f.write(f"talkSpecialChar:\n")
+            sc = [i for i in SPECIAL_CHAR]
+            for i in range(len(sc)):
+                if sc[i] in SPECIAL_CHAR_ASM:
+                    sc[i] = SPECIAL_CHAR_ASM[sc[i]]
+                else:
+                    sc[i] = f"_{sc[i].replace('@',',')}_"
+            f.write(f"    .byte {','.join(sc)}\n\n")
+            f.write(f"talkTellsYou:\n")
+            f.write(f"    .byte {','.join(['_'+i+'_' for i in 'TELLS_YOU'])},_CL\n\n")
+            f.write(f"talkDictionary:\n")
+            f.write(f"    ; range: $01 - $d1\n")
+            for i in s:
+                f.write(f"    .byte {i}\n")
+            f.write("\n")
+            bytes_after += len(substr_dict)*2
+        else:
+            labels = []
+            prefix = filename.split('/')[-1].split('.')[0]
+            for loc in data:
+                len_i = 3 if 'talk' in filename else 1
+                for i in range(len_i):
+                    label = f"{prefix}{loc.replace(' ','').replace('Crossing','')}"
+                    if len_i>1:
+                        label += f"{i+1}"
+                    labels.append(label)
+                    f.write(f"{label}:\n")
+                    f.write(f"    ; {len(data[loc][i]['bytes'].split(','))} bytes\n")
+                    #w = textwrap.wrap(data[loc][i]['bytes'].replace(',',', '),width=70)
+                    w = data[loc][i]['quote_byte_segments']
+                    for j in w:
+                        j = j.replace(' ','')
+                        if j[-1] == ',':
+                            j = j[:-1]
+                        f.write(f"    .byte {j}\n")
+                    f.write("\n")
+                    bytes_before += len(data[loc][i]['quote_raw'])+len(data[loc][i]['speaker_raw'])
+                    bytes_after += len(data[loc][i]['bytes'].split(','))
+            f.write(f"{prefix}Pointer:\n")
+            for label in labels:
+                f.write(f"    .byte <{label},>{label}\n")
+    if bytes_before:
+        print(f"Text\n* bytes to pack: {bytes_before}")
+        print(f"* Compressed size: {bytes_after}")
+        print(f"* Saved {bytes_before-bytes_after} bytes (~{(bytes_before-bytes_after)/1024:.0f}K, {100*(bytes_before-bytes_after)/bytes_before:.0f}%)")
 
 def main(args):
     verbose = args.verbose
     talk_data = parse_raw_text('src/data/raw/text/talk.txt')
+    learn_data = parse_raw_text('src/data/raw/text/learn.txt')
     mass_text = ""
     for loc in talk_data:
         for i in range(len(talk_data[loc])):
@@ -354,7 +369,17 @@ def main(args):
             talk_data[loc][i]['quote_segments'] = segments
             for segment in segments:
                 mass_text += squish_segment(segment)
+    
+    for loc in learn_data:
+        for i in range(len(learn_data[loc])):
+            segments = text_to_segments(learn_data[loc][i]['quote_raw'])
+            learn_data[loc][i]['quote_segments'] = segments
+            for segment in segments:
+                mass_text += squish_segment(segment)
+
     substr_dict = create_substr_dict(mass_text)
+    write_asm('src/data/compressed/text/dictionary.asm',substr_dict)
+
     for loc in talk_data:
         for i in range(len(talk_data[loc])):
             b = []
@@ -362,13 +387,35 @@ def main(args):
             segments += text_to_segments(talk_data[loc][i]['quote_raw'])
             talk_data[loc][i]['quote_byte_segments'] = []
             for segment in segments:
+                if args.verbose:
+                    print(f"Compressing segment: {segment}")
                 bs = compress_segment(segment, substr_dict)
                 talk_data[loc][i]['quote_byte_segments'].append(bs)
                 b.append(bs)
             talk_data[loc][i]['quote_byte_segments'].append("$00") # end of section
             b.append("$00") 
             talk_data[loc][i]['bytes'] = ",".join(b)
-    write_asm('src/data/compressed/text/talk.asm', substr_dict, talk_data)
+    write_asm('src/data/compressed/text/talk.asm', substr_dict, data=talk_data)
+
+    for page in learn_data:
+        #pp.pprint(learn_data)
+        for i in range(len(learn_data[page])):
+            b = []
+            segments = text_to_segments(learn_data[page][i]['quote_raw'])
+            learn_data[page][i]['quote_byte_segments'] = []
+            for segment in segments:
+                if args.verbose:
+                    print(f"Compressing segment: {segment}")
+                bs = compress_segment(segment, substr_dict)
+                learn_data[page][i]['quote_byte_segments'].append(bs)
+                b.append(bs)
+            learn_data[page][i]['quote_byte_segments'].append("$00") # end of section
+            b.append("$00") 
+            learn_data[page][i]['bytes'] = ",".join(b)
+    #pp.pprint(learn_data)
+    #input()
+    write_asm('src/data/compressed/text/learn.asm', substr_dict, data=learn_data)
+
     #print(HLENS[HLENS.index(max([i for i in HLENS]))])
 
 if __name__ == "__main__":
