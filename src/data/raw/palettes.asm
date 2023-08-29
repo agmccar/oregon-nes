@@ -1,3 +1,9 @@
+; %00000000 attribute bytes cheat sheet
+;  ||||||++- top left quadrant
+;  ||||++--- top right quadrant
+;  ||++----- bottom left quadrant
+;  ++------- bottom right quadrant
+
 palette:
     ; background palette data
     .byte C_BLACK, C_PINK, C_ORANGE, C_WHITE

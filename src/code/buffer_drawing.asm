@@ -593,18 +593,6 @@
     RTS
 .endproc
 
-; .proc BufferSetPaletteBlue
-;     LDA gameSettings
-;     AND #1
-;     BNE Done
-;     BufferStart #1, #$3f, #$02
-;         LDA #C_BLUE
-;         JSR WriteByteToBuffer
-;     JSR EndBufferWrite
-;     Done:
-;     RTS
-; .endproc
-
 .proc BufferDrawTitleOptions
 
     LDA whatIsYourChoiceText
@@ -696,6 +684,16 @@
 .endproc
 
 .proc BufferDrawTitleLearn
+
+    BufferStart #6, #$23, #$e1 ; clear attr
+        LDA #$ff
+        LDX #6
+        :
+        JSR WriteByteToBuffer
+        DEX
+        BNE :-
+    JSR EndBufferWrite
+
     LDX #14 ; clear 14 rows of tiles
     LDA #$21
     STA pointer+1
@@ -726,23 +724,86 @@
     BNE Line
 
     JSR BufferDrawLearnText
-    ; BufferStart #6, #$21, #$84 ; placeholder
-    ;     LDA #_P_
-    ;     JSR WriteByteToBuffer
-    ;     LDA #_A_
-    ;     JSR WriteByteToBuffer
-    ;     LDA #_G_
-    ;     JSR WriteByteToBuffer
-    ;     LDA #_E_
-    ;     JSR WriteByteToBuffer
-    ;     LDA #___
-    ;     JSR WriteByteToBuffer
-    ;     CLC
-    ;     LDA #_1_
-    ;     ADC menuCursor
-    ;     JSR WriteByteToBuffer
-    ; JSR EndBufferWrite
 
+    LDA menuCursor
+    CMP #5 ; "Adjust your monitor" page
+    BEQ :+
+    JMP Done
+    :
+    BufferStart #TEXT_POPUP_LINE_LEN, #$22, #$a4
+        LDX #0 ; colors text
+        :
+        LDA titleColorsText, X
+        JSR WriteByteToBuffer
+        INX
+        CPX #TEXT_POPUP_LINE_LEN
+        BNE :-
+    JSR EndBufferWrite
+    
+    LDA #$22 ; color squares
+    STA pointer
+    LDA #$04
+    STA pointer+1
+    LDX #4
+    ColorSquares:
+    TXA
+    PHA
+    BufferStart #24, pointer, pointer+1
+        LDX #4
+        LDA #TILE_LIGHT_SQ
+        STA helper
+        @sq:
+        TXA
+        PHA
+        LDA #0
+        JSR WriteByteToBuffer
+        LDX #4
+        :
+        LDA helper
+        JSR WriteByteToBuffer
+        DEX
+        BNE :-
+        LDA #0
+        JSR WriteByteToBuffer
+        PLA
+        TAX
+        CPX #4
+        BCS :+
+        LDA #TILE_DARK_SQ
+        STA helper
+        :
+        DEX
+        BNE @sq
+    JSR EndBufferWrite
+    CLC
+    LDA pointer+1
+    ADC #$20
+    STA pointer+1
+    LDA pointer
+    ADC #0
+    STA pointer
+    PLA
+    TAX
+    DEX
+    BNE ColorSquares
+    
+    BufferStart #6, #$23, #$e1 ; colorsquare attributes 
+        LDA #0
+        JSR WriteByteToBuffer
+        LDA #%10001000
+        JSR WriteByteToBuffer
+        LDA #$aa
+        JSR WriteByteToBuffer
+        JSR WriteByteToBuffer
+        LDA #%00100010
+        JSR WriteByteToBuffer
+        LDA #0
+        JSR WriteByteToBuffer
+    JSR EndBufferWrite
+
+    ; Todo: "Control-S key" (page 7)
+
+    Done:
     JSR BufferDrawPressStart
     RTS
 .endproc

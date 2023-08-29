@@ -99,6 +99,8 @@ _CP = 207 ; )
  
 ; other tiles
 TILE_GRASS = $ff
+TILE_DARK_SQ = $1c ; dark square. used on color testing page of "learn" screen
+TILE_LIGHT_SQ = $1d ; light square
 
 ; Length (in characters) of HUD elements
 TEXT_MAINMENU_LEN   = 19  ; main menu options

@@ -7,6 +7,10 @@ titleOptionsText:
     .byte _O_,_F_,_F_
     .byte _O_,_N_
 
+titleColorsText:
+    .byte _O_,_R_,_A_,_N_,_G_,_E_,___,_G_,_R_,_E_,_E_,_N_
+    .byte ___,_B_,_L_,_U_,_E_,___,_V_,_I_,_O_,_L_,_E_,_T_
+
 whatIsYourChoiceText:
     .byte 8,_Y_,_O_,_U_,___,_M_,_A_,_Y_,_CL
     .byte 20,_W_,_H_,_A_,_T_,___,_I_,_S_,___,_Y_,_O_,_U_,_R_,___,_C_,_H_,_O_,_I_,_C_,_E_,_QU
