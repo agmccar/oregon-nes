@@ -107,7 +107,7 @@ bankswitch_nosave:
     LDA #$FE
     STA $0200, X
     LDA #$00
-    CPX #106
+    CPX #106 ; total bytes reserved in vars.asm, above "this line"
     BCS :+
     CPY #1
     BNE :+
