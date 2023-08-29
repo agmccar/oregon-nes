@@ -26,3 +26,5 @@ nametableBuffer:    .res 64
 
 talkTextBuffer:     .res 32 ; buffer to store talk text word lengths
 wordBuffer:         .res 16
+
+oregonTopTen:       .res 10*(8+2) ; 10 x (8-letter name + 16 bits for score)

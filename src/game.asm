@@ -75,7 +75,11 @@ bankswitch_nosave:
     :                   ; vblankwait
     BIT PPUSTATUS
     BPL :-
-    :                   ; clear memory. TODO: preserve "Oregon Top Ten" data.
+    ; TODO: preserve "Oregon Top Ten" data.
+    ; Look for a sentinal value in memory - if it is found,
+    ; then this is most likely a "warm" reset
+    ; Otherwise, populate Top Ten with the default values
+    :                   ; clear memory
     LDA #$00
     STA $0000, X
     STA $0100, X
