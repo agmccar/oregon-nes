@@ -24,6 +24,7 @@
     .include "data/raw/text/text.asm"
     .include "data/compressed/text/dictionary.asm"
     .include "data/compressed/text/talk.asm"
+    .include "data/compressed/text/learn.asm"
 
 .segment "ROM2"
     .include "data/compressed/image/landmarkImageA.asm"

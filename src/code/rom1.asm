@@ -1584,6 +1584,23 @@
     RTS
 .endproc
 
+.proc BufferDrawLearnText
+    LDA menuCursor
+    ASL
+    TAX
+    LDA learnPointer, X
+    STA pointer
+    INX
+    LDA learnPointer, X
+    STA pointer+1
+    LDA #$21
+    STA cartHelperDigit
+    LDA #$64
+    STA cartHelperDigit+1
+    JSR BufferDrawText
+    RTS
+.endproc
+
 .proc BufferDrawTalkText
     LDA location ; get memory location of compressed talk text
     ASL
@@ -1600,6 +1617,11 @@
     STA cartHelperDigit
     LDA #$E4
     STA cartHelperDigit+1
+    JSR BufferDrawText
+    RTS
+.endproc
+
+.proc BufferDrawText
     LDY #0 ; decompress and draw talk text
     STY counter
     STY textLineHelper+3
@@ -1607,10 +1629,13 @@
     LDX #0
     :
     STA talkTextBuffer, X
+    CPX #TEXT_POPUP_LINE_LEN
+    BCS :+
     STA textLineHelper, X
+    :
     INX
     CPX #32
-    BNE :-
+    BNE :--
     LDX #0 ; clear popupTextLine1
     LDA #___
     :
@@ -1677,7 +1702,7 @@
     LDX counter
     CLC
     ADC #_CM-1
-    JSR WriteTalkTextChar ; replace last space with punctuation mark
+    JSR WriteTextChar ; replace last space with punctuation mark
     JMP NewSpace
     :
     TYA ; "tells you:"
@@ -1685,12 +1710,12 @@
 
     LDX counter
     LDA #___
-    JSR WriteTalkTextChar
+    JSR WriteTextChar
     DEC counter
     LDY #0
     :
     LDA talkTellsYou, Y
-    JSR WriteTalkTextChar
+    JSR WriteTextChar
     LDA talkTellsYou, Y
     INX
     INY
@@ -1700,7 +1725,7 @@
     LDX counter
     LDA #___
     :
-    JSR WriteTalkTextChar
+    JSR WriteTextChar
     INX
     CPX #TEXT_POPUP_LINE_LEN
     BNE :-
@@ -1709,7 +1734,7 @@
     LDX counter
     LDA #___
     :
-    JSR WriteTalkTextChar
+    JSR WriteTextChar
     INX
     CPX #TEXT_POPUP_LINE_LEN
     BNE :-
@@ -1717,7 +1742,7 @@
     LDA #1
     STA textLineHelper+3 ; flag for 1 literal char
     LDA #_QT
-    JSR WriteTalkTextChar
+    JSR WriteTextChar
     PLA
     TAY
     PLA
@@ -1725,7 +1750,7 @@
     JMP NextSegment
     NewSpace:
     LDA #___
-    JSR WriteTalkTextChar ; write new space
+    JSR WriteTextChar ; write new space
     PLA
     TAX ; unstash talkTextBuffer index
     JMP NextSegment
@@ -1735,7 +1760,7 @@
     LDX counter
     LDA helper2 ; check if extra letter is stashed
     BEQ NextDataByte
-    JSR WriteTalkTextChar
+    JSR WriteTextChar
     LDA #0
     STA helper2
     LDA helper+1
@@ -1751,14 +1776,14 @@
     SBC #LITERAL_CHAR+26
     TAX
     LDA talkSpecialChar, X
-    JSR WriteTalkTextChar
+    JSR WriteTextChar
     JSR IncrementPointerY
     JMP Space
     LiteralAZ:
     SEC ; literal A-Z character
     SBC #LITERAL_CHAR
     JSR LetterNumToTileIndex
-    JSR WriteTalkTextChar
+    JSR WriteTextChar
     JSR IncrementPointerY
     JMP Space
 
@@ -1789,7 +1814,7 @@
     BNE :-
     LDY #0
     LDA (pointer), Y ; first char of dict lookup result
-    JSR WriteTalkTextChar
+    JSR WriteTextChar
     JSR IncrementPointerY
     LDA helper+1
     BNE :+
@@ -1798,7 +1823,7 @@
     JMP :++
     :
     LDA (pointer), Y ; second char of dict lookup result
-    JSR WriteTalkTextChar
+    JSR WriteTextChar
     :
     PLA ; unstash Y
     TAY
@@ -1813,7 +1838,7 @@
     CMP #0
     BNE :+
     LDA #___
-    JSR WriteTalkTextChar
+    JSR WriteTextChar
     PLA
     TAX ; unstash talkTextBuffer index
     INX
@@ -1822,10 +1847,15 @@
     JMP NextDataByte
     
     Done:
+    LDA gameState
+    CMP #GAMESTATE_LANDMARK
+    BNE :+
     LDA #1
     STA textLineHelper+3 ; flag for 1 literal char
     LDA #_QT
-    JSR WriteTalkTextChar
+    JSR WriteTextChar
+    :
+
     LDX counter
     JSR StartBufferWrite
         LDA counter
@@ -1843,6 +1873,9 @@
         BNE :-
     JSR EndBufferWrite
 
+    LDA gameState
+    CMP #GAMESTATE_LANDMARK
+    BNE :+
     INC talkOption ; increment talkOption
     LDA talkOption
     CMP #3
@@ -1853,7 +1886,7 @@
     RTS
 .endproc
 
-.proc WriteTalkTextChar
+.proc WriteTextChar
     PHA
     STX textLineHelper+2 ; stash x
     LDA textLineHelper+3 ; check single char flag

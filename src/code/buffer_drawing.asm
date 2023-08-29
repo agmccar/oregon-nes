@@ -725,22 +725,23 @@
     DEX
     BNE Line
 
-    BufferStart #6, #$21, #$84 ; placeholder
-        LDA #_P_
-        JSR WriteByteToBuffer
-        LDA #_A_
-        JSR WriteByteToBuffer
-        LDA #_G_
-        JSR WriteByteToBuffer
-        LDA #_E_
-        JSR WriteByteToBuffer
-        LDA #___
-        JSR WriteByteToBuffer
-        CLC
-        LDA #_1_
-        ADC menuCursor
-        JSR WriteByteToBuffer
-    JSR EndBufferWrite
+    JSR BufferDrawLearnText
+    ; BufferStart #6, #$21, #$84 ; placeholder
+    ;     LDA #_P_
+    ;     JSR WriteByteToBuffer
+    ;     LDA #_A_
+    ;     JSR WriteByteToBuffer
+    ;     LDA #_G_
+    ;     JSR WriteByteToBuffer
+    ;     LDA #_E_
+    ;     JSR WriteByteToBuffer
+    ;     LDA #___
+    ;     JSR WriteByteToBuffer
+    ;     CLC
+    ;     LDA #_1_
+    ;     ADC menuCursor
+    ;     JSR WriteByteToBuffer
+    ; JSR EndBufferWrite
 
     JSR BufferDrawPressStart
     RTS
