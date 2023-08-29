@@ -149,6 +149,7 @@
     - [ ] Fort Walla Walla:  Flow Gently Sweet Afton.
     - [ ] The Dalles: Jimmy Crack Corn (Blue Tail Fly)
     - [ ] Willamette Valley:  Viva la compangie (Viva l'amour).
+- [ ] (easter egg) annoying 1 channel music if in Monochrome mode?
 
 ## Supplies screen
 

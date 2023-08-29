@@ -75,23 +75,60 @@ bankswitch_nosave:
     :                   ; vblankwait
     BIT PPUSTATUS
     BPL :-
-    ; TODO: preserve "Oregon Top Ten" data.
-    ; Look for a sentinal value in memory - if it is found,
-    ; then this is most likely a "warm" reset
-    ; Otherwise, populate Top Ten with the default values
+    
+    LDY #0              ; Preserve "Oregon Top Ten" data.
+    LDA $0300           ; Look for "OREGON" in memory - if it is found,
+    CMP #_O_            ; then this is most likely a "warm" reset.
+    BNE :+
+    LDA $0301
+    CMP #_R_
+    BNE :+
+    LDA $0302
+    CMP #_E_
+    BNE :+
+    LDA $0303
+    CMP #_G_
+    BNE :+
+    LDA $0304
+    CMP #_O_
+    BNE :+
+    LDA $0305
+    CMP #_N_
+    BNE :+
+    LDY #1
     :                   ; clear memory
     LDA #$00
     STA $0000, X
     STA $0100, X
-    STA $0300, X
     STA $0400, X
     STA $0500, X
     STA $0600, X
     STA $0700, X
     LDA #$FE
     STA $0200, X
+    LDA #$00
+    CPX #106
+    BCS :+
+    CPY #1
+    BNE :+
+    JMP :++
+    :
+    STA $0300, X
+    :
     INX
-    BNE :-
+    BNE :---
+    LDA #_O_ ; load sentinal value into memory
+    STA $0300
+    LDA #_R_
+    STA $0301
+    LDA #_E_
+    STA $0302
+    LDA #_G_
+    STA $0303
+    LDA #_O_
+    STA $0304
+    LDA #_N_
+    STA $0305
     :                   ; vblankwait again
     BIT PPUSTATUS
     BPL :-

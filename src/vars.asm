@@ -1,4 +1,7 @@
 
+resetSentinal:      .res 6 ; sentinal value to detect hard or soft reset 
+oregonTopTen:       .res 10*(8+2) ; 10 x (8-letter name + 16 bits for score)
+
 dateText:           .res TEXT_DATE_LEN
 popupTextLine1:     .res TEXT_POPUP_LINE_LEN
 popupTextLine2:     .res TEXT_POPUP_LINE_LEN
@@ -25,6 +28,6 @@ eventQueuePointer:  .res 1
 nametableBuffer:    .res 64
 
 talkTextBuffer:     .res 32 ; buffer to store talk text word lengths
-wordBuffer:         .res 16
+wordBuffer:         .res 16 ; buffer to store talk text words 
 
-oregonTopTen:       .res 10*(8+2) ; 10 x (8-letter name + 16 bits for score)
+;gravestone:         .res 8+32 ; name + epitaph 
