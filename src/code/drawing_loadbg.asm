@@ -21,7 +21,7 @@
     ;JSR BufferDrawTitle
     LDX #0                  ; default palette
     JSR UpdatePalette
-    JSR BufferSetPaletteBlue ; shameless hack
+    ; JSR BufferSetPaletteBlue ; shameless hack
 
     JSR StartBulkDrawing ; draw adornments
     LDY #6

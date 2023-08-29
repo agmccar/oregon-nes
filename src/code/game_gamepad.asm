@@ -68,14 +68,35 @@
         BNE :+
         JMP CheckDown
         :
-        JMP :+ ; hack
+        LDA menuOpen
+        CMP #MENU_NONE
+        BNE :+
+        JMP @menuNone
+        :
+        CMP #MENU_TITLE_LEARN
+        BNE :+
+        JMP @menuTitleLearn
+        :
         JMP Done
+        @menuNone:
+            JMP MainMoveDown ; hack
+        @menuTitleLearn:
+            LDA menuCursor
+            CMP #5 ; "adjust colors" screen
+            BNE :+
+            LDA #1 ; easter egg, switch color mode
+            EOR gameSettings
+            STA gameSettings
+            JSR UpdatePalette
+            ; JSR BufferDrawTitleLearn
+            :
+            JMP Done
     CheckDown:
         LDA #KEY_DOWN
         BIT buttons1
-        BNE :+
+        BNE MainMoveDown ; hack
         JMP CheckUp
-        :
+        MainMoveDown:
         LDX fingerY
         INX
         INX

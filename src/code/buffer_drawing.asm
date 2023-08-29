@@ -593,17 +593,17 @@
     RTS
 .endproc
 
-.proc BufferSetPaletteBlue
-    LDA gameSettings
-    AND #1
-    BNE Done
-    BufferStart #1, #$3f, #$02
-        LDA #C_BLUE
-        JSR WriteByteToBuffer
-    JSR EndBufferWrite
-    Done:
-    RTS
-.endproc
+; .proc BufferSetPaletteBlue
+;     LDA gameSettings
+;     AND #1
+;     BNE Done
+;     BufferStart #1, #$3f, #$02
+;         LDA #C_BLUE
+;         JSR WriteByteToBuffer
+;     JSR EndBufferWrite
+;     Done:
+;     RTS
+; .endproc
 
 .proc BufferDrawTitleOptions
 

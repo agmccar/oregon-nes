@@ -1029,11 +1029,11 @@
     CMP #GAMESTATE_TITLE
     BNE :+
     LDX #$D0 ; below title logo
-    LDA #$f0
+    LDA #$fa
     JMP :++
     :
     LDX #$C0 ; tippy top of screen
-    LDA #$0f
+    LDA #$af
     :
     STX PPUADDR
     LDX #0
@@ -1046,10 +1046,10 @@
     LDA PPUSTATUS
     LDA #$23
     STA PPUADDR
-    LDA #$F0 ; bottom adornment
+    LDA #$f0 ; bottom adornment
     STA PPUADDR
     LDX #0
-    LDA #$f0
+    LDA #$fa
     :
     STA PPUDATA
     INX
@@ -1098,14 +1098,14 @@
     LDA #$C0
     STA PPUADDR
     LDX #0
-    LDA #$0f
+    LDA #$af
     :
     STA PPUDATA
     INX
     CPX #8
     BNE :-
     LDX #0
-    LDA #$00
+    LDA #$aa
     :
     STA PPUDATA
     INX
