@@ -55,6 +55,7 @@
     - [x] landmark sprites
     - [ ] display landmark sprites on screen
 - [ ] gravestones
+    - [ ] preserve gravestone data on soft resets
 - [x] event queue
 - [ ] random events (sans graphics)
   - [x] Indians help find food
