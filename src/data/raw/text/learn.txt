@@ -33,6 +33,4 @@ You may use these colors to adjust your monitor or television.
 
 ## Page 7
 
-# TODO SELECT? key combo like START+SELECT?
-# Control-S key
-# You may turn the sound on or off during the program by pressing Control-S.
+You may turn the sound on or off during the program by pressing SELECT.

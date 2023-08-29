@@ -34,8 +34,8 @@ talkDictionary:
     .byte _E_,_S_
     .byte _O_,_R_
     .byte _T_,_O_
-    .byte _E_,_A_
     .byte _O_,_N_
+    .byte _E_,_A_
     .byte _L_,_L_
     .byte _E_,_N_
     .byte _E_,_D_
@@ -57,10 +57,10 @@ talkDictionary:
     .byte _I_,_V_
     .byte _E_,_P_
     .byte _I_,_L_
+    .byte _E_,_L_
     .byte _E_,_Y_
     .byte _A_,_T_
     .byte _E_,_G_
-    .byte _E_,_L_
     .byte _C_,_H_
     .byte _W_,_H_
     .byte _W_,_E_
@@ -72,9 +72,9 @@ talkDictionary:
     .byte _O_,_O_
     .byte _I_,_M_
     .byte _D_,_I_
+    .byte _A_,_Y_
     .byte _O_,_L_
     .byte _C_,_K_
-    .byte _A_,_Y_
     .byte _O_,_M_
     .byte _H_,_A_
     .byte _P_,_L_
@@ -98,12 +98,12 @@ talkDictionary:
     .byte _E_,_B_
     .byte _U_,_P_
     .byte _A_,_S_
+    .byte _R_,_N_
+    .byte _B_,_Y_
     .byte _D_,_R_
     .byte _I_,_F_
     .byte _I_,_C_
-    .byte _R_,_N_
     .byte _A_,_C_
-    .byte _B_,_Y_
     .byte _E_,_W_
     .byte _L_,_O_
     .byte _S_,_F_
@@ -122,17 +122,18 @@ talkDictionary:
     .byte _T_,_L_
     .byte _T_,_I_
     .byte _L_,_D_
+    .byte _U_,_R_
     .byte _U_,_M_
     .byte _R_,_I_
     .byte _T_,_B_
     .byte _T_,_G_
     .byte _D_,_H_
     .byte _O_,_S_
+    .byte _P_,_R_
     .byte _W_,_N_
-    .byte _U_,_R_
     .byte _D_,_L_
     .byte _D_,_E_
-    .byte _S_,_P_
+    .byte _G_,_S_
     .byte _D_,_O_
     .byte _T_,_M_
     .byte _N_,_I_
@@ -148,7 +149,6 @@ talkDictionary:
     .byte _T_,_C_
     .byte _D_,_A_
     .byte _Y_,_F_
-    .byte _P_,_R_
     .byte _S_,_N_
     .byte _S_,_L_
     .byte _G_,_D_
@@ -162,10 +162,11 @@ talkDictionary:
     .byte _D_,_U_
     .byte _V_,_E_
     .byte _R_,_S_
-    .byte _G_,_S_
     .byte _M_,_I_
     .byte _A_,_V_
     .byte _O_,_P_
+    .byte _S_,_P_
+    .byte _N_,_D_
     .byte _P_,_A_
     .byte _F_,_A_
     .byte _D_,_W_
@@ -193,7 +194,6 @@ talkDictionary:
     .byte _X_,_I_
     .byte _L_,_Y_
     .byte _E_,_K_
-    .byte _N_,_D_
     .byte _K_,_I_
     .byte _B_,_A_
     .byte _D_,_D_
@@ -205,6 +205,7 @@ talkDictionary:
     .byte _F_,_T_
     .byte _G_,_T_
     .byte _P_,_T_
+    .byte _T_,_U_
     .byte _M_,_P_
     .byte _M_,_U_
     .byte _S_,_A_
@@ -234,5 +235,4 @@ talkDictionary:
     .byte _T_,_E_
     .byte _F_,_O_
     .byte _D_,_C_
-    .byte _D_,_G_
 
