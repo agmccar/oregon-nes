@@ -15,7 +15,6 @@
         - [ ] explanation pages 
     - [ ] 4. Turn sound on|off
         - [ ] explanation page
-        - [ ] easter egg: SELECT to switch to monochrome mode?
 
 ## New game screens
 
