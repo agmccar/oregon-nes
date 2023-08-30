@@ -1998,13 +1998,15 @@
         BNE :-
     JSR EndBufferWrite
 
-    LDX #4 ; draw column headers
+    LDX #5 ; draw column headers
     JSR StartBufferWrite
-        LDA #4
+        LDA #5
         JSR WriteByteToBuffer
         LDA #$20
         JSR WriteByteToBuffer
         LDA #$c4
+        JSR WriteByteToBuffer
+        LDA #$48 ; vert line
         JSR WriteByteToBuffer
         LDX #0
         :
@@ -2014,13 +2016,15 @@
         CPX #4
         BNE :-
     JSR EndBufferWrite
-    LDX #6
+    LDX #7
     JSR StartBufferWrite
-        LDA #6
+        LDA #7
         JSR WriteByteToBuffer
         LDA #$20
         JSR WriteByteToBuffer
         LDA #$cc
+        JSR WriteByteToBuffer
+        LDA #$48 ; vert line
         JSR WriteByteToBuffer
         LDX #4
         :
@@ -2030,13 +2034,15 @@
         CPX #10
         BNE :-
     JSR EndBufferWrite
-    LDX #6
+    LDX #7
     JSR StartBufferWrite
-        LDA #6
+        LDA #7
         JSR WriteByteToBuffer
         LDA #$20
         JSR WriteByteToBuffer
         LDA #$d4
+        JSR WriteByteToBuffer
+        LDA #$48 ; vert line
         JSR WriteByteToBuffer
         LDX #10
         :
