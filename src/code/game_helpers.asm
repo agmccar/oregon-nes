@@ -146,6 +146,18 @@
 .proc SetDigitFromValue
     ; X: address of digits to reference (4 bytes)
     ; Y: ZP address of value (2 bytes)
+    LDA helper
+    PHA
+    LDA helper+1
+    PHA
+    LDA helper2
+    PHA
+    LDA helper2+1
+    PHA
+    LDA pointer
+    PHA
+    LDA pointer+1
+    PHA
     STX helper2
     LDX #0
     STX helper2+1
@@ -281,6 +293,29 @@
     LDA decimalDigits, X    ; draw 1s place digit
     LDY #3
     STA (helper2), Y
+    PLA
+    STA pointer+1
+    PLA
+    STA pointer
+    PLA
+    STA helper2+1
+    PLA
+    STA helper2
+    PLA
+    STA helper+1
+    PLA
+    STA helper
+    RTS
+.endproc
+
+.proc SetDefaultTopTen
+    LDX #0
+    :
+    LDA topTenDefault, X
+    STA oregonTopTen, X
+    INX
+    CPX #100 ; len of topTenDefault data in entirety
+    BNE :-
     RTS
 .endproc
 

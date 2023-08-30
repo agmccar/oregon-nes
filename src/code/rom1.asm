@@ -1979,3 +1979,114 @@
     LDX textLineHelper+2 ; unstash x
     RTS
 .endproc
+
+.proc BufferDrawTopTen
+    LDA #0
+    STA helper ; index of row data in oregonTopTen
+    LDA #8
+    STA helper+1 ; end of Top Ten name data
+    LDA #$21
+    STA pointer ; screen location of row
+    LDA #$03
+    STA pointer+1
+    LDX #10 ; number of rows
+    NextRow:
+    TXA
+    PHA
+    LDX #27
+    JSR StartBufferWrite
+        LDA #27
+        JSR WriteByteToBuffer
+        LDA pointer
+        JSR WriteByteToBuffer
+        LDA pointer+1
+        JSR WriteByteToBuffer
+        LDX helper
+        :
+        LDA oregonTopTen, X
+        JSR WriteByteToBuffer ; write name
+        INX
+        CPX helper+1
+        BNE :-
+        LDA #___ ; two spaces
+        JSR WriteByteToBuffer
+        JSR WriteByteToBuffer
+        LDA oregonTopTen, X ; stash this row's score
+        STA counter+1
+        INX
+        LDA oregonTopTen, X
+        STA counter
+        INX ; stash index of next row data
+        STX helper
+        CLC
+        LDA helper+1
+        ADC #10 ; stash index of end of next row's name data
+        STA helper+1
+        LDX #cartHelperDigit
+        LDY #counter
+        JSR SetDigitFromValue
+        LDX #0
+        :
+        LDA cartHelperDigit, X
+        CMP #_UL
+        BNE :+
+        LDA #___
+        :
+        JSR WriteByteToBuffer ; score (decimal characters)
+        INX
+        CPX #4
+        BNE :--
+        LDA #___ ; two spaces
+        JSR WriteByteToBuffer
+        JSR WriteByteToBuffer
+        LDA counter+1
+        CMP topTenRating ; Good enough for "Trail Guide"?
+        BCC Adventurer
+        BNE :+
+        LDA counter
+        CMP topTenRating+1
+        BCC Adventurer
+        :
+        LDX #2 ; index of "Trail Guide"
+        LDA #2+11
+        STA helper2
+        JMP Rating
+        Adventurer:
+        LDA counter+1
+        CMP topTenRating+13 ; index of "Adventurer" score high byte
+        BCC Greenhorn
+        BNE :+
+        LDA counter
+        CMP topTenRating+14
+        BCC Greenhorn
+        :
+        LDX #15 ; index of "Adventurer"
+        LDA #15+11
+        STA helper2
+        JMP Rating
+        Greenhorn:
+        LDX #28 ; index of "Greenhorn"
+        LDA #28+11
+        STA helper2
+        Rating:
+        LDA topTenRating, X
+        JSR WriteByteToBuffer
+        INX
+        CPX helper2
+        BNE Rating
+    JSR EndBufferWrite
+    CLC
+    LDA pointer+1
+    ADC #$20
+    STA pointer+1
+    LDA pointer
+    ADC #0
+    STA pointer
+    PLA
+    TAX
+    DEX
+    BEQ :+
+    JMP NextRow
+    :
+    RTS
+.endproc

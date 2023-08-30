@@ -99,8 +99,8 @@ _CP = 207 ; )
  
 ; other tiles
 TILE_GRASS = $ff
-TILE_DARK_SQ = $1c ; dark square. used on color testing page of "learn" screen
-TILE_LIGHT_SQ = $1d ; light square
+TILE_DARK_SQ = $1c ; dark square if "adornment" is loaded into pattern B
+TILE_LIGHT_SQ = $1d ; light square "
 
 ; Length (in characters) of HUD elements
 TEXT_MAINMENU_LEN   = 19  ; main menu options
@@ -133,6 +133,7 @@ GAMESTATE_TRAVELING = 5 ; main game state - traveling the trail
 ; Menu states
 MENU_NONE               = 0 ; all menus closed
 MENU_TITLE_LEARN        = 16 ; "Learn about the trail" menu
+MENU_TITLE_TOPTEN       = 17 ; The Oregon Top Ten
 MENU_NEWGAME_TYPING     = 1 ; new game name input 
 MENU_NEWGAME_OCCUPATION = 2 ; new game occupation selection 
 MENU_NEWGAME_STARTDATE  = 3 ; new game starting month selection
@@ -245,4 +246,4 @@ C_LGREY = $10
 C_MONO = $0B
 
 ; talk text 
-LITERAL_CHAR = 210
+LITERAL_CHAR = $d2 ; see data/compressed/text/dictionary.asm

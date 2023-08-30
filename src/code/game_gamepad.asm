@@ -42,7 +42,8 @@
             :
             CMP #17 ; See the Oregon Top Ten
             BNE :+
-
+            LDA #MENU_TITLE_TOPTEN
+            STA menuOpen
             :
             CMP #19 ; Turn sound [off|on]
             BNE :+

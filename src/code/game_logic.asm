@@ -184,6 +184,10 @@
     BNE :+
     JMP TitleLearn
     :
+    CMP #MENU_TITLE_TOPTEN
+    BNE :+
+    JMP TitleTopTen
+    :
     CMP #MENU_NEWGAME_TYPING
     BNE :+
     JMP NewGameTyping
@@ -299,6 +303,12 @@
         STA fingerAttr
         STA menuCursor ; use menuCursor to denote page number (0-6)
         JSR BufferDrawTitleLearn
+        JMP Done
+    TitleTopTen:
+        LDA #0 ;no fingers visible
+        STA fingerAttr
+        JSR ClearScreen
+        JSR BufferDrawTopTen
         JMP Done
     NewGameTyping:
         LDA #%00001100      ; both fingers visible, pointing right

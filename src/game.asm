@@ -12,6 +12,7 @@
 
 .segment "ROM0"
     .include "tiles.asm"
+    .include "data/raw/text/top10.asm"
 
 .segment "ROM1"
     .include "code/rom1.asm"
@@ -129,6 +130,9 @@ bankswitch_nosave:
     STA $0304
     LDA #_N_
     STA $0305
+    CPY #1 ; set default high scores if this is a hard reset
+    BEQ :+
+    JSR SetDefaultTopTen
     :                   ; vblankwait again
     BIT PPUSTATUS
     BPL :-
