@@ -26,6 +26,10 @@
         BNE :+
         JMP @menuTitleLearn
         :
+        CMP #MENU_TITLE_TOPTEN
+        BNE :+
+        JMP @menuTitleTopTen
+        :
         JMP Done
         @menuNone:
             LDA fingerY
@@ -60,6 +64,10 @@
             :
             LDA #0
             STA menuCursor
+            LDA #MENU_NONE
+            STA menuOpen
+            JMP Done
+        @menuTitleTopTen:
             LDA #MENU_NONE
             STA menuOpen
             JMP Done
