@@ -2177,5 +2177,31 @@
     BEQ :+
     JMP NextRow
     :
+    LDX #0
+    LDA #___
+    :
+    STA popupTextLine1, X
+    STA popupTextLine2, X
+    INX
+    CPX #TEXT_POPUP_LINE_LEN
+    BNE :-
+    LDX #0
+    :
+    LDA topTenQuestion, X
+    STA popupTextLine1, X
+    INX
+    CPX #21 ; len("Would you like to see")
+    BNE :-
+    LDY #0
+    :
+    LDA topTenQuestion, X
+    STA popupTextLine2, Y
+    INX
+    INY
+    CPX #19+21 ;  +len("how pts are earned?")
+    BNE :-
+
+
+    JSR BufferDrawTextBox
     RTS
 .endproc

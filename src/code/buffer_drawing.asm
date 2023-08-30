@@ -1166,6 +1166,130 @@
     RTS
 .endproc
 
+.proc BufferDrawTextBox
+    LDA gameState
+    CMP #GAMESTATE_TITLE
+    BNE :+
+    LDA #$22
+    STA pointer
+    LDA #$62
+    STA pointer+1
+    JMP :++
+    :
+    LDA #$21
+    STA pointer
+    LDA #$42
+    STA pointer+1
+    :
+    BufferStart #28, pointer, pointer+1 ; top row
+        LDA #_RD
+        JSR WriteByteToBuffer
+        LDA #_HR
+        LDX #0
+        :
+        JSR WriteByteToBuffer
+        INX
+        CPX #26
+        BNE :-
+        LDA #_LD
+        JSR WriteByteToBuffer
+    JSR EndBufferWrite
+
+    LDX #4 ; row 1-4
+    CLC
+    LDA pointer+1
+    ADC #$20
+    STA pointer+1
+    LDA pointer
+    ADC #0
+    STA pointer
+    :
+    TXA
+    PHA
+    BufferStart #28, pointer, pointer+1
+        LDA #_VR
+        JSR WriteByteToBuffer
+        LDA #___
+        LDX #0
+        :
+        JSR WriteByteToBuffer
+        INX
+        CPX #26
+        BNE :-
+        LDA #_VR
+        JSR WriteByteToBuffer
+    JSR EndBufferWrite
+    CLC
+    LDA pointer+1
+    ADC #$20
+    STA pointer+1
+    LDA pointer
+    ADC #0
+    STA pointer
+    PLA
+    TAX
+    DEX
+    BNE :--
+
+    BufferStart #28, pointer, pointer+1 ; bottom row
+        LDA #_RU
+        JSR WriteByteToBuffer
+        LDA #_HR
+        LDX #0
+        :
+        JSR WriteByteToBuffer
+        INX
+        CPX #26
+        BNE :-
+        LDA #_LU
+        JSR WriteByteToBuffer
+    JSR EndBufferWrite
+
+    CLC
+    LDA pointer+1
+    ADC #2
+    STA pointer+1
+    LDA pointer
+    ADC #0
+    STA pointer
+    SEC
+    LDA pointer+1
+    SBC #$60
+    STA pointer+1
+    LDA pointer
+    SBC #0
+    STA pointer
+
+    BufferStart #TEXT_POPUP_LINE_LEN, pointer, pointer+1 ; popup text line 1
+        LDX #0
+        :
+        LDA popupTextLine1, X
+        JSR WriteByteToBuffer
+        INX
+        CPX #TEXT_POPUP_LINE_LEN
+        BNE :-
+    JSR EndBufferWrite
+    CLC
+    LDA pointer+1
+    ADC #$20
+    STA pointer+1
+    LDA pointer
+    ADC #0
+    STA pointer
+
+    BufferStart #TEXT_POPUP_LINE_LEN, pointer, pointer+1 ; popup text line 2
+        LDX #0
+        :
+        LDA popupTextLine2, X
+        JSR WriteByteToBuffer
+        INX
+        CPX #TEXT_POPUP_LINE_LEN
+        BNE :-
+    JSR EndBufferWrite
+
+    RTS
+.endproc
+
 .proc BufferDrawTextPopup
 
     BufferStart #16, #$23, #$D0 ; attributes
@@ -1216,82 +1340,7 @@
         BNE :-
     JSR EndBufferWrite
 
-
-    BufferStart #28, #$21, #$42 ; top row
-        LDA #_RD
-        JSR WriteByteToBuffer
-        LDA #_HR
-        LDX #0
-        :
-        JSR WriteByteToBuffer
-        INX
-        CPX #26
-        BNE :-
-        LDA #_LD
-        JSR WriteByteToBuffer
-    JSR EndBufferWrite
-
-    LDX #4 ; row 1-4
-    LDA #$62
-    STA helper+1
-    :
-    TXA
-    PHA
-    BufferStart #28, #$21, helper+1
-        LDA #_VR
-        JSR WriteByteToBuffer
-        LDA #___
-        LDX #0
-        :
-        JSR WriteByteToBuffer
-        INX
-        CPX #26
-        BNE :-
-        LDA #_VR
-        JSR WriteByteToBuffer
-    JSR EndBufferWrite
-    LDA helper+1
-    CLC
-    ADC #$20
-    STA helper+1
-    PLA
-    TAX
-    DEX
-    BNE :--
-
-    BufferStart #28, #$21, #$E2 ; bottom row
-        LDA #_RU
-        JSR WriteByteToBuffer
-        LDA #_HR
-        LDX #0
-        :
-        JSR WriteByteToBuffer
-        INX
-        CPX #26
-        BNE :-
-        LDA #_LU
-        JSR WriteByteToBuffer
-    JSR EndBufferWrite
-
-    BufferStart #TEXT_POPUP_LINE_LEN, #$21, #$84 ; popup text line 1
-        LDX #0
-        :
-        LDA popupTextLine1, X
-        JSR WriteByteToBuffer
-        INX
-        CPX #TEXT_POPUP_LINE_LEN
-        BNE :-
-    JSR EndBufferWrite
-
-    BufferStart #TEXT_POPUP_LINE_LEN, #$21, #$A4 ; popup text line 2
-        LDX #0
-        :
-        LDA popupTextLine2, X
-        JSR WriteByteToBuffer
-        INX
-        CPX #TEXT_POPUP_LINE_LEN
-        BNE :-
-    JSR EndBufferWrite
+    JSR BufferDrawTextBox
 
     JSR BufferDrawPressStart ; draw "Press start to continue"
 

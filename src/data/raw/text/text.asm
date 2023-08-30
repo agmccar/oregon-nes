@@ -457,3 +457,7 @@ topTenColumns:
     .byte _N_,_A_,_M_,_E_
     .byte _P_,_O_,_I_,_N_,_T_,_S_
     .byte _R_,_A_,_T_,_I_,_N_,_G_
+
+topTenQuestion:
+    .byte _W_,_O_,_U_,_L_,_D_,___,_Y_,_O_,_U_,___,_L_,_I_,_K_,_E_,___,_T_,_O_,___,_S_,_E_,_E_
+    .byte _H_,_O_,_W_,___,_P_,_T_,_S_,___,_A_,_R_,_E_,___,_E_,_A_,_R_,_N_,_E_,_D_,_QU
