@@ -449,3 +449,11 @@ topTenRating:
     .byte $1b,$58,_T_,_R_,_A_,_I_,_L_,___,_G_,_U_,_I_,_D_,_E_
     .byte $0b,$b8,_A_,_D_,_V_,_E_,_N_,_T_,_U_,_R_,_E_,_R_,___
     .byte $00,$00,_G_,_R_,_E_,_E_,_N_,_H_,_O_,_R_,_N_,___,___
+
+topTenHeader:
+    .byte _T_,_H_,_E_,___,_O_,_R_,_E_,_G_,_O_,_N_,___,_T_,_O_,_P_,___,_T_,_E_,_N_
+
+topTenColumns:
+    .byte _N_,_A_,_M_,_E_
+    .byte _P_,_O_,_I_,_N_,_T_,_S_
+    .byte _R_,_A_,_T_,_I_,_N_,_G_

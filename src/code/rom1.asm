@@ -1981,7 +1981,90 @@
 .endproc
 
 .proc BufferDrawTopTen
-    LDA #0
+    LDX #18 ; draw "The Oregon Top Ten"
+    JSR StartBufferWrite
+        LDA #18
+        JSR WriteByteToBuffer
+        LDA #$20
+        JSR WriteByteToBuffer
+        LDA #$87
+        JSR WriteByteToBuffer
+        LDX #0
+        :
+        LDA topTenHeader, X
+        JSR WriteByteToBuffer
+        INX
+        CPX #18
+        BNE :-
+    JSR EndBufferWrite
+
+    LDX #4 ; draw column headers
+    JSR StartBufferWrite
+        LDA #4
+        JSR WriteByteToBuffer
+        LDA #$20
+        JSR WriteByteToBuffer
+        LDA #$c4
+        JSR WriteByteToBuffer
+        LDX #0
+        :
+        LDA topTenColumns, X
+        JSR WriteByteToBuffer
+        INX
+        CPX #4
+        BNE :-
+    JSR EndBufferWrite
+    LDX #6
+    JSR StartBufferWrite
+        LDA #6
+        JSR WriteByteToBuffer
+        LDA #$20
+        JSR WriteByteToBuffer
+        LDA #$cc
+        JSR WriteByteToBuffer
+        LDX #4
+        :
+        LDA topTenColumns, X
+        JSR WriteByteToBuffer
+        INX
+        CPX #10
+        BNE :-
+    JSR EndBufferWrite
+    LDX #6
+    JSR StartBufferWrite
+        LDA #6
+        JSR WriteByteToBuffer
+        LDA #$20
+        JSR WriteByteToBuffer
+        LDA #$d4
+        JSR WriteByteToBuffer
+        LDX #10
+        :
+        LDA topTenColumns, X
+        JSR WriteByteToBuffer
+        INX
+        CPX #16
+        BNE :-
+    JSR EndBufferWrite
+    LDX #6
+    JSR StartBufferWrite
+        LDA #6
+        JSR WriteByteToBuffer
+        LDA #$23
+        JSR WriteByteToBuffer
+        LDA #$c9
+        JSR WriteByteToBuffer
+        LDA #%01011111
+        LDX #6
+        :
+        JSR WriteByteToBuffer
+        DEX
+        BNE :-
+    JSR EndBufferWrite
+
+
+
+    LDA #0 ; draw 10 rows: name/points/rating
     STA helper ; index of row data in oregonTopTen
     LDA #8
     STA helper+1 ; end of Top Ten name data
