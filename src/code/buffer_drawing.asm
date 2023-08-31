@@ -14,7 +14,7 @@
     JMP Done
     :                       ; erase finger at old position (draw blank tile)
     LDA #%00010000
-    BIT fingerAttr          ; check if main finger is normal or "up/down" arrows
+    BIT fingerAttr          ; check if main finger is normal or arrows
     BEQ :++
     LDX fingerLastX
     LDY fingerLastY
@@ -53,12 +53,25 @@
     :                       ; draw finger at new position
     LDA #%00000100          ; check if main finger is visible
     BIT fingerAttr
+    BEQ :+++
+    LDA #%00010000          ; draw normal finger or arrows
+    BIT fingerAttr          ; check if main finger is normal or arrows
     BEQ :++
-    LDA #%00010000          ; draw normal finger or "up/down" arrows
-    BIT fingerAttr          ; check if main finger is normal or "up/down" arrows
-    BEQ :+
     LDX fingerX
     LDY fingerY
+    LDA #%00000001
+    BIT fingerAttr
+    BEQ :+
+    INX
+    LDA #_AR    ; arrow right
+    JSR WriteTileToBuffer
+    LDX fingerX
+    LDY fingerY
+    DEX
+    LDA #_AL    ; arrow left
+    JSR WriteTileToBuffer
+    JMP :+++
+    :
     INY
     LDA #_AD    ; arrow down
     JSR WriteTileToBuffer

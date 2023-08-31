@@ -53,7 +53,7 @@ menuOpen:           .res 1 ; see: constants.asm -> Menu states
 ;  ||||||+- "Old" finger direction- 0:R, 1:L
 ;  |||||+-- Main finger visible- 0:no, 1:yes
 ;  ||||+--- "Old" finger visible- 0:no, 1:yes
-;  |||+---- type- 0:normal finger 1:"up/down" arrows
+;  |||+---- type- 0:normal finger, 1: arrows (if 'R': up/down, 'L':left/right)
 ;  +++----- unused
 fingerAttr:         .res 1
 fingerX:            .res 1 ; (tiles from top left)

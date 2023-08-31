@@ -11,7 +11,7 @@
         - [x] pages
     - [ ] 3. See the Oregon Top Ten
         - [x] raw text
-        - [ ] Top Ten list
+        - [x] Top Ten list
         - [ ] explanation pages 
     - [ ] 4. Turn sound on|off
         - [ ] explanation page

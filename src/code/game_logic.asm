@@ -305,10 +305,20 @@
         JSR BufferDrawTitleLearn
         JMP Done
     TitleTopTen:
-        LDA #0 ;no fingers visible
+        LDA #%00010101 ; "<>" finger visible
         STA fingerAttr
+        LDA #26
+        STA fingerX
+        LDA #22
+        STA fingerY
+        LDA #0 ; Y/N (default N)
+        STA menuCursor
         JSR ClearScreen
         JSR BufferDrawTopTen
+        LDX fingerX
+        LDY fingerY
+        LDA #_N_
+        JSR WriteTileToBuffer
         JMP Done
     NewGameTyping:
         LDA #%00001100      ; both fingers visible, pointing right
