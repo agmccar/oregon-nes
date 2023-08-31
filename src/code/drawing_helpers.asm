@@ -1028,14 +1028,23 @@
     LDA gameState ; where is it?
     CMP #GAMESTATE_TITLE
     BNE :+
-    LDX #$D0 ; below title logo
+    LDA #$D0 ; below title logo
+    STA PPUADDR
     LDA #$fa
-    JMP :++
+    JMP :+++
     :
-    LDX #$C0 ; tippy top of screen
+    LDA #$C0 ; tippy top of screen
+    STA PPUADDR
     LDA #$af
+    LDX #0
     :
-    STX PPUADDR
+    STA PPUDATA
+    INX
+    CPX #8
+    BNE :-
+    LDA #$fa
+    :
+    
     LDX #0
     :
     STA PPUDATA

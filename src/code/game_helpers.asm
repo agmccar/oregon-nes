@@ -319,6 +319,22 @@
     RTS
 .endproc
 
+.proc ToggleYN
+    LDA menuCursor
+    EOR #1
+    STA menuCursor
+    BNE :+
+    LDA #_Y_
+    JMP :++
+    :
+    LDA #_N_
+    :
+    LDX fingerX
+    LDY fingerY
+    JSR WriteTileToBuffer
+    RTS
+.endproc
+
 .proc SetPpuAddrPointerFromXY
     ; X - tiles right of origin
     ; Y - tiles down from origin

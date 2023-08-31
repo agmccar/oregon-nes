@@ -1601,385 +1601,6 @@
     RTS
 .endproc
 
-.proc BufferDrawTalkText
-    LDA location ; get memory location of compressed talk text
-    ASL
-    CLC
-    ADC talkOption
-    ADC talkOption
-    TAX
-    LDA talkPointer, X
-    STA pointer
-    INX
-    LDA talkPointer, X
-    STA pointer+1
-    LDA #$20 ; PPU address - start at top left
-    STA cartHelperDigit
-    LDA #$E4
-    STA cartHelperDigit+1
-    JSR BufferDrawText
-    RTS
-.endproc
-
-.proc BufferDrawText
-    LDY #0 ; decompress and draw talk text
-    STY counter
-    STY textLineHelper+3
-    LDA #0 ; clear talkTextBuffer, textLineHelper
-    LDX #0
-    :
-    STA talkTextBuffer, X
-    CPX #TEXT_POPUP_LINE_LEN
-    BCS :+
-    STA textLineHelper, X
-    :
-    INX
-    CPX #32
-    BNE :--
-    LDX #0 ; clear popupTextLine1
-    LDA #___
-    :
-    STA popupTextLine1, X
-    INX
-    CPX #TEXT_POPUP_LINE_LEN
-    BNE :-
-    LDA #0
-    STA textLineHelper ; reset index of char in word
-    NextSegment:
-    LDX #0
-    STX counter+1 ; reset talkTextBuffer index
-    LDA (pointer), Y ; read first header byte
-    BNE :+
-    JMP Done
-    :
-    AND #$0f
-    STA helper ; punctuation type
-    LDA (pointer), Y
-    LSR
-    LSR
-    LSR
-    LSR
-    STA helper+1 ; remaining header length
-    JSR IncrementPointerY
-    LDX #0 ; read word length header bytes
-    STX counter+1 ; talkTextBuffer index
-    :
-    TXA
-    PHA
-    LDA (pointer), Y
-    LSR
-    LSR
-    LSR
-    LSR
-    LDX counter+1
-    STA talkTextBuffer, X ; stash word lengths
-    INC counter+1
-    INX
-    LDA (pointer), Y
-    AND #$0f
-    STA talkTextBuffer, X
-    INC counter+1
-    PLA
-    TAX
-    JSR IncrementPointerY
-    INX
-    CPX helper+1
-    BNE :-
-    LDA #0
-    LDX counter+1
-    STA talkTextBuffer, X
-    LDX #0 ; begin decompress segment payload
-    STX helper2 ; storage for extra letter. starts empty
-    NextWord:
-    LDA talkTextBuffer, X
-    STA helper+1 ; character length of next word
-    BNE SameSegment
-    TXA ; done with segment
-    PHA ; stash talkTextBuffer index
-    LDA helper
-    BEQ :+
-    DEC counter ; punctuation
-    LDX counter
-    CLC
-    ADC #_CM-1
-    JSR WriteTextChar ; replace last space with punctuation mark
-    JMP NewSpace
-    :
-    TYA ; "tells you:"
-    PHA
-
-    LDX counter
-    LDA #___
-    JSR WriteTextChar
-    DEC counter
-    LDY #0
-    :
-    LDA talkTellsYou, Y
-    JSR WriteTextChar
-    LDA talkTellsYou, Y
-    INX
-    INY
-    CPY #10
-    BNE :-
-
-    LDX counter
-    LDA #___
-    :
-    JSR WriteTextChar
-    INX
-    CPX #TEXT_POPUP_LINE_LEN
-    BNE :-
-
-    DEC counter
-    LDX counter
-    LDA #___
-    :
-    JSR WriteTextChar
-    INX
-    CPX #TEXT_POPUP_LINE_LEN
-    BNE :-
-    
-    LDA #1
-    STA textLineHelper+3 ; flag for 1 literal char
-    LDA #_QT
-    JSR WriteTextChar
-    PLA
-    TAY
-    PLA
-    TAX ; unstash talkTextBuffer index
-    JMP NextSegment
-    NewSpace:
-    LDA #___
-    JSR WriteTextChar ; write new space
-    PLA
-    TAX ; unstash talkTextBuffer index
-    JMP NextSegment
-    SameSegment:
-    TXA
-    PHA ; stash talkTextBuffer index
-    LDX counter
-    LDA helper2 ; check if extra letter is stashed
-    BEQ NextDataByte
-    JSR WriteTextChar
-    LDA #0
-    STA helper2
-    LDA helper+1
-    BNE NextDataByte
-    JMP Space
-    NextDataByte:
-    LDA (pointer), Y
-    CMP #LITERAL_CHAR
-    BCC DictLookup
-    CMP #LITERAL_CHAR+26
-    BCC LiteralAZ
-    SEC
-    SBC #LITERAL_CHAR+26
-    TAX
-    LDA talkSpecialChar, X
-    JSR WriteTextChar
-    JSR IncrementPointerY
-    JMP Space
-    LiteralAZ:
-    SEC ; literal A-Z character
-    SBC #LITERAL_CHAR
-    JSR LetterNumToTileIndex
-    JSR WriteTextChar
-    JSR IncrementPointerY
-    JMP Space
-
-    DictLookup: ; dictionary lookup
-    STA helper2+1 ; stash (dictionary index+1)
-    DEC helper2+1 ; dictionary index+0
-    TYA
-    PHA ; stash Y
-    LDA pointer ; stash pointer
-    STA cartHelperDigit+2
-    LDA pointer+1
-    STA cartHelperDigit+3
-    LDA #<talkDictionary ; location of dictionary
-    STA pointer
-    LDA #>talkDictionary
-    STA pointer+1
-    LDY #0 ; get location of dictionary lookup result
-    :
-    CLC
-    LDA pointer
-    ADC helper2+1
-    STA pointer
-    LDA pointer+1
-    ADC #0
-    STA pointer+1
-    INY
-    CPY #2
-    BNE :-
-    LDY #0
-    LDA (pointer), Y ; first char of dict lookup result
-    JSR WriteTextChar
-    JSR IncrementPointerY
-    LDA helper+1
-    BNE :+
-    LDA (pointer), Y ; stash 2nd char for next word, done with this word
-    STA helper2
-    JMP :++
-    :
-    LDA (pointer), Y ; second char of dict lookup result
-    JSR WriteTextChar
-    :
-    PLA ; unstash Y
-    TAY
-    LDA cartHelperDigit+2 ; unstash pointer
-    STA pointer
-    LDA cartHelperDigit+3
-    STA pointer+1
-    JSR IncrementPointerY
-    ;JMP Space
-    Space:
-    LDA helper+1
-    CMP #0
-    BNE :+
-    LDA #___
-    JSR WriteTextChar
-    PLA
-    TAX ; unstash talkTextBuffer index
-    INX
-    JMP NextWord
-    :
-    JMP NextDataByte
-    
-    Done:
-    LDA gameState
-    CMP #GAMESTATE_LANDMARK
-    BNE :+
-    LDA #1
-    STA textLineHelper+3 ; flag for 1 literal char
-    LDA #_QT
-    JSR WriteTextChar
-    :
-
-    LDX counter
-    JSR StartBufferWrite
-        LDA counter
-        JSR WriteByteToBuffer
-        LDA cartHelperDigit
-        JSR WriteByteToBuffer
-        LDA cartHelperDigit+1
-        JSR WriteByteToBuffer
-        LDX #0
-        :
-        LDA popupTextLine1, X
-        JSR WriteByteToBuffer
-        INX
-        CPX counter
-        BNE :-
-    JSR EndBufferWrite
-
-    LDA gameState
-    CMP #GAMESTATE_LANDMARK
-    BNE :+
-    INC talkOption ; increment talkOption
-    LDA talkOption
-    CMP #3
-    BNE :+
-    LDA #0
-    STA talkOption
-    :
-    RTS
-.endproc
-
-.proc WriteTextChar
-    PHA
-    STX textLineHelper+2 ; stash x
-    LDA textLineHelper+3 ; check single char flag
-    BEQ :+
-    LDA #0
-    STA textLineHelper+3
-    PLA
-    DEC counter
-    LDX counter
-    STA popupTextLine1, X
-    INC counter
-    JMP Done
-    :
-    PLA
-    LDX textLineHelper ; index of char in word
-    STA wordBuffer, X
-    INC textLineHelper
-    CMP #___ ; check if there are more characters to write
-    BEQ :+
-    DEC helper+1 ; remaining chars in word
-    JMP Done
-    :
-    LDA counter ; word is done
-    CLC
-    ADC textLineHelper ; add length of word to length of text line
-    CMP #TEXT_POPUP_LINE_LEN ; check if there is space in text line for word
-    BCS :+
-    JMP WordToLine
-    :
-    TYA ; no more room in line
-    PHA ; stash Y
-    LDX #TEXT_POPUP_LINE_LEN ; write line to screen
-    JSR StartBufferWrite
-        LDA #TEXT_POPUP_LINE_LEN
-        JSR WriteByteToBuffer
-        LDA cartHelperDigit
-        JSR WriteByteToBuffer
-        LDA cartHelperDigit+1
-        JSR WriteByteToBuffer
-        LDX #0
-        :
-        LDA popupTextLine1, X
-        JSR WriteByteToBuffer
-        INX
-        CPX #TEXT_POPUP_LINE_LEN
-        BNE :-
-    JSR EndBufferWrite
-    PLA ; unstash Y
-    TAY
-    CLC ; write a "carriage return" to screen
-    LDA cartHelperDigit+1
-    ADC #$20
-    STA cartHelperDigit+1
-    LDA cartHelperDigit
-    ADC #0
-    STA cartHelperDigit
-    LDX #0
-    STX counter ; reset index of char in line
-    LDA #___
-    :
-    STA popupTextLine1, X ; clear popupTextLine1
-    INX
-    CPX #TEXT_POPUP_LINE_LEN
-    BNE :-
-    WordToLine: ; write finished word to line
-    LDX #0
-    :
-    TXA
-    PHA
-    LDA wordBuffer, X
-    LDX counter
-    STA popupTextLine1, X
-    INC counter
-    PLA
-    TAX
-    INX
-    CPX textLineHelper
-    BNE :-
-    ClearWordBuffer:
-    LDA #0
-    STA textLineHelper ; reset index of char in word
-    LDA #___
-    LDX #0
-    :
-    STA wordBuffer, X
-    INX
-    CPX #16
-    BNE :-
-    Done:
-    LDX textLineHelper+2 ; unstash x
-    RTS
-.endproc
-
 .proc BufferDrawTopTen
     LDX #18 ; draw "The Oregon Top Ten"
     JSR StartBufferWrite
@@ -2203,5 +1824,855 @@
 
 
     JSR BufferDrawTextBox
+    RTS
+.endproc
+
+
+.proc ControllerNewGame
+    LDA buttons1
+    CMP buttons1Last
+    BNE CheckA
+    JMP Done
+    CheckA:
+        LDA #KEY_A
+        BIT buttons1
+        BNE :+
+        JMP CheckB
+        :
+        LDA menuOpen
+        CMP #MENU_NONE
+        BNE :+
+        JMP @menuNone
+        :
+        CMP #MENU_NEWGAME_TYPING
+        BNE :+
+        JMP @menuTyping
+        :
+        CMP #MENU_NEWGAME_OCCUPATION
+        BNE :+
+        JMP @menuOccupation
+        :
+        CMP #MENU_NEWGAME_STARTDATE
+        BNE :+
+        JMP @menuStartDate
+        :
+        JMP CheckB
+        @menuNone:
+            LDA fingerX ; check finger coords for "Leader" selection
+            CMP #5
+            BNE :+
+            LDA fingerY 
+            CMP #6
+            BNE :+
+            LDA #MENU_NEWGAME_TYPING
+            STA menuOpen
+            LDA #0
+            STA nameCursor
+            JMP Done
+            :
+            LDA fingerX ; check finger coords for "Occupation" selection
+            CMP #14
+            BNE :+
+            LDA fingerY 
+            CMP #6
+            BNE :+
+            LDA #0
+            STA menuCursor
+            LDA #MENU_NEWGAME_OCCUPATION
+            STA menuOpen
+            JMP Done
+            :
+            LDA fingerX ; check finger coords for "Person1" selection
+            CMP #5
+            BNE :+ 
+            LDA fingerY 
+            CMP #12
+            BNE :+  
+            LDA #MENU_NEWGAME_TYPING
+            STA menuOpen
+            LDA #4
+            STA nameCursor
+            JMP Done
+            :
+            LDA fingerX ; check finger coords for "Person2" selection
+            CMP #5
+            BNE :+ 
+            LDA fingerY 
+            CMP #14
+            BNE :+  
+            LDA #MENU_NEWGAME_TYPING
+            STA menuOpen
+            LDA #8
+            STA nameCursor
+            JMP Done
+            :
+            LDA fingerX ; check finger coords for "Person3" selection
+            CMP #15
+            BNE :+ 
+            LDA fingerY 
+            CMP #12
+            BNE :+  
+            LDA #MENU_NEWGAME_TYPING
+            STA menuOpen
+            LDA #12
+            STA nameCursor
+            JMP Done
+            :
+            LDA fingerX ; check finger coords for "Person4" selection
+            CMP #15
+            BNE :+
+            LDA fingerY 
+            CMP #14
+            BNE :+
+            LDA #MENU_NEWGAME_TYPING
+            STA menuOpen
+            LDA #16
+            STA nameCursor
+            JMP Done
+            :
+            LDA fingerX ; check finger coords for "Starting date" selection
+            CMP #5
+            BNE :+ 
+            LDA fingerY 
+            CMP #20
+            BNE :+  
+            LDA #MENU_NEWGAME_STARTDATE
+            STA menuOpen
+            :
+            JMP Done
+        @menuOccupation:
+            LDA menuCursor
+            STA occupation
+            JSR CloseSubmenu
+            JMP Done
+        @menuTyping:
+            LDA fingerX
+            CMP #21
+            BNE :+
+            LDA fingerY
+            CMP #24
+            BNE :+
+            JSR CloseSubmenu
+            JMP Done
+            :
+            LDX keyboardKey
+            LDA keyboard, X
+            LDY nameCursor
+            STA personName,Y
+            INC nameCursor
+            LDA nameCursor
+            AND #%00000011
+            BNE :+
+            DEC nameCursor
+            LDA #41         ; jump to "DONE" key
+            STA keyboardKey
+            LDA #21
+            STA fingerX
+            LDA #24
+            STA fingerY
+            :
+            JSR LoadBgNewGame ; todo: only update 1 tile (use WriteTileToBuffer?)
+            JSR DrawMenuKeyboard
+            JSR RedrawFinger
+            JMP Done
+        @menuStartDate:
+            LDA fingerX
+            CMP #6
+            BNE :+++
+            LDA fingerY
+            CMP #21
+            BNE :+
+            LDA #3 ; march
+            STA dateMonth
+            JMP @startDateDone
+            :
+            CMP #23
+            BNE :+
+            LDA #4 ; april
+            STA dateMonth
+            JMP @startDateDone
+            :
+            CMP #25
+            BNE :+
+            LDA #5 ; may
+            STA dateMonth
+            JMP @startDateDone
+            :
+            CMP #16
+            BNE :+++
+            LDA fingerY
+            CMP #21
+            BNE :+
+            LDA #6 ; june
+            STA dateMonth
+            JMP @startDateDone
+            :
+            CMP #23
+            BNE :+
+            LDA #7 ; july
+            STA dateMonth
+            JMP @startDateDone
+            :
+            CMP #25
+            BNE :+
+            LDA #8 ; august
+            STA dateMonth
+            :
+            @startDateDone:
+            JSR CloseSubmenu
+            JMP Done
+    CheckB:
+        LDA #KEY_B
+        BIT buttons1
+        BNE :+
+        JMP CheckStart
+        :
+        LDA menuOpen
+        CMP #MENU_NONE
+        BNE :+
+        JMP @menuNone
+        :
+        CMP #MENU_NEWGAME_TYPING
+        BNE :+
+        JMP @menuTyping
+        :
+        CMP #MENU_NEWGAME_OCCUPATION
+        BNE :+
+        JMP @menuOccupation
+        :
+        JMP CheckStart
+        @menuNone:
+        JMP Done
+        @menuTyping:
+        JMP Done
+        @menuOccupation:
+        JSR CloseSubmenu
+        JMP Done
+
+    CheckStart:
+        LDA #KEY_START
+        BIT buttons1
+        BNE :+
+        JMP CheckLeft
+        :
+        LDA menuOpen
+        CMP #MENU_NONE
+        BNE :+
+        JMP @menuNone
+        :
+        CMP #MENU_NEWGAME_TYPING
+        BNE :+
+        JMP @menuTyping
+        :
+        CMP #MENU_NEWGAME_OCCUPATION
+        BNE :+
+        JMP @menuOccupation
+        :
+        JMP CheckLeft
+        @menuNone:
+            JSR IncrementDate
+            JSR SetOpeningBalance
+            LDA #GAMESTATE_STORE
+            STA gameState
+            JMP Done
+        @menuTyping:
+            LDA #21
+            CMP fingerX
+            BNE :+
+            LDA #24
+            CMP fingerY
+            BNE :+
+            JSR CloseSubmenu    ; "DONE" key pressed. close keyboard
+            JMP Done
+            :
+            LDA #21             ; move finger to the "DONE" key
+            STA fingerX
+            LDA #24
+            STA fingerY
+            JMP Done
+        @menuOccupation:
+            LDA menuCursor
+            STA occupation
+            JSR CloseSubmenu
+            JMP Done
+
+    CheckLeft:
+        LDA #KEY_LEFT
+        BIT buttons1
+        BNE :+
+        JMP CheckRight
+        :
+        LDA menuOpen
+        CMP #MENU_NONE
+        BNE :+
+        JMP @menuNone
+        :
+        CMP #MENU_NEWGAME_TYPING
+        BNE :+
+        JMP @menuTyping
+        :
+        CMP #MENU_NEWGAME_OCCUPATION
+        BNE :+
+        JMP Done
+        :
+        CMP #MENU_NEWGAME_STARTDATE
+        BNE :+
+        JMP @menuStartDate
+        :
+        JMP CheckRight
+        @menuNone:
+            LDA fingerX ; check finger coords for "Leader" selection
+            CMP #5
+            BNE :+
+            LDA fingerY 
+            CMP #6
+            BNE :+
+            LDA menuOpen
+            CMP #MENU_NONE
+            BNE :+
+            LDA #14
+            STA fingerX ; move finger to "Occupation"
+            JMP Done
+            :
+            LDA fingerX ; check finger coords for "Occupation" selection
+            CMP #14
+            BNE :+
+            LDA fingerY 
+            CMP #6
+            BNE :+
+            LDA menuOpen
+            CMP #MENU_NONE
+            BNE :+
+            LDA #5
+            STA fingerX ; move finger to "Leader"
+            JMP Done
+            :
+            LDA fingerX ; check finger coords for "Person1" selection
+            CMP #5
+            BNE :+
+            LDA fingerY 
+            CMP #12
+            BNE :+
+            LDA menuOpen
+            CMP #MENU_NONE
+            BNE :+
+            LDA #15
+            STA fingerX ; move finger to "Person3"
+            JMP Done
+            :
+            LDA fingerX ; check finger coords for "Person2" selection
+            CMP #5
+            BNE :+
+            LDA fingerY 
+            CMP #14
+            BNE :+
+            LDA menuOpen
+            CMP #MENU_NONE
+            BNE :+
+            LDA #15
+            STA fingerX ; move finger to "Person4"
+            JMP Done
+            :
+            LDA fingerX ; check finger coords for "Person3" selection
+            CMP #15
+            BNE :+
+            LDA fingerY 
+            CMP #12
+            BNE :+
+            LDA menuOpen
+            CMP #MENU_NONE
+            BNE :+
+            LDA #5
+            STA fingerX ; move finger to "Person1"
+            JMP Done
+            :
+            LDA fingerX ; check finger coords for "Person4" selection
+            CMP #15
+            BNE :+
+            LDA fingerY 
+            CMP #14
+            BNE :+
+            LDA menuOpen
+            CMP #MENU_NONE
+            BNE :+
+            LDA #5
+            STA fingerX ; move finger to "Person2"
+            :
+            JMP Done
+        @menuTyping:
+            LDX fingerX
+            DEX
+            DEX
+            DEC keyboardKey
+            LDA keyboardKey
+            STA helper
+            CPX #3  ; check if we need to wrap around
+            BNE :+
+            LDX #25 ; wrap around
+            LDA keyboardKey
+            CLC
+            ADC #TEXT_KEYBOARD_LEN
+            STA helper
+            LDA fingerY
+            CMP #24 ; check if we need to wrap to the "DONE" keyboard button
+            BNE :+
+            LDX #21 ; wrap around to "DONE" keyboard button
+            LDA #41
+            STA helper
+            :
+            STX fingerX
+            LDA helper
+            STA keyboardKey
+            JMP Done
+        @menuStartDate:
+            LDA fingerX
+            CMP #6
+            BNE :+
+            LDA #16
+            STA fingerX
+            JMP Done
+            :
+            CMP #16
+            BNE :+
+            LDA #6
+            STA fingerX
+            :
+            JMP Done
+    CheckRight:
+        LDA #KEY_RIGHT
+        BIT buttons1
+        BNE :+
+        JMP CheckUp
+        :
+        LDA menuOpen
+        CMP #MENU_NONE
+        BNE :+
+        JMP @menuNone
+        :
+        CMP #MENU_NEWGAME_TYPING
+        BNE :+
+        JMP @menuTyping
+        :
+        CMP #MENU_NEWGAME_OCCUPATION
+        BNE :+
+        JMP Done
+        :
+        CMP #MENU_NEWGAME_STARTDATE
+        BNE :+
+        JMP @menuStartDate
+        :
+        JMP CheckUp
+        @menuNone:
+            LDA fingerX ; check finger coords for "Leader" selection
+            CMP #5
+            BNE :+
+            LDA fingerY 
+            CMP #6
+            BNE :+
+            LDA #14
+            STA fingerX ; move finger to "Occupation"
+            JMP Done
+            :
+            LDA fingerX ; check finger coords for "Occupation" selection
+            CMP #14
+            BNE :+
+            LDA fingerY 
+            CMP #6
+            BNE :+
+            LDA #5
+            STA fingerX ; move finger to "Leader"
+            JMP Done
+            :
+            LDA fingerX ; check finger coords for "Person1" selection
+            CMP #5
+            BNE :+
+            LDA fingerY 
+            CMP #12
+            BNE :+
+            LDA #15
+            STA fingerX ; move finger to "Person3"
+            JMP Done
+            :
+            LDA fingerX ; check finger coords for "Person2" selection
+            CMP #5
+            BNE :+
+            LDA fingerY 
+            CMP #14
+            BNE :+
+            LDA #15
+            STA fingerX ; move finger to "Person4"
+            JMP Done
+            :
+            LDA fingerX ; check finger coords for "Person3" selection
+            CMP #15
+            BNE :+
+            LDA fingerY 
+            CMP #12
+            BNE :+
+            LDA #5
+            STA fingerX ; move finger to "Person1"
+            JMP Done
+            :
+            LDA fingerX ; check finger coords for "Person4" selection
+            CMP #15
+            BNE :+
+            LDA fingerY 
+            CMP #14
+            BNE :+
+            LDA #5
+            STA fingerX ; move finger to "Person2"
+            JMP Done
+        @menuTyping:
+            LDX fingerX
+            INX
+            INX
+            INC keyboardKey
+            LDA keyboardKey
+            STA helper
+            LDA fingerY
+            CMP #24 ; check if we are on bottom row
+            BNE @wrapFingerNormallyR
+            CPX #23 ; check if we need to wrap around the "DONE" key
+            BEQ @wrapFingerR
+            @wrapFingerNormallyR:
+            CPX #27 ; check if we need to wrap around normally
+            BNE @moveFingerR
+            LDA helper
+            SEC
+            SBC #2
+            STA helper
+            @wrapFingerR:
+            LDX #5  ; wrap around
+            LDA helper
+            SEC
+            SBC #9
+            STA helper
+            @moveFingerR:
+            STX fingerX
+            LDA helper
+            STA keyboardKey
+            JMP Done
+        @menuStartDate:
+            LDA fingerX
+            CMP #6
+            BNE :+
+            LDA #16
+            STA fingerX
+            JMP Done
+            :
+            CMP #16
+            BNE :+
+            LDA #6
+            STA fingerX
+            :
+            JMP Done
+    CheckUp:
+        LDA #KEY_UP
+        BIT buttons1
+        BNE :+
+        JMP CheckDown
+        :
+        LDA menuOpen
+        CMP #MENU_NONE
+        BNE :+
+        JMP @menuNone
+        :
+        CMP #MENU_NEWGAME_TYPING
+        BNE :+
+        JMP @menuTyping
+        :
+        CMP #MENU_NEWGAME_OCCUPATION
+        BNE :+
+        JMP @menuOccupation
+        :
+        CMP #MENU_NEWGAME_STARTDATE
+        BNE :+
+        JMP @menuStartDate
+        :
+        JMP CheckDown
+        @menuNone:
+            LDA fingerX ; check finger coords for "Leader" selection
+            CMP #5
+            BNE :+
+            LDA fingerY 
+            CMP #6
+            BNE :+
+            LDA #20
+            STA fingerY ; move finger to "Starting date"
+            JMP Done
+            :
+            LDA fingerX ; check finger coords for "Occupation" selection
+            CMP #14
+            BNE :+
+            LDA fingerY 
+            CMP #6
+            BNE :+
+            LDA #5
+            STA fingerX
+            LDA #20
+            STA fingerY ; move finger to "Starting date"
+            JMP Done
+            :
+            LDA fingerX ; check finger coords for "Person1" selection
+            CMP #5
+            BNE :+
+            LDA fingerY 
+            CMP #12
+            BNE :+
+            LDA #6
+            STA fingerY ; move finger to "Leader"
+            JMP Done
+            :
+            LDA fingerX ; check finger coords for "Person2" selection
+            CMP #5
+            BNE :+
+            LDA fingerY 
+            CMP #14
+            BNE :+
+            LDA #12
+            STA fingerY ; move finger to "Person1"
+            JMP Done
+            :
+            LDA fingerX ; check finger coords for "Person3" selection
+            CMP #15
+            BNE :+
+            LDA fingerY 
+            CMP #12
+            BNE :+
+            LDA #14
+            STA fingerX
+            LDA #6
+            STA fingerY ; move finger to "Occupation"
+            JMP Done
+            :
+            LDA fingerX ; check finger coords for "Person4" selection
+            CMP #15
+            BNE :+
+            LDA fingerY 
+            CMP #14
+            BNE :+
+            LDA #12
+            STA fingerY ; move finger to "Person3"
+            JMP Done
+            :
+            LDA fingerX ; check finger coords for "Starting date" selection
+            CMP #5
+            BNE :+
+            LDA fingerY 
+            CMP #20
+            BNE :+
+            LDA #14
+            STA fingerY ; move finger to "Person2"
+            JMP Done
+            :
+            JMP CheckDown
+        @menuTyping:
+            LDX fingerY
+            DEX
+            DEX
+            LDA keyboardKey
+            SEC
+            SBC #TEXT_KEYBOARD_LEN
+            STA helper
+            CPX #16 ; check if fingerY is past top of keyboard
+            BNE @moveFingerU
+            LDA fingerX
+            CMP #23 ; check if we are in last 2 columns
+            BCC @wrapFingerU
+            LDA #21
+            STA fingerX ; wrap to the "DONE" key
+            LDA #41
+            STA helper
+            LDX #24 ; wrap to bottom of keyboard
+            JMP @moveFingerU
+            @wrapFingerU:
+            LDX #24 ; wrap to bottom of keyboard
+            LDA keyboardKey
+            CLC
+            ADC #33
+            STA helper
+            @moveFingerU:
+            STX fingerY
+            LDA helper
+            STA keyboardKey
+            JMP Done
+        @menuOccupation:
+            LDX fingerY
+            DEX
+            DEX
+            CPX #5 ; check if fingerY is past top of menu
+            BNE :+
+            LDX #21 ; wrap to bottom of menu
+            LDA #8
+            STA menuCursor
+            :
+            DEC menuCursor
+            STX fingerY
+            JMP Done
+        @menuStartDate:
+            LDX fingerY
+            DEX
+            DEX
+            CPX #19 ; check if fingerY is past top of menu
+            BNE :+
+            LDX #25 ; wrap to bottom of menu
+            :
+            STX fingerY
+            JMP Done
+    CheckDown:
+        LDA #KEY_DOWN
+        BIT buttons1
+        BNE :+
+        JMP Done
+        :
+        LDA menuOpen
+        CMP #MENU_NONE
+        BNE :+
+        JMP @menuNone
+        :
+        CMP #MENU_NEWGAME_TYPING
+        BNE :+
+        JMP @menuTyping
+        :
+        CMP #MENU_NEWGAME_OCCUPATION
+        BNE :+
+        JMP @menuOccupation
+        :
+        CMP #MENU_NEWGAME_STARTDATE
+        BNE :+
+        JMP @menuStartDate
+        :
+        JMP Done
+        @menuNone:
+            LDA fingerX ; check finger coords for "Leader" selection
+            CMP #5
+            BNE :+
+            LDA fingerY 
+            CMP #6
+            BNE :+
+            LDA #12
+            STA fingerY ; move finger to "Person1"
+            JMP Done
+            :
+            LDA fingerX ; check finger coords for "Occupation" selection
+            CMP #14
+            BNE :+
+            LDA fingerY 
+            CMP #6
+            BNE :+
+            LDA #15
+            STA fingerX
+            LDA #12
+            STA fingerY ; move finger to "Person3"
+            JMP Done
+            :
+            LDA fingerX ; check finger coords for "Person1" selection
+            CMP #5
+            BNE :+
+            LDA fingerY 
+            CMP #12
+            BNE :+
+            LDA #14
+            STA fingerY ; move finger to "Person2"
+            JMP Done
+            :
+            LDA fingerX ; check finger coords for "Person2" selection
+            CMP #5
+            BNE :+
+            LDA fingerY 
+            CMP #14
+            BNE :+
+            LDA #20
+            STA fingerY ; move finger to "Starting date"
+            JMP Done
+            :
+            LDA fingerX ; check finger coords for "Person3" selection
+            CMP #15
+            BNE :+
+            LDA fingerY 
+            CMP #12
+            BNE :+
+            LDA #14
+            STA fingerY ; move finger to "Person4"
+            JMP Done
+            :
+            LDA fingerX ; check finger coords for "Person4" selection
+            CMP #15
+            BNE :+
+            LDA fingerY 
+            CMP #14
+            BNE :+
+            LDA #5
+            STA fingerX
+            LDA #20
+            STA fingerY ; move finger to "Starting date"
+            JMP Done
+            :
+            LDA fingerX ; check finger coords for "Starting date" selection
+            CMP #5
+            BNE Done
+            LDA fingerY 
+            CMP #20
+            BNE Done
+            LDA #5
+            STA fingerX
+            LDA #6
+            STA fingerY ; move finger to "Leader"
+            JMP Done
+        @menuTyping:
+            LDX fingerY
+            INX
+            INX
+            LDA keyboardKey
+            CLC
+            ADC #11
+            STA helper
+            CPX #26 ; check if fingerY is past bottom of screen
+            BEQ @wrapFingerD
+            LDA fingerX
+            CMP #23 ; check if fingerX is in "DONE" columns
+            BCC @moveFingerD
+            CPX #24 ; check if fingerY is in 3rd row
+            BNE @moveFingerD
+            LDA #21
+            STA fingerX
+            LDA #41
+            STA helper
+            JMP @moveFingerD
+            @wrapFingerD:
+            LDX #18 ; wrap to top of screen
+            LDA keyboardKey
+            SEC
+            SBC #33
+            STA helper
+            @moveFingerD:
+            STX fingerY
+            LDA helper
+            STA keyboardKey
+            JMP Done
+        @menuOccupation:
+            LDX fingerY
+            INX
+            INX
+            CPX #23 ; check if fingerY is past bottom of menu
+            BNE :+
+            LDX #7 ; wrap to top of menu
+            LDA #$FF
+            STA menuCursor
+            :
+            INC menuCursor
+            STX fingerY
+            JMP Done
+        @menuStartDate:
+            LDX fingerY
+            INX
+            INX
+            CPX #27 ; check if fingerY is past bottom of menu
+            BNE :+
+            LDX #21 ; wrap to top of menu
+            :
+            STX fingerY
+            JMP Done
+    Done:
     RTS
 .endproc

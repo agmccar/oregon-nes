@@ -23,24 +23,27 @@
     .include "data/raw/climate.asm"
     ;.include "data/raw/rivers.asm"
     .include "data/raw/text/text.asm"
-    .include "data/compressed/text/dictionary.asm"
-    .include "data/compressed/text/talk.asm"
     .include "data/compressed/text/learn.asm"
 
 .segment "ROM2"
     .include "data/compressed/image/landmarkImageA.asm"
+    .include "data/compressed/text/talkA.asm"
 
 .segment "ROM3"
     .include "data/compressed/image/landmarkImageB.asm"
+    .include "data/compressed/text/talkB.asm"
 
 .segment "ROM4"
     .include "data/compressed/image/landmarkImageC.asm"
+    .include "data/compressed/text/talkC.asm"
 
 .segment "ROM5"
     .include "data/compressed/image/landmarkImageD.asm"
+    .include "data/compressed/text/talkD.asm"
 
 .segment "ROM6"
     .include "data/compressed/image/landmarkImageE.asm"
+    .include "data/compressed/text/talkE.asm"
     .include "data/compressed/image/mapImage.asm"
     .include "data/raw/image/suppliesImage.asm"
     .include "data/raw/image/adornmentImage.asm"
@@ -200,3 +203,5 @@ bankswitch_nosave:
 .include "code/game_helpers.asm"
 .include "code/game_init_state.asm"
 .include "code/game_gamepad.asm"
+.include "data/compressed/text/dictionary.asm"
+.include "data/compressed/text/talkPointer.asm"

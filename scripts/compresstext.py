@@ -279,7 +279,7 @@ def create_substr_dict(mass_text):
             mass_text = mass_text.replace(c,'$')
     return {k:v for k,v in substr_dict.items() if len(v)}
 
-def write_asm(filename, substr_dict, data=None):
+def write_asm(filename, substr_dict, data=None, labelPrefix=None, pointer=False, writeData=True):
     bytes_before = 0
     bytes_after = 0
     s = [0 for i in range(256)]
@@ -330,7 +330,10 @@ def write_asm(filename, substr_dict, data=None):
             bytes_after += len(substr_dict)*2
         else:
             labels = []
-            prefix = filename.split('/')[-1].split('.')[0]
+            if labelPrefix:
+                prefix = labelPrefix
+            else:
+                prefix = filename.split('/')[-1].split('.')[0]
             for loc in data:
                 len_i = 3 if 'talk' in filename else 1
                 for i in range(len_i):
@@ -338,21 +341,23 @@ def write_asm(filename, substr_dict, data=None):
                     if len_i>1:
                         label += f"{i+1}"
                     labels.append(label)
-                    f.write(f"{label}:\n")
-                    f.write(f"    ; {len(data[loc][i]['bytes'].split(','))} bytes\n")
-                    #w = textwrap.wrap(data[loc][i]['bytes'].replace(',',', '),width=70)
-                    w = data[loc][i]['quote_byte_segments']
-                    for j in w:
-                        j = j.replace(' ','')
-                        if j[-1] == ',':
-                            j = j[:-1]
-                        f.write(f"    .byte {j}\n")
-                    f.write("\n")
-                    bytes_before += len(data[loc][i]['quote_raw'])+len(data[loc][i]['speaker_raw'])
-                    bytes_after += len(data[loc][i]['bytes'].split(','))
-            f.write(f"{prefix}Pointer:\n")
-            for label in labels:
-                f.write(f"    .byte <{label},>{label}\n")
+                    if writeData:
+                        f.write(f"{label}:\n")
+                        f.write(f"    ; {len(data[loc][i]['bytes'].split(','))} bytes\n")
+                        #w = textwrap.wrap(data[loc][i]['bytes'].replace(',',', '),width=70)
+                        w = data[loc][i]['quote_byte_segments']
+                        for j in w:
+                            j = j.replace(' ','')
+                            if j[-1] == ',':
+                                j = j[:-1]
+                            f.write(f"    .byte {j}\n")
+                        f.write("\n")
+                        bytes_before += len(data[loc][i]['quote_raw'])+len(data[loc][i]['speaker_raw'])
+                        bytes_after += len(data[loc][i]['bytes'].split(','))
+            if pointer:
+                f.write(f"{prefix}Pointer:\n")
+                for label in labels:
+                    f.write(f"    .byte <{label},>{label}\n")
     if bytes_before:
         print(f"Text\n* bytes to pack: {bytes_before}")
         print(f"* Compressed size: {bytes_after}")
@@ -395,7 +400,18 @@ def main(args):
             talk_data[loc][i]['quote_byte_segments'].append("$00") # end of section
             b.append("$00") 
             talk_data[loc][i]['bytes'] = ",".join(b)
-    write_asm('src/data/compressed/text/talk.asm', substr_dict, data=talk_data)
+    # write_asm('src/data/compressed/text/talk.asm', substr_dict, data=talk_data)
+    write_asm('src/data/compressed/text/talkPointer.asm', substr_dict, data=talk_data, pointer=True, writeData=False, labelPrefix="talk")
+    talk_dataA = {i:talk_data[i] for i in [j for j in talk_data][:4]}
+    talk_dataB = {i:talk_data[i] for i in [j for j in talk_data][4:8]}
+    talk_dataC = {i:talk_data[i] for i in [j for j in talk_data][8:12]}
+    talk_dataD = {i:talk_data[i] for i in [j for j in talk_data][12:16]}
+    talk_dataE = {i:talk_data[i] for i in [j for j in talk_data][16:]}
+    write_asm('src/data/compressed/text/talkA.asm', substr_dict, data=talk_dataA, labelPrefix="talk")
+    write_asm('src/data/compressed/text/talkB.asm', substr_dict, data=talk_dataB, labelPrefix="talk")
+    write_asm('src/data/compressed/text/talkC.asm', substr_dict, data=talk_dataC, labelPrefix="talk")
+    write_asm('src/data/compressed/text/talkD.asm', substr_dict, data=talk_dataD, labelPrefix="talk")
+    write_asm('src/data/compressed/text/talkE.asm', substr_dict, data=talk_dataE, labelPrefix="talk")
 
     for page in learn_data:
         #pp.pprint(learn_data)
@@ -414,7 +430,7 @@ def main(args):
             learn_data[page][i]['bytes'] = ",".join(b)
     #pp.pprint(learn_data)
     #input()
-    write_asm('src/data/compressed/text/learn.asm', substr_dict, data=learn_data)
+    write_asm('src/data/compressed/text/learn.asm', substr_dict, data=learn_data, pointer=True)
 
     #print(HLENS[HLENS.index(max([i for i in HLENS]))])
 

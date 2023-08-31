@@ -1918,3 +1918,390 @@
     JSR EndBufferWrite
     RTS
 .endproc
+
+.proc BufferDrawTalkText
+    LDA location ; get memory location of compressed talk text
+    ASL
+    CLC
+    ADC talkOption
+    ADC talkOption
+    TAX
+    LDA talkPointer, X
+    STA pointer
+    INX
+    LDA talkPointer, X
+    STA pointer+1
+    LDA #$20 ; PPU address - start at top left
+    STA cartHelperDigit
+    LDA #$E4
+    STA cartHelperDigit+1
+
+    LDA location ; bankswitch to get text data
+    LSR
+    LSR
+    CLC
+    ADC #2
+    TAY
+    JSR bankswitch_y
+
+    JSR BufferDrawText
+    LDY #1
+    JSR bankswitch_y
+
+    INC talkOption ; increment talkOption
+    LDA talkOption
+    CMP #3
+    BNE :+
+    LDA #0
+    STA talkOption
+    :
+    RTS
+.endproc
+
+.proc BufferDrawText
+    LDY #0 ; decompress and draw talk text
+    STY counter
+    STY textLineHelper+3
+    LDA #0 ; clear talkTextBuffer, textLineHelper
+    LDX #0
+    :
+    STA talkTextBuffer, X
+    CPX #TEXT_POPUP_LINE_LEN
+    BCS :+
+    STA textLineHelper, X
+    :
+    INX
+    CPX #32
+    BNE :--
+    LDX #0 ; clear popupTextLine1
+    LDA #___
+    :
+    STA popupTextLine1, X
+    INX
+    CPX #TEXT_POPUP_LINE_LEN
+    BNE :-
+    LDA #0
+    STA textLineHelper ; reset index of char in word
+    NextSegment:
+    LDX #0
+    STX counter+1 ; reset talkTextBuffer index
+    LDA (pointer), Y ; read first header byte
+    BNE :+
+    JMP Done
+    :
+    AND #$0f
+    STA helper ; punctuation type
+    LDA (pointer), Y
+    LSR
+    LSR
+    LSR
+    LSR
+    STA helper+1 ; remaining header length
+    JSR IncrementPointerY
+    LDX #0 ; read word length header bytes
+    STX counter+1 ; talkTextBuffer index
+    :
+    TXA
+    PHA
+    LDA (pointer), Y
+    LSR
+    LSR
+    LSR
+    LSR
+    LDX counter+1
+    STA talkTextBuffer, X ; stash word lengths
+    INC counter+1
+    INX
+    LDA (pointer), Y
+    AND #$0f
+    STA talkTextBuffer, X
+    INC counter+1
+    PLA
+    TAX
+    JSR IncrementPointerY
+    INX
+    CPX helper+1
+    BNE :-
+    LDA #0
+    LDX counter+1
+    STA talkTextBuffer, X
+    LDX #0 ; begin decompress segment payload
+    STX helper2 ; storage for extra letter. starts empty
+    NextWord:
+    LDA talkTextBuffer, X
+    STA helper+1 ; character length of next word
+    BNE SameSegment
+    TXA ; done with segment
+    PHA ; stash talkTextBuffer index
+    LDA helper
+    BEQ :+
+    DEC counter ; punctuation
+    LDX counter
+    CLC
+    ADC #_CM-1
+    JSR WriteTextChar ; replace last space with punctuation mark
+    JMP NewSpace
+    :
+    TYA ; "tells you:"
+    PHA
+
+    LDX counter
+    LDA #___
+    JSR WriteTextChar
+    DEC counter
+    LDY #0
+    :
+    LDA talkTellsYou, Y
+    JSR WriteTextChar
+    LDA talkTellsYou, Y
+    INX
+    INY
+    CPY #10
+    BNE :-
+
+    LDX counter
+    LDA #___
+    :
+    JSR WriteTextChar
+    INX
+    CPX #TEXT_POPUP_LINE_LEN
+    BNE :-
+
+    DEC counter
+    LDX counter
+    LDA #___
+    :
+    JSR WriteTextChar
+    INX
+    CPX #TEXT_POPUP_LINE_LEN
+    BNE :-
+    
+    LDA #1
+    STA textLineHelper+3 ; flag for 1 literal char
+    LDA #_QT
+    JSR WriteTextChar
+    PLA
+    TAY
+    PLA
+    TAX ; unstash talkTextBuffer index
+    JMP NextSegment
+    NewSpace:
+    LDA #___
+    JSR WriteTextChar ; write new space
+    PLA
+    TAX ; unstash talkTextBuffer index
+    JMP NextSegment
+    SameSegment:
+    TXA
+    PHA ; stash talkTextBuffer index
+    LDX counter
+    LDA helper2 ; check if extra letter is stashed
+    BEQ NextDataByte
+    JSR WriteTextChar
+    LDA #0
+    STA helper2
+    LDA helper+1
+    BNE NextDataByte
+    JMP Space
+    NextDataByte:
+    LDA (pointer), Y
+    CMP #LITERAL_CHAR
+    BCC DictLookup
+    CMP #LITERAL_CHAR+26
+    BCC LiteralAZ
+    SEC
+    SBC #LITERAL_CHAR+26
+    TAX
+    LDA talkSpecialChar, X
+    JSR WriteTextChar
+    JSR IncrementPointerY
+    JMP Space
+    LiteralAZ:
+    SEC ; literal A-Z character
+    SBC #LITERAL_CHAR
+    JSR LetterNumToTileIndex
+    JSR WriteTextChar
+    JSR IncrementPointerY
+    JMP Space
+
+    DictLookup: ; dictionary lookup
+    STA helper2+1 ; stash (dictionary index+1)
+    DEC helper2+1 ; dictionary index+0
+    TYA
+    PHA ; stash Y
+    LDA pointer ; stash pointer
+    STA cartHelperDigit+2
+    LDA pointer+1
+    STA cartHelperDigit+3
+    LDA #<talkDictionary ; location of dictionary
+    STA pointer
+    LDA #>talkDictionary
+    STA pointer+1
+    LDY #0 ; get location of dictionary lookup result
+    :
+    CLC
+    LDA pointer
+    ADC helper2+1
+    STA pointer
+    LDA pointer+1
+    ADC #0
+    STA pointer+1
+    INY
+    CPY #2
+    BNE :-
+    LDY #0
+    LDA (pointer), Y ; first char of dict lookup result
+    JSR WriteTextChar
+    JSR IncrementPointerY
+    LDA helper+1
+    BNE :+
+    LDA (pointer), Y ; stash 2nd char for next word, done with this word
+    STA helper2
+    JMP :++
+    :
+    LDA (pointer), Y ; second char of dict lookup result
+    JSR WriteTextChar
+    :
+    PLA ; unstash Y
+    TAY
+    LDA cartHelperDigit+2 ; unstash pointer
+    STA pointer
+    LDA cartHelperDigit+3
+    STA pointer+1
+    JSR IncrementPointerY
+    ;JMP Space
+    Space:
+    LDA helper+1
+    CMP #0
+    BNE :+
+    LDA #___
+    JSR WriteTextChar
+    PLA
+    TAX ; unstash talkTextBuffer index
+    INX
+    JMP NextWord
+    :
+    JMP NextDataByte
+    
+    Done:
+    LDA menuOpen
+    CMP #MENU_TALK
+    BNE :+
+    LDA #1
+    STA textLineHelper+3 ; flag for 1 literal char
+    LDA #_QT
+    JSR WriteTextChar
+    :
+
+    LDX counter
+    JSR StartBufferWrite
+        LDA counter
+        JSR WriteByteToBuffer
+        LDA cartHelperDigit
+        JSR WriteByteToBuffer
+        LDA cartHelperDigit+1
+        JSR WriteByteToBuffer
+        LDX #0
+        :
+        LDA popupTextLine1, X
+        JSR WriteByteToBuffer
+        INX
+        CPX counter
+        BNE :-
+    JSR EndBufferWrite
+    RTS
+.endproc
+
+.proc WriteTextChar
+    PHA
+    STX textLineHelper+2 ; stash x
+    LDA textLineHelper+3 ; check single char flag
+    BEQ :+
+    LDA #0
+    STA textLineHelper+3
+    PLA
+    DEC counter
+    LDX counter
+    STA popupTextLine1, X
+    INC counter
+    JMP Done
+    :
+    PLA
+    LDX textLineHelper ; index of char in word
+    STA wordBuffer, X
+    INC textLineHelper
+    CMP #___ ; check if there are more characters to write
+    BEQ :+
+    DEC helper+1 ; remaining chars in word
+    JMP Done
+    :
+    LDA counter ; word is done
+    CLC
+    ADC textLineHelper ; add length of word to length of text line
+    CMP #TEXT_POPUP_LINE_LEN ; check if there is space in text line for word
+    BCS :+
+    JMP WordToLine
+    :
+    TYA ; no more room in line
+    PHA ; stash Y
+    LDX #TEXT_POPUP_LINE_LEN ; write line to screen
+    JSR StartBufferWrite
+        LDA #TEXT_POPUP_LINE_LEN
+        JSR WriteByteToBuffer
+        LDA cartHelperDigit
+        JSR WriteByteToBuffer
+        LDA cartHelperDigit+1
+        JSR WriteByteToBuffer
+        LDX #0
+        :
+        LDA popupTextLine1, X
+        JSR WriteByteToBuffer
+        INX
+        CPX #TEXT_POPUP_LINE_LEN
+        BNE :-
+    JSR EndBufferWrite
+    PLA ; unstash Y
+    TAY
+    CLC ; write a "carriage return" to screen
+    LDA cartHelperDigit+1
+    ADC #$20
+    STA cartHelperDigit+1
+    LDA cartHelperDigit
+    ADC #0
+    STA cartHelperDigit
+    LDX #0
+    STX counter ; reset index of char in line
+    LDA #___
+    :
+    STA popupTextLine1, X ; clear popupTextLine1
+    INX
+    CPX #TEXT_POPUP_LINE_LEN
+    BNE :-
+    WordToLine: ; write finished word to line
+    LDX #0
+    :
+    TXA
+    PHA
+    LDA wordBuffer, X
+    LDX counter
+    STA popupTextLine1, X
+    INC counter
+    PLA
+    TAX
+    INX
+    CPX textLineHelper
+    BNE :-
+    ClearWordBuffer:
+    LDA #0
+    STA textLineHelper ; reset index of char in word
+    LDA #___
+    LDX #0
+    :
+    STA wordBuffer, X
+    INX
+    CPX #16
+    BNE :-
+    Done:
+    LDX textLineHelper+2 ; unstash x
+    RTS
+.endproc
