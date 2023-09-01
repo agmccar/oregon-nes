@@ -103,8 +103,14 @@
     CheckDown:
         LDA #KEY_DOWN
         BIT buttons1
-        BNE MainMoveDown ; hack
+        BNE :+ ; hack
         JMP CheckUp
+        :
+        LDA menuOpen
+        CMP #MENU_NONE
+        BEQ :+
+        JMP Done
+        :
         MainMoveDown:
         LDX fingerY
         INX
@@ -120,6 +126,11 @@
         BIT buttons1
         BNE :+
         JMP CheckLeft
+        :
+        LDA menuOpen
+        CMP #MENU_NONE
+        BEQ :+
+        JMP Done
         :
         LDX fingerY
         DEX

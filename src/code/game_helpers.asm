@@ -324,10 +324,10 @@
     EOR #1
     STA menuCursor
     BNE :+
-    LDA #_Y_
+    LDA #_N_
     JMP :++
     :
-    LDA #_N_
+    LDA #_Y_
     :
     LDX fingerX
     LDY fingerY
