@@ -450,14 +450,54 @@ topTenRating:
     .byte $0b,$b8,_A_,_D_,_V_,_E_,_N_,_T_,_U_,_R_,_E_,_R_,___
     .byte $00,$00,_G_,_R_,_E_,_E_,_N_,_H_,_O_,_R_,_N_,___,___
 
-topTenHeader:
+topTenHeaderText:
     .byte _T_,_H_,_E_,___,_O_,_R_,_E_,_G_,_O_,_N_,___,_T_,_O_,_P_,___,_T_,_E_,_N_
 
-topTenColumns:
+topTenColumnText:
     .byte _N_,_A_,_M_,_E_
     .byte _P_,_O_,_I_,_N_,_T_,_S_
     .byte _R_,_A_,_T_,_I_,_N_,_G_
 
-topTenQuestion:
+topTenQuestionText:
     .byte _W_,_O_,_U_,_L_,_D_,___,_Y_,_O_,_U_,___,_L_,_I_,_K_,_E_,___,_T_,_O_,___,_S_,_E_,_E_
     .byte _H_,_O_,_W_,___,_P_,_T_,_S_,___,_A_,_R_,_E_,___,_E_,_A_,_R_,_N_,_E_,_D_,_QU
+
+topTenHelpText:
+    .byte _O_,_N_,___,_A_,_R_,_R_,_I_,_V_,_I_,_N_,_G_,___,_I_,_N_,___,_O_,_R_,_E_,_G_,_O_,_N_
+    .byte _H_,_E_,_A_,_L_,_T_,_H_
+    .byte _R_,_E_,_S_,_O_,_U_,_R_,_C_,_E_,_S_
+    .byte _O_,_F_,___,_P_,_A_,_R_,_T_,_Y_
+    .byte _P_,_O_,_I_,_N_,_T_,_S_,___,_P_,_E_,_R_
+    .byte _P_,_E_,_R_,_S_,_O_,_N_
+    .byte _I_,_T_,_E_,_M_
+
+topTenResourcesText:
+    .byte _W_,_A_,_G_,_O_,_N_
+    .byte _O_,_X_
+    .byte _S_,_P_,_A_,_R_,_E_,___,_W_,_A_,_G_,_O_,_N_,___,_P_,_A_,_R_,_T_
+    .byte _S_,_E_,_T_,___,_O_,_F_,___,_C_,_L_,_O_,_T_,_H_,_I_,_N_,_G_
+    .byte _B_,_U_,_L_,_L_,_E_,_T_,_S_
+    .byte _F_,_O_,_O_,_D_
+    .byte _C_,_A_,_S_,_H_
+
+topTenResourcesEachText:
+    .byte _E_,_A_,_C_,_H_
+    .byte _5_,_0_
+    .byte _2_,_5_,___,_LB
+    .byte _DL,_5_,_00
+    
+
+; Health of Party   Points per Person
+; good              500
+; fair              400
+; poor              300
+; very poor         200
+
+; Resources of Party      Points per Item
+; wagons                  50
+; ox                      4
+; spare wagon part        2
+; set of clothing         2
+; bullets (each 50)       1
+; food (each 25 pounds)   1
+; cash (each 5 dollars)   1

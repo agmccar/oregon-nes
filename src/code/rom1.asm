@@ -1612,7 +1612,7 @@
         JSR WriteByteToBuffer
         LDX #0
         :
-        LDA topTenHeader, X
+        LDA topTenHeaderText, X
         JSR WriteByteToBuffer
         INX
         CPX #18
@@ -1631,7 +1631,7 @@
         JSR WriteByteToBuffer
         LDX #0
         :
-        LDA topTenColumns, X
+        LDA topTenColumnText, X
         JSR WriteByteToBuffer
         INX
         CPX #4
@@ -1649,7 +1649,7 @@
         JSR WriteByteToBuffer
         LDX #4
         :
-        LDA topTenColumns, X
+        LDA topTenColumnText, X
         JSR WriteByteToBuffer
         INX
         CPX #10
@@ -1667,7 +1667,7 @@
         JSR WriteByteToBuffer
         LDX #10
         :
-        LDA topTenColumns, X
+        LDA topTenColumnText, X
         JSR WriteByteToBuffer
         INX
         CPX #16
@@ -1808,14 +1808,14 @@
     BNE :-
     LDX #0
     :
-    LDA topTenQuestion, X
+    LDA topTenQuestionText, X
     STA popupTextLine1, X
     INX
     CPX #21 ; len("Would you like to see")
     BNE :-
     LDY #0
     :
-    LDA topTenQuestion, X
+    LDA topTenQuestionText, X
     STA popupTextLine2, Y
     INX
     INY
