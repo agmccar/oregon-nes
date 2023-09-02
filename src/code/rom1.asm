@@ -1584,7 +1584,56 @@
     RTS
 .endproc
 
-.proc BufferDrawLearnText
+.macro BufferStart_ len, addrHi, addrLo
+    LDX len
+    JSR StartBufferWrite
+    LDA len
+    JSR WriteByteToBuffer
+    LDA addrHi
+    JSR WriteByteToBuffer
+    LDA addrLo
+    JSR WriteByteToBuffer
+.endmacro
+
+.proc BufferDrawTitleLearn
+    BufferStart_ #6, #$23, #$e1 ; clear attr
+        LDA #$ff
+        LDX #6
+        :
+        JSR WriteByteToBuffer
+        DEX
+        BNE :-
+    JSR EndBufferWrite
+
+    LDX #14 ; clear 14 rows of tiles
+    LDA #$21
+    STA pointer+1
+    LDA #$40
+    STA pointer
+    Line:
+    TXA
+    PHA
+    BufferStart_ #$20, pointer+1, pointer
+        LDX #0
+        LDA #___
+        :
+        JSR WriteByteToBuffer
+        INX
+        CPX #$20
+        BNE :-
+    JSR EndBufferWrite
+    CLC
+    LDA pointer
+    ADC #$20
+    STA pointer
+    LDA pointer+1
+    ADC #0
+    STA pointer+1
+    PLA
+    TAX
+    DEX
+    BNE Line
+
     LDA menuCursor
     ASL
     TAX
@@ -1598,6 +1647,87 @@
     LDA #$64
     STA cartHelperDigit+1
     JSR BufferDrawText
+
+    LDA menuCursor
+    CMP #5 ; "Adjust your monitor" page
+    BEQ :+
+    JMP Done
+    :
+    BufferStart_ #TEXT_POPUP_LINE_LEN, #$22, #$a4
+        LDX #0 ; colors text
+        :
+        LDA titleColorsText, X
+        JSR WriteByteToBuffer
+        INX
+        CPX #TEXT_POPUP_LINE_LEN
+        BNE :-
+    JSR EndBufferWrite
+    
+    LDA #$22 ; color squares
+    STA pointer
+    LDA #$04
+    STA pointer+1
+    LDX #4
+    ColorSquares:
+    TXA
+    PHA
+    BufferStart_ #24, pointer, pointer+1
+        LDX #4
+        LDA #TILE_LIGHT_SQ
+        STA helper
+        @sq:
+        TXA
+        PHA
+        LDA #0
+        JSR WriteByteToBuffer
+        LDX #4
+        :
+        LDA helper
+        JSR WriteByteToBuffer
+        DEX
+        BNE :-
+        LDA #0
+        JSR WriteByteToBuffer
+        PLA
+        TAX
+        CPX #4
+        BCS :+
+        LDA #TILE_DARK_SQ
+        STA helper
+        :
+        DEX
+        BNE @sq
+    JSR EndBufferWrite
+    CLC
+    LDA pointer+1
+    ADC #$20
+    STA pointer+1
+    LDA pointer
+    ADC #0
+    STA pointer
+    PLA
+    TAX
+    DEX
+    BNE ColorSquares
+    
+    BufferStart_ #6, #$23, #$e1 ; colorsquare attributes 
+        LDA #0
+        JSR WriteByteToBuffer
+        LDA #%10001000
+        JSR WriteByteToBuffer
+        LDA #$aa
+        JSR WriteByteToBuffer
+        JSR WriteByteToBuffer
+        LDA #%00100010
+        JSR WriteByteToBuffer
+        LDA #0
+        JSR WriteByteToBuffer
+    JSR EndBufferWrite
+
+    ; Todo: "Control-S key" (page 7)
+
+    Done:
+    JSR BufferDrawPressStart
     RTS
 .endproc
 
@@ -1826,7 +1956,6 @@
     JSR BufferDrawTextBox
     RTS
 .endproc
-
 
 .proc ControllerNewGame
     LDA buttons1

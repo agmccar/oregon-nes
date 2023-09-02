@@ -160,6 +160,7 @@
 
 - [ ] use `.charmap` instead of `_T_,_H_,_I_,_S_,___,_N_,_O_,_N_,_S_,_E_,_N_,_S_,_E_`
 - [x] move text data to banks 2-6 + move decompression code to bank 7
+- [ ] ROM1 use meaningful filenames instead of `rom1.asm`
 
 ## Graphics (general)
 

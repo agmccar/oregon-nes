@@ -1074,3 +1074,66 @@
     JSR BufferDrawPressStart
     RTS
 .endproc
+
+.proc DrawTopTenHelp
+    JSR ClearScreen
+    LDA menuCursor
+    CMP #5
+    BNE :+
+    JMP Done
+    :
+    CMP #3
+    BNE :+
+    LDY #6
+    JSR bankswitch_y
+    JSR DrawAdornments
+    LDY #1
+    JSR bankswitch_y
+    :
+    LDX #21
+    JSR StartBufferWrite ; "On Arriving In Oregon"
+        LDA #21
+        JSR WriteByteToBuffer
+        LDA #$20
+        JSR WriteByteToBuffer
+        LDA #$85
+        JSR WriteByteToBuffer
+        LDX #0
+        :
+        LDA topTenHelpText, X
+        JSR WriteByteToBuffer
+        INX
+        CPX #21
+        BNE :-
+    JSR EndBufferWrite
+
+    DEC menuCursor
+    LDA menuCursor
+    ASL
+    TAX
+    INC menuCursor
+    LDA top10Pointer, X
+    STA pointer
+    INX
+    LDA top10Pointer, X
+    STA pointer+1
+    LDA #$20
+    STA cartHelperDigit
+    LDA #$C4
+    STA cartHelperDigit+1
+    LDA menuCursor
+    CMP #3
+    BNE :+
+    CLC
+    LDA cartHelperDigit+1
+    ADC #$80
+    STA cartHelperDigit+1
+    LDA cartHelperDigit
+    ADC #0
+    STA cartHelperDigit
+    :
+    JSR BufferDrawText
+    
+    Done:
+    RTS
+.endproc

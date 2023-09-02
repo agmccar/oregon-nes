@@ -217,6 +217,8 @@ def compress_segment(segment, substr_dict):
 
     # Header length nibble (second half of first header byte)
     header_bytes[0] = f"${hex(len(header_bytes[1:]))[2:]}"+header_bytes[0]
+    if len(hex(len(header_bytes[1:]))[2:]) > 1:
+        raise Exception(f"Too many header bytes in segment: {segment}")
 
     # Verify header bytes
     header = ','.join(header_bytes)
@@ -365,26 +367,33 @@ def write_asm(filename, substr_dict, data=None, labelPrefix=None, pointer=False,
 
 def main(args):
     verbose = args.verbose
-    talk_data = parse_raw_text('src/data/raw/text/talk.txt')
-    learn_data = parse_raw_text('src/data/raw/text/learn.txt')
+    # DRY: Do Repeat Yourself!
     mass_text = ""
+    talk_data = parse_raw_text('src/data/raw/text/talk.txt')
     for loc in talk_data:
         for i in range(len(talk_data[loc])):
             segments = text_to_segments(talk_data[loc][i]['quote_raw'])
             talk_data[loc][i]['quote_segments'] = segments
             for segment in segments:
                 mass_text += squish_segment(segment)
-    
+    learn_data = parse_raw_text('src/data/raw/text/learn.txt')
     for loc in learn_data:
         for i in range(len(learn_data[loc])):
             segments = text_to_segments(learn_data[loc][i]['quote_raw'])
             learn_data[loc][i]['quote_segments'] = segments
             for segment in segments:
                 mass_text += squish_segment(segment)
-
+    top10_data = parse_raw_text('src/data/raw/text/top10.txt')
+    for loc in top10_data:
+        for i in range(len(top10_data[loc])):
+            segments = text_to_segments(top10_data[loc][i]['quote_raw'])
+            top10_data[loc][i]['quote_segments'] = segments
+            for segment in segments:
+                mass_text += squish_segment(segment)
     substr_dict = create_substr_dict(mass_text)
     write_asm('src/data/compressed/text/dictionary.asm',substr_dict)
 
+    # 'talk' text
     for loc in talk_data:
         for i in range(len(talk_data[loc])):
             b = []
@@ -400,7 +409,6 @@ def main(args):
             talk_data[loc][i]['quote_byte_segments'].append("$00") # end of section
             b.append("$00") 
             talk_data[loc][i]['bytes'] = ",".join(b)
-    # write_asm('src/data/compressed/text/talk.asm', substr_dict, data=talk_data)
     write_asm('src/data/compressed/text/talkPointer.asm', substr_dict, data=talk_data, pointer=True, writeData=False, labelPrefix="talk")
     talk_dataA = {i:talk_data[i] for i in [j for j in talk_data][:4]}
     talk_dataB = {i:talk_data[i] for i in [j for j in talk_data][4:8]}
@@ -413,8 +421,8 @@ def main(args):
     write_asm('src/data/compressed/text/talkD.asm', substr_dict, data=talk_dataD, labelPrefix="talk")
     write_asm('src/data/compressed/text/talkE.asm', substr_dict, data=talk_dataE, labelPrefix="talk")
 
+    # 'learn' text
     for page in learn_data:
-        #pp.pprint(learn_data)
         for i in range(len(learn_data[page])):
             b = []
             segments = text_to_segments(learn_data[page][i]['quote_raw'])
@@ -428,11 +436,25 @@ def main(args):
             learn_data[page][i]['quote_byte_segments'].append("$00") # end of section
             b.append("$00") 
             learn_data[page][i]['bytes'] = ",".join(b)
-    #pp.pprint(learn_data)
-    #input()
     write_asm('src/data/compressed/text/learn.asm', substr_dict, data=learn_data, pointer=True)
 
-    #print(HLENS[HLENS.index(max([i for i in HLENS]))])
+    # 'top10' text
+    for page in top10_data:
+        for i in range(len(top10_data[page])):
+            b = []
+            segments = text_to_segments(top10_data[page][i]['quote_raw'])
+            top10_data[page][i]['quote_byte_segments'] = []
+            for segment in segments:
+                if args.verbose:
+                    print(f"Compressing segment: {segment}")
+                bs = compress_segment(segment, substr_dict)
+                top10_data[page][i]['quote_byte_segments'].append(bs)
+                b.append(bs)
+            top10_data[page][i]['quote_byte_segments'].append("$00") # end of section
+            b.append("$00") 
+            top10_data[page][i]['bytes'] = ",".join(b)
+    write_asm('src/data/compressed/text/top10.asm', substr_dict, data=top10_data, pointer=True)
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()

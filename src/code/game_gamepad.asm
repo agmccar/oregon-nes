@@ -68,6 +68,18 @@
             STA menuOpen
             JMP Done
         @menuTitleTopTen:
+            LDA menuCursor
+            BEQ :++
+            JSR DrawTopTenHelp
+            INC menuCursor
+            LDA menuCursor
+            CMP #5
+            BEQ :+
+            JMP Done
+            :
+            LDA #0
+            STA menuCursor
+            :
             LDA #MENU_NONE
             STA menuOpen
             JMP Done

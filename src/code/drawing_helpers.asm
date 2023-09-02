@@ -1052,6 +1052,23 @@
     CPX #8
     BNE :-
 
+    LDA gameState
+    CMP #GAMESTATE_TITLE
+    BNE :++
+    LDA PPUSTATUS
+    LDA #$23
+    STA PPUADDR
+    LDA #$c8
+    STA PPUADDR
+    LDA #$af
+    LDX #0
+    :
+    STA PPUDATA
+    INX
+    CPX #8
+    BNE :-
+    :
+
     LDA PPUSTATUS
     LDA #$23
     STA PPUADDR

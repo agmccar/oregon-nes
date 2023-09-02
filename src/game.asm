@@ -12,7 +12,7 @@
 
 .segment "ROM0"
     .include "tiles.asm"
-    .include "data/raw/text/top10.asm"
+    .include "data/raw/text/top10default.asm"
 
 .segment "ROM1"
     .include "code/rom1.asm"
@@ -24,6 +24,7 @@
     ;.include "data/raw/rivers.asm"
     .include "data/raw/text/text.asm"
     .include "data/compressed/text/learn.asm"
+    .include "data/compressed/text/top10.asm"
 
 .segment "ROM2"
     .include "data/compressed/image/landmarkImageA.asm"
