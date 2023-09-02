@@ -464,9 +464,9 @@ topTenQuestionText:
 
 topTenHelpText:
     .byte _O_,_N_,___,_A_,_R_,_R_,_I_,_V_,_I_,_N_,_G_,___,_I_,_N_,___,_O_,_R_,_E_,_G_,_O_,_N_
-    .byte _H_,_E_,_A_,_L_,_T_,_H_
-    .byte _R_,_E_,_S_,_O_,_U_,_R_,_C_,_E_,_S_
-    .byte _O_,_F_,___,_P_,_A_,_R_,_T_,_Y_
+    .byte _H_,_E_,_A_,_L_,_T_,_H_,___,_O_,_F_
+    .byte _R_,_E_,_S_,_O_,_U_,_R_,_C_,_E_,_S_,___,_O_,_F_
+    .byte _P_,_A_,_R_,_T_,_Y_
     .byte _P_,_O_,_I_,_N_,_T_,_S_,___,_P_,_E_,_R_
     .byte _P_,_E_,_R_,_S_,_O_,_N_
     .byte _I_,_T_,_E_,_M_

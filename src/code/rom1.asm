@@ -1757,7 +1757,7 @@
         JSR WriteByteToBuffer
         LDA #$c4
         JSR WriteByteToBuffer
-        LDA #$48 ; vert line
+        LDA #TILE_COL_HEADER ; vert line
         JSR WriteByteToBuffer
         LDX #0
         :
@@ -1775,7 +1775,7 @@
         JSR WriteByteToBuffer
         LDA #$cc
         JSR WriteByteToBuffer
-        LDA #$48 ; vert line
+        LDA #TILE_COL_HEADER ; vert line
         JSR WriteByteToBuffer
         LDX #4
         :
@@ -1793,7 +1793,7 @@
         JSR WriteByteToBuffer
         LDA #$d4
         JSR WriteByteToBuffer
-        LDA #$48 ; vert line
+        LDA #TILE_COL_HEADER ; vert line
         JSR WriteByteToBuffer
         LDX #10
         :

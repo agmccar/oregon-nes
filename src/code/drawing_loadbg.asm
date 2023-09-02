@@ -1133,6 +1133,47 @@
     STA cartHelperDigit
     :
     JSR BufferDrawText
+
+    LDA menuCursor
+    CMP #1
+    BNE :+
+    LDA #$23
+    STA pointer
+    LDA #$e0
+    STA pointer+1
+    LDA #$f5
+    STA helper
+    JMP ColorColumnHeaders
+    :
+    CMP #2
+    BNE :+
+    LDA #$23
+    STA pointer
+    LDA #$d8
+    STA pointer+1
+    LDA #$5f
+    STA helper
+    JMP ColorColumnHeaders
+    :
+    JMP Done
+
+    ColorColumnHeaders:
+    LDX #8
+    JSR StartBufferWrite ; color column headers
+        LDA #8
+        JSR WriteByteToBuffer
+        LDA pointer
+        JSR WriteByteToBuffer
+        LDA pointer+1
+        JSR WriteByteToBuffer
+        LDX #0
+        :
+        LDA helper
+        JSR WriteByteToBuffer
+        INX
+        CPX #8
+        BNE :-
+    JSR EndBufferWrite
     
     Done:
     RTS
