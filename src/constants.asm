@@ -101,7 +101,7 @@ _CP = 207 ; )
 TILE_GRASS = $ff
 TILE_DARK_SQ = $1c ; dark square if "adornment" is loaded into pattern B
 TILE_LIGHT_SQ = $1d ; light square "
-TILE_COL_HEADER = #$48 ; hack to improve some column headers' readability
+TILE_COL_HEADER = $48 ; hack to improve some column headers' readability
 
 ; Length (in characters) of HUD elements
 TEXT_MAINMENU_LEN   = 19  ; main menu options
