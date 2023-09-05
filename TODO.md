@@ -57,7 +57,7 @@
 - [ ] gravestones
     - [ ] preserve gravestone data on soft resets
 - [x] event queue
-- [ ] random events (sans graphics)
+- [ ] random events logic
   - [x] Indians help find food
   - [x] Severe thunderstorm
   - [x] Severe blizzard
@@ -130,6 +130,8 @@
 - [x] landmark screen graphics
 - [x] landmark screen logic
 - [ ] fix fort kearney color palette
+
+## Music
 - [ ] sound engine
 - [ ] Music for each landmark
     - [x] Independence, MO: Yankee Doodle.
@@ -167,5 +169,8 @@
 - [x] Green Only mode
 - [x] nametable update buffer
 - [x] compress tile and nametable data (PackBits?)
+
+## Polish (nice to have)
+
 - [ ] lowercase letters
-- [ ] cursor/finger icon blinks 
+- [ ] cursor/finger icon blinks
