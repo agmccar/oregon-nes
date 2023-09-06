@@ -872,6 +872,7 @@
         CMP #MENU_TEXTPOPUP_YN
         BNE :+
         JMP @menuTextPopupYN
+        :
         JMP Done
         @menuTextPopup:
             JSR CloseTextPopup

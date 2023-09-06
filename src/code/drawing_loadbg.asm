@@ -194,25 +194,21 @@
     LDA #$00
     STA PPUADDR
     JSR UnpackData
-    LDY #1
-    JSR bankswitch_y
-
-    LDA gameSettings
-    AND #1
-    BNE :++
-    LDA PPUSTATUS
-    LDA #$3f
+    LDA PPUSTATUS ; attributes
+    LDA #$23
     STA PPUADDR
-    LDA #$00
+    LDA #$C0
     STA PPUADDR
     LDX #0
     :
-    LDA suppliesPalette, X
+    LDA suppliesAttr, X
     STA PPUDATA
     INX
-    CPX #$10
+    CPX #7*8
     BNE :-
-    :
+    LDY #1
+    JSR bankswitch_y
+
     JSR DoneBulkDrawing
     JSR BufferDrawSupplies
     JSR BufferDrawPressStart

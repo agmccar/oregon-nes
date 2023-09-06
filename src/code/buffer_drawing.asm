@@ -698,18 +698,22 @@
 
 .proc BufferDrawSupplies
 
-    LDY #0 ; get image data
-    JSR bankswitch_y
-
-    BufferStart #7*8, #$23, #$C0 ; attributes
+    LDA gameSettings
+    AND #1
+    BNE :++
+    BufferStart #$10, #$3f, #$00
         LDX #0
         :
-        LDA suppliesAttr, X
+        LDA suppliesPalette, X
         JSR WriteByteToBuffer
         INX
-        CPX #7*8
+        CPX #$10
         BNE :-
     JSR EndBufferWrite
+    :
+
+    LDY #0 ; get image data
+    JSR bankswitch_y
 
     LDA #5
     STA counter

@@ -1,6 +1,11 @@
 .proc StartBulkDrawing
     LDA #%00000000      ; turn off screen
     STA softPPUMASK
+    ; STA PPUMASK
+    :                   ; wait for vblank
+    BIT PPUSTATUS
+    BPL :-
+    LDA #0
     STA PPUMASK
     RTS
 .endproc
@@ -101,8 +106,8 @@
     STA PPUADDR
     LDA #$C0
     STA PPUADDR
-    LDA #%11111111
-    LDX #0
+    LDA #$ff
+    LDX #$C0
     :
     STA PPUDATA
     INX

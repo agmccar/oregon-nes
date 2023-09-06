@@ -31,15 +31,23 @@
 ; 	.byte 7, $23,$37, $99,$9a,$9b,$9c,$9d,$9e,$9f
 ;     .byte 0
 
+; suppliesAttr:
+; 	.byte $c0,$30,$00,$00,$00,$00,$00,$00
+;     .byte $5f,$8b,$00,$00,$00,$00,$00,$00
+; 	.byte $00,$a0,$20,$00,$00,$00,$00,$00
+;     .byte $00,$aa,$2a,$00,$00,$00,$00,$00
+; 	.byte $b0,$e0,$00,$00,$00,$00,$00,$00
+;     .byte $8c,$2a,$82,$a0,$a0,$80,$a0,$2a
+; 	.byte $00,$00,$0a,$0a,$0a,$08,$0a,$0a
 suppliesAttr:
-	.byte $c0,$30,$00,$00,$00,$00,$00,$00
-    .byte $5f,$8b,$00,$00,$00,$00,$00,$00
-	.byte $00,$a0,$20,$00,$00,$00,$00,$00
-    .byte $00,$aa,$2a,$00,$00,$00,$00,$00
-	.byte $b0,$e0,$00,$00,$00,$00,$00,$00
-    .byte $8c,$2a,$82,$a0,$a0,$80,$a0,$2a
-	.byte $00,$00,$0a,$0a,$0a,$08,$0a,$0a
-
+    .byte $3f,$cf,$ff,$ff,$ff,$ff,$ff,$ff
+    .byte $50,$b8,$ff,$ff,$ff,$ff,$ff,$ff
+    .byte $ff,$af,$ef,$ff,$ff,$ff,$ff,$ff
+    .byte $ff,$aa,$ea,$ff,$ff,$ff,$ff,$ff
+    .byte $8f,$3f,$ff,$ff,$ff,$ff,$ff,$ff
+    .byte $b3,$ea,$be,$af,$af,$bf,$af,$ea
+    .byte $ff,$ff,$fa,$fa,$fa,$fb,$fa,$fa
+	
 ; Len, +X, <data> 
 suppliesImageFood:
 	.byte $20,$61 ; (1,3)
