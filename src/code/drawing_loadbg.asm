@@ -189,7 +189,7 @@
     STY PPUADDR
     LDY #$00
     STY PPUADDR
-    LDX #$09
+    LDX #10 ; rows of tiles to load
     :
     LDA (pointer), Y
     STA PPUDATA

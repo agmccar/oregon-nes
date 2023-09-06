@@ -26,6 +26,9 @@
 
 - [ ] Matts general store intro text/menus
 - [ ] shop screen graphics
+    - [ ] matt
+    - [ ] compress chr tiles 
+    - [ ] rewrite check supplies screen
 - [ ] prices increase at each fort
 
 ## River crossing
@@ -175,3 +178,4 @@
 - [ ] lowercase letters
 - [ ] cursor/finger icon blinks
 - [ ] Turn sound on/off screen  
+- [ ] original game returns to main menu after a long idle time?
