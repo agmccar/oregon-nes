@@ -177,30 +177,42 @@
     BNE :-
 
     ; tile chr
-    LDY #6
-    JSR bankswitch_y
-    LDA #<suppliesTiles
-    STA pointer
-    LDA #>suppliesTiles
-    STA pointer+1
     LDY #0
-    STY PPUMASK
-    LDY #$10
-    STY PPUADDR
-    LDY #$00
-    STY PPUADDR
-    LDX #10 ; rows of tiles to load
-    :
-    LDA (pointer), Y
-    STA PPUDATA
-    INY
-    BNE :-
-    INC pointer+1
-    DEX
-    BNE :-
+    JSR bankswitch_y
+    LDA #<suppliesFoodTiles
+    STA pointer
+    LDA #>suppliesFoodTiles
+    STA pointer+1
+    LDA #$00
+    STA counter
+    LDA #$0a
+    STA counter+1
+    LDA #0
+    STA PPUMASK
+    LDA #$10
+    STA PPUADDR
+    LDA #$00
+    STA PPUADDR
+    JSR UnpackData
     LDY #1
     JSR bankswitch_y
 
+    LDA gameSettings
+    AND #1
+    BNE :++
+    LDA PPUSTATUS
+    LDA #$3f
+    STA PPUADDR
+    LDA #$00
+    STA PPUADDR
+    LDX #0
+    :
+    LDA suppliesPalette, X
+    STA PPUDATA
+    INX
+    CPX #$10
+    BNE :-
+    :
     JSR DoneBulkDrawing
     JSR BufferDrawSupplies
     JSR BufferDrawPressStart

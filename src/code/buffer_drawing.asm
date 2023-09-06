@@ -697,23 +697,8 @@
 .endproc
 
 .proc BufferDrawSupplies
-    LDA gameSettings
-    AND #1
-    BNE :++
-    BufferStart #$10, #$3f, #$00
-        LDX #0
-        :
-        LDA suppliesPalette, X
-        JSR WriteByteToBuffer
-        INX
-        CPX #$10
-        BNE :-
-    JSR EndBufferWrite
 
-    : ; vblankwait
-    BIT PPUSTATUS
-    BPL :-
-    LDY #6 ; get image data
+    LDY #0 ; get image data
     JSR bankswitch_y
 
     BufferStart #7*8, #$23, #$C0 ; attributes
@@ -725,33 +710,70 @@
         CPX #7*8
         BNE :-
     JSR EndBufferWrite
-    LDX #0 ; image
+
+    LDA #5
+    STA counter
+    LDX #0
     STX helper
+    :
+    INC helper
+    INC helper
+    LDA suppliesImageFood, X
+    STA pointer
+    INX
+    LDA suppliesImageFood, X
+    STA pointer+1
+    INX
     :
     TXA
     PHA
-    LDA suppliesImage, X
+    LDA suppliesImageFood, X
     TAX
     JSR StartBufferWrite
         PLA
         TAX
-        LDA suppliesImage, X
+        LDA suppliesImageFood, X
         JSR WriteByteToBuffer
         CLC
         LDA helper
-        ADC #3
-        ADC suppliesImage, X
+        ADC #2
+        ADC suppliesImageFood, X
         STA helper
         INX
+        CLC
+        LDA suppliesImageFood, X
+        ADC pointer+1
+        STA pointer+1
+        LDA pointer
+        JSR WriteByteToBuffer
+        LDA pointer+1
+        JSR WriteByteToBuffer
+        SEC
+        LDA pointer+1
+        SBC suppliesImageFood, X
+        STA pointer+1
+        CLC
+        LDA pointer+1
+        ADC #$20
+        STA pointer+1
+        LDA pointer
+        ADC #0
+        STA pointer
+        INX
         :
-        LDA suppliesImage, X
+        LDA suppliesImageFood, X
         JSR WriteByteToBuffer
         INX
         CPX helper
         BNE :-
     JSR EndBufferWrite
-    LDA suppliesImage, X
+    LDA suppliesImageFood, X
     BNE :--
+    INC helper
+    INX
+    DEC counter
+    BNE :---
+    
     LDY #1
     JSR bankswitch_y
 

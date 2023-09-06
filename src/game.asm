@@ -11,8 +11,10 @@
     .include "vars.asm"
 
 .segment "ROM0"
-    .include "tiles.asm"
+    .include "tiles.asm" ; TODO deprecate
     .include "data/raw/text/top10default.asm"
+    .include "data/compressed/image/suppliesTiles.asm"
+    .include "data/raw/image/suppliesImage.asm"
 
 .segment "ROM1"
     .include "code/rom1.asm"
@@ -46,10 +48,9 @@
 .segment "ROM6"
     .include "data/compressed/image/landmarkImageE.asm"
     .include "data/compressed/text/talkE.asm"
-    .include "data/compressed/image/mapImage.asm"
-    .include "data/raw/image/suppliesImage.asm"
-    .include "data/raw/image/adornmentImage.asm"
-    .include "data/raw/image/titleLogoImage.asm"
+    .include "data/compressed/image/mapImage.asm" ; TODO move to bank 0
+    .include "data/raw/image/adornmentImage.asm" ; TODO move to bank 0
+    .include "data/raw/image/titleLogoImage.asm" ; TODO move to bank 0
 
 .segment "RODATA" ; ROM7
     banktable:              ; Write to this table to switch banks.
