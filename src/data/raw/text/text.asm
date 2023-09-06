@@ -482,9 +482,9 @@ topTenResourcesText:
 
 topTenResourcesEachText:
     .byte _E_,_A_,_C_,_H_
-    .byte _5_,_0_
-    .byte _2_,_5_,___,_LB
-    .byte _DL,_5_,_00
+    ; .byte _5_,_0_
+    ; .byte _2_,_5_,___,_LB
+    ; .byte _DL,_5_
     
 
 ; Health of Party   Points per Person

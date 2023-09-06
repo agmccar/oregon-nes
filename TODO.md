@@ -9,10 +9,10 @@
     - [x] 2. Learn about the trail
         - [x] raw text
         - [x] pages
-    - [ ] 3. See the Oregon Top Ten
+    - [x] 3. See the Oregon Top Ten
         - [x] raw text
         - [x] Top Ten list
-        - [ ] explanation pages 
+        - [x] explanation pages 
     - [ ] 4. Turn sound on|off
         - [ ] explanation page
 
