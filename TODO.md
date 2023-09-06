@@ -21,6 +21,7 @@
 - [ ] choose occupation menu
 - [ ] Name party members graphics
 - [ ] decide which month to leave menu
+- [ ] independence graphic + text boxes screens
 
 ## Shop screen
 
@@ -28,7 +29,7 @@
 - [ ] shop screen graphics
     - [ ] matt
     - [ ] compress chr tiles 
-    - [ ] rewrite check supplies screen
+    - [x] rewrite check supplies screen
 - [ ] prices increase at each fort
 
 ## River crossing
