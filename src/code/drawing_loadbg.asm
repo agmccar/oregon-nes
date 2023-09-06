@@ -39,231 +39,6 @@
     RTS
 .endproc
 
-.proc LoadBgNewGame
-    JSR ClearScreen
-    JSR ClearAttributes ; default palette
-    JSR StartBulkDrawing
-    Leader:
-        LDA PPUSTATUS       ; write "LEADER:"
-        LDA #$20            
-        STA PPUADDR
-        LDA #$85
-        STA PPUADDR
-        LDX #0
-        :
-        LDA newGameText, X  
-        STA PPUDATA
-        INX
-        CPX #7
-        BNE :-
-    Occupation:
-        LDA PPUSTATUS       ; write "OCCUPATION:"
-        LDA #$20     
-        STA PPUADDR
-        LDA #$8F
-        STA PPUADDR
-        :
-        LDA newGameText, X  
-        STA PPUDATA
-        INX
-        CPX #18
-        BNE :-
-    OtherPartyMembers:
-        LDA PPUSTATUS       ; write "OTHER PARTY MEMBERS:"
-        LDA #$21
-        STA PPUADDR
-        LDA #$45
-        STA PPUADDR
-        :
-        LDA newGameText, X  
-        STA PPUDATA
-        INX
-        CPX #38
-        BNE :-
-    NameLeader:
-        LDA PPUSTATUS       ; write leader name
-        LDA #$20
-        STA PPUADDR
-        LDA #$C7
-        STA PPUADDR
-        LDX #0
-        :
-        LDA personName, X
-        CMP #___
-        BNE :+
-        LDA #_UL
-        :
-        STA PPUDATA
-        INX
-        CPX #4
-        BNE :--
-    NameOccupation:
-        LDA PPUSTATUS       ; write occupation
-        LDA #$20            
-        STA PPUADDR
-        LDA #$D0
-        STA PPUADDR
-        LDX #0
-        LDY #0
-        LDA occupation
-        CMP #0
-        BNE :+
-        JMP @occTextLoop
-        :
-        STX helper
-        :
-        INX
-        INC helper
-        CPX #TEXT_OCCUPATION_LEN
-        BNE :-
-        LDX #0
-        INY
-        CPY occupation
-        BNE :-
-        LDY #0
-        LDX helper
-        @occTextLoop:
-        LDA occupationText, X
-        CMP #___
-        BNE :+
-        LDA #_UL
-        :
-        STA PPUDATA
-        INX
-        INY
-        CPY #TEXT_OCCUPATION_LEN
-        BNE @occTextLoop
-    NamePerson1:
-        LDA PPUSTATUS       ; write party member 1 name
-        LDA #$21            
-        STA PPUADDR
-        LDA #$87
-        STA PPUADDR
-        LDX #0
-        @underline3:
-        LDA personName+4, X
-        CMP #___
-        BNE :+
-        LDA #_UL
-        :
-        STA PPUDATA
-        INX
-        CPX #4
-        BNE @underline3
-    NamePerson2:
-        LDA PPUSTATUS       ; write party member 3 name
-        LDA #$21
-        STA PPUADDR
-        LDA #$91
-        STA PPUADDR
-        LDX #0
-        @underline4:
-        LDA personName+12, X
-        CMP #___
-        BNE :+
-        LDA #_UL
-        :
-        STA PPUDATA
-        INX
-        CPX #4
-        BNE @underline4
-    NamePerson3:
-        LDA PPUSTATUS       ; write party member 2 name
-        LDA #$21
-        STA PPUADDR
-        LDA #$C7
-        STA PPUADDR
-        LDX #0
-        @underline5:
-        LDA personName+8, X
-        CMP #___
-        BNE :+
-        LDA #_UL
-        :
-        STA PPUDATA
-        INX
-        CPX #4
-        BNE @underline5
-    NamePerson4:
-        LDA PPUSTATUS       ; write party member 4 name
-        LDA #$21
-        STA PPUADDR
-        LDA #$D1
-        STA PPUADDR
-        LDX #0
-        @underline6:
-        LDA personName+16, X
-        CMP #___
-        BNE :+
-        LDA #_UL
-        :
-        STA PPUDATA
-        INX
-        CPX #4
-        BNE @underline6
-    StartingDate:
-        LDA PPUSTATUS
-        LDA #$22
-        STA PPUADDR
-        LDA #$45
-        STA PPUADDR
-        LDX #38
-        :               ; draw "STARTING DATE:"
-        LDA newGameText, X
-        STA PPUDATA
-        INX
-        CPX #52
-        BNE :-
-        LDA PPUSTATUS   ; draw the month name
-        LDA #$22
-        STA PPUADDR
-        LDA #$87
-        STA PPUADDR
-        LDA dateMonth
-        CMP #3
-        BNE :+
-        LDA #0
-        JMP @doLoop
-        :
-        CMP #4
-        BNE :+
-        LDA #12
-        JMP @doLoop
-        :
-        CMP #5
-        BNE :+
-        LDA #24
-        JMP @doLoop
-        :
-        CMP #6
-        BNE :+
-        LDA #6
-        JMP @doLoop
-        :
-        CMP #7
-        BNE :+
-        LDA #18
-        JMP @doLoop
-        :
-        CMP #8
-        BNE :+
-        LDA #30
-        :
-        @doLoop:
-        TAX 
-        LDY #0
-        :
-        LDA startingDateText, X
-        STA PPUDATA
-        INX
-        INY
-        CPY #TEXT_STARTDATE_LEN
-        BNE :-
-
-    JSR DoneBulkDrawing
-    RTS
-.endproc
-
 .proc LoadBgStore
     JSR ClearScreen
     JSR ClearAttributes         ; default palette
@@ -1072,5 +847,240 @@
     JSR DoneBulkDrawing
     JSR BufferDrawTalkText
     JSR BufferDrawPressStart
+    RTS
+.endproc
+
+.proc DrawTopTenHelp
+    LDA menuCursor
+    CMP #4
+    BNE :+
+    JMP Done
+    :
+    JSR ClearScreen
+    LDA menuCursor
+    CMP #3
+    BNE :+
+    LDY #6
+    JSR bankswitch_y
+    JSR DrawAdornments
+    LDY #1
+    JSR bankswitch_y
+    :
+    LDX #21
+    JSR StartBufferWrite ; "On Arriving In Oregon"
+        LDA #21
+        JSR WriteByteToBuffer
+        LDA #$20
+        JSR WriteByteToBuffer
+        LDA #$85
+        JSR WriteByteToBuffer
+        LDX #0
+        :
+        LDA topTenHelpText, X
+        JSR WriteByteToBuffer
+        INX
+        CPX #21
+        BNE :-
+    JSR EndBufferWrite
+
+    DEC menuCursor
+    LDA menuCursor
+    ASL
+    TAX
+    INC menuCursor
+    LDA top10Pointer, X
+    STA pointer
+    INX
+    LDA top10Pointer, X
+    STA pointer+1
+    LDA #$20
+    STA cartHelperDigit
+    LDA #$C4
+    STA cartHelperDigit+1
+    LDA menuCursor
+    CMP #3
+    BNE :+
+    CLC
+    LDA cartHelperDigit+1
+    ADC #$80
+    STA cartHelperDigit+1
+    LDA cartHelperDigit
+    ADC #0
+    STA cartHelperDigit
+    :
+    JSR BufferDrawText
+    JSR BufferDrawPressStart
+
+    LDA menuCursor
+    CMP #1
+    BNE :+
+    LDA #$23
+    STA pointer
+    LDA #$e0
+    STA pointer+1
+    LDA #$f5
+    STA helper
+    LDA #10
+    STA helper+1
+    LDA #$22
+    STA helper2
+    LDA #$04
+    STA helper2+1
+    LDA #21
+    STA counter
+    LDA #30
+    STA counter+1
+    JMP ColorColumnHeaders
+    :
+    CMP #2
+    BNE :+
+    LDA #$23
+    STA pointer
+    LDA #$d8
+    STA pointer+1
+    LDA #$5f
+    STA helper
+    LDA #13
+    STA helper+1
+    LDA #$21
+    STA helper2
+    LDA #$c3
+    STA helper2+1
+    LDA #30
+    STA counter
+    LDA #42
+    STA counter+1
+    JMP ColorColumnHeaders
+    :
+    JMP Done
+
+    ColorColumnHeaders:
+    LDX #8
+    JSR StartBufferWrite ; color column headers
+        LDA #8
+        JSR WriteByteToBuffer
+        LDA pointer
+        JSR WriteByteToBuffer
+        LDA pointer+1
+        JSR WriteByteToBuffer
+        LDX #0
+        :
+        LDA helper
+        JSR WriteByteToBuffer
+        INX
+        CPX #8
+        BNE :-
+    JSR EndBufferWrite
+
+    BufferStart_ helper+1, helper2, helper2+1 ; "Health of"/"Resources of"
+    LDA #TILE_COL_HEADER
+    JSR WriteByteToBuffer
+    LDX counter
+    :
+    LDA topTenHelpText, X
+    JSR WriteByteToBuffer
+    INX
+    CPX counter+1
+    BNE :-
+    JSR EndBufferWrite
+    CLC
+    LDA helper2+1
+    ADC #$20
+    STA helper2+1
+    BufferStart_ helper+1, helper2, helper2+1
+    LDA #TILE_COL_HEADER
+    JSR WriteByteToBuffer
+    LDA #___
+    LDX helper+1
+    DEX
+    :
+    JSR WriteByteToBuffer
+    DEX
+    BNE :-
+    JSR EndBufferWrite
+    CLC
+    LDA helper2+1
+    ADC menuCursor
+    STA helper2+1
+    INC helper2+1
+    INC helper2+1
+    BufferStart_ #5, helper2, helper2+1 ; "Party"
+    LDX #42
+    :
+    LDA topTenHelpText, X
+    JSR WriteByteToBuffer
+    INX
+    CPX #47
+    BNE :-
+    JSR EndBufferWrite
+
+    SEC ; next column header
+    LDA helper2+1
+    SBC #$21
+    SBC menuCursor
+    CLC
+    ADC helper+1
+    STA helper2+1
+    BufferStart_ #11, helper2, helper2+1 ; "Points per"
+    LDA #TILE_COL_HEADER
+    JSR WriteByteToBuffer
+    LDX #47
+    :
+    LDA topTenHelpText, X
+    JSR WriteByteToBuffer
+    INX
+    CPX #57
+    BNE :-
+    JSR EndBufferWrite
+    CLC
+    LDA helper2+1
+    ADC #$20
+    STA helper2+1
+    BufferStart_ #11, helper2, helper2+1 
+    LDA #TILE_COL_HEADER
+    JSR WriteByteToBuffer
+    LDA #___
+    LDX #10
+    :
+    JSR WriteByteToBuffer
+    DEX
+    BNE :-
+    JSR EndBufferWrite
+    CLC
+    LDA helper2+1
+    ADC menuCursor
+    STA helper2+1
+    INC helper2+1
+    INC helper2+1
+    LDA #57
+    STA counter
+    LDA #63
+    STA counter+1
+    LDA menuCursor
+    CMP #2
+    BNE :+
+    CLC
+    LDA counter
+    ADC #6
+    STA counter
+    LDA counter+1
+    ADC #6
+    STA counter+1
+    :
+    BufferStart_ #6, helper2, helper2+1 ; "Person"/"Item  "
+    LDX counter
+    :
+    LDA topTenHelpText, X
+    JSR WriteByteToBuffer
+    INX
+    CPX counter+1
+    BNE :-
+    JSR EndBufferWrite
+
+
+
+
+
+    Done:
     RTS
 .endproc
