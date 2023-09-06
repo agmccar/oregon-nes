@@ -390,6 +390,13 @@ def main(args):
             top10_data[loc][i]['quote_segments'] = segments
             for segment in segments:
                 mass_text += squish_segment(segment)
+    sound_data = parse_raw_text('src/data/raw/text/sound.txt')
+    for loc in sound_data:
+        for i in range(len(sound_data[loc])):
+            segments = text_to_segments(sound_data[loc][i]['quote_raw'])
+            sound_data[loc][i]['quote_segments'] = segments
+            for segment in segments:
+                mass_text += squish_segment(segment)
     substr_dict = create_substr_dict(mass_text)
     write_asm('src/data/compressed/text/dictionary.asm',substr_dict)
 
@@ -454,6 +461,23 @@ def main(args):
             b.append("$00") 
             top10_data[page][i]['bytes'] = ",".join(b)
     write_asm('src/data/compressed/text/top10.asm', substr_dict, data=top10_data, pointer=True)
+
+    # 'sound' text
+    for page in sound_data:
+        for i in range(len(sound_data[page])):
+            b = []
+            segments = text_to_segments(sound_data[page][i]['quote_raw'])
+            sound_data[page][i]['quote_byte_segments'] = []
+            for segment in segments:
+                if args.verbose:
+                    print(f"Compressing segment: {segment}")
+                bs = compress_segment(segment, substr_dict)
+                sound_data[page][i]['quote_byte_segments'].append(bs)
+                b.append(bs)
+            sound_data[page][i]['quote_byte_segments'].append("$00") # end of section
+            b.append("$00") 
+            sound_data[page][i]['bytes'] = ",".join(b)
+    write_asm('src/data/compressed/text/sound.asm', substr_dict, data=sound_data, pointer=True)
 
 
 if __name__ == "__main__":

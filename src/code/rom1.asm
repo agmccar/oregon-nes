@@ -1595,7 +1595,7 @@
     JSR WriteByteToBuffer
 .endmacro
 
-.proc BufferDrawTitleLearn
+.proc BufferClearTitle
     BufferStart_ #6, #$23, #$e1 ; clear attr
         LDA #$ff
         LDX #6
@@ -1633,7 +1633,11 @@
     TAX
     DEX
     BNE Line
+    RTS
+.endproc
 
+.proc BufferDrawTitleLearn
+    JSR BufferClearTitle
     LDA menuCursor
     ASL
     TAX
@@ -1727,6 +1731,51 @@
     ; Todo: "Control-S key" (page 7)
 
     Done:
+    JSR BufferDrawPressStart
+    RTS
+.endproc
+
+.proc BufferDrawTitleSound
+    JSR BufferClearTitle
+    
+    LDA soundPointer
+    STA pointer
+    LDA soundPointer+1
+    STA pointer+1
+    LDA #$21
+    STA cartHelperDigit
+    LDA #$A4
+    STA cartHelperDigit+1
+    JSR BufferDrawText
+
+    LDA soundPointer+2
+    STA pointer
+    LDA soundPointer+3
+    STA pointer+1
+    LDA #$22
+    STA cartHelperDigit
+    LDA #$04
+    STA cartHelperDigit+1
+    JSR BufferDrawText
+
+    BIT gameSettings
+    BPL :+
+    JMP Done
+    :
+    BufferStart_ #4, #$21, #$cb
+    LDA #_O_
+    JSR WriteByteToBuffer
+    LDA #_N_
+    JSR WriteByteToBuffer
+    LDA #_PD
+    JSR WriteByteToBuffer
+    LDA #___
+    JSR WriteByteToBuffer
+    JSR EndBufferWrite
+    Done:
+    LDA gameSettings
+    EOR #$80
+    STA gameSettings
     JSR BufferDrawPressStart
     RTS
 .endproc

@@ -1,7 +1,5 @@
 
 .proc InitStateTitle
-    ; LDA #1
-    ; STA colorMono
     LDA #$18
     STA seed+1
     LDA #$48

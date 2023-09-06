@@ -29,11 +29,6 @@ seed:               .res 2 ; PRNG seed
 ;  +------- stopped- 1:stopped 0:moving
 oxenFrame:          .res 1 
 
-; %00000000
-;  |||||||+ Color: 0:full color, 1:monochrome
-;  |++++++- unused
-;  +------- Sound on/off
-gameSettings:          .res 1
 
 
 ; HUD --------------------------------------------------------------------------

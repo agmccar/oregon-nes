@@ -30,6 +30,10 @@
         BNE :+
         JMP @menuTitleTopTen
         :
+        CMP #MENU_TITLE_SOUND
+        BNE :+
+        JMP @menuTitleSound
+        :
         JMP Done
         @menuNone:
             LDA fingerY
@@ -51,7 +55,8 @@
             :
             CMP #19 ; Turn sound [off|on]
             BNE :+
-
+            LDA #MENU_TITLE_SOUND
+            STA menuOpen
             :
             JMP Done
         @menuTitleLearn:
@@ -80,6 +85,10 @@
             LDA #0
             STA menuCursor
             :
+            LDA #MENU_NONE
+            STA menuOpen
+            JMP Done
+        @menuTitleSound:
             LDA #MENU_NONE
             STA menuOpen
             JMP Done

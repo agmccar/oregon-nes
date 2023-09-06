@@ -670,15 +670,15 @@
         JSR WriteByteToBuffer
         LDA gameSettings
         BPL :+
-        LDA #_N_
+        LDA #_F_
         JSR WriteByteToBuffer
-        LDA #___
+        LDA #_F_
         JSR WriteByteToBuffer
         JMP :++
         :
-        LDA #_F_
+        LDA #_N_
         JSR WriteByteToBuffer
-        LDA #_F_
+        LDA #___
         JSR WriteByteToBuffer
         :
     JSR EndBufferWrite

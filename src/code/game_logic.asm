@@ -188,6 +188,10 @@
     BNE :+
     JMP TitleTopTen
     :
+    CMP #MENU_TITLE_SOUND
+    BNE :+
+    JMP TitleSound
+    :
     CMP #MENU_NEWGAME_TYPING
     BNE :+
     JMP NewGameTyping
@@ -320,6 +324,11 @@
         LDY fingerY
         LDA #_N_
         JSR WriteTileToBuffer
+        JMP Done
+    TitleSound:
+        LDA #%0 ; no finger visible
+        STA fingerAttr
+        JSR BufferDrawTitleSound
         JMP Done
     NewGameTyping:
         LDA #%00001100      ; both fingers visible, pointing right

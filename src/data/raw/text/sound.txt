@@ -1,3 +1,7 @@
+## Text1
+
 The sound is now turned off.
 
-You may turn the sound on or off during the program by pressing Control-S.
+## Text2
+
+You may turn the sound on or off during the program by pressing Select.

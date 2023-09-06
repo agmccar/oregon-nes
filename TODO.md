@@ -4,7 +4,7 @@
 ## Title screen
 
 - [x] title screen graphics
-- [ ] title screen options
+- [x] title screen options
     - [x] 1. Travel the trail (new game)
     - [x] 2. Learn about the trail
         - [x] raw text
@@ -13,8 +13,8 @@
         - [x] raw text
         - [x] Top Ten list
         - [x] explanation pages 
-    - [ ] 4. Turn sound on|off
-        - [ ] explanation page
+    - [x] 4. Turn sound on|off
+        - [x] explanation page
 
 ## New game screens
 
@@ -174,3 +174,4 @@
 
 - [ ] lowercase letters
 - [ ] cursor/finger icon blinks
+- [ ] Turn sound on/off screen  

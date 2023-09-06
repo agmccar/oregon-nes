@@ -33,8 +33,8 @@ talkDictionary:
     .byte _O_,_U_
     .byte _E_,_S_
     .byte _O_,_R_
-    .byte _T_,_O_
     .byte _O_,_N_
+    .byte _T_,_O_
     .byte _E_,_A_
     .byte _L_,_L_
     .byte _E_,_N_
@@ -63,8 +63,8 @@ talkDictionary:
     .byte _A_,_T_
     .byte _C_,_H_
     .byte _W_,_H_
-    .byte _E_,_F_
     .byte _N_,_O_
+    .byte _E_,_F_
     .byte _A_,_L_
     .byte _A_,_M_
     .byte _W_,_E_
@@ -95,17 +95,17 @@ talkDictionary:
     .byte _U_,_P_
     .byte _A_,_S_
     .byte _E_,_W_
+    .byte _U_,_R_
     .byte _O_,_V_
     .byte _A_,_B_
-    .byte _R_,_E_
     .byte _F_,_F_
     .byte _D_,_S_
+    .byte _B_,_Y_
     .byte _A_,_C_
     .byte _T_,_Y_
-    .byte _B_,_Y_
     .byte _D_,_R_
     .byte _I_,_C_
-    .byte _R_,_N_
+    .byte _R_,_E_
     .byte _O_,_S_
     .byte _A_,_F_
     .byte _L_,_O_
@@ -113,25 +113,26 @@ talkDictionary:
     .byte _S_,_I_
     .byte _K_,_E_
     .byte _S_,_F_
+    .byte _G_,_S_
     .byte _B_,_L_
     .byte _P_,_E_
     .byte _D_,_F_
-    .byte _G_,_S_
+    .byte _R_,_N_
     .byte _U_,_L_
-    .byte _G_,_E_
     .byte _S_,_M_
     .byte _T_,_L_
     .byte _R_,_I_
     .byte _T_,_I_
     .byte _D_,_L_
     .byte _D_,_H_
-    .byte _U_,_R_
+    .byte _P_,_R_
     .byte _U_,_M_
+    .byte _G_,_E_
     .byte _T_,_B_
     .byte _L_,_D_
     .byte _T_,_G_
+    .byte _N_,_I_
     .byte _C_,_E_
-    .byte _P_,_R_
     .byte _W_,_N_
     .byte _E_,_X_
     .byte _D_,_E_
@@ -139,9 +140,9 @@ talkDictionary:
     .byte _V_,_E_
     .byte _D_,_O_
     .byte _T_,_M_
-    .byte _N_,_I_
     .byte _V_,_A_
     .byte _S_,_B_
+    .byte _N_,_D_
     .byte _J_,_U_
     .byte _T_,_W_
     .byte _E_,_I_
@@ -165,7 +166,6 @@ talkDictionary:
     .byte _E_,_O_
     .byte _S_,_P_
     .byte _E_,_E_
-    .byte _N_,_D_
     .byte _P_,_A_
     .byte _F_,_A_
     .byte _D_,_W_
@@ -206,7 +206,6 @@ talkDictionary:
     .byte _D_,_C_
     .byte _G_,_T_
     .byte _P_,_T_
-    .byte _T_,_U_
     .byte _M_,_P_
     .byte _M_,_U_
     .byte _S_,_A_
@@ -235,4 +234,5 @@ talkDictionary:
     .byte _M_,_R_
     .byte _S_,_R_
     .byte _T_,_E_
+    .byte _D_,_G_
 

@@ -24,6 +24,7 @@
     ;.include "data/raw/rivers.asm"
     .include "data/raw/text/text.asm"
     .include "data/compressed/text/learn.asm"
+    .include "data/compressed/text/sound.asm"
     .include "data/compressed/text/top10.asm"
 
 .segment "ROM2"
@@ -112,7 +113,7 @@ bankswitch_nosave:
     LDA #$FE
     STA $0200, X
     LDA #$00
-    CPX #106 ; total bytes reserved in vars.asm, above "this line"
+    CPX #107 ; total bytes reserved in vars.asm, above "this line"
     BCS :+
     CPY #1
     BNE :+
@@ -134,6 +135,8 @@ bankswitch_nosave:
     STA $0304
     LDA #_N_
     STA $0305
+    LDA #%10000000 ; default gameSettings
+    STA $0306
     CPY #1 ; set default high scores if this is a hard reset
     BEQ :+
     JSR SetDefaultTopTen

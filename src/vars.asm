@@ -1,5 +1,12 @@
 
 resetSentinal:      .res 6 ; sentinal value to detect hard or soft reset 
+
+; %00000000
+;  |||||||+ Color: 0:full color, 1:monochrome
+;  |++++++- unused
+;  +------- Sound on/off
+gameSettings:       .res 1
+
 oregonTopTen:       .res 10*(8+2) ; 10 x (8-letter name + 16 bits for score)
 ;gravestone:         .res 8+32 ; name + epitaph 
 
