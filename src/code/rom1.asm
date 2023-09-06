@@ -2805,3 +2805,238 @@
     Done:
     RTS
 .endproc
+
+.proc DrawTopTenHelp
+    LDA menuCursor
+    CMP #4
+    BNE :+
+    JMP Done
+    :
+    JSR ClearScreen
+    LDA menuCursor
+    CMP #3
+    BNE :+
+    LDY #6
+    JSR bankswitch_y
+    JSR DrawAdornments
+    LDY #1
+    JSR bankswitch_y
+    :
+    LDX #21
+    JSR StartBufferWrite ; "On Arriving In Oregon"
+        LDA #21
+        JSR WriteByteToBuffer
+        LDA #$20
+        JSR WriteByteToBuffer
+        LDA #$85
+        JSR WriteByteToBuffer
+        LDX #0
+        :
+        LDA topTenHelpText, X
+        JSR WriteByteToBuffer
+        INX
+        CPX #21
+        BNE :-
+    JSR EndBufferWrite
+
+    DEC menuCursor
+    LDA menuCursor
+    ASL
+    TAX
+    INC menuCursor
+    LDA top10Pointer, X
+    STA pointer
+    INX
+    LDA top10Pointer, X
+    STA pointer+1
+    LDA #$20
+    STA cartHelperDigit
+    LDA #$C4
+    STA cartHelperDigit+1
+    LDA menuCursor
+    CMP #3
+    BNE :+
+    CLC
+    LDA cartHelperDigit+1
+    ADC #$80
+    STA cartHelperDigit+1
+    LDA cartHelperDigit
+    ADC #0
+    STA cartHelperDigit
+    :
+    JSR BufferDrawText
+    JSR BufferDrawPressStart
+
+    LDA menuCursor
+    CMP #1
+    BNE :+
+    LDA #$23
+    STA pointer
+    LDA #$e0
+    STA pointer+1
+    LDA #$f5
+    STA helper
+    LDA #10
+    STA helper+1
+    LDA #$22
+    STA helper2
+    LDA #$04
+    STA helper2+1
+    LDA #21
+    STA counter
+    LDA #30
+    STA counter+1
+    JMP ColorColumnHeaders
+    :
+    CMP #2
+    BNE :+
+    LDA #$23
+    STA pointer
+    LDA #$d8
+    STA pointer+1
+    LDA #$5f
+    STA helper
+    LDA #13
+    STA helper+1
+    LDA #$21
+    STA helper2
+    LDA #$c3
+    STA helper2+1
+    LDA #30
+    STA counter
+    LDA #42
+    STA counter+1
+    JMP ColorColumnHeaders
+    :
+    JMP Done
+
+    ColorColumnHeaders:
+    LDX #8
+    JSR StartBufferWrite ; color column headers
+        LDA #8
+        JSR WriteByteToBuffer
+        LDA pointer
+        JSR WriteByteToBuffer
+        LDA pointer+1
+        JSR WriteByteToBuffer
+        LDX #0
+        :
+        LDA helper
+        JSR WriteByteToBuffer
+        INX
+        CPX #8
+        BNE :-
+    JSR EndBufferWrite
+
+    BufferStart_ helper+1, helper2, helper2+1 ; "Health of"/"Resources of"
+    LDA #TILE_COL_HEADER
+    JSR WriteByteToBuffer
+    LDX counter
+    :
+    LDA topTenHelpText, X
+    JSR WriteByteToBuffer
+    INX
+    CPX counter+1
+    BNE :-
+    JSR EndBufferWrite
+    CLC
+    LDA helper2+1
+    ADC #$20
+    STA helper2+1
+    BufferStart_ helper+1, helper2, helper2+1
+    LDA #TILE_COL_HEADER
+    JSR WriteByteToBuffer
+    LDA #___
+    LDX helper+1
+    DEX
+    :
+    JSR WriteByteToBuffer
+    DEX
+    BNE :-
+    JSR EndBufferWrite
+    CLC
+    LDA helper2+1
+    ADC menuCursor
+    STA helper2+1
+    INC helper2+1
+    INC helper2+1
+    BufferStart_ #5, helper2, helper2+1 ; "Party"
+    LDX #42
+    :
+    LDA topTenHelpText, X
+    JSR WriteByteToBuffer
+    INX
+    CPX #47
+    BNE :-
+    JSR EndBufferWrite
+
+    SEC ; next column header
+    LDA helper2+1
+    SBC #$21
+    SBC menuCursor
+    CLC
+    ADC helper+1
+    STA helper2+1
+    BufferStart_ #11, helper2, helper2+1 ; "Points per"
+    LDA #TILE_COL_HEADER
+    JSR WriteByteToBuffer
+    LDX #47
+    :
+    LDA topTenHelpText, X
+    JSR WriteByteToBuffer
+    INX
+    CPX #57
+    BNE :-
+    JSR EndBufferWrite
+    CLC
+    LDA helper2+1
+    ADC #$20
+    STA helper2+1
+    BufferStart_ #11, helper2, helper2+1 
+    LDA #TILE_COL_HEADER
+    JSR WriteByteToBuffer
+    LDA #___
+    LDX #10
+    :
+    JSR WriteByteToBuffer
+    DEX
+    BNE :-
+    JSR EndBufferWrite
+    CLC
+    LDA helper2+1
+    ADC menuCursor
+    STA helper2+1
+    INC helper2+1
+    INC helper2+1
+    LDA #57
+    STA counter
+    LDA #63
+    STA counter+1
+    LDA menuCursor
+    CMP #2
+    BNE :+
+    CLC
+    LDA counter
+    ADC #6
+    STA counter
+    LDA counter+1
+    ADC #6
+    STA counter+1
+    :
+    BufferStart_ #6, helper2, helper2+1 ; "Person"/"Item  "
+    LDX counter
+    :
+    LDA topTenHelpText, X
+    JSR WriteByteToBuffer
+    INX
+    CPX counter+1
+    BNE :-
+    JSR EndBufferWrite
+
+
+
+
+
+    Done:
+    RTS
+.endproc

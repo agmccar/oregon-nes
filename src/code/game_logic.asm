@@ -313,6 +313,7 @@
         STA fingerY
         LDA #0 ; Y/N (default N)
         STA menuCursor
+        STA fingerLastY
         JSR ClearScreen
         JSR BufferDrawTopTen
         LDX fingerX
