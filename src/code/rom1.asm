@@ -2855,227 +2855,252 @@
     RTS
 .endproc
 
+; .proc LoadBgNewGame
+;     JSR ClearScreen
+;     JSR ClearAttributes ; default palette
+;     JSR StartBulkDrawing
+;     Leader:
+;         LDA PPUSTATUS       ; write "LEADER:"
+;         LDA #$20            
+;         STA PPUADDR
+;         LDA #$85
+;         STA PPUADDR
+;         LDX #0
+;         :
+;         LDA newGameText, X  
+;         STA PPUDATA
+;         INX
+;         CPX #7
+;         BNE :-
+;     Occupation:
+;         LDA PPUSTATUS       ; write "OCCUPATION:"
+;         LDA #$20     
+;         STA PPUADDR
+;         LDA #$8F
+;         STA PPUADDR
+;         :
+;         LDA newGameText, X  
+;         STA PPUDATA
+;         INX
+;         CPX #18
+;         BNE :-
+;     OtherPartyMembers:
+;         LDA PPUSTATUS       ; write "OTHER PARTY MEMBERS:"
+;         LDA #$21
+;         STA PPUADDR
+;         LDA #$45
+;         STA PPUADDR
+;         :
+;         LDA newGameText, X  
+;         STA PPUDATA
+;         INX
+;         CPX #38
+;         BNE :-
+;     NameLeader:
+;         LDA PPUSTATUS       ; write leader name
+;         LDA #$20
+;         STA PPUADDR
+;         LDA #$C7
+;         STA PPUADDR
+;         LDX #0
+;         :
+;         LDA personName, X
+;         CMP #___
+;         BNE :+
+;         LDA #_UL
+;         :
+;         STA PPUDATA
+;         INX
+;         CPX #4
+;         BNE :--
+;     NameOccupation:
+;         LDA PPUSTATUS       ; write occupation
+;         LDA #$20            
+;         STA PPUADDR
+;         LDA #$D0
+;         STA PPUADDR
+;         LDX #0
+;         LDY #0
+;         LDA occupation
+;         CMP #0
+;         BNE :+
+;         JMP @occTextLoop
+;         :
+;         STX helper
+;         :
+;         INX
+;         INC helper
+;         CPX #TEXT_OCCUPATION_LEN
+;         BNE :-
+;         LDX #0
+;         INY
+;         CPY occupation
+;         BNE :-
+;         LDY #0
+;         LDX helper
+;         @occTextLoop:
+;         LDA occupationText, X
+;         CMP #___
+;         BNE :+
+;         LDA #_UL
+;         :
+;         STA PPUDATA
+;         INX
+;         INY
+;         CPY #TEXT_OCCUPATION_LEN
+;         BNE @occTextLoop
+;     NamePerson1:
+;         LDA PPUSTATUS       ; write party member 1 name
+;         LDA #$21            
+;         STA PPUADDR
+;         LDA #$87
+;         STA PPUADDR
+;         LDX #0
+;         @underline3:
+;         LDA personName+4, X
+;         CMP #___
+;         BNE :+
+;         LDA #_UL
+;         :
+;         STA PPUDATA
+;         INX
+;         CPX #4
+;         BNE @underline3
+;     NamePerson2:
+;         LDA PPUSTATUS       ; write party member 3 name
+;         LDA #$21
+;         STA PPUADDR
+;         LDA #$91
+;         STA PPUADDR
+;         LDX #0
+;         @underline4:
+;         LDA personName+12, X
+;         CMP #___
+;         BNE :+
+;         LDA #_UL
+;         :
+;         STA PPUDATA
+;         INX
+;         CPX #4
+;         BNE @underline4
+;     NamePerson3:
+;         LDA PPUSTATUS       ; write party member 2 name
+;         LDA #$21
+;         STA PPUADDR
+;         LDA #$C7
+;         STA PPUADDR
+;         LDX #0
+;         @underline5:
+;         LDA personName+8, X
+;         CMP #___
+;         BNE :+
+;         LDA #_UL
+;         :
+;         STA PPUDATA
+;         INX
+;         CPX #4
+;         BNE @underline5
+;     NamePerson4:
+;         LDA PPUSTATUS       ; write party member 4 name
+;         LDA #$21
+;         STA PPUADDR
+;         LDA #$D1
+;         STA PPUADDR
+;         LDX #0
+;         @underline6:
+;         LDA personName+16, X
+;         CMP #___
+;         BNE :+
+;         LDA #_UL
+;         :
+;         STA PPUDATA
+;         INX
+;         CPX #4
+;         BNE @underline6
+;     StartingDate:
+;         LDA PPUSTATUS
+;         LDA #$22
+;         STA PPUADDR
+;         LDA #$45
+;         STA PPUADDR
+;         LDX #38
+;         :               ; draw "STARTING DATE:"
+;         LDA newGameText, X
+;         STA PPUDATA
+;         INX
+;         CPX #52
+;         BNE :-
+;         LDA PPUSTATUS   ; draw the month name
+;         LDA #$22
+;         STA PPUADDR
+;         LDA #$87
+;         STA PPUADDR
+;         LDA dateMonth
+;         CMP #3
+;         BNE :+
+;         LDA #0
+;         JMP @doLoop
+;         :
+;         CMP #4
+;         BNE :+
+;         LDA #12
+;         JMP @doLoop
+;         :
+;         CMP #5
+;         BNE :+
+;         LDA #24
+;         JMP @doLoop
+;         :
+;         CMP #6
+;         BNE :+
+;         LDA #6
+;         JMP @doLoop
+;         :
+;         CMP #7
+;         BNE :+
+;         LDA #18
+;         JMP @doLoop
+;         :
+;         CMP #8
+;         BNE :+
+;         LDA #30
+;         :
+;         @doLoop:
+;         TAX 
+;         LDY #0
+;         :
+;         LDA startingDateText, X
+;         STA PPUDATA
+;         INX
+;         INY
+;         CPY #TEXT_STARTDATE_LEN
+;         BNE :-
+
+;     JSR DoneBulkDrawing
+;     RTS
+; .endproc
+
 .proc LoadBgNewGame
     JSR ClearScreen
-    JSR ClearAttributes ; default palette
+    JSR ClearAttributes
     JSR StartBulkDrawing
-    Leader:
-        LDA PPUSTATUS       ; write "LEADER:"
-        LDA #$20            
-        STA PPUADDR
-        LDA #$85
-        STA PPUADDR
-        LDX #0
-        :
-        LDA newGameText, X  
-        STA PPUDATA
-        INX
-        CPX #7
-        BNE :-
-    Occupation:
-        LDA PPUSTATUS       ; write "OCCUPATION:"
-        LDA #$20     
-        STA PPUADDR
-        LDA #$8F
-        STA PPUADDR
-        :
-        LDA newGameText, X  
-        STA PPUDATA
-        INX
-        CPX #18
-        BNE :-
-    OtherPartyMembers:
-        LDA PPUSTATUS       ; write "OTHER PARTY MEMBERS:"
-        LDA #$21
-        STA PPUADDR
-        LDA #$45
-        STA PPUADDR
-        :
-        LDA newGameText, X  
-        STA PPUDATA
-        INX
-        CPX #38
-        BNE :-
-    NameLeader:
-        LDA PPUSTATUS       ; write leader name
-        LDA #$20
-        STA PPUADDR
-        LDA #$C7
-        STA PPUADDR
-        LDX #0
-        :
-        LDA personName, X
-        CMP #___
-        BNE :+
-        LDA #_UL
-        :
-        STA PPUDATA
-        INX
-        CPX #4
-        BNE :--
-    NameOccupation:
-        LDA PPUSTATUS       ; write occupation
-        LDA #$20            
-        STA PPUADDR
-        LDA #$D0
-        STA PPUADDR
-        LDX #0
-        LDY #0
-        LDA occupation
-        CMP #0
-        BNE :+
-        JMP @occTextLoop
-        :
-        STX helper
-        :
-        INX
-        INC helper
-        CPX #TEXT_OCCUPATION_LEN
-        BNE :-
-        LDX #0
-        INY
-        CPY occupation
-        BNE :-
-        LDY #0
-        LDX helper
-        @occTextLoop:
-        LDA occupationText, X
-        CMP #___
-        BNE :+
-        LDA #_UL
-        :
-        STA PPUDATA
-        INX
-        INY
-        CPY #TEXT_OCCUPATION_LEN
-        BNE @occTextLoop
-    NamePerson1:
-        LDA PPUSTATUS       ; write party member 1 name
-        LDA #$21            
-        STA PPUADDR
-        LDA #$87
-        STA PPUADDR
-        LDX #0
-        @underline3:
-        LDA personName+4, X
-        CMP #___
-        BNE :+
-        LDA #_UL
-        :
-        STA PPUDATA
-        INX
-        CPX #4
-        BNE @underline3
-    NamePerson2:
-        LDA PPUSTATUS       ; write party member 3 name
-        LDA #$21
-        STA PPUADDR
-        LDA #$91
-        STA PPUADDR
-        LDX #0
-        @underline4:
-        LDA personName+12, X
-        CMP #___
-        BNE :+
-        LDA #_UL
-        :
-        STA PPUDATA
-        INX
-        CPX #4
-        BNE @underline4
-    NamePerson3:
-        LDA PPUSTATUS       ; write party member 2 name
-        LDA #$21
-        STA PPUADDR
-        LDA #$C7
-        STA PPUADDR
-        LDX #0
-        @underline5:
-        LDA personName+8, X
-        CMP #___
-        BNE :+
-        LDA #_UL
-        :
-        STA PPUDATA
-        INX
-        CPX #4
-        BNE @underline5
-    NamePerson4:
-        LDA PPUSTATUS       ; write party member 4 name
-        LDA #$21
-        STA PPUADDR
-        LDA #$D1
-        STA PPUADDR
-        LDX #0
-        @underline6:
-        LDA personName+16, X
-        CMP #___
-        BNE :+
-        LDA #_UL
-        :
-        STA PPUDATA
-        INX
-        CPX #4
-        BNE @underline6
-    StartingDate:
-        LDA PPUSTATUS
-        LDA #$22
-        STA PPUADDR
-        LDA #$45
-        STA PPUADDR
-        LDX #38
-        :               ; draw "STARTING DATE:"
-        LDA newGameText, X
-        STA PPUDATA
-        INX
-        CPX #52
-        BNE :-
-        LDA PPUSTATUS   ; draw the month name
-        LDA #$22
-        STA PPUADDR
-        LDA #$87
-        STA PPUADDR
-        LDA dateMonth
-        CMP #3
-        BNE :+
-        LDA #0
-        JMP @doLoop
-        :
-        CMP #4
-        BNE :+
-        LDA #12
-        JMP @doLoop
-        :
-        CMP #5
-        BNE :+
-        LDA #24
-        JMP @doLoop
-        :
-        CMP #6
-        BNE :+
-        LDA #6
-        JMP @doLoop
-        :
-        CMP #7
-        BNE :+
-        LDA #18
-        JMP @doLoop
-        :
-        CMP #8
-        BNE :+
-        LDA #30
-        :
-        @doLoop:
-        TAX 
-        LDY #0
-        :
-        LDA startingDateText, X
-        STA PPUDATA
-        INX
-        INY
-        CPY #TEXT_STARTDATE_LEN
-        BNE :-
-
+    LDA menuCursor ; page number
+    CMP #0
+    BNE :+
+    JMP OccupationMenu
+    :
+    CMP #1
+    BNE :+
+    JMP Page2
+    :
+    CMP #2
+    BNE :+
+    JMP Page3
+    :
+    JMP Done
+    OccupationMenu:
+    
+    Done:
     JSR DoneBulkDrawing
     RTS
 .endproc

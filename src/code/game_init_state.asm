@@ -67,6 +67,7 @@
     LDA #0              ; initialize cursor
     STA fingerLastX     ; (5x,6y) tiles from top left, facing R
     STA fingerLastY
+    STA menuCursor      ; page number
     LDA #5
     STA fingerX
     LDA #6
