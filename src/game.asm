@@ -48,9 +48,9 @@
 .segment "ROM6"
     .include "data/compressed/image/landmarkImageE.asm"
     .include "data/compressed/text/talkE.asm"
-    .include "data/compressed/image/mapImage.asm" ; TODO move to bank 0
-    .include "data/raw/image/adornmentImage.asm" ; TODO move to bank 0
-    .include "data/raw/image/titleLogoImage.asm" ; TODO move to bank 0
+    .include "data/compressed/image/mapImage.asm" ; TODO move to bank 0?
+    .include "data/raw/image/adornmentImage.asm" ; TODO move to bank 0?
+    .include "data/raw/image/titleLogoImage.asm" ; TODO move to bank 0?
 
 .segment "RODATA" ; ROM7
     banktable:              ; Write to this table to switch banks.

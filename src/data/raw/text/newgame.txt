@@ -1,107 +1,145 @@
-# Many kinds of people made the trip to Oregon.
-#
-# You may:
-# 
-# Be a banker from Boston
-# Be a carpenter from Ohio
-# Be a farmer from Illinois
-# Find out the differences between these choices
+## SelectOccupationText
 
-# Traveling to Oregon isn't easy! But if you're a banker, you'll have more
-# money for supplies and services than a carpenter or a farmer.
-#
-# However, the harder you have to try, the more points you deserve! 
-# Therefore, the farmer earns the greatest number of points and the banker
-# earns the least.
+Many kinds of people made the trip to Oregon.
 
-# What is the first name of the wagon leader?
+## SelectOccupationBanker
 
-# What are the first names of the four other members in your party?
-# (Enter names or press Return)
+Be a banker from Boston
 
-# Going back to 1848...
+## SelectOccupationCarpenter
 
-# It is 1848. Your jumping off place for Oregon is Independence, Missouri.
-# You must decide which month to leave Independence.
-#
-# March
-# April
-# May
-# June
-# July
-# Ask for advice
+Be a carpenter from Ohio
 
-# You attend a public meeting held for "folks with the California - Oregon
-# fever." You're told:
-#
-# If you leave too early, there won't be any grass for your oxen to eat. If
-# you leave too late, you may not get to Oregon before winter comes. If you
-# leave at just the right time, there will be green grass and the weather
-# will still be cool.
-# PSB
+## SelectOccupationFarmer
 
-# Before leaving Independence, you should buy equipment and supplies.
-# You have $$$$$$ in cash, but you don't have to spend it all now.
-# PSB
+Be a farmer from Illinois
 
-# You can buy whatever you need at Matt's General Store.
-# PSB
+## SelectOccupationHelp
 
-# Hello, I'm Matt. So you're going to Oregon! I can fix you up with what you
-# need:
-#
-    # - a team of oxen to pull your wagon
-    #
-    # - clothing for both summer and winter
-    #
+Find out the differences between these choices
 
-    # - plenty of food for the trip
-    #
-    # - ammunition for your rifles
-    #
-    # - spare parts for your wagon
-    #
-# PSB 
+## OccupationHelpText1
 
-# Matt's General Store
-# Independence, Missouri
-    # There are 2 oxen in a yoke; I recommend at least 3 yoke. I charge $40 a yoke.
-    # How many do you want?
+Traveling to Oregon isn't easy! But if you're a banker, you'll have more
+money for supplies and services than a carpenter or a farmer.
 
-    # I recommend you take at least 200 pounds of food for each person in your
-    # family. I see that you have 5 people in all. You'll need flour, sugar,
-    # bacon, and coffee. My price is 20 cents a pound.
-    #
-    # How many pounds of food do you want?
+## OccupationHelpText2
 
-    # You'll need warm clothing in the mountains. I recommend taking at least
-    # 2 sets of clothes per person. Each set is $10.00.
-    #
-    # How many sets of clothes do you want?
+However, the harder you have to try, the more points you deserve! 
+Therefore, the farmer earns the greatest number of points and the banker
+earns the least.
 
-    # I sell ammunition in boxes of 20 bullets. Each box costs $2.00.
-    #
-    # How many boxes do you want?
+## NamePartyText1
 
-    # It's a good idea to have a few spare parts for your wagon. Here are the
-    # prices:
-    #
-    # wagon wheel  - $10 each
-    # wagon axle   - $10 each
-    # wagon tongue - $10 each
-    #
-    # How many wagon
-        # wheels?
-        # axles?
-        # tongues?
+What is the first name of the wagon leader?
+
+## NamePartyText2
+
+What are the first names of the four other members in your party?
+
+## NamePartyPressStart
+
+(Enter names or press Start)
+
+## GoingBackText
+
+Going back to 1848…
+
+## SelectMonthText
+
+It is 1848. Your jumping off place for Oregon is Independence, Missouri.
+You must decide which month to leave Independence.
+
+## SelectMonthAdvice1
+
+You attend a public meeting held for "folks with the California - Oregon
+fever." You're told:
+
+## SelectMonthAdvice2
+
+If you leave too early, there won't be any grass for your oxen to eat. If
+you leave too late, you may not get to Oregon before winter comes. If you
+leave at just the right time, there will be green grass and the weather
+will still be cool.
+
+## BeforeLeavingText1
+
+Before leaving Independence, you should buy equipment and supplies.
+You have $$$$$$ in cash, but you don't have to spend it all now.
+
+## BeforeLeavingText2
+
+You can buy whatever you need at Matt's General Store.
+
+## MattsGeneralStoreHello
+
+Hello, I'm Matt. So you're going to Oregon! I can fix you up with
+what you need:
+
+## MattsSupplies1
+
+a team of oxen to pull your wagon
+
+## MattsSupplies2
+
+clothing for both summer and winter
+
+## MattsSupplies3
+
+plenty of food for the trip
+
+## MattsSupplies4
+
+ammunition for your rifles
+
+## MattsSupplies5
+
+spare parts for your wagon
+
+## MattsBuySupplies1
+
+There are 2 oxen in a yoke; I recommend at least 3 yoke. I charge $40 a yoke.
+How many do you want?
+
+## MattsBuySupplies2
+
+I recommend you take at least 200 pounds of food for each person in your
+family. I see that you have 5 people in all. You'll need flour, sugar,
+bacon, and coffee. My price is 20 cents a pound.
+How many pounds of food do you want?
+
+## MattsBuySupplies3
+
+You'll need warm clothing in the mountains. I recommend taking at least
+2 sets of clothes per person. Each set is $10.00.
+How many sets of clothes do you want?
+
+## MattsBuySupplies4
+
+I sell ammunition in boxes of 20 bullets. Each box costs $2.00.
+How many boxes do you want?
+
+## MattsBuySupplies5
+
+It's a good idea to have a few spare parts for your wagon. Here are the
+prices:
+# wagon wheel  - $10 each
+# wagon axle   - $10 each
+# wagon tongue - $10 each
+How many wagon
+# wheels?
+# axles?
+# tongues?
 # Bill so far: $$$$$$
-
 # Amount you have: $$$$$$
 # Which item would you like to buy?
 # Press SPACE BAR to leave store
 
-# Well then, you're ready to start. Good luck! You have a long and difficult
-# journey ahead of you.
-# PSB
+## MattsGoodLuck
 
-# Now loading the wagon...
+Well then, you're ready to start. Good luck! You have a long and difficult
+journey ahead of you.
+
+## NowLoadingText
+
+Now loading the wagon…

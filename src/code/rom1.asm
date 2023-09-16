@@ -3084,6 +3084,9 @@
     JSR ClearScreen
     JSR ClearAttributes
     JSR StartBulkDrawing
+    JSR DrawAdornments
+    JSR DoneBulkDrawing
+
     LDA menuCursor ; page number
     CMP #0
     BNE :+
@@ -3099,9 +3102,10 @@
     :
     JMP Done
     OccupationMenu:
-    
+    ; JSR 
+    ; LDA #<newgamePage1
+    ; 
     Done:
-    JSR DoneBulkDrawing
     RTS
 .endproc
 
