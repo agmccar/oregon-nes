@@ -15,6 +15,8 @@ Play the original:
 
 ![title screen](graphics/scratch/game_011.png?raw=true)
 
+![name party screen](graphics/scratch/game_nameparty.png?raw=true)
+
 ![landmark screen](graphics/scratch/game_000.png?raw=true)
 
 ![traveling](graphics/scratch/game_009.png?raw=true)
