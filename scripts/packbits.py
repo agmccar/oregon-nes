@@ -190,9 +190,9 @@ def main(args):
     # pp.pprint(packed_size, indent=4)
     o = sum([original_size[i] for i in original_size])
     p = sum([packed_size[i] for i in packed_size])
-    print(f"Image/CHR\n* bytes to pack: {o}")
-    print(f"* Compressed size: {p}")
-    print(f"* Saved {o-p} bytes (~{(o-p)/1024:.0f}K, {100*(o-p)/o:.0f}%)")
+    if verbose: print(f"Image/CHR\n* bytes to pack: {o}")
+    if verbose: print(f"* Compressed size: {p}")
+    if verbose: print(f"* Saved {o-p} bytes (~{(o-p)/1024:.0f}K, {100*(o-p)/o:.0f}%)")
     return asm_data
 
 if __name__ == "__main__":

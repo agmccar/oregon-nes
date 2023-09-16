@@ -15,6 +15,7 @@
     .include "data/raw/text/top10default.asm"
     .include "data/compressed/image/suppliesTiles.asm"
     .include "data/raw/image/suppliesImage.asm"
+    .include "data/compressed/image/namepartyImage.asm"
 
 .segment "ROM1"
     .include "code/rom1.asm"

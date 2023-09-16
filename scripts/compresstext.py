@@ -378,9 +378,10 @@ def write_asm(filename, substr_dict, data=None, labelPrefix=None, pointer=False,
                 for label in labels:
                     f.write(f"    .byte <{label},>{label}\n")
     if bytes_before:
-        print(f"Text\n* bytes to pack: {bytes_before}")
-        print(f"* Compressed size: {bytes_after}")
-        print(f"* Saved {bytes_before-bytes_after} bytes (~{(bytes_before-bytes_after)/1024:.0f}K, {100*(bytes_before-bytes_after)/bytes_before:.0f}%)")
+        0
+        # if verbose: print(f"Text\n* bytes to pack: {bytes_before}")
+        # if verbose: print(f"* Compressed size: {bytes_after}")
+        # if verbose: print(f"* Saved {bytes_before-bytes_after} bytes (~{(bytes_before-bytes_after)/1024:.0f}K, {100*(bytes_before-bytes_after)/bytes_before:.0f}%)")
 
 def main(args):
     verbose = args.verbose
