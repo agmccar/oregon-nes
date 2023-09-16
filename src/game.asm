@@ -28,6 +28,7 @@
     .include "data/compressed/text/learn.asm"
     .include "data/compressed/text/sound.asm"
     .include "data/compressed/text/top10.asm"
+    .include "data/compressed/text/newgame.asm"
 
 .segment "ROM2"
     .include "data/compressed/image/landmarkImageA.asm"

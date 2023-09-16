@@ -67,12 +67,12 @@ hudMenuStatusText:
     .byte _M_,_I_,_L_,_E_,_S_ ;47-52
 
 startingDateText:
-    .byte _M_,_A_,_R_,_C_,_H_,___
-    .byte _J_,_U_,_N_,_E_,___,___
-    .byte _A_,_P_,_R_,_I_,_L_,___
-    .byte _J_,_U_,_L_,_Y_,___,___
-    .byte _M_,_A_,_Y_,___,___,___
-    .byte _A_,_U_,_G_,_U_,_S_,_T_
+    .byte 5,_M_,_A_,_R_,_C_,_H_
+    .byte 5,_A_,_P_,_R_,_I_,_L_
+    .byte 3,_M_,_A_,_Y_
+    .byte 4,_J_,_U_,_N_,_E_
+    .byte 4,_J_,_U_,_L_,_Y_
+    .byte 14,_A_,_S_,_K_,___,_F_,_O_,_R_,___,_A_,_D_,_V_,_I_,_C_,_E_
 
 keyboard:
     .byte _A_,_B_,_C_,_D_,_E_,_F_,_G_,_H_,_7_,_8_,_9_

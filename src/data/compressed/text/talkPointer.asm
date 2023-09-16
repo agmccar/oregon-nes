@@ -1,6 +1,6 @@
 ; First header byte:
 ; %00000000
-;  ||||++++ Type of punctiation- {' ': 0, ',': 1, '.': 2, '!': 3, '?': 4}
+;  ||||++++ Type of punctiation- {' ': 0, ',': 1, '.': 2, '!': 3, '?': 4, '$': 5}
 ;  ++++---- Remaining length of header
 
 ; (2nd - nth) header bytes:
@@ -13,10 +13,10 @@
 
 ; Data segment bytes:
 ; $00      : End of entire section
-; $01 - $d1: Dictionary
-; $d2 - $eb: Literal A-Z
-; $ec - $f5: Literal special chars: ["'", '-', '"', ';', ':', '.', ',', '…', '(', ')']
-; $f6 - $ff: Unused
+; $01 - $cf: Dictionary
+; $d0 - $e9: Literal A-Z
+; $ea - $fe: Literal special chars: ["'", '-', '"', ';', ':', '.', ',', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '…', '(', ')', '%']
+; $ff: Unused
 
 talkPointer:
     .byte <talkIndependence1,>talkIndependence1

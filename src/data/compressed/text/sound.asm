@@ -1,6 +1,6 @@
 ; First header byte:
 ; %00000000
-;  ||||++++ Type of punctiation- {' ': 0, ',': 1, '.': 2, '!': 3, '?': 4}
+;  ||||++++ Type of punctiation- {' ': 0, ',': 1, '.': 2, '!': 3, '?': 4, '$': 5}
 ;  ++++---- Remaining length of header
 
 ; (2nd - nth) header bytes:
@@ -13,19 +13,19 @@
 
 ; Data segment bytes:
 ; $00      : End of entire section
-; $01 - $d1: Dictionary
-; $d2 - $eb: Literal A-Z
-; $ec - $f5: Literal special chars: ["'", '-', '"', ';', ':', '.', ',', '…', '(', ')']
-; $f6 - $ff: Unused
+; $01 - $cf: Dictionary
+; $d0 - $e9: Literal A-Z
+; $ea - $fe: Literal special chars: ["'", '-', '"', ';', ':', '.', ',', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '…', '(', ')', '%']
+; $ff: Unused
 
 soundText1:
-    ; 18 bytes
-    .byte $32,$35,$23,$63,$01,$06,$05,$75,$10,$26,$e8,$e5,$46,$df,$0d,$18,$d7
+    ; 17 bytes
+    .byte $32,$35,$23,$63,$01,$06,$03,$7a,$0f,$dd,$28,$90,$44,$0e,$13,$d5
     .byte $00
 
 soundText2:
-    ; 43 bytes
-    .byte $72,$33,$43,$52,$23,$63,$72,$86,$ea,$05,$de,$2f,$e5,$46,$df,$01,$06,$05,$75,$08,$07,$18,$d7,$d5,$46,$03,$d8,$01,$1a,$15,$d8,$19,$de,$4b,$64,$06,$e4,$03,$58,$1f,$16,$e5
+    ; 42 bytes
+    .byte $72,$33,$43,$52,$23,$63,$72,$86,$e8,$03,$dc,$2d,$90,$44,$01,$06,$03,$7a,$09,$07,$13,$d5,$d3,$67,$04,$d6,$01,$19,$17,$d6,$1a,$dc,$4e,$61,$06,$e2,$04,$5e,$1f,$15,$e3
     .byte $00
 
 soundPointer:

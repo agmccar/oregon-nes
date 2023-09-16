@@ -3092,14 +3092,14 @@
     BNE :+
     JMP OccupationMenu
     :
-    CMP #1
-    BNE :+
-    JMP Page2
-    :
-    CMP #2
-    BNE :+
-    JMP Page3
-    :
+    ; CMP #1
+    ; BNE :+
+    ; JMP Page2
+    ; :
+    ; CMP #2
+    ; BNE :+
+    ; JMP Page3
+    ; :
     JMP Done
     OccupationMenu:
     ; JSR 

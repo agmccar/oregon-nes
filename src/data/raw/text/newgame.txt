@@ -4,19 +4,19 @@ Many kinds of people made the trip to Oregon.
 
 ## SelectOccupationBanker
 
-Be a banker from Boston
+Be a banker from Boston$
 
 ## SelectOccupationCarpenter
 
-Be a carpenter from Ohio
+Be a carpenter from Ohio$
 
 ## SelectOccupationFarmer
 
-Be a farmer from Illinois
+Be a farmer from Illinois$
 
 ## SelectOccupationHelp
 
-Find out the differences between these choices
+Find out the differences between these choices$
 
 ## OccupationHelpText1
 
@@ -39,11 +39,11 @@ What are the first names of the four other members in your party?
 
 ## NamePartyPressStart
 
-(Enter names or press Start)
+(Enter names or press Start)$
 
 ## GoingBackText
 
-Going back to 1848…
+Going back to 1848…$
 
 ## SelectMonthText
 
@@ -53,7 +53,7 @@ You must decide which month to leave Independence.
 ## SelectMonthAdvice1
 
 You attend a public meeting held for "folks with the California - Oregon
-fever." You're told:
+fever." You're told:$
 
 ## SelectMonthAdvice2
 
@@ -65,7 +65,7 @@ will still be cool.
 ## BeforeLeavingText1
 
 Before leaving Independence, you should buy equipment and supplies.
-You have $$$$$$ in cash, but you don't have to spend it all now.
+You have ……………… in cash, but you don't have to spend it all now.
 
 ## BeforeLeavingText2
 
@@ -74,31 +74,31 @@ You can buy whatever you need at Matt's General Store.
 ## MattsGeneralStoreHello
 
 Hello, I'm Matt. So you're going to Oregon! I can fix you up with
-what you need:
+what you need:$
 
 ## MattsSupplies1
 
-a team of oxen to pull your wagon
+a team of oxen to pull your wagon$
 
 ## MattsSupplies2
 
-clothing for both summer and winter
+clothing for both summer and winter$
 
 ## MattsSupplies3
 
-plenty of food for the trip
+plenty of food for the trip$
 
 ## MattsSupplies4
 
-ammunition for your rifles
+ammunition for your rifles$
 
 ## MattsSupplies5
 
-spare parts for your wagon
+spare parts for your wagon$
 
 ## MattsBuySupplies1
 
-There are 2 oxen in a yoke; I recommend at least 3 yoke. I charge $40 a yoke.
+There are 2 oxen in a yoke; I recommend at least 3 yoke. I charge %40 a yoke.
 How many do you want?
 
 ## MattsBuySupplies2
@@ -111,27 +111,27 @@ How many pounds of food do you want?
 ## MattsBuySupplies3
 
 You'll need warm clothing in the mountains. I recommend taking at least
-2 sets of clothes per person. Each set is $10.00.
+2 sets of clothes per person. Each set is %10.
 How many sets of clothes do you want?
 
 ## MattsBuySupplies4
 
-I sell ammunition in boxes of 20 bullets. Each box costs $2.00.
+I sell ammunition in boxes of 20 bullets. Each box costs %2.
 How many boxes do you want?
 
 ## MattsBuySupplies5
 
 It's a good idea to have a few spare parts for your wagon. Here are the
-prices:
-# wagon wheel  - $10 each
-# wagon axle   - $10 each
-# wagon tongue - $10 each
-How many wagon
+prices:$
+# wagon wheel  - %10 each
+# wagon axle   - %10 each
+# wagon tongue - %10 each
+How many wagon$
 # wheels?
 # axles?
 # tongues?
-# Bill so far: $$$$$$
-# Amount you have: $$$$$$
+# Bill so far:
+# Amount you have:
 # Which item would you like to buy?
 # Press SPACE BAR to leave store
 
@@ -142,4 +142,4 @@ journey ahead of you.
 
 ## NowLoadingText
 
-Now loading the wagon…
+Now loading the wagon…$

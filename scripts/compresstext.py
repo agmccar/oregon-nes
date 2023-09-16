@@ -9,28 +9,38 @@ PUNCT = {
     "@": 1, # actually a comma
     ".": 2,
     "!": 3,
-    "?": 4
+    "?": 4,
+    "$": 5, # EOL / no punct
 }
 SUBSTR_LEN = 2
-LITERAL_CHAR = 210
 SPECIAL_CHAR = {
-    "'": LITERAL_CHAR+26,
-    "-": LITERAL_CHAR+27,
-    '"': LITERAL_CHAR+28,
-    ';': LITERAL_CHAR+29,
-    ':': LITERAL_CHAR+30,
-    '.': LITERAL_CHAR+31,
-    '@': LITERAL_CHAR+32, # actually a comma
-    '0': LITERAL_CHAR+33,
-    '1': LITERAL_CHAR+34,
-    '2': LITERAL_CHAR+35,
-    '4': LITERAL_CHAR+36,
-    '6': LITERAL_CHAR+37,
-    '7': LITERAL_CHAR+38,
-    '…': LITERAL_CHAR+39,
-    '(': LITERAL_CHAR+40,
-    ')': LITERAL_CHAR+41,
+    "'": 26,
+    "-": 27,
+    '"': 28,
+    ';': 29,
+    ':': 30,
+    '.': 31,
+    '@': 32, # actually a comma
+    '0': 33,
+    '1': 34,
+    '2': 35,
+    '3': 36,
+    '4': 37,
+    '5': 38,
+    '6': 40,
+    '7': 41,
+    '8': 42,
+    '9': 43,
+    '…': 44,
+    '(': 45,
+    ')': 46,
+    '%': 47, # actually dollar sign
 }
+
+LITERAL_CHAR = 0xff-len(SPECIAL_CHAR)-26
+for i in SPECIAL_CHAR:
+    SPECIAL_CHAR[i] += LITERAL_CHAR
+
 SPECIAL_CHAR_ASM = {
     "'": "_AP",
     "-": "_HY",
@@ -41,7 +51,8 @@ SPECIAL_CHAR_ASM = {
     '@': "_CM", # actually a comma
     '…': "_EL",
     '(': "_OP",
-    ')': "_CP"
+    ')': "_CP",
+    '%': "_DL", # actually dollar sign
 }
 HLENS = []
 
@@ -176,7 +187,7 @@ def parse_raw_text(filename):
     text = text.split("##")[1:]
     for section in text:
         # remove comments
-        section = '\n'.join([line for line in section.split('\n') if not line.startswith('#')])
+        section = '\n'.join([line.strip() for line in section.split('\n') if not line.startswith('#')])
         a = section.split('\n\n')
         loc = a.pop(0).strip()
         if len(''.join([i.strip() for i in a])):
@@ -196,6 +207,8 @@ def parse_raw_text(filename):
                     'quote_raw': quote_raw,
                     #'quote_wrap': textwrap.wrap('"'+quote_raw+'"', width=TEXTLINE_TILES),
                 })
+    # pp.pprint(talk_data)
+    # input()
     return talk_data
 
 def compress_segment(segment, substr_dict):
@@ -257,7 +270,11 @@ def compress_segment(segment, substr_dict):
     return bytes_full
 
 def squish_segment(segment):
+    # try:
     segment = segment[:-1] if segment[-1] in PUNCT else segment
+    # except:
+    #     print(segment)
+    #     exit()
     return ''.join(segment.split(' ')).upper()
 
 def speaker_segment(text):
@@ -310,8 +327,8 @@ def write_asm(filename, substr_dict, data=None, labelPrefix=None, pointer=False,
         f.write(f"; Data segment bytes:\n; $00      : End of entire section\n")
         f.write(f"; $01 - ${hex(LITERAL_CHAR-1)[2:]}: Dictionary\n")
         f.write(f"; ${hex(LITERAL_CHAR)[2:]} - ${hex(LITERAL_CHAR+26-1)[2:]}: Literal A-Z\n")
-        f.write(f"; ${hex(LITERAL_CHAR+26)[2:]} - ${hex(LITERAL_CHAR+26+len(SPECIAL_CHAR_ASM)-1)[2:]}: Literal special chars: {str([i.replace('@',',') for i in SPECIAL_CHAR_ASM])}\n")
-        f.write(f"; ${hex(LITERAL_CHAR+26+len(SPECIAL_CHAR_ASM))[2:]} - $ff: Unused\n")
+        f.write(f"; ${hex(LITERAL_CHAR+26)[2:]} - ${hex(LITERAL_CHAR+26+len(SPECIAL_CHAR)-1)[2:]}: Literal special chars: {str([i.replace('@',',') for i in SPECIAL_CHAR])}\n")
+        f.write(f"; $ff: Unused\n")
         f.write(f"\n")
         if data == None:
             f.write(f"talkSpecialChar:\n")
@@ -397,6 +414,15 @@ def main(args):
             sound_data[loc][i]['quote_segments'] = segments
             for segment in segments:
                 mass_text += squish_segment(segment)
+    newgame_data = parse_raw_text('src/data/raw/text/newgame.txt')
+    for loc in newgame_data:
+        for i in range(len(newgame_data[loc])):
+            segments = text_to_segments(newgame_data[loc][i]['quote_raw'])
+            # pp.pprint(segments)
+            # input()
+            newgame_data[loc][i]['quote_segments'] = segments
+            for segment in segments:
+                mass_text += squish_segment(segment)
     substr_dict = create_substr_dict(mass_text)
     write_asm('src/data/compressed/text/dictionary.asm',substr_dict)
 
@@ -479,14 +505,36 @@ def main(args):
             sound_data[page][i]['bytes'] = ",".join(b)
     write_asm('src/data/compressed/text/sound.asm', substr_dict, data=sound_data, pointer=True)
 
+    # 'newgame' text
+    for page in newgame_data:
+        for i in range(len(newgame_data[page])):
+            b = []
+            segments = text_to_segments(newgame_data[page][i]['quote_raw'])
+            newgame_data[page][i]['quote_byte_segments'] = []
+            for segment in segments:
+                if args.verbose:
+                    print(f"Compressing segment: {segment}")
+                bs = compress_segment(segment, substr_dict)
+                newgame_data[page][i]['quote_byte_segments'].append(bs)
+                b.append(bs)
+            newgame_data[page][i]['quote_byte_segments'].append("$00") # end of section
+            b.append("$00") 
+            newgame_data[page][i]['bytes'] = ",".join(b)
+    write_asm('src/data/compressed/text/newgame.asm', substr_dict, data=newgame_data, pointer=True)
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "-v",
         "--verbose",
+        dest="verbose",
         help="increase output verbosity",
         action="store_true"
     )
     args = parser.parse_args()
-    main(args)
+    try:
+        main(args)
+    except KeyboardInterrupt:
+        print("\nOkay then.")
+        exit()
