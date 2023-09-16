@@ -1860,6 +1860,8 @@
 .endproc
 
 .proc BufferDrawText
+    TXA
+    PHA
     LDY #0 ; decompress and draw talk text
     STY counter
     STY textLineHelper+3
@@ -1935,12 +1937,15 @@
     TXA ; done with segment
     PHA ; stash talkTextBuffer index
     LDA helper
-    BEQ :+
+    BEQ :++
     DEC counter ; punctuation
     LDX counter
     CLC
     ADC #_CM-1
+    CMP #_PR
+    BEQ :+
     JSR WriteTextChar ; replace last space with punctuation mark
+    :
     JMP NewSpace
     :
     TYA ; "tells you:"
@@ -2110,6 +2115,8 @@
         CPX counter
         BNE :-
     JSR EndBufferWrite
+    PLA
+    TAX
     RTS
 .endproc
 

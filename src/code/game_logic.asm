@@ -271,8 +271,8 @@
         :
         CMP #GAMESTATE_NEWGAME
         BNE :+
-        LDA #%00001100      ; both fingers visible, normal, pointing right
-        STA fingerAttr
+        ; LDA #%00001100      ; both fingers visible, normal, pointing right
+        ; STA fingerAttr
         JSR LoadBgNewGame
         JMP Done
         :

@@ -15,7 +15,7 @@
 ; $00      : End of entire section
 ; $01 - $cf: Dictionary
 ; $d0 - $e9: Literal A-Z
-; $ea - $fe: Literal special chars: ["'", '-', '"', ';', ':', '.', ',', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '…', '(', ')', '%']
+; $ea - $fe: Literal '-";:.,0123456789…()%
 ; $ff: Unused
 
 talkSpecialChar:
@@ -25,7 +25,6 @@ talkTellsYou:
     .byte _T_,_E_,_L_,_L_,_S_,___,_Y_,_O_,_U_,_CL
 
 talkDictionary:
-    ; range: $01 - $d1
     .byte _T_,_H_
     .byte _E_,_R_
     .byte _O_,_U_

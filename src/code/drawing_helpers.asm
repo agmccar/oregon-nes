@@ -967,6 +967,10 @@
 .endproc
 
 .proc DrawAdornments
+
+    LDY #6
+    JSR bankswitch_y
+
     LDA #<adornmentTiles ; load tiles into pattern B
     STA pointer
     LDA #>adornmentTiles
@@ -1081,10 +1085,16 @@
     INX
     CPX #8
     BNE :-
+    LDY #1
+    JSR bankswitch_y
     RTS
 .endproc
 
 .proc DrawTitleLogo
+
+    LDY #6
+    JSR bankswitch_y
+    
     LDA #<titleLogoTiles ; load tiles into pattern B
     STA pointer
     LDA #>titleLogoTiles
@@ -1138,5 +1148,8 @@
     CPX #8
     BNE :-
 
+    LDY #1
+    JSR bankswitch_y
+    
     RTS
 .endproc

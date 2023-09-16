@@ -27,19 +27,20 @@ SPECIAL_CHAR = {
     '3': 36,
     '4': 37,
     '5': 38,
-    '6': 40,
-    '7': 41,
-    '8': 42,
-    '9': 43,
-    '…': 44,
-    '(': 45,
-    ')': 46,
-    '%': 47, # actually dollar sign
+    '6': 39,
+    '7': 40,
+    '8': 41,
+    '9': 42,
+    '…': 43,
+    '(': 44,
+    ')': 45,
+    '%': 46, # actually dollar sign
 }
 
 LITERAL_CHAR = 0xff-len(SPECIAL_CHAR)-26
 for i in SPECIAL_CHAR:
     SPECIAL_CHAR[i] += LITERAL_CHAR
+# LITERAL_CHAR = $d0 ; see src/constants.asm
 
 SPECIAL_CHAR_ASM = {
     "'": "_AP",
@@ -290,12 +291,12 @@ def text_to_segments(text):
 def create_substr_dict(mass_text):
     substr_dict = {}
     for c in SPECIAL_CHAR:
-        mass_text = mass_text.replace(c, '$')
+        mass_text = mass_text.replace(c, '🐂')
     for i in range(1, LITERAL_CHAR):
-        c = most_common_substring([x for x in mass_text.split('$') if len(x)>=2])
+        c = most_common_substring([x for x in mass_text.split('🐂') if len(x)>=2])
         substr_dict[i] = c
         if len(c):
-            mass_text = mass_text.replace(c,'$')
+            mass_text = mass_text.replace(c,'🐂')
     return {k:v for k,v in substr_dict.items() if len(v)}
 
 def write_asm(filename, substr_dict, data=None, labelPrefix=None, pointer=False, writeData=True):
@@ -327,7 +328,7 @@ def write_asm(filename, substr_dict, data=None, labelPrefix=None, pointer=False,
         f.write(f"; Data segment bytes:\n; $00      : End of entire section\n")
         f.write(f"; $01 - ${hex(LITERAL_CHAR-1)[2:]}: Dictionary\n")
         f.write(f"; ${hex(LITERAL_CHAR)[2:]} - ${hex(LITERAL_CHAR+26-1)[2:]}: Literal A-Z\n")
-        f.write(f"; ${hex(LITERAL_CHAR+26)[2:]} - ${hex(LITERAL_CHAR+26+len(SPECIAL_CHAR)-1)[2:]}: Literal special chars: {str([i.replace('@',',') for i in SPECIAL_CHAR])}\n")
+        f.write(f"; ${hex(LITERAL_CHAR+26)[2:]} - ${hex(LITERAL_CHAR+26+len(SPECIAL_CHAR)-1)[2:]}: Literal {''.join([i.replace('@',',') for i in SPECIAL_CHAR])}\n")
         f.write(f"; $ff: Unused\n")
         f.write(f"\n")
         if data == None:
@@ -342,7 +343,6 @@ def write_asm(filename, substr_dict, data=None, labelPrefix=None, pointer=False,
             f.write(f"talkTellsYou:\n")
             f.write(f"    .byte {','.join(['_'+i+'_' for i in 'TELLS_YOU'])},_CL\n\n")
             f.write(f"talkDictionary:\n")
-            f.write(f"    ; range: $01 - $d1\n")
             for i in s:
                 f.write(f"    .byte {i}\n")
             f.write("\n")

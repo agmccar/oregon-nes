@@ -15,7 +15,7 @@
 ; $00      : End of entire section
 ; $01 - $cf: Dictionary
 ; $d0 - $e9: Literal A-Z
-; $ea - $fe: Literal special chars: ["'", '-', '"', ';', ':', '.', ',', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '…', '(', ')', '%']
+; $ea - $fe: Literal '-";:.,0123456789…()%
 ; $ff: Unused
 
 talkPointer:

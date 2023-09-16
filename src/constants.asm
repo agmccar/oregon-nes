@@ -90,12 +90,12 @@ _AD = 137+64 ; v (arrow down)
 ; _3D = 139+64 ; ┴
 ; _3L = 140+64 ; ├
 ; _3R = 141+64 ; ┤
-_HY = 202 ; -
-_QT = 203 ; "
-_SC = 204 ; ;
-_EL = 205 ; …
-_OP = 206 ; (
-_CP = 207 ; )
+_HY = $ca ; -
+_QT = $cb ; "
+_SC = $cc ; ;
+_EL = $cd ; …
+_OP = $ce ; (
+_CP = $cf ; )
  
 ; other tiles
 TILE_GRASS = $ff
@@ -248,4 +248,4 @@ C_LGREY = $10
 C_MONO = $0B
 
 ; talk text 
-LITERAL_CHAR = $d2 ; see data/compressed/text/dictionary.asm
+LITERAL_CHAR = $d0 ; see data/compressed/text/dictionary.asm

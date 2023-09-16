@@ -23,12 +23,8 @@
     JSR UpdatePalette
     
     JSR StartBulkDrawing ; draw adornments
-    LDY #6
-    JSR bankswitch_y
     JSR DrawAdornments
     JSR DrawTitleLogo
-    LDY #1
-    JSR bankswitch_y
     JSR DoneBulkDrawing
     JSR BufferDrawTitleOptions
 
@@ -330,11 +326,7 @@
     JSR ClearScreen
     JSR ClearAttributes
     JSR StartBulkDrawing
-    LDY #6
-    JSR bankswitch_y
     JSR DrawAdornments
-    LDY #1
-    JSR bankswitch_y
     JSR DoneBulkDrawing
     JSR BufferDrawTalkText
     JSR BufferDrawPressStart
@@ -351,11 +343,7 @@
     LDA menuCursor
     CMP #3
     BNE :+
-    LDY #6
-    JSR bankswitch_y
     JSR DrawAdornments
-    LDY #1
-    JSR bankswitch_y
     :
     LDX #21
     JSR StartBufferWrite ; "On Arriving In Oregon"
