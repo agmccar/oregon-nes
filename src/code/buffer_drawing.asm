@@ -2213,3 +2213,82 @@
     LDX textLineHelper+2 ; unstash x
     RTS
 .endproc
+
+.proc HighlightKeyboardKey
+    BufferStart #$10, #$23, #$e8
+        LDX #$10
+        LDA #$ff
+        :
+        JSR WriteByteToBuffer
+        DEX
+        BNE :-
+    JSR EndBufferWrite
+
+    LDA #$23
+    STA pointer
+    LDA #$e8
+    STA pointer+1
+    LDA fingerX
+    LSR
+    LSR
+    CLC
+    ADC pointer+1
+    STA pointer+1
+    LDA fingerY
+    CMP #25
+    BCC :+
+    CLC
+    LDA pointer+1
+    ADC #8
+    STA pointer+1
+    :
+
+    LDA fingerX
+    LSR
+    AND #1
+    BEQ :++
+    SEC
+    LDA fingerY
+    SBC #21
+    LSR
+    AND #1
+    BEQ :+
+    LDA #$7f
+    STA helper
+    JMP Done
+    :
+    LDA #$f7
+    STA helper
+    JMP Done
+    :
+    SEC
+    LDA fingerY
+    SBC #21
+    LSR
+    AND #1
+    BEQ :+
+    LDA #$df
+    STA helper
+    JMP Done
+    :
+    LDA #$fd
+    STA helper
+
+
+    Done:
+    ;     1  2  2  3  3  4  4  5  5  6
+
+    ; 23  1  2  2  3  3  4  4  5  5  6
+    ; 25  9  10 10 11 11 12 12    13+14
+
+    ;     06 08 10 12 14 16 18 20 22 24
+    ; 21  fb fe fb fe fb fe fb fe fb fe
+    ; 23  bf ef bf ef bf ef bf ef bf ef
+    ; 25  fb fe fb fe fb fe fb    fb+fe
+    BufferStart #1, pointer, pointer+1
+        LDA helper
+        JSR WriteByteToBuffer
+    JSR EndBufferWrite
+
+    RTS
+.endproc

@@ -199,14 +199,14 @@
     LDA buttons1
     CMP buttons1Last
     BNE CheckA
-    JMP Done ; RTS
+    RTS
     CheckA:
         LDA #KEY_A
         BIT buttons1
         BNE :+
         JMP CheckStart
         :
-        JMP Done
+        RTS
     CheckStart:
         LDA #KEY_START
         BIT buttons1
@@ -214,10 +214,6 @@
         JMP CheckSelect
         :
         LDA menuOpen
-        CMP #MENU_NONE
-        BNE :+
-        JMP @menuNone
-        :
         CMP #MENU_NEWGAME_OCCUPATION
         BNE :+
         JMP @menuOccupation
@@ -226,9 +222,11 @@
         BNE :+
         JMP @menuOccupationHelp
         :
-        JMP Done
-        @menuNone:
-            JMP Done
+        CMP #MENU_NEWGAME_NAMEPARTY
+        BNE :+
+        JMP @menuNameParty
+        :
+        RTS
         @menuOccupation:
             LDA #MENU_NEWGAME_NAMEPARTY
             STA menuOpen
@@ -237,31 +235,33 @@
             BNE :+
             LDA occupationAttribute+0
             STA occupation
-            JMP Done
+            RTS
             :
             CMP #13 ; "Be a carpenter from Ohio"
             BNE :+
             LDA occupationAttribute+1
             STA occupation
-            JMP Done
+            RTS
             :
             CMP #16 ; "Be a farmer from Illinois"
             BNE :+
             LDA occupationAttribute+2
             STA occupation
-            JMP Done
+            RTS
             :
             CMP #19 ; "Find out the differences between these choices"
             BNE :+
             LDA #MENU_NEWGAME_OCC_HELP
             STA menuOpen
-            JMP Done
+            RTS
             :
-            JMP Done
+            RTS
         @menuOccupationHelp:
             LDA #MENU_NEWGAME_OCCUPATION
             STA menuOpen
-            JMP Done
+            RTS
+        @menuNameParty:
+            RTS
     CheckSelect:
         LDA #KEY_SELECT
         BIT buttons1
@@ -271,9 +271,20 @@
         LDA menuOpen
         CMP #MENU_NEWGAME_OCCUPATION
         BNE :+
-        JMP MainMoveDown ; hack
+        JMP @menuOccupation
         :
-        JMP Done
+        RTS
+        @menuOccupation:
+            LDX fingerY
+            INX
+            INX
+            INX
+            CPX #22 ; check if fingerY is past bottom of menu
+            BNE :+
+            LDX #10 ; wrap to top of menu
+            :
+            STX fingerY
+            RTS
     CheckDown:
         LDA #KEY_DOWN
         BIT buttons1
@@ -282,20 +293,38 @@
         :
         LDA menuOpen
         CMP #MENU_NEWGAME_OCCUPATION
-        BEQ :+
-        JMP Done
-        :
-        MainMoveDown:
-        LDX fingerY
-        INX
-        INX
-        INX
-        CPX #22 ; check if fingerY is past bottom of menu
         BNE :+
-        LDX #10 ; wrap to top of menu
+        JMP @menuOccupation
         :
-        STX fingerY
-        JMP Done
+        CMP #MENU_NEWGAME_NAMEPARTY
+        BNE :+
+        JMP @menuNameParty
+        :
+        RTS
+        @menuOccupation:
+            LDX fingerY
+            INX
+            INX
+            INX
+            CPX #22 ; check if fingerY is past bottom of menu
+            BNE :+
+            LDX #10 ; wrap to top of menu
+            :
+            STX fingerY
+            RTS
+        @menuNameParty:
+            LDX fingerY
+            INX
+            INX
+            CPX #27 ; check if finger is too far down
+            BNE :+
+            LDX #21     ; wrap around to top
+            :
+            STX fingerY
+            LDA #60
+            STA frameCounter
+            JSR HighlightKeyboardKey
+            RTS
     CheckUp:
         LDA #KEY_UP
         BIT buttons1
@@ -304,46 +333,102 @@
         :
         LDA menuOpen
         CMP #MENU_NEWGAME_OCCUPATION
-        BEQ :+
-        JMP Done
-        :
-        LDX fingerY
-        DEX
-        DEX
-        DEX
-        CPX #7 ; check if fingerY is past top of menu
         BNE :+
-        LDX #19 ; wrap to bottom of menu
+        JMP @menuOccupation
         :
-        STX fingerY
-        JMP Done
+        CMP #MENU_NEWGAME_NAMEPARTY
+        BNE :+
+        JMP @menuNameParty
+        :
+        RTS
+        @menuOccupation:
+            LDX fingerY
+            DEX
+            DEX
+            DEX
+            CPX #7 ; check if fingerY is past top of menu
+            BNE :+
+            LDX #19 ; wrap to bottom of menu
+            :
+            STX fingerY
+            RTS
+        @menuNameParty:
+            LDX fingerY
+            DEX
+            DEX
+            CPX #19 ; check if finger is too far up
+            BNE :+
+            LDX #25     ; wrap around to bottom
+            :
+            STX fingerY
+            LDA #60
+            STA frameCounter
+            JSR HighlightKeyboardKey
+            RTS
     CheckLeft:
         LDA #KEY_LEFT
         BIT buttons1
         BNE :+
         JMP CheckRight
         :
+        LDA menuOpen
+        CMP #MENU_NEWGAME_NAMEPARTY
+        BNE :+
+        JMP @menuNameParty
+        :
+        RTS
     ;     LDA menuOpen
     ;     CMP #MENU_TITLE_TOPTEN
     ;     BEQ :+
-    ;     JMP Done
+    ;     RTS
     ;     :
     ;     JSR ToggleYN
-        JMP Done
+        @menuNameParty:
+            LDX fingerX
+            DEX
+            DEX
+            CPX #4 ; check if finger is too far left
+            BNE :+
+            LDX #24     ; wrap around to right
+            :
+            STX fingerX
+            LDA #60
+            STA frameCounter
+            JSR HighlightKeyboardKey
+            RTS
     CheckRight:
-    ;     LDA #KEY_RIGHT
-    ;     BIT buttons1
-    ;     BNE :+
-    ;     JMP Done
+        LDA #KEY_RIGHT
+        BIT buttons1
+        BNE :+
+        RTS
+        :
+        LDA menuOpen
+        CMP #MENU_NEWGAME_NAMEPARTY
+        BNE :+
+        JMP @menuNameParty
+        :
+        RTS
     ;     :
     ;     LDA menuOpen
     ;     CMP #MENU_TITLE_TOPTEN
     ;     BEQ :+
-    ;     JMP Done
+    ;     RTS
     ;     :
     ;     JSR ToggleYN
-    ;     JMP Done
-    Done:
+        @menuNameParty:
+            LDX fingerX
+            INX
+            INX
+            CPX #26 ; check if finger is too far right
+            BNE :+
+            LDX #6     ; wrap around to left
+            :
+            STX fingerX
+            LDA #60
+            STA frameCounter
+            JSR HighlightKeyboardKey
+            RTS
+    ; Done:
     RTS
 .endproc
 

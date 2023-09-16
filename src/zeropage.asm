@@ -49,7 +49,8 @@ menuOpen:           .res 1 ; see: constants.asm -> Menu states
 ;  |||||+-- Main finger visible- 0:no, 1:yes
 ;  ||||+--- "Old" finger visible- 0:no, 1:yes
 ;  |||+---- type- 0:normal finger, 1: arrows (if 'R': up/down, 'L':left/right)
-;  +++----- unused
+;  ||+----- keyboard key- 0:no, 1:yes
+;  ++------ unused
 fingerAttr:         .res 1
 fingerX:            .res 1 ; (tiles from top left)
 fingerY:            .res 1 ; (tiles from top left)

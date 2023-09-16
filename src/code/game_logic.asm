@@ -356,6 +356,7 @@
         LDA #10
         STA fingerY
         JSR LoadBgNewGame
+        ;JSR RedrawFinger
         ; JSR DrawOccupationMenu
         ; LDX #15
         ; LDY #7
@@ -370,9 +371,19 @@
         JSR LoadBgNewGame
         JMP Done
     NewGameNameParty:
-        LDA #%00000100      ; only main finger visible, pointing right
+        LDA #%00100000      ; keyboard key
         STA fingerAttr
+        LDA #6
+        STA fingerX
+        LDA #21
+        STA fingerY
+        ; LDA #0
+        ; STA menuCursor
+        ; STA fingerLastY
         JSR LoadBgNewGame
+        LDA #30
+        STA frameCounter
+        JSR HighlightKeyboardKey
         JMP Done
     NewGameStartDate:
         LDA #%00000100      ; only main finger visible
@@ -463,61 +474,98 @@
 .proc Every60Frames
     LDA gameState ; only on main traveling screen
     CMP #GAMESTATE_TRAVELING
-    BEQ :+
-    JMP Done
-    :
-    LDA frameCounter
-    CMP #60
+    BEQ Traveling
+    CMP #GAMESTATE_NEWGAME
     BNE :+
-    JMP sec1
+    JMP NewGame
     :
-    CMP #120
-    BNE :+
-    JMP sec2
-    :
-    AND #$07
-    CMP #0
-    BNE :+
-    JMP animate
-    :
-    JMP Done
-    animate:
-        LDA wagonRest
-        BEQ :+
-        JMP :+++
-        :
-        LDA oxenFrame
-        BPL :+
-        JMP Done
-        :
-        JSR BufferDrawWagon
-        INC oxenFrame
-        LDA oxenFrame
-        CMP #3
-        BNE :+
-        LDA #0
-        STA oxenFrame
-        :
-        INC frameCounter
-        JMP Done
-    sec1:
-        ; 1st second: move wagon
-        LDA oxenFrame
-        AND #%01111111
-        STA oxenFrame
-        INC frameCounter
-        JMP Done
-    sec2:
-        ; 2nd second: pause, update counters, roll for event
-        LDA #%10000000
-        STA oxenFrame
-        JSR ElapseDay
-        JSR BufferDrawMainMenuHUDValues
-        JSR RestOneDay
-        JSR BufferDrawTravelingHUDValues
-        LDA #0
-        STA frameCounter
-        JMP Done
-    Done:
     RTS
+    Traveling:
+        LDA frameCounter
+        CMP #60
+        BNE :+
+        JMP @sec1
+        :
+        CMP #120
+        BNE :+
+        JMP @sec2
+        :
+        AND #$07
+        CMP #0
+        BNE :+
+        JMP @animate
+        :
+        RTS
+        @animate:
+            LDA wagonRest
+            BEQ :+
+            JMP :+++
+            :
+            LDA oxenFrame
+            BPL :+
+            RTS
+            :
+            JSR BufferDrawWagon
+            INC oxenFrame
+            LDA oxenFrame
+            CMP #3
+            BNE :+
+            LDA #0
+            STA oxenFrame
+            :
+            INC frameCounter
+            RTS
+        @sec1:
+            ; 1st second: move wagon
+            LDA oxenFrame
+            AND #%01111111
+            STA oxenFrame
+            INC frameCounter
+            RTS
+        @sec2:
+            ; 2nd second: pause, update counters, roll for event
+            LDA #%10000000
+            STA oxenFrame
+            JSR ElapseDay
+            JSR BufferDrawMainMenuHUDValues
+            JSR RestOneDay
+            JSR BufferDrawTravelingHUDValues
+            LDA #0
+            STA frameCounter
+            RTS
+    NewGame:
+        LDA menuOpen
+        CMP #MENU_NEWGAME_NAMEPARTY
+        BEQ :+
+        RTS
+        :
+        LDA frameCounter
+        CMP #30
+        BNE :+
+        JMP @sec1
+        :
+        CMP #60
+        BNE :+
+        JMP @sec2
+        :
+        RTS
+        @sec1:
+            ; BufferStart #2, #$3f, #$06
+            ; LDA #C_GREY
+            ; JSR WriteByteToBuffer
+            ; LDA #C_WHITE
+            ; JSR WriteByteToBuffer
+            ; JSR EndBufferWrite
+            ; INC frameCounter
+            RTS
+        @sec2:
+            ; BufferStart #2, #$3f, #$06
+            ; LDA #C_WHITE
+            ; JSR WriteByteToBuffer
+            ; LDA #C_GREY
+            ; JSR WriteByteToBuffer
+            ; JSR EndBufferWrite
+            ; LDA #0
+            ; STA frameCounter
+            RTS
 .endproc

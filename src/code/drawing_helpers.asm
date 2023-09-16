@@ -36,7 +36,7 @@
     ; PPUADDR must be set
     LDA #_VR ;vert line
     STA PPUDATA
-    LDA #___
+    LDA #0
     LDX #0 ;loop 22 times
     :
     STA PPUDATA

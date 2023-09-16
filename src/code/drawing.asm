@@ -32,7 +32,6 @@
         STA PPUADDR
         LDA #_VR ;vert line
         STA PPUDATA
-        LDA #___
         LDX #0
         @letters1:
             TXA
@@ -44,7 +43,7 @@
             LDA keyboard, Y
             JMP @letter1
             @skipLetter1:
-                LDA #___
+                LDA #0
             @letter1:
             STA PPUDATA
             INX
@@ -80,7 +79,7 @@
             LDA keyboard, Y
             JMP @letter2
             @skipLetter2:
-                LDA #___
+                LDA #0
             @letter2:
             STA PPUDATA
             INX
@@ -116,7 +115,7 @@
             LDA keyboard, Y
             JMP @letter3
             @skipLetter3:
-                LDA #___
+                LDA #0
             @letter3:
             STA PPUDATA
             INX

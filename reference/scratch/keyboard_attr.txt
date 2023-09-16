@@ -1,0 +1,12 @@
+
+
+$23e8 + _ :
+    06 08 10 12 14 16 18 20 22 24
+21  1  2  2  3  3  4  4  5  5  6
+23  1  2  2  3  3  4  4  5  5  6
+25  9  10 10 11 11 12 12    13+14
+
+    06 08 10 12 14 16 18 20 22 24
+21  fb fe fb fe fb fe fb fe fb fe
+23  bf ef bf ef bf ef bf ef bf ef
+25  fb fe fb fe fb fe fb    fb+fe

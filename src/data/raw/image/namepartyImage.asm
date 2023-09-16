@@ -30,7 +30,7 @@ namepartyImage: ; 13 rows
 	.byte $00,$00,$00,$00,$00,$00,$00,$00,$b8,$b9,$ba,$bb,$00,$be,$ba,$bb
 
 namepartyAttr: ; full attr table
-	.byte $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$80,$20,$00,$00,$00,$00
+	.byte $0f,$0f,$0f,$0f,$0f,$0f,$0f,$0f,$00,$00,$80,$20,$00,$00,$00,$00
 	.byte $08,$80,$00,$00,$08,$0a,$00,$aa,$00,$88,$aa,$02,$00,$00,$00,$aa
 	.byte $ff,$ff,$ff,$ff,$ff,$ff,$ff,$ff,$ff,$ff,$ff,$ff,$ff,$ff,$ff,$ff
 	.byte $ff,$ff,$ff,$ff,$ff,$ff,$ff,$ff,$ff,$ff,$ff,$ff,$ff,$ff,$ff,$ff

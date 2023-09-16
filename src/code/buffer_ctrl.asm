@@ -33,6 +33,9 @@
     BNE :-                  ; repeat until no more bytes to copy
     LDY nametableBuffer, X
     INX
+    LDA #0 ; https://www.nesdev.org/wiki/PPU_registers#Palette_corruption
+    STA PPUADDR
+    STA PPUADDR
     JMP @loop               ; exit if entire buffer has been read
     Done:
     RTS
