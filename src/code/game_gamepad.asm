@@ -206,7 +206,44 @@
         BNE :+
         JMP CheckStart
         :
+        LDA menuOpen
+        CMP #MENU_NEWGAME_NAMEPARTY
+        BNE :+
+        JMP @menuNameParty
+        :
         RTS
+        ; @menuTyping:
+        ;     LDA fingerX
+        ;     CMP #21
+        ;     BNE :+
+        ;     LDA fingerY
+        ;     CMP #24
+        ;     BNE :+
+        ;     JSR CloseSubmenu
+        ;     JMP Done
+        ;     :
+        ;     LDX keyboardKey
+        ;     LDA keyboard, X
+        ;     LDY nameCursor
+        ;     STA personName,Y
+        ;     INC nameCursor
+        ;     LDA nameCursor
+        ;     AND #%00000011
+        ;     BNE :+
+        ;     DEC nameCursor
+        ;     LDA #41         ; jump to "DONE" key
+        ;     STA keyboardKey
+        ;     LDA #21
+        ;     STA fingerX
+        ;     LDA #24
+        ;     STA fingerY
+        ;     :
+        ;     JSR LoadBgNewGame ; todo: only update 1 tile (use WriteTileToBuffer?)
+        ;     JSR DrawMenuKeyboard
+        ;     JSR RedrawFinger
+        ;     RTS
+        @menuNameParty:
+            RTS
     CheckStart:
         LDA #KEY_START
         BIT buttons1

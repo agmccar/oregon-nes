@@ -18,8 +18,9 @@
 
 ## New game screens
 
-- [ ] choose occupation menu
+- [x] choose occupation menu
 - [x] Name party members graphics
+- [ ] name party members input
 - [ ] decide which month to leave menu
 - [ ] independence graphic + text boxes screens
 

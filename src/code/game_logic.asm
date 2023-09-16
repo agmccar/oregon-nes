@@ -539,7 +539,7 @@
         BEQ :+
         RTS
         :
-        LDA frameCounter
+        LDA frameCounter ; blink cursor
         CMP #30
         BNE :+
         JMP @sec1
@@ -549,7 +549,7 @@
         JMP @sec2
         :
         RTS
-        @sec1:
+        @sec1: 
             ; BufferStart #2, #$3f, #$06
             ; LDA #C_GREY
             ; JSR WriteByteToBuffer
