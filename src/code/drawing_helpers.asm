@@ -37,11 +37,11 @@
     LDA #_VR ;vert line
     STA PPUDATA
     LDA #___
-    LDX #0 ;loop 23 times
+    LDX #0 ;loop 22 times
     :
     STA PPUDATA
     INX
-    CPX #23
+    CPX #22
     BNE :-
     LDA #_VR ;vert line
     STA PPUDATA

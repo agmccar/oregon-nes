@@ -4,16 +4,16 @@
     KBLine0:
         LDA #$22 ; Line 0  top border
         STA PPUADDR
-        LDA #$04
+        LDA #$64
         STA PPUADDR
         LDA #_RD ;corner
         STA PPUDATA
         LDA #_HR ;horiz line
-        LDX #0 ;loop 23 times
+        LDX #0
         @topBorderLine:
             STA PPUDATA
             INX
-            CPX #23
+            CPX #TEXT_KEYBOARD_LEN*2
             BNE @topBorderLine
         LDA #_LD ;corner
         STA PPUDATA
@@ -21,19 +21,19 @@
     KBLine1:
         LDA #$22 ; Line 1 blank
         STA PPUADDR
-        LDA #$24
+        LDA #$84
         STA PPUADDR
         JSR DrawMenuKeyboardBlankLine
 
     KBLine2:
-        LDA #$22 ; Line 2 A-9
+        LDA #$22 ; Line 2 qwertyuiop
         STA PPUADDR
-        LDA #$44
+        LDA #$a4
         STA PPUADDR
         LDA #_VR ;vert line
         STA PPUDATA
         LDA #___
-        LDX #0 ;loop 23 times
+        LDX #0
         @letters1:
             TXA
             AND #%00000001
@@ -48,7 +48,7 @@
             @letter1:
             STA PPUDATA
             INX
-            CPX #23
+            CPX #TEXT_KEYBOARD_LEN*2
             BNE @letters1
         LDA #_VR ;vert line
         STA PPUDATA
@@ -56,18 +56,18 @@
     KBLine3:
         LDA #$22 ; Line 3 blank
         STA PPUADDR
-        LDA #$64
+        LDA #$c4
         STA PPUADDR
         JSR DrawMenuKeyboardBlankLine
 
     KBLine4:
-        LDA #$22 ; Line 4 I-6
+        LDA #$22 ; Line 4 asdfghjkl
         STA PPUADDR
-        LDA #$84
+        LDA #$e4
         STA PPUADDR
         LDA #_VR ;vert line
         STA PPUDATA
-        LDX #0 ;loop 23 times
+        LDX #0
         @letters2:
             TXA
             AND #%00000001
@@ -84,26 +84,26 @@
             @letter2:
             STA PPUDATA
             INX
-            CPX #23
+            CPX #TEXT_KEYBOARD_LEN*2
             BNE @letters2
         LDA #_VR ;vert line
         STA PPUDATA
 
     KBLine5:
-        LDA #$22 ; Line 5 blank
+        LDA #$23 ; Line 5 blank
         STA PPUADDR
-        LDA #$A4
+        LDA #$04
         STA PPUADDR
         JSR DrawMenuKeyboardBlankLine
 
     KBLine6:
-        LDA #$22 ; Line 6 Q-3
+        LDA #$23 ; Line 6 zxcvbnm Done
         STA PPUADDR
-        LDA #$C4
+        LDA #$24
         STA PPUADDR
         LDA #_VR ;vert line
         STA PPUDATA
-        LDX #0 ;loop 23 times
+        LDX #0
         @letters3:
             TXA
             AND #%00000001
@@ -120,50 +120,14 @@
             @letter3:
             STA PPUDATA
             INX
-            CPX #23
+            CPX #TEXT_KEYBOARD_LEN*2
             BNE @letters3
         LDA #_VR ;vert line
         STA PPUDATA
 
-    KBLine7:
-        LDA #$22 ; Line 7 blank
+        LDA #$23 ; Line 6 "DONE"
         STA PPUADDR
-        LDA #$E4
-        STA PPUADDR
-        JSR DrawMenuKeyboardBlankLine
-
-    KBLine8:
-        LDA #$23 ; Line 8 Y-?
-        STA PPUADDR
-        LDA #$04
-        STA PPUADDR
-        LDA #_VR ;vert line
-        STA PPUDATA
-        LDX #0 ;loop 23 times
-        @letters4:
-            TXA
-            AND #%00000001
-            BEQ @skipLetter4
-            TXA
-            LSR
-            CLC
-            ADC #33
-            TAY
-            LDA keyboard, Y
-            JMP @letter4
-            @skipLetter4:
-                LDA #___
-            @letter4:
-            STA PPUDATA
-            INX
-            CPX #23
-            BNE @letters4
-        LDA #_VR ;vert line
-        STA PPUDATA
-
-        LDA #$23 ; Line 8 "DONE"
-        STA PPUADDR
-        LDA #$16
+        LDA #$36
         STA PPUADDR
         LDX #0 ;loop 4 times
         @letterDone:
@@ -173,26 +137,26 @@
             CPX #4
             BNE @letterDone
 
-    KBLine9:
+    KBLine7:
         LDA #$23 ; Line 9 blank
         STA PPUADDR
-        LDA #$24
+        LDA #$44
         STA PPUADDR
         JSR DrawMenuKeyboardBlankLine
 
-    KBLineA:
+    KBLine8:
         LDA #$23 ; Line 10  bottom border
         STA PPUADDR
-        LDA #$44
+        LDA #$64
         STA PPUADDR
         LDA #_RU ;corner
         STA PPUDATA
         LDA #_HR ;horiz line
-        LDX #0 ;loop 23 times
+        LDX #0
         @bottomBorderLine:
             STA PPUDATA
             INX
-            CPX #23
+            CPX #TEXT_KEYBOARD_LEN*2
             BNE @bottomBorderLine
         LDA #_LU ;corner
         STA PPUDATA

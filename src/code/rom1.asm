@@ -3162,6 +3162,40 @@
     JSR StartBulkDrawing
     JSR DrawNamePartyImage
     JSR DoneBulkDrawing
+    LDX #14 ; newgameNamePartyText1
+    LDA #$22
+    STA cartHelperDigit
+    LDA #$02
+    STA cartHelperDigit+1
+    ; :
+    LDA newgamePointer,X
+    STA pointer
+    INX
+    LDA newgamePointer,X
+    STA pointer+1
+    INX
+    JSR BufferDrawText
+    JSR StartBulkDrawing
+    JSR DrawMenuKeyboard
+    JSR DoneBulkDrawing
+    ; CLC
+    ; LDA cartHelperDigit+1
+    ; ADC #$40
+    ; STA cartHelperDigit+1
+    ; LDA cartHelperDigit
+    ; ADC #0
+    ; STA cartHelperDigit
+    ; CPX #14
+    ; BNE :-
+    BufferStart_ #8, #$22, #$37
+    LDX #8
+    LDA #_UL
+    :
+    JSR WriteByteToBuffer
+    DEX
+    BNE :-
+    JSR EndBufferWrite
+
     RTS
 .endproc
 
