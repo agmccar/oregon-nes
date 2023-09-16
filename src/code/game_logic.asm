@@ -204,6 +204,10 @@
     BNE :+
     JMP NewGameOccHelp
     :
+    CMP #MENU_NEWGAME_NAMEPARTY
+    BNE :+
+    JMP NewGameNameParty
+    :
     CMP #MENU_NEWGAME_STARTDATE
     BNE :+
     JMP NewGameStartDate
@@ -363,6 +367,11 @@
         ; LDX #1
         ; LDY #1
         ; JSR MoveFingerToSubmenu
+        JSR LoadBgNewGame
+        JMP Done
+    NewGameNameParty:
+        LDA #%00000100      ; only main finger visible, pointing right
+        STA fingerAttr
         JSR LoadBgNewGame
         JMP Done
     NewGameStartDate:

@@ -230,7 +230,7 @@
         @menuNone:
             JMP Done
         @menuOccupation:
-            LDA #MENU_NEWGAME_STARTDATE
+            LDA #MENU_NEWGAME_NAMEPARTY
             STA menuOpen
             LDA fingerY
             CMP #10 ; "Be a banker from Boston"

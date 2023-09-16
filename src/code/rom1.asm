@@ -3081,9 +3081,6 @@
 .proc LoadBgNewGame
     JSR ClearScreen
     JSR ClearAttributes
-    JSR StartBulkDrawing
-    JSR DrawAdornments
-    JSR DoneBulkDrawing
 
     LDA menuOpen
     CMP #MENU_NEWGAME_OCCUPATION
@@ -3094,8 +3091,15 @@
     BNE :+
     JMP OccupationHelp
     :
+    CMP #MENU_NEWGAME_NAMEPARTY
+    BNE :+
+    JMP NameParty
+    :
     RTS
     Occupation:
+    JSR StartBulkDrawing
+    JSR DrawAdornments
+    JSR DoneBulkDrawing
     LDX #0 ; newgameSelectOccupationText
     LDA #$20
     STA cartHelperDigit
@@ -3127,6 +3131,9 @@
     BNE :--
     RTS
     OccupationHelp:
+    JSR StartBulkDrawing
+    JSR DrawAdornments
+    JSR DoneBulkDrawing
     LDX #10 ; newgameOccupationHelpText1
     LDA #$20
     STA cartHelperDigit
@@ -3150,6 +3157,11 @@
     CPX #14
     BNE :-
     JSR BufferDrawPressStart
+    RTS
+    NameParty:
+    JSR StartBulkDrawing
+    JSR DrawNamePartyImage
+    JSR DoneBulkDrawing
     RTS
 .endproc
 

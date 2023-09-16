@@ -1153,3 +1153,79 @@
     
     RTS
 .endproc
+
+.proc DrawNamePartyImage
+    LDY #0 ; get image data
+    JSR bankswitch_y
+
+    LDA #<namepartyTiles 
+    STA pointer
+    LDA #>namepartyTiles
+    STA pointer+1
+    LDA #$00 ; load 12x16x16 into counter (number of bytes to copy)
+    STA counter
+    LDA #$0C
+    STA counter+1
+    LDA #0
+    STA PPUMASK
+    LDA #$10
+    STA PPUADDR
+    LDA #$00
+    STA PPUADDR
+    JSR UnpackData
+    
+    LDA #<namepartyAttr ; set attribute table
+    STA pointer
+    LDA #>namepartyAttr
+    STA pointer+1
+    LDA #8*8
+    STA counter
+    LDA #0
+    STA counter+1
+    LDA PPUSTATUS
+    LDA #$23
+    STA PPUADDR
+    LDA #$C0
+    STA PPUADDR
+    JSR UnpackData
+
+    LDA #<namepartyImage   ; draw image
+    STA pointer
+    LDA #>namepartyImage
+    STA pointer+1
+    LDA #$a0 ; 13x$20 tiles for nameparty image (#$1a0)
+    STA counter
+    LDA #$01
+    STA counter+1
+    LDA PPUSTATUS
+    LDA #$20
+    STA PPUADDR
+    LDA #$40
+    STA PPUADDR
+    JSR UnpackData
+    
+    ; LDA #<titleLogoTiles ; load tiles into pattern B
+    ; STA pointer
+    ; LDA #>titleLogoTiles
+    ; STA pointer+1
+    ; LDY #0
+    ; STY PPUMASK
+    ; LDY #$12
+    ; STY PPUADDR
+    ; LDY #$00
+    ; STY PPUADDR
+    ; LDX #$03
+    ; :
+    ; LDA (pointer), Y
+    ; STA PPUDATA
+    ; INY
+    ; BNE :-
+    ; INC pointer+1
+    ; DEX
+    ; BNE :-
+    
+
+    LDY #1
+    JSR bankswitch_y
+    RTS
+.endproc
