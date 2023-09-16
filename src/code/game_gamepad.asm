@@ -1,5 +1,5 @@
 
-.proc ControllerTitle
+.proc GamepadTitle
     LDA buttons1
     CMP buttons1Last
     BNE CheckA
@@ -47,16 +47,19 @@
             BNE :+
             LDA #MENU_TITLE_LEARN
             STA menuOpen
+            JMP Done
             :
             CMP #17 ; See the Oregon Top Ten
             BNE :+
             LDA #MENU_TITLE_TOPTEN
             STA menuOpen
+            JMP Done
             :
             CMP #19 ; Turn sound [off|on]
             BNE :+
             LDA #MENU_TITLE_SOUND
             STA menuOpen
+            JMP Done
             :
             JMP Done
         @menuTitleLearn:
@@ -192,9 +195,159 @@
     RTS
 .endproc
 
-; .proc ControllerNewGame -> rom1
+.proc GamepadNewGame
+    LDA buttons1
+    CMP buttons1Last
+    BNE CheckA
+    JMP Done ; RTS
+    CheckA:
+        LDA #KEY_A
+        BIT buttons1
+        BNE :+
+        JMP CheckStart
+        :
+        JMP Done
+    CheckStart:
+        LDA #KEY_START
+        BIT buttons1
+        BNE :+
+        JMP CheckSelect
+        :
+        LDA menuOpen
+        CMP #MENU_NONE
+        BNE :+
+        JMP @menuNone
+        :
+        CMP #MENU_NEWGAME_OCCUPATION
+        BNE :+
+        JMP @menuOccupation
+        :
+        CMP #MENU_NEWGAME_OCC_HELP
+        BNE :+
+        JMP @menuOccupationHelp
+        :
+        JMP Done
+        @menuNone:
+            JMP Done
+        @menuOccupation:
+            LDA #MENU_NEWGAME_STARTDATE
+            STA menuOpen
+            LDA fingerY
+            CMP #10 ; "Be a banker from Boston"
+            BNE :+
+            LDA occupationAttribute+0
+            STA occupation
+            JMP Done
+            :
+            CMP #13 ; "Be a carpenter from Ohio"
+            BNE :+
+            LDA occupationAttribute+1
+            STA occupation
+            JMP Done
+            :
+            CMP #16 ; "Be a farmer from Illinois"
+            BNE :+
+            LDA occupationAttribute+2
+            STA occupation
+            JMP Done
+            :
+            CMP #19 ; "Find out the differences between these choices"
+            BNE :+
+            LDA #MENU_NEWGAME_OCC_HELP
+            STA menuOpen
+            JMP Done
+            :
+            JMP Done
+        @menuOccupationHelp:
+            LDA #MENU_NEWGAME_OCCUPATION
+            STA menuOpen
+            JMP Done
+    CheckSelect:
+        LDA #KEY_SELECT
+        BIT buttons1
+        BNE :+
+        JMP CheckDown
+        :
+        LDA menuOpen
+        CMP #MENU_NEWGAME_OCCUPATION
+        BNE :+
+        JMP MainMoveDown ; hack
+        :
+        JMP Done
+    CheckDown:
+        LDA #KEY_DOWN
+        BIT buttons1
+        BNE :+ ; hack
+        JMP CheckUp
+        :
+        LDA menuOpen
+        CMP #MENU_NEWGAME_OCCUPATION
+        BEQ :+
+        JMP Done
+        :
+        MainMoveDown:
+        LDX fingerY
+        INX
+        INX
+        INX
+        CPX #22 ; check if fingerY is past bottom of menu
+        BNE :+
+        LDX #10 ; wrap to top of menu
+        :
+        STX fingerY
+        JMP Done
+    CheckUp:
+        LDA #KEY_UP
+        BIT buttons1
+        BNE :+
+        JMP CheckLeft
+        :
+        LDA menuOpen
+        CMP #MENU_NEWGAME_OCCUPATION
+        BEQ :+
+        JMP Done
+        :
+        LDX fingerY
+        DEX
+        DEX
+        DEX
+        CPX #7 ; check if fingerY is past top of menu
+        BNE :+
+        LDX #19 ; wrap to bottom of menu
+        :
+        STX fingerY
+        JMP Done
+    CheckLeft:
+        LDA #KEY_LEFT
+        BIT buttons1
+        BNE :+
+        JMP CheckRight
+        :
+    ;     LDA menuOpen
+    ;     CMP #MENU_TITLE_TOPTEN
+    ;     BEQ :+
+    ;     JMP Done
+    ;     :
+    ;     JSR ToggleYN
+        JMP Done
+    CheckRight:
+    ;     LDA #KEY_RIGHT
+    ;     BIT buttons1
+    ;     BNE :+
+    ;     JMP Done
+    ;     :
+    ;     LDA menuOpen
+    ;     CMP #MENU_TITLE_TOPTEN
+    ;     BEQ :+
+    ;     JMP Done
+    ;     :
+    ;     JSR ToggleYN
+    ;     JMP Done
+    Done:
+    RTS
+.endproc
 
-.proc ControllerStore
+.proc GamepadStore
     LDA buttons1
     CMP buttons1Last
     BNE CheckA
@@ -797,7 +950,7 @@
     RTS
 .endproc
 
-.proc ControllerLandmark
+.proc GamepadLandmark
     LDA buttons1
     CMP buttons1Last
     BNE CheckStart
@@ -814,7 +967,7 @@
     RTS
 .endproc
 
-.proc ControllerTraveling
+.proc GamepadTraveling
     LDA menuOpen
     CMP #MENU_MAINMENU
     BEQ :+
@@ -1184,6 +1337,6 @@
     RTS
 .endproc
 
-.proc ControllerMap
+.proc GamepadMap
     RTS
 .endproc

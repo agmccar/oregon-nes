@@ -149,15 +149,15 @@ defaultPersonNames:
     .byte _J_,_O_,_H_,_N_
     .byte _S_,_H_,_I_,_R_;,_L_,_E_,_Y_
 
-occupationText:
-    .byte _B_,_A_,_N_,_K_,_E_,_R_,___,___,___,___,___
-    .byte _D_,_O_,_C_,_T_,_O_,_R_,___,___,___,___,___
-    .byte _M_,_E_,_R_,_C_,_H_,_A_,_N_,_T_,___,___,___
-    .byte _B_,_L_,_A_,_C_,_K_,_S_,_M_,_I_,_T_,_H_,___
-    .byte _C_,_A_,_R_,_P_,_E_,_N_,_T_,_E_,_R_,___,___
-    .byte _S_,_A_,_D_,_D_,_L_,_E_,_M_,_A_,_K_,_E_,_R_
-    .byte _F_,_A_,_R_,_M_,_E_,_R_,___,___,___,___,___
-    .byte _T_,_E_,_A_,_C_,_H_,_E_,_R_,___,___,___,___
+; occupationText:
+;     .byte _B_,_A_,_N_,_K_,_E_,_R_,___,___,___,___,___
+;     .byte _D_,_O_,_C_,_T_,_O_,_R_,___,___,___,___,___
+;     .byte _M_,_E_,_R_,_C_,_H_,_A_,_N_,_T_,___,___,___
+;     .byte _B_,_L_,_A_,_C_,_K_,_S_,_M_,_I_,_T_,_H_,___
+;     .byte _C_,_A_,_R_,_P_,_E_,_N_,_T_,_E_,_R_,___,___
+;     .byte _S_,_A_,_D_,_D_,_L_,_E_,_M_,_A_,_K_,_E_,_R_
+;     .byte _F_,_A_,_R_,_M_,_E_,_R_,___,___,___,___,___
+;     .byte _T_,_E_,_A_,_C_,_H_,_E_,_R_,___,___,___,___
 
 occupationAttribute:
     ; %00000000
@@ -167,13 +167,13 @@ occupationAttribute:
     ;  ||+----- More likely to repair broken wagon parts
     ;  ++------ Starting cash (00:$400, 01:$800, 10:$1200, 11:$1600)
     .byte %11000000 ; BANKER
-    .byte %10010000 ; DOCTOR
-    .byte %10000011 ; MERCHANT
-    .byte %01100100 ; BLACKSMITH
+    ; .byte %10010000 ; DOCTOR
+    ; .byte %10000011 ; MERCHANT
+    ; .byte %01100100 ; BLACKSMITH
     .byte %01100100 ; CARPENTER
-    .byte %01000101 ; SADDLEMAKER
+    ; .byte %01000101 ; SADDLEMAKER
     .byte %00001110 ; FARMER
-    .byte %00000111 ; TEACHER
+    ; .byte %00000111 ; TEACHER
 
 riverAttribute:
     ; %00000000

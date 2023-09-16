@@ -1728,8 +1728,6 @@
         JSR WriteByteToBuffer
     JSR EndBufferWrite
 
-    ; Todo: "Control-S key" (page 7)
-
     Done:
     JSR BufferDrawPressStart
     RTS
@@ -2006,11 +2004,7 @@
     RTS
 .endproc
 
-.proc ControllerNewGame
-    RTS
-.endproc
-
-; .proc ControllerNewGame
+; .proc GamepadNewGame
 ;     LDA buttons1
 ;     CMP buttons1Last
 ;     BNE CheckA
@@ -3091,25 +3085,52 @@
     JSR DrawAdornments
     JSR DoneBulkDrawing
 
-    LDA menuCursor ; page number
-    CMP #0
+    LDA menuOpen
+    CMP #MENU_NEWGAME_OCCUPATION
     BNE :+
-    JMP OccupationMenu
+    JMP Occupation
     :
-    ; CMP #1
-    ; BNE :+
-    ; JMP Page2
-    ; :
-    ; CMP #2
-    ; BNE :+
-    ; JMP Page3
-    ; :
-    JMP Done
-    OccupationMenu:
+    CMP #MENU_NEWGAME_OCC_HELP
+    BNE :+
+    JMP OccupationHelp
+    :
+    RTS
+    Occupation:
     LDX #0 ; newgameSelectOccupationText
     LDA #$20
     STA cartHelperDigit
-    LDA #$c6
+    LDA #$c4
+    STA cartHelperDigit+1
+    :
+    LDA newgamePointer,X
+    STA pointer
+    INX
+    LDA newgamePointer,X
+    STA pointer+1
+    INX
+    JSR BufferDrawText
+    CPX #2
+    BNE :+
+    CLC
+    LDA cartHelperDigit+1
+    ADC #2
+    STA cartHelperDigit+1
+    :
+    CLC
+    LDA cartHelperDigit+1
+    ADC #$40
+    STA cartHelperDigit+1
+    LDA cartHelperDigit
+    ADC #0
+    STA cartHelperDigit
+    CPX #10
+    BNE :--
+    RTS
+    OccupationHelp:
+    LDX #10 ; newgameOccupationHelpText1
+    LDA #$20
+    STA cartHelperDigit
+    LDA #$c4
     STA cartHelperDigit+1
     :
     LDA newgamePointer,X
@@ -3126,16 +3147,9 @@
     LDA cartHelperDigit
     ADC #0
     STA cartHelperDigit
-    CPX #10
+    CPX #14
     BNE :-
-
-    
-
-
-    ; JSR 
-    ; LDA #<newgamePage1
-    ; 
-    Done:
+    JSR BufferDrawPressStart
     RTS
 .endproc
 

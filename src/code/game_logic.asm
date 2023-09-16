@@ -140,32 +140,32 @@
     LDA gameState
     CMP #GAMESTATE_TRAVELING
     BNE :+
-    JSR ControllerTraveling
+    JSR GamepadTraveling
     JMP Done
     :
     CMP #GAMESTATE_TITLE
     BNE :+
-    JSR ControllerTitle
+    JSR GamepadTitle
     JMP Done
     :
     CMP #GAMESTATE_NEWGAME
     BNE :+
-    JSR ControllerNewGame
+    JSR GamepadNewGame
     JMP Done
     :
     CMP #GAMESTATE_STORE
     BNE :+
-    JSR ControllerStore
+    JSR GamepadStore
     JMP Done
     :
     CMP #GAMESTATE_LANDMARK
     BNE :+
-    JSR ControllerLandmark
+    JSR GamepadLandmark
     JMP Done
     :
     CMP #GAMESTATE_MAP
     BNE :+
-    JSR ControllerMap
+    JSR GamepadMap
     JMP Done
     :
     Done:
@@ -199,6 +199,10 @@
     CMP #MENU_NEWGAME_OCCUPATION
     BNE :+
     JMP NewGameOccupation
+    :
+    CMP #MENU_NEWGAME_OCC_HELP
+    BNE :+
+    JMP NewGameOccHelp
     :
     CMP #MENU_NEWGAME_STARTDATE
     BNE :+
@@ -268,13 +272,13 @@
         BNE :+
         JSR InitStateTitle
         JMP Done
-        :
-        CMP #GAMESTATE_NEWGAME
-        BNE :+
+        ; :
+        ; CMP #GAMESTATE_NEWGAME
+        ; BNE :+
         ; LDA #%00001100      ; both fingers visible, normal, pointing right
         ; STA fingerAttr
-        JSR LoadBgNewGame
-        JMP Done
+        ; JSR LoadBgNewGame
+        ; JMP Done
         :
         CMP #GAMESTATE_STORE
         BNE :+
@@ -343,10 +347,23 @@
     NewGameOccupation:
         LDA #%00000100      ; only main finger visible, pointing right
         STA fingerAttr
-        JSR DrawOccupationMenu
-        LDX #15
-        LDY #7
-        JSR MoveFingerToSubmenu
+        LDA #4
+        STA fingerX
+        LDA #10
+        STA fingerY
+        JSR LoadBgNewGame
+        ; JSR DrawOccupationMenu
+        ; LDX #15
+        ; LDY #7
+        ; JSR MoveFingerToSubmenu
+        JMP Done
+    NewGameOccHelp:
+        LDA #0      ; no finger visible, pointing right
+        STA fingerAttr
+        ; LDX #1
+        ; LDY #1
+        ; JSR MoveFingerToSubmenu
+        JSR LoadBgNewGame
         JMP Done
     NewGameStartDate:
         LDA #%00000100      ; only main finger visible
