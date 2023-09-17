@@ -48,6 +48,8 @@ riverGageHeight:
 ; time to dry out your supplies."
 
 ; Snake
+; Minimum depth: 6 ft
+; Minimum width: 1000 ft
 ; 05-10 1010 7.4
 ; 05-13 1003 6.5
 ; 05-05 1001 6.2
@@ -55,6 +57,8 @@ riverGageHeight:
 
 
 ; Green
+; Minimum depth: 20 ft
+; Minimum width: 400 ft
 ; 04-20 402 20.3
 ; 04-22 431 24.2
 ; 04-13 402 20.3
@@ -62,6 +66,8 @@ riverGageHeight:
 
 
 ; Big Blue
+; Minimum depth: 1 ft
+; Minimum width: 220 ft
 ; Muddy
 ; 03-10 261 6.5
 ; 03-14 244 4.3
@@ -70,6 +76,8 @@ riverGageHeight:
 
 
 ; Kansas
+; Minimum depth: 1 ft
+; Minimum width: 600 ft
 ; 03-05 653 8.1
 ; 03-05 647 7.4
 ; 03-05 641 6.5

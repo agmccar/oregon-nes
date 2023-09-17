@@ -8,7 +8,7 @@ resetSentinal:      .res 6 ; sentinal value to detect hard or soft reset
 gameSettings:       .res 1
 
 oregonTopTen:       .res 10*(8+2) ; 10 x (8-letter name + 16 bits for score)
-;gravestone:         .res 8+32 ; name + epitaph 
+gravestone:         .res 8+32 ; name + epitaph 
 
 ;----------- above this line, memory is preserved on soft reset
 
@@ -18,6 +18,7 @@ popupTextLine2:     .res TEXT_POPUP_LINE_LEN
 textLineHelper:     .res TEXT_POPUP_LINE_LEN
 eventQueue:         .res 4
 eventQueuePointer:  .res 1
+personName:         .res 5*8  ; 8 chars * 5 people
 
 ; Nametable buffer
 ;   byte    0 = length of data (0 = no more data)

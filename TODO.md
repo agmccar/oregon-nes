@@ -181,3 +181,4 @@
 - [ ] cursor/finger icon blinks
 - [ ] Turn sound on/off screen  
 - [ ] original game returns to main menu after a long idle time?
+- [ ] MECC loading screen
