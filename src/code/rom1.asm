@@ -2088,32 +2088,31 @@
         JSR StartBulkDrawing
         JSR DrawNamePartyImage
         JSR DoneBulkDrawing
-        LDX #14 ; newgameNamePartyText1
-        LDA #$22
-        STA cartHelperDigit
-        LDA #$02
-        STA cartHelperDigit+1
-        ; :
-        LDA newgamePointer,X
-        STA pointer
+        BufferStart_ #29, #$22, #$02
+        LDX #0
+        :
+        LDA newgameNamePartyWhatText, X
+        JSR WriteByteToBuffer
         INX
-        LDA newgamePointer,X
-        STA pointer+1
+        CPX #29
+        BNE :-
+        JSR EndBufferWrite
+
+        BufferStart_ #13, #$22, #$22
+        LDX #0
+        :
+        LDA newgameNamePartyPersonText, X
+        JSR WriteByteToBuffer
         INX
-        JSR BufferDrawText
+        CPX #13
+        BNE :-
+        JSR EndBufferWrite
+
         JSR StartBulkDrawing
         JSR DrawMenuKeyboard
         JSR DoneBulkDrawing
-        ; CLC
-        ; LDA cartHelperDigit+1
-        ; ADC #$40
-        ; STA cartHelperDigit+1
-        ; LDA cartHelperDigit
-        ; ADC #0
-        ; STA cartHelperDigit
-        ; CPX #14
-        ; BNE :-
-        BufferStart_ #8, #$22, #$37
+        
+        BufferStart_ #TEXT_NAME_LEN, #$22, #$37
         LDX #8
         LDA #_UL
         :
@@ -2662,6 +2661,16 @@
             LDA keyboardKey ; Done?
             CMP #(TEXT_KEYBOARD_LEN*3)-2
             BNE :+
+            LDA #0
+            STA nameCursor
+            INC menuCursor
+            JSR BufferDrawNextNamePrompt
+            LDX #6
+            STA fingerX
+            LDY #21
+            STA fingerY
+            LDA #0
+            STA keyboardKey
             ; JSR PressedDone/NextName
             RTS
             :
@@ -3028,5 +3037,60 @@
             JSR HighlightKeyboardKey
             RTS
     ; Done:
+    RTS
+.endproc
+
+.proc BufferDrawNextNamePrompt
+    BufferStart_ #$20, #$22, #$22
+        LDX #$20
+        LDA #0
+        :
+        JSR WriteByteToBuffer
+        DEX
+        BNE :-
+    JSR EndBufferWrite
+    BufferStart_ #3, #$22, #$22
+        LDX #0
+        LDY menuCursor
+        DEY
+        :
+        CPY #0
+        BEQ :+
+        INX
+        INX
+        INX
+        DEY
+        JMP :-
+        :
+        TYA
+        PHA
+        LDA newgameNewPartyNthText, X
+        JSR WriteByteToBuffer
+        PLA
+        TAY
+        INX
+        INY
+        CPY #3
+        BNE :-
+    JSR EndBufferWrite
+    BufferStart_ #13, #$22, #$22+4
+        LDX #13
+        :
+        LDA newgameNamePartyPersonText, X
+        JSR WriteByteToBuffer
+        INX
+        CPX #26
+        BNE :-
+    JSR EndBufferWrite
+    BufferStart_ #TEXT_NAME_LEN, #$22, #$37
+        LDX #TEXT_NAME_LEN
+        LDA #_UL
+        :
+        JSR WriteByteToBuffer
+        DEX
+        BNE :-
+    JSR EndBufferWrite
+
+
     RTS
 .endproc

@@ -35,7 +35,7 @@ What is the first name of the wagon leader?
 
 ## NamePartyText2
 
-What are the first names of the four other members in your party?
+What is the first name of the 2nd person?
 
 ## NamePartyPressStart
 
