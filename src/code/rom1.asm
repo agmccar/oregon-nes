@@ -2640,3 +2640,393 @@
     JSR DoneBulkDrawing
     RTS
 .endproc
+
+.proc GamepadNewGame
+    LDA buttons1
+    CMP buttons1Last
+    BNE CheckA
+    RTS
+    CheckA:
+        LDA #KEY_A
+        BIT buttons1
+        BNE :+
+        JMP CheckB
+        :
+        LDA menuOpen
+        CMP #MENU_NEWGAME_NAMEPARTY
+        BNE :+
+        JMP @menuNameParty
+        :
+        RTS
+        @menuNameParty:
+            LDA keyboardKey ; Done?
+            CMP #(TEXT_KEYBOARD_LEN*3)-2
+            BNE :+
+            ; JSR PressedDone/NextName
+            RTS
+            :
+            LDX keyboardKey
+            LDA keyboard, X
+            LDY nameCursor
+            CPY #TEXT_NAME_LEN
+            BNE :+
+            DEC nameCursor
+            DEY
+            :
+            STA personName, Y
+            STA helper+1
+            INC nameCursor
+            LDA nameCursor
+            CMP #TEXT_NAME_LEN
+            BNE :+
+            LDA #(TEXT_KEYBOARD_LEN*3)-2 ; jump to "DONE" key
+            STA keyboardKey
+            LDA #22
+            STA fingerX
+            LDA #25
+            STA fingerY
+            LDY nameCursor
+            DEY
+            LDA personName, Y
+            STA helper+1
+            :
+            CLC ; tilex from left
+            LDA nameCursor
+            ADC #22
+            TAX
+            LDA helper+1 ; tile index to draw
+            LDY #17 ; tiles from top
+            JSR WriteTileToBuffer
+            LDA #60
+            STA frameCounter
+            JSR HighlightKeyboardKey
+            RTS
+    CheckB:
+        LDA #KEY_B
+        BIT buttons1
+        BNE :+
+        JMP CheckStart
+        :
+        LDA menuOpen
+        CMP #MENU_NEWGAME_NAMEPARTY
+        BNE :+
+        JMP @menuNameParty
+        :
+        RTS
+        @menuNameParty:
+            LDY nameCursor
+            DEC nameCursor
+            BPL :+
+            INY
+            :
+            LDA #___
+            STA personName, Y
+            CLC ; tilex from left
+            LDA nameCursor
+            ADC #23
+            TAX
+            LDA #_UL ; tile index to draw
+            LDY #17 ; tiles from top
+            JSR WriteTileToBuffer
+            BIT nameCursor
+            BPL :+
+            INC nameCursor
+            :
+            RTS
+    CheckStart:
+        LDA #KEY_START
+        BIT buttons1
+        BNE :+
+        JMP CheckSelect
+        :
+        LDA menuOpen
+        CMP #MENU_NEWGAME_OCCUPATION
+        BNE :+
+        JMP @menuOccupation
+        :
+        CMP #MENU_NEWGAME_OCC_HELP
+        BNE :+
+        JMP @menuOccupationHelp
+        :
+        CMP #MENU_NEWGAME_NAMEPARTY
+        BNE :+
+        JMP @menuNameParty
+        :
+        RTS
+        @menuOccupation:
+            LDA #MENU_NEWGAME_NAMEPARTY
+            STA menuOpen
+            LDA fingerY
+            CMP #10 ; "Be a banker from Boston"
+            BNE :+
+            LDA occupationAttribute+0
+            STA occupation
+            RTS
+            :
+            CMP #13 ; "Be a carpenter from Ohio"
+            BNE :+
+            LDA occupationAttribute+1
+            STA occupation
+            RTS
+            :
+            CMP #16 ; "Be a farmer from Illinois"
+            BNE :+
+            LDA occupationAttribute+2
+            STA occupation
+            RTS
+            :
+            CMP #19 ; "Find out the differences between these choices"
+            BNE :+
+            LDA #MENU_NEWGAME_OCC_HELP
+            STA menuOpen
+            RTS
+            :
+            RTS
+        @menuOccupationHelp:
+            LDA #MENU_NEWGAME_OCCUPATION
+            STA menuOpen
+            RTS
+        @menuNameParty:
+            RTS
+    CheckSelect:
+        LDA #KEY_SELECT
+        BIT buttons1
+        BNE :+
+        JMP CheckDown
+        :
+        LDA menuOpen
+        CMP #MENU_NEWGAME_OCCUPATION
+        BNE :+
+        JMP @menuOccupation
+        :
+        RTS
+        @menuOccupation:
+            LDX fingerY
+            INX
+            INX
+            INX
+            CPX #22 ; check if fingerY is past bottom of menu
+            BNE :+
+            LDX #10 ; wrap to top of menu
+            :
+            STX fingerY
+            RTS
+    CheckDown:
+        LDA #KEY_DOWN
+        BIT buttons1
+        BNE :+ ; hack
+        JMP CheckUp
+        :
+        LDA menuOpen
+        CMP #MENU_NEWGAME_OCCUPATION
+        BNE :+
+        JMP @menuOccupation
+        :
+        CMP #MENU_NEWGAME_NAMEPARTY
+        BNE :+
+        JMP @menuNameParty
+        :
+        RTS
+        @menuOccupation:
+            LDX fingerY
+            INX
+            INX
+            INX
+            CPX #22 ; check if fingerY is past bottom of menu
+            BNE :+
+            LDX #10 ; wrap to top of menu
+            :
+            STX fingerY
+            RTS
+        @menuNameParty:
+            LDX fingerY
+            INX
+            INX
+            LDA keyboardKey
+            CLC
+            ADC #TEXT_KEYBOARD_LEN
+            STA helper
+            CPX #27 ; check if fingerY is past bottom of screen
+            BEQ @wrapFingerD
+            LDA fingerX
+            CMP #22 ; check if fingerX is in "DONE" columns
+            BCC @moveFingerD
+            CPX #25 ; check if fingerY is in 2nd row
+            BNE @moveFingerD
+            LDA #22
+            STA fingerX
+            LDA #(TEXT_KEYBOARD_LEN*3)-2
+            STA helper
+            JMP @moveFingerD
+            @wrapFingerD:
+            LDX #21 ; wrap to top row
+            LDA keyboardKey
+            SEC
+            SBC #TEXT_KEYBOARD_LEN*2
+            STA helper
+            @moveFingerD:
+            STX fingerY
+            LDA helper
+            STA keyboardKey
+            LDA #60
+            STA frameCounter
+            JSR HighlightKeyboardKey
+            RTS
+    CheckUp:
+        LDA #KEY_UP
+        BIT buttons1
+        BNE :+
+        JMP CheckLeft
+        :
+        LDA menuOpen
+        CMP #MENU_NEWGAME_OCCUPATION
+        BNE :+
+        JMP @menuOccupation
+        :
+        CMP #MENU_NEWGAME_NAMEPARTY
+        BNE :+
+        JMP @menuNameParty
+        :
+        RTS
+        @menuOccupation:
+            LDX fingerY
+            DEX
+            DEX
+            DEX
+            CPX #7 ; check if fingerY is past top of menu
+            BNE :+
+            LDX #19 ; wrap to bottom of menu
+            :
+            STX fingerY
+            RTS
+        @menuNameParty:
+            LDX fingerY
+            DEX
+            DEX
+            LDA keyboardKey
+            SEC
+            SBC #TEXT_KEYBOARD_LEN
+            STA helper
+            CPX #19 ; check if fingerY is past top of keyboard
+            BNE @moveFingerU
+            LDA fingerX
+            CMP #22 ; check if we are in last 2 columns
+            BCC @wrapFingerU
+            LDA #22
+            STA fingerX ; wrap to the "DONE" key
+            LDA #(TEXT_KEYBOARD_LEN*3)-2
+            STA helper
+            LDX #25 ; wrap to bottom of keyboard
+            JMP @moveFingerU
+            @wrapFingerU:
+            LDX #25 ; wrap to bottom of keyboard
+            LDA keyboardKey
+            CLC
+            ADC #TEXT_KEYBOARD_LEN*2
+            STA helper
+            @moveFingerU:
+            STX fingerY
+            LDA helper
+            STA keyboardKey
+            LDA #60
+            STA frameCounter
+            JSR HighlightKeyboardKey
+            RTS
+    CheckLeft:
+        LDA #KEY_LEFT
+        BIT buttons1
+        BNE :+
+        JMP CheckRight
+        :
+        LDA menuOpen
+        CMP #MENU_NEWGAME_NAMEPARTY
+        BNE :+
+        JMP @menuNameParty
+        :
+        RTS
+        ;     LDA menuOpen
+        ;     CMP #MENU_TITLE_TOPTEN
+        ;     BEQ :+
+        ;     RTS
+        ;     :
+        ;     JSR ToggleYN
+        @menuNameParty:
+            LDX fingerX
+            DEX
+            DEX
+            DEC keyboardKey
+            LDA keyboardKey
+            STA helper
+            CPX #4  ; check if we need to wrap around
+            BNE :+
+            LDX #24 ; wrap around
+            LDA keyboardKey
+            CLC
+            ADC #TEXT_KEYBOARD_LEN
+            STA helper
+            LDA fingerY
+            CMP #25 ; check if we need to wrap to the "DONE" keyboard button
+            BNE :+
+            LDX #22 ; wrap around to "DONE" keyboard button
+            LDA #TEXT_KEYBOARD_LEN*3-2
+            STA helper
+            :
+            STX fingerX
+            LDA helper
+            STA keyboardKey
+            LDA #60
+            STA frameCounter
+            JSR HighlightKeyboardKey
+            RTS
+    CheckRight:
+        LDA #KEY_RIGHT
+        BIT buttons1
+        BNE :+
+        RTS
+        :
+        LDA menuOpen
+        CMP #MENU_NEWGAME_NAMEPARTY
+        BNE :+
+        JMP @menuNameParty
+        :
+        RTS
+        ;     :
+        ;     LDA menuOpen
+        ;     CMP #MENU_TITLE_TOPTEN
+        ;     BEQ :+
+        ;     RTS
+        ;     :
+        ;     JSR ToggleYN
+        @menuNameParty:
+            LDX fingerX
+            INX
+            INX
+            INC keyboardKey
+            LDA keyboardKey
+            STA helper
+            LDA fingerY
+            CMP #25 ; check if we are on bottom row
+            BNE @wrapFingerNormallyR
+            CPX #24 ; check if we need to wrap around the "DONE" key
+            BEQ @wrapFingerR
+            @wrapFingerNormallyR:
+            CPX #26 ; check if we need to wrap around normally
+            BNE @moveFingerR
+            DEC helper
+            @wrapFingerR:
+            LDX #6  ; wrap around
+            LDA helper
+            SEC
+            SBC #TEXT_KEYBOARD_LEN-1
+            STA helper
+            @moveFingerR:
+            STX fingerX
+            LDA helper
+            STA keyboardKey
+            LDA #60
+            STA frameCounter
+            JSR HighlightKeyboardKey
+            RTS
+    ; Done:
+    RTS
+.endproc

@@ -18,7 +18,7 @@ popupTextLine2:     .res TEXT_POPUP_LINE_LEN
 textLineHelper:     .res TEXT_POPUP_LINE_LEN
 eventQueue:         .res 4
 eventQueuePointer:  .res 1
-personName:         .res 5*8  ; 8 chars * 5 people
+personName:         .res 5*TEXT_NAME_LEN  ; 8 chars * 5 people
 
 ; Nametable buffer
 ;   byte    0 = length of data (0 = no more data)

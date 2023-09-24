@@ -13,7 +13,7 @@
         @topBorderLine:
             STA PPUDATA
             INX
-            CPX #TEXT_KEYBOARD_LEN*2
+            CPX #(TEXT_KEYBOARD_LEN+1)*2
             BNE @topBorderLine
         LDA #_LD ;corner
         STA PPUDATA
@@ -49,6 +49,9 @@
             INX
             CPX #TEXT_KEYBOARD_LEN*2
             BNE @letters1
+        LDA #0
+        STA PPUDATA
+        STA PPUDATA
         LDA #_VR ;vert line
         STA PPUDATA
 
@@ -74,7 +77,7 @@
             TXA
             LSR
             CLC
-            ADC #11
+            ADC #TEXT_KEYBOARD_LEN
             TAY
             LDA keyboard, Y
             JMP @letter2
@@ -85,6 +88,9 @@
             INX
             CPX #TEXT_KEYBOARD_LEN*2
             BNE @letters2
+        LDA #0
+        STA PPUDATA
+        STA PPUDATA
         LDA #_VR ;vert line
         STA PPUDATA
 
@@ -110,7 +116,7 @@
             TXA
             LSR
             CLC
-            ADC #22
+            ADC #TEXT_KEYBOARD_LEN*2
             TAY
             LDA keyboard, Y
             JMP @letter3
@@ -121,6 +127,9 @@
             INX
             CPX #TEXT_KEYBOARD_LEN*2
             BNE @letters3
+        LDA #0
+        STA PPUDATA
+        STA PPUDATA
         LDA #_VR ;vert line
         STA PPUDATA
 
@@ -155,7 +164,7 @@
         @bottomBorderLine:
             STA PPUDATA
             INX
-            CPX #TEXT_KEYBOARD_LEN*2
+            CPX #(TEXT_KEYBOARD_LEN+1)*2
             BNE @bottomBorderLine
         LDA #_LU ;corner
         STA PPUDATA
