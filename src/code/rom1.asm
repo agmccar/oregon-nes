@@ -2643,14 +2643,47 @@
 .proc PressedDoneNextName
     LDA #0
     STA nameCursor
-    INC menuCursor
-    JSR BufferDrawNextNamePrompt
-    LDX #6
-    STA fingerX
-    LDY #21
-    STA fingerY
-    LDA #0
     STA keyboardKey
+    LDA #6
+    STA fingerX
+    LDA #21
+    STA fingerY
+    INC menuCursor
+    LDA menuCursor
+    CMP #5 ; max people in party
+    BEQ :+
+    JSR BufferDrawNextNamePrompt
+    JSR HighlightKeyboardKey
+    RTS
+    :
+    LDA #$22
+    STA pointer
+    LDA #$00
+    STA pointer+1
+    LDX #4*3
+    :
+    TXA
+    PHA
+    BufferStart_ #$20, pointer, pointer+1
+    LDA #0
+    LDX #$20
+    :
+    JSR WriteByteToBuffer
+    DEX
+    BNE :-
+    JSR EndBufferWrite
+    CLC
+    LDA pointer+1
+    ADC #$20
+    STA pointer+1
+    LDA pointer
+    ADC #0
+    STA pointer
+    PLA
+    TAX
+    DEX
+    BNE :--
+    ; "Are these names correct?" 
     RTS
 .endproc
 
@@ -2682,14 +2715,15 @@
             JSR PressedDoneNextName
             RTS
             :
-            LDX keyboardKey
-            LDA keyboard, X
-            LDY nameCursor
-            CPY #TEXT_NAME_LEN
+            JSR NameKeyHelper
+            LDA nameCursor
+            CMP #TEXT_NAME_LEN
             BNE :+
             DEC nameCursor
             DEY
             :
+            LDX keyboardKey
+            LDA keyboard, X
             STA personName, Y
             STA helper+1
             INC nameCursor
@@ -2702,7 +2736,7 @@
             STA fingerX
             LDA #25
             STA fingerY
-            LDY nameCursor
+            JSR NameKeyHelper
             DEY
             LDA personName, Y
             STA helper+1
@@ -2729,20 +2763,31 @@
         :
         RTS
         @menuNameParty:
-            LDY nameCursor
             DEC nameCursor
-            BPL :+
+            JSR NameKeyHelper
+            LDA nameCursor
+            CMP #TEXT_NAME_LEN-1
+            BEQ :+
             INY
-            :
             LDA #___
             STA personName, Y
+            DEY
+            :
+            LDA nameCursor
+            BMI :+
+            LDA #___
+            STA personName, Y
+            :
             CLC ; tilex from left
             LDA nameCursor
             ADC #23
+            CMP #22
+            BEQ :+
             TAX
             LDA #_UL ; tile index to draw
             LDY #17 ; tiles from top
             JSR WriteTileToBuffer
+            :
             BIT nameCursor
             BPL :+
             INC nameCursor
@@ -3048,6 +3093,19 @@
             JSR HighlightKeyboardKey
             RTS
     ; Done:
+    RTS
+.endproc
+
+.proc NameKeyHelper
+    PHA
+    LDA menuCursor
+    ASL
+    ASL
+    ASL
+    CLC
+    ADC nameCursor
+    TAY
+    PLA
     RTS
 .endproc
 

@@ -95,7 +95,7 @@ def verify(a, b, verbose):
     if verbose: print(f"Verifying segment, unpacked bytes: {len(a)}, Packed bytes: {len(b)}", end='')
     if len(b) > len(a):
         if verbose: print(f"unpacked bytes: {a}")
-        input(f"Packed bytes: {b}")
+        #input(f"Packed bytes: {b}")
     while len(c) < len(a):
         try:
             header = int(b[i].replace('$',''),16)

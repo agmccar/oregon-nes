@@ -774,3 +774,8 @@
     Done:
     RTS
 .endproc
+
+.proc LoadBgRiverCrossing
+    
+    RTS
+.endproc

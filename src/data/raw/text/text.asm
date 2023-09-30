@@ -146,11 +146,10 @@ healthText:
     .byte _V_,_E_,_R_,_Y_,___,_P_,_O_,_O_,_R_
 
 defaultPersonNames:
-    .byte ___,___,___,___
-    .byte _P_,_H_,_I_,_L_
-    .byte _C_,_H_,_A_,_R_;,_O_,_L_,_Y_,_N_
-    .byte _J_,_O_,_H_,_N_
-    .byte _S_,_H_,_I_,_R_;,_L_,_E_,_Y_
+    .byte 6,_P_,_H_,_I_,_L_,_I_,_P_
+    .byte 8,_C_,_H_,_A_,_R_,_O_,_L_,_Y_,_N_
+    .byte 4,_J_,_O_,_H_,_N_
+    .byte 7,_S_,_H_,_I_,_R_,_L_,_E_,_Y_
 
 newgameNamePartyWhatText:
     .byte _W_,_H_,_A_,_T_,___,_I_,_S_,___,_T_,_H_,_E_,___,_F_,_I_,_R_,_S_,_T_,___,_N_,_A_,_M_,_E_,___,_O_,_F_,___,_T_,_H_,_E_

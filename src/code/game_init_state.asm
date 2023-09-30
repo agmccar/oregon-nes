@@ -21,11 +21,12 @@
     STA accumulatedRain
     JSR ClearPopupText      ; clear popup text
     LDX #0
-    :                       ; default person names
-    LDA defaultPersonNames, X
+    LDA #___
+    :                       ; clear person names
+    ;LDA defaultPersonNames, X
     STA personName, X
     INX
-    CPX #20
+    CPX #8*5
     BNE :-
     LDX #dollarsDigit       ; reset digits
     LDY #dollars
