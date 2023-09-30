@@ -199,7 +199,7 @@
     LDA buttons1
     CMP buttons1Last
     BNE CheckA
-    JMP Done
+    RTS
     CheckA:
         LDA #KEY_A
         BIT buttons1
@@ -230,50 +230,50 @@
             BNE :+
             LDA #MENU_STORE_ITEM2
             STA menuOpen
-            JMP Done
+            RTS
             :
             CMP #10         ; 'Clothes' selected
             BNE :+
             LDA #MENU_STORE_ITEM2
             STA menuOpen
-            JMP Done
+            RTS
             :
             CMP #12         ; 'Bullets' selected
             BNE :+
             LDA #MENU_STORE_ITEM4
             STA menuOpen
-            JMP Done
+            RTS
             :
             CMP #14         ; 'Wheels' selected
             BNE :+
             LDA #MENU_STORE_ITEM1
             STA menuOpen
-            JMP Done
+            RTS
             :
             CMP #16         ; 'Axles' selected
             BNE :+
             LDA #MENU_STORE_ITEM1
             STA menuOpen
-            JMP Done
+            RTS
             :
             CMP #18         ; 'Tongues' selected
             BNE :+
             LDA #MENU_STORE_ITEM1
             STA menuOpen
-            JMP Done
+            RTS
             :
             CMP #20         ; 'lb Food' selected
             BNE :+
             LDA #MENU_STORE_ITEM4
             STA menuOpen
-            JMP Done
+            RTS
             :
-            JMP Done
+            RTS
         @menuItem1:
         @menuItem2:
         @menuItem4:
             JSR CloseSubmenu
-            JMP Done
+            RTS
 
     CheckB:
         LDA #KEY_B
@@ -300,12 +300,12 @@
         :
         JMP CheckStart
         @menuNone:
-            JMP Done
+            RTS
         @menuItem1:
         @menuItem2:
         @menuItem4:
             JSR CloseSubmenu
-            JMP Done
+            RTS
 
     CheckStart:
         LDA #KEY_START
@@ -335,16 +335,16 @@
             JSR ValidateCart
             CMP #1
             BEQ :+
-            JMP Done
+            RTS
             :
             JSR DoStorePurchase
             LDA #GAMESTATE_LANDMARK
             STA gameState
-            JMP Done
+            RTS
         @menuItem1:
         @menuItem2:
         @menuItem4:
-        JMP Done
+        RTS
 
     CheckLeft:
         LDA #KEY_LEFT
@@ -372,7 +372,7 @@
         JMP CheckRight
         @menuNone:
         @menuItem1:
-            JMP Done
+            RTS
         @menuItem2:
             LDX fingerX
             DEX
@@ -381,7 +381,7 @@
             LDX #7     ; wrap around to right
             :
             STX fingerX
-            JMP Done
+            RTS
         @menuItem4:
             LDX fingerX
             DEX
@@ -390,8 +390,8 @@
             LDX #6     ; wrap around to right
             :
             STX fingerX
-            JMP Done
-        JMP Done
+            RTS
+        RTS
 
     CheckRight:
         LDA #KEY_RIGHT
@@ -419,7 +419,7 @@
         JMP CheckUp
         @menuNone:
         @menuItem1:
-            JMP Done
+            RTS
         @menuItem2:
             LDX fingerX
             INX
@@ -428,7 +428,7 @@
             LDX #6     ; wrap around to left
             :
             STX fingerX
-            JMP Done
+            RTS
         @menuItem4:
             LDX fingerX
             INX
@@ -437,8 +437,8 @@
             LDX #4     ; wrap around to left
             :
             STX fingerX
-            JMP Done
-        JMP Done
+            RTS
+        RTS
 
     CheckUp:
         LDA #KEY_UP
@@ -473,7 +473,7 @@
             LDX #20     ; wrap around to bottom
             :
             STX fingerY
-            JMP Done
+            RTS
         @menuItem1:
             LDA fingerY
             CMP #14
@@ -495,7 +495,7 @@
             LDX fingerX
             LDY fingerY
             JSR WriteTileToBuffer
-            JMP Done
+            RTS
             :
             CMP #16
             BNE :+
@@ -524,7 +524,7 @@
             LDX fingerX
             LDY fingerY
             JSR WriteTileToBuffer
-            JMP Done
+            RTS
             :
             CMP #18
             BNE :+
@@ -560,7 +560,7 @@
             LDY fingerY
             JSR WriteTileToBuffer
             :
-            JMP Done
+            RTS
         @menuItem2:
             LDA fingerY
             CMP #8
@@ -574,7 +574,7 @@
             STY cost
             LDY #cartOxen
             JSR SetCartFromDigit
-            JMP Done
+            RTS
             :
             CMP #10
             BNE :+
@@ -588,7 +588,7 @@
             LDY #cartClothing
             JSR SetCartFromDigit
             :
-            JMP Done
+            RTS
         @menuItem4:
             LDA fingerY
             CMP #12
@@ -602,7 +602,7 @@
             STY cost
             LDY #cartBullets
             JSR SetCartFromDigit
-            JMP Done
+            RTS
             :
             CMP #20
             BNE :+
@@ -616,12 +616,12 @@
             LDY #cartFoodLbs
             JSR SetCartFromDigit
             :
-            JMP Done
+            RTS
     CheckDown:
         LDA #KEY_DOWN
         BIT buttons1
         BNE :+
-        JMP Done
+        RTS
         :
         LDA menuOpen
         CMP #MENU_NONE
@@ -640,7 +640,7 @@
         BNE :+
         JMP @menuItem4
         :
-        JMP Done
+        RTS
         @menuNone:
             LDX fingerY
             INX
@@ -650,7 +650,7 @@
             LDX #8      ; wrap around to top
             :
             STX fingerY
-            JMP Done
+            RTS
         @menuItem1:
             LDA fingerY
             CMP #14
@@ -672,7 +672,7 @@
             LDX fingerX
             LDY fingerY
             JSR WriteTileToBuffer
-            JMP Done
+            RTS
             :
             CMP #16
             BNE :+
@@ -701,7 +701,7 @@
             LDX fingerX
             LDY fingerY
             JSR WriteTileToBuffer
-            JMP Done
+            RTS
             :
             CMP #18
             BNE :+
@@ -737,7 +737,7 @@
             LDY fingerY
             JSR WriteTileToBuffer
             :
-            JMP Done
+            RTS
         @menuItem2:
             LDA fingerY
             CMP #8
@@ -751,7 +751,7 @@
             STY cost
             LDY #cartOxen
             JSR SetCartFromDigit
-            JMP Done
+            RTS
             :
             CMP #10
             BNE :+
@@ -765,7 +765,7 @@
             LDY #cartClothing
             JSR SetCartFromDigit
             :
-            JMP Done
+            RTS
         @menuItem4:
             LDA fingerY
             CMP #12
@@ -779,7 +779,7 @@
             STY cost
             LDY #cartBullets
             JSR SetCartFromDigit
-            JMP Done
+            RTS
             :
             CMP #20
             BNE :+
@@ -793,8 +793,7 @@
             LDY #cartFoodLbs
             JSR SetCartFromDigit
             :
-            JMP Done
-    Done:
+            RTS
     RTS
 .endproc
 

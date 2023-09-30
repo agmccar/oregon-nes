@@ -164,6 +164,10 @@ newgameNamePartyPersonText:
     .byte _W_,_A_,_G_,_O_,_N_,___,_L_,_E_,_A_,_D_,_E_,_R_,_QU
     .byte _P_,_A_,_R_,_T_,_Y_,___,_M_,_E_,_M_,_B_,_E_,_R_,_QU
 
+newgameNamePartyCorrectText:
+    .byte _A_,_R_,_E_,___,_T_,_H_,_E_,_S_,_E_,___,_N_,_A_,_M_,_E_,_S_,___,_C_,_O_,_R_,_R_,_E_,_C_,_T_,_QU
+newgameNamePartyChangeText:
+    .byte _C_,_H_,_A_,_N_,_G_,_E_,___,_W_,_H_,_I_,_C_,_H_,___,_N_,_A_,_M_,_E_,_QU
 ; occupationText:
 ;     .byte _B_,_A_,_N_,_K_,_E_,_R_,___,___,___,___,___
 ;     .byte _D_,_O_,_C_,_T_,_O_,_R_,___,___,___,___,___

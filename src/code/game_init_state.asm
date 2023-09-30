@@ -81,6 +81,8 @@
     LDA #0              ; initialize cursor
     STA fingerLastX     ; (5x,6y) tiles from top left, facing R
     STA fingerLastY
+    LDA #MENU_NONE
+    STA menuOpen
     LDA #2
     STA fingerX
     LDA #8

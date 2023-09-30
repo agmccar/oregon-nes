@@ -3,7 +3,7 @@
     LDA #%00001100          ; skip drawing if neither finger is set to visible
     BIT fingerAttr
     BNE :+
-    JMP Done
+    RTS
     :                       ; skip drawing if finger hasn't moved
     LDX fingerX
     LDY fingerY
@@ -11,7 +11,7 @@
     BNE :+
     CPY fingerLastY
     BNE :+
-    JMP Done
+    RTS
     :                       ; erase finger at old position (draw blank tile)
     LDA #%00010000
     BIT fingerAttr          ; check if main finger is normal or arrows
@@ -91,7 +91,6 @@
     STA fingerLastX
     LDA fingerY
     STA fingerLastY
-    Done:
     RTS
 .endproc
 

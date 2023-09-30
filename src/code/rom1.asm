@@ -2650,13 +2650,13 @@
     STA fingerY
     INC menuCursor
     LDA menuCursor
-    CMP #5 ; max people in party
+    CMP #5 ; Done with all people in party?
     BEQ :+
     JSR BufferDrawNextNamePrompt
     JSR HighlightKeyboardKey
     RTS
     :
-    LDA #$22
+    LDA #$22 ; clear screen tiles
     STA pointer
     LDA #$00
     STA pointer+1
@@ -2683,7 +2683,91 @@
     TAX
     DEX
     BNE :--
-    ; "Are these names correct?" 
+
+    BufferStart_ #3*8, #$23, #$e0
+    LDA #$ff ; clear attr
+    LDX #3*8
+    :
+    JSR WriteByteToBuffer
+    DEX
+    BNE :-
+    JSR EndBufferWrite
+
+    LDA #$22 ; draw party member names
+    STA pointer
+    LDA #$44
+    STA pointer+1
+    LDA #TEXT_NAME_LEN
+    STA helper+1
+    LDX #0
+    STX helper
+    :
+    TXA
+    PHA
+    BufferStart_ #TEXT_NAME_LEN+3, pointer, pointer+1
+        PLA
+        TAX
+        CLC
+        ADC #_1_
+        JSR WriteByteToBuffer
+        TXA
+        PHA
+        LDA #_PD
+        JSR WriteByteToBuffer
+        LDA #___
+        JSR WriteByteToBuffer
+        LDX helper
+        :
+        LDA personName, X
+        JSR WriteByteToBuffer
+        INX
+        INC helper
+        CPX helper+1
+        BNE :-
+    JSR EndBufferWrite
+    CLC
+    LDA helper+1
+    ADC #TEXT_NAME_LEN
+    STA helper+1
+    LDA pointer+1
+    ADC #$20
+    STA pointer+1
+    LDA pointer
+    ADC #0
+    STA pointer
+    PLA
+    TAX
+    INX
+    CPX #5
+    BNE :--
+
+    BufferStart_ #24, #$23, #$22
+    LDX #0
+    : ; "Are these names correct?"
+    LDA newgameNamePartyCorrectText, X
+    JSR WriteByteToBuffer
+    INX
+    CPX #24
+    BNE :-
+    JSR EndBufferWrite
+
+    LDA #0
+    STA fingerLastLastY
+    STA fingerLastY
+    LDX #28 ; y/n
+    STX fingerX
+    LDY #25
+    STY fingerY
+    LDA #_Y_
+    JSR WriteTileToBuffer
+    LDA #%00011111
+    STA fingerAttr
+    JSR DrawFinger
+    LDA #MENU_NEWGAME_NAMESCORRECT
+    STA menuOpen
+    LDA #1
+    STA menuCursor
+
     RTS
 .endproc
 
@@ -2706,6 +2790,11 @@
         CMP #MENU_NEWGAME_NAMEPARTY
         BNE :+
         JMP @menuNameParty
+        :
+        LDA menuOpen
+        CMP #MENU_NEWGAME_NAMESCORRECT
+        BNE :+
+        JMP @menuNamesCorrect
         :
         RTS
         @menuNameParty:
@@ -2749,6 +2838,17 @@
             LDY #17 ; tiles from top
             JSR WriteTileToBuffer
             JSR HighlightKeyboardKey
+            RTS
+        @menuNamesCorrect:
+            LDA menuCursor
+            BEQ :+
+            JSR IncrementDate
+            JSR SetOpeningBalance
+            LDA #GAMESTATE_STORE ; "Y"
+            STA gameState
+            RTS
+            :
+            ; "N"
             RTS
     CheckB:
         LDA #KEY_B
@@ -2819,7 +2919,7 @@
             LDA fingerY
             CMP #10 ; "Be a banker from Boston"
             BNE :+
-            LDA occupationAttribute+0
+            LDA occupationAttribute
             STA occupation
             RTS
             :
@@ -3012,13 +3112,12 @@
         BNE :+
         JMP @menuNameParty
         :
+        LDA menuOpen
+        CMP #MENU_NEWGAME_NAMESCORRECT
+        BNE :+
+        JMP @menuNamesCorrect
+        :
         RTS
-        ;     LDA menuOpen
-        ;     CMP #MENU_TITLE_TOPTEN
-        ;     BEQ :+
-        ;     RTS
-        ;     :
-        ;     JSR ToggleYN
         @menuNameParty:
             LDX fingerX
             DEX
@@ -3045,6 +3144,9 @@
             STA keyboardKey
             JSR HighlightKeyboardKey
             RTS
+        @menuNamesCorrect:
+            JSR ToggleYN
+            RTS
     CheckRight:
         LDA #KEY_RIGHT
         BIT buttons1
@@ -3056,14 +3158,12 @@
         BNE :+
         JMP @menuNameParty
         :
+        LDA menuOpen
+        CMP #MENU_NEWGAME_NAMESCORRECT
+        BNE :+
+        JMP @menuNamesCorrect
+        :
         RTS
-        ;     :
-        ;     LDA menuOpen
-        ;     CMP #MENU_TITLE_TOPTEN
-        ;     BEQ :+
-        ;     RTS
-        ;     :
-        ;     JSR ToggleYN
         @menuNameParty:
             LDX fingerX
             INX
@@ -3091,6 +3191,9 @@
             LDA helper
             STA keyboardKey
             JSR HighlightKeyboardKey
+            RTS
+        @menuNamesCorrect:
+            JSR ToggleYN
             RTS
     ; Done:
     RTS

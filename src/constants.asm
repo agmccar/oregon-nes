@@ -144,6 +144,7 @@ MENU_NEWGAME_TYPING     = 1 ; new game name input
 MENU_NEWGAME_OCCUPATION = 2 ; new game occupation selection 
 MENU_NEWGAME_OCC_HELP   = 19 ; new game occupation explanation screen
 MENU_NEWGAME_NAMEPARTY  = 20 ; new game name party screen
+MENU_NEWGAME_NAMESCORRECT = 21 ; "Are these names correct?"
 MENU_NEWGAME_STARTDATE  = 3 ; new game starting month selection
 MENU_STORE_ITEM1        = 4 ; 1 digit general store item selection
 MENU_STORE_ITEM2        = 5 ; 2 digit general store item selection
