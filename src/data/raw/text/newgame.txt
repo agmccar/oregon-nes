@@ -29,14 +29,6 @@ However, the harder you have to try, the more points you deserve!
 Therefore, the farmer earns the greatest number of points and the banker
 earns the least.
 
-## NamePartyText1
-
-What is the first name of the wagon leader?
-
-## NamePartyText2
-
-What is the first name of the 2nd person?
-
 ## NamePartyPressStart
 
 (Enter names or press Start)$

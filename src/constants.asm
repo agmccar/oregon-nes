@@ -123,6 +123,9 @@ TEXT_STORENAME_LEN  = 12
 TEXT_STARTDATE_LEN  = 6
 TEXT_NAME_LEN       = 8
 
+; keyboard key indices
+KEYBOARD_DONE = (TEXT_KEYBOARD_LEN*3)-2
+
 ; Game states
 GAMESTATE_TITLE     = 0 ; title screen
 GAMESTATE_NEWGAME   = 1 ; set party member names, select occupation

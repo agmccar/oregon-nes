@@ -2640,10 +2640,28 @@
     RTS
 .endproc
 
+.proc PressedDoneNextName
+    LDA #0
+    STA nameCursor
+    INC menuCursor
+    JSR BufferDrawNextNamePrompt
+    LDX #6
+    STA fingerX
+    LDY #21
+    STA fingerY
+    LDA #0
+    STA keyboardKey
+    RTS
+.endproc
+
 .proc GamepadNewGame
     LDA buttons1
     CMP buttons1Last
-    BNE CheckA
+    BNE :+
+    RTS
+    :
+    LDA buttons1Last 
+    BEQ CheckA
     RTS
     CheckA:
         LDA #KEY_A
@@ -2659,19 +2677,9 @@
         RTS
         @menuNameParty:
             LDA keyboardKey ; Done?
-            CMP #(TEXT_KEYBOARD_LEN*3)-2
+            CMP #KEYBOARD_DONE
             BNE :+
-            LDA #0
-            STA nameCursor
-            INC menuCursor
-            JSR BufferDrawNextNamePrompt
-            LDX #6
-            STA fingerX
-            LDY #21
-            STA fingerY
-            LDA #0
-            STA keyboardKey
-            ; JSR PressedDone/NextName
+            JSR PressedDoneNextName
             RTS
             :
             LDX keyboardKey
@@ -2688,7 +2696,7 @@
             LDA nameCursor
             CMP #TEXT_NAME_LEN
             BNE :+
-            LDA #(TEXT_KEYBOARD_LEN*3)-2 ; jump to "DONE" key
+            LDA #KEYBOARD_DONE ; jump to "DONE" key
             STA keyboardKey
             LDA #22
             STA fingerX
@@ -2706,8 +2714,6 @@
             LDA helper+1 ; tile index to draw
             LDY #17 ; tiles from top
             JSR WriteTileToBuffer
-            LDA #60
-            STA frameCounter
             JSR HighlightKeyboardKey
             RTS
     CheckB:
@@ -2796,6 +2802,19 @@
             STA menuOpen
             RTS
         @menuNameParty:
+            LDA keyboardKey
+            CMP #KEYBOARD_DONE
+            BNE :+
+            JSR PressedDoneNextName
+            RTS
+            :
+            LDA #KEYBOARD_DONE ; jump to "Done"
+            STA keyboardKey
+            LDA #22
+            STA fingerX
+            LDA #25
+            STA fingerY
+            JSR HighlightKeyboardKey
             RTS
     CheckSelect:
         LDA #KEY_SELECT
@@ -2864,7 +2883,7 @@
             BNE @moveFingerD
             LDA #22
             STA fingerX
-            LDA #(TEXT_KEYBOARD_LEN*3)-2
+            LDA #KEYBOARD_DONE
             STA helper
             JMP @moveFingerD
             @wrapFingerD:
@@ -2877,8 +2896,6 @@
             STX fingerY
             LDA helper
             STA keyboardKey
-            LDA #60
-            STA frameCounter
             JSR HighlightKeyboardKey
             RTS
     CheckUp:
@@ -2923,7 +2940,7 @@
             BCC @wrapFingerU
             LDA #22
             STA fingerX ; wrap to the "DONE" key
-            LDA #(TEXT_KEYBOARD_LEN*3)-2
+            LDA #KEYBOARD_DONE
             STA helper
             LDX #25 ; wrap to bottom of keyboard
             JMP @moveFingerU
@@ -2937,8 +2954,6 @@
             STX fingerY
             LDA helper
             STA keyboardKey
-            LDA #60
-            STA frameCounter
             JSR HighlightKeyboardKey
             RTS
     CheckLeft:
@@ -2983,8 +2998,6 @@
             STX fingerX
             LDA helper
             STA keyboardKey
-            LDA #60
-            STA frameCounter
             JSR HighlightKeyboardKey
             RTS
     CheckRight:
@@ -3032,8 +3045,6 @@
             STX fingerX
             LDA helper
             STA keyboardKey
-            LDA #60
-            STA frameCounter
             JSR HighlightKeyboardKey
             RTS
     ; Done:

@@ -2215,6 +2215,8 @@
 .endproc
 
 .proc HighlightKeyboardKey
+    LDA #60
+    STA frameCounter
     BufferStart #$10, #$23, #$e8
         LDX #$10
         LDA #$ff
