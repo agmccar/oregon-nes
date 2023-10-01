@@ -20,7 +20,7 @@
 
 - [x] choose occupation menu
 - [x] Name party members graphics
-- [ ] name party members input
+- [x] name party members input
 - [ ] decide which month to leave menu
 - [ ] independence graphic + text boxes screens
 
@@ -35,8 +35,8 @@
 
 ## River crossing
 
-- [ ] river crossing data tables: depth, width
-- [ ] river crossing graphics
+- [x] river crossing data tables: depth, width
+- [x] river crossing graphics
 - [ ] river crossing logic
 
 ## The Dalles rafting minigame

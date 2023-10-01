@@ -362,6 +362,14 @@
         ; LDY #7
         ; JSR MoveFingerToSubmenu
         JMP Done
+    NewGameStartDate:
+        ; LDA #%00000100      ; only main finger visible
+        ; STA fingerAttr
+        ; JSR DrawStartDateSubmenu
+        ; LDX #6
+        ; LDY #21
+        ; JSR MoveFingerToSubmenu
+        ; JMP Done
     NewGameOccHelp:
         LDA #0      ; no finger visible, pointing right
         STA fingerAttr
@@ -384,14 +392,6 @@
         LDA #30
         STA frameCounter
         JSR HighlightKeyboardKey
-        JMP Done
-    NewGameStartDate:
-        LDA #%00000100      ; only main finger visible
-        STA fingerAttr
-        JSR DrawStartDateSubmenu
-        LDX #6
-        LDY #21
-        JSR MoveFingerToSubmenu
         JMP Done
     StoreSubmenu:
         LDA #%00011100      ; both fingers visible, main finger "up/down" arrows

@@ -2021,6 +2021,10 @@
     BNE :+
     JMP NameParty
     :
+    CMP #MENU_NEWGAME_STARTDATE
+    BNE :+
+    JMP StartDate
+    :
     RTS
     Occupation:
         JSR StartBulkDrawing
@@ -2120,6 +2124,22 @@
         DEX
         BNE :-
         JSR EndBufferWrite
+        RTS
+    StartDate:
+        JSR StartBulkDrawing
+        JSR DrawAdornments
+        JSR DoneBulkDrawing
+
+        LDA newgamePointer+16
+        STA pointer
+        LDA newgamePointer+17
+        STA pointer+1
+        LDA #$20
+        STA cartHelperDigit
+        LDA #$e4
+        STA cartHelperDigit+1
+        JSR BufferDrawText
+        
         RTS
 .endproc
 
@@ -2844,8 +2864,11 @@
             BEQ :+
             JSR IncrementDate
             JSR SetOpeningBalance
-            LDA #GAMESTATE_STORE ; "Y"
-            STA gameState
+            ; TODO: "Going back to 1848..."
+            ; LDA #GAMESTATE_STORE ; "Y"
+            ; STA gameState
+            LDA #MENU_NEWGAME_STARTDATE
+            STA menuOpen
             RTS
             :
             ; "N"
