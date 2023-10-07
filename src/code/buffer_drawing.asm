@@ -2142,6 +2142,8 @@
     DEC helper+1 ; remaining chars in word
     JMP Done
     :
+    LDA #0
+    STA textLineHelper+5
     LDA textLineHelper+4 ; check if there are remaining words in segment
     BNE :+
     LDA helper ; check punctuation type
@@ -2151,11 +2153,14 @@
     CMP #_PR ; '$' EOL
     BEQ :+
     STA wordBuffer, X ; replace last space with punctuation mark
+    LDA #1
+    STA textLineHelper+5
     :
     LDA counter ; word is done
     CLC
     ADC textLineHelper ; add length of word to length of text line
-    CMP #TEXT_POPUP_LINE_LEN ; check if there is space in text line for word
+    ADC textLineHelper+5
+    CMP #TEXT_POPUP_LINE_LEN+1 ; check if there is space in text line for word
     BCS :+
     JMP WordToLine
     :
