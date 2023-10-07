@@ -1832,9 +1832,9 @@
     LDA talkPointer, X
     STA pointer+1
     LDA #$20 ; PPU address - start at top left
-    STA cartHelperDigit
+    STA bufferHelper
     LDA #$E4
-    STA cartHelperDigit+1
+    STA bufferHelper+1
 
     LDA location ; bankswitch to get text data
     LSR
@@ -2035,9 +2035,9 @@
     TYA
     PHA ; stash Y
     LDA pointer ; stash pointer
-    STA cartHelperDigit+2
+    STA bufferHelper+2
     LDA pointer+1
-    STA cartHelperDigit+3
+    STA bufferHelper+3
     LDA #<talkDictionary ; location of dictionary
     STA pointer
     LDA #>talkDictionary
@@ -2069,9 +2069,9 @@
     :
     PLA ; unstash Y
     TAY
-    LDA cartHelperDigit+2 ; unstash pointer
+    LDA bufferHelper+2 ; unstash pointer
     STA pointer
-    LDA cartHelperDigit+3
+    LDA bufferHelper+3
     STA pointer+1
     JSR IncrementPointerY
     ;JMP Space
@@ -2102,9 +2102,9 @@
     JSR StartBufferWrite
         LDA counter
         JSR WriteByteToBuffer
-        LDA cartHelperDigit
+        LDA bufferHelper
         JSR WriteByteToBuffer
-        LDA cartHelperDigit+1
+        LDA bufferHelper+1
         JSR WriteByteToBuffer
         LDX #0
         :
@@ -2155,9 +2155,9 @@
     JSR StartBufferWrite
         LDA #TEXT_POPUP_LINE_LEN
         JSR WriteByteToBuffer
-        LDA cartHelperDigit
+        LDA bufferHelper
         JSR WriteByteToBuffer
-        LDA cartHelperDigit+1
+        LDA bufferHelper+1
         JSR WriteByteToBuffer
         LDX #0
         :
@@ -2170,12 +2170,12 @@
     PLA ; unstash Y
     TAY
     CLC ; write a "carriage return" to screen
-    LDA cartHelperDigit+1
+    LDA bufferHelper+1
     ADC #$20
-    STA cartHelperDigit+1
-    LDA cartHelperDigit
+    STA bufferHelper+1
+    LDA bufferHelper
     ADC #0
-    STA cartHelperDigit
+    STA bufferHelper
     LDX #0
     STX counter ; reset index of char in line
     LDA #___

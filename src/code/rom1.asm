@@ -1647,9 +1647,9 @@
     LDA learnPointer, X
     STA pointer+1
     LDA #$21
-    STA cartHelperDigit
+    STA bufferHelper
     LDA #$64
-    STA cartHelperDigit+1
+    STA bufferHelper+1
     JSR BufferDrawText
 
     LDA menuCursor
@@ -1741,9 +1741,9 @@
     LDA soundPointer+1
     STA pointer+1
     LDA #$21
-    STA cartHelperDigit
+    STA bufferHelper
     LDA #$A4
-    STA cartHelperDigit+1
+    STA bufferHelper+1
     JSR BufferDrawText
 
     LDA soundPointer+2
@@ -1751,9 +1751,9 @@
     LDA soundPointer+3
     STA pointer+1
     LDA #$22
-    STA cartHelperDigit
+    STA bufferHelper
     LDA #$04
-    STA cartHelperDigit+1
+    STA bufferHelper+1
     JSR BufferDrawText
 
     BIT gameSettings
@@ -2032,9 +2032,9 @@
         JSR DoneBulkDrawing
         LDX #0 ; newgameSelectOccupationText
         LDA #$20
-        STA cartHelperDigit
+        STA bufferHelper
         LDA #$c4
-        STA cartHelperDigit+1
+        STA bufferHelper+1
         :
         LDA newgamePointer,X
         STA pointer
@@ -2046,17 +2046,17 @@
         CPX #2
         BNE :+
         CLC
-        LDA cartHelperDigit+1
+        LDA bufferHelper+1
         ADC #2
-        STA cartHelperDigit+1
+        STA bufferHelper+1
         :
         CLC
-        LDA cartHelperDigit+1
+        LDA bufferHelper+1
         ADC #$40
-        STA cartHelperDigit+1
-        LDA cartHelperDigit
+        STA bufferHelper+1
+        LDA bufferHelper
         ADC #0
-        STA cartHelperDigit
+        STA bufferHelper
         CPX #10
         BNE :--
         RTS
@@ -2066,9 +2066,9 @@
         JSR DoneBulkDrawing
         LDX #10 ; newgameOccupationHelpText1
         LDA #$20
-        STA cartHelperDigit
+        STA bufferHelper
         LDA #$c4
-        STA cartHelperDigit+1
+        STA bufferHelper+1
         :
         LDA newgamePointer,X
         STA pointer
@@ -2078,12 +2078,12 @@
         INX
         JSR BufferDrawText
         CLC
-        LDA cartHelperDigit+1
+        LDA bufferHelper+1
         ADC #$40
-        STA cartHelperDigit+1
-        LDA cartHelperDigit
+        STA bufferHelper+1
+        LDA bufferHelper
         ADC #0
-        STA cartHelperDigit
+        STA bufferHelper
         CPX #14
         BNE :-
         JSR BufferDrawPressStart
@@ -2091,6 +2091,7 @@
     NameParty:
         JSR StartBulkDrawing
         JSR DrawNamePartyImage
+        JSR DrawMenuKeyboard
         JSR DoneBulkDrawing
         BufferStart_ #29, #$22, #$02
         LDX #0
@@ -2110,11 +2111,11 @@
         INX
         CPX #13
         BNE :-
-        JSR EndBufferWrite
 
-        JSR StartBulkDrawing
-        JSR DrawMenuKeyboard
-        JSR DoneBulkDrawing
+
+
+        
+        JSR EndBufferWrite
         
         BufferStart_ #TEXT_NAME_LEN, #$22, #$37
         LDX #8
@@ -2135,9 +2136,9 @@
         LDA newgamePointer+17
         STA pointer+1
         LDA #$20
-        STA cartHelperDigit
+        STA bufferHelper
         LDA #$e4
-        STA cartHelperDigit+1
+        STA bufferHelper+1
         JSR BufferDrawText
         
         RTS

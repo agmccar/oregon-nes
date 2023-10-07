@@ -373,19 +373,19 @@
     LDA top10Pointer, X
     STA pointer+1
     LDA #$20
-    STA cartHelperDigit
+    STA bufferHelper
     LDA #$C4
-    STA cartHelperDigit+1
+    STA bufferHelper+1
     LDA menuCursor
     CMP #3
     BNE :+
     CLC
-    LDA cartHelperDigit+1
+    LDA bufferHelper+1
     ADC #$80
-    STA cartHelperDigit+1
-    LDA cartHelperDigit
+    STA bufferHelper+1
+    LDA bufferHelper
     ADC #0
-    STA cartHelperDigit
+    STA bufferHelper
     :
     JSR BufferDrawText
     JSR BufferDrawPressStart
