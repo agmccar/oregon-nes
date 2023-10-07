@@ -228,6 +228,7 @@ def compress_segment(segment, substr_dict):
         wlen[-1] = wlen[-1]+"0"
     for w in wlen:
         header_bytes.append(f"${hex(int(w,16))[2:]}")
+         # todo Last one needs to be +1 to include punct (if not '$' EOL)?
 
     # Header length nibble (second half of first header byte)
     header_bytes[0] = f"${hex(len(header_bytes[1:]))[2:]}"+header_bytes[0]

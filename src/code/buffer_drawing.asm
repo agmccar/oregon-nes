@@ -1863,13 +1863,14 @@
     PHA
     LDY #0 ; decompress and draw talk text
     STY counter
-    STY textLineHelper+3
     LDA #0 ; clear talkTextBuffer, textLineHelper
     LDX #0
     :
     STA talkTextBuffer, X
     CPX #TEXT_POPUP_LINE_LEN
     BCS :+
+    ; textLineHelper+3
+    ; textLineHelper+4 ; number of words in segment
     STA textLineHelper, X
     :
     INX
@@ -1882,8 +1883,6 @@
     INX
     CPX #TEXT_POPUP_LINE_LEN
     BNE :-
-    LDA #0
-    STA textLineHelper ; reset index of char in word
     NextSegment:
     LDX #0
     STX counter+1 ; reset talkTextBuffer index
@@ -1902,6 +1901,7 @@
     JSR IncrementPointerY
     LDX #0 ; read word length header bytes
     STX counter+1 ; talkTextBuffer index
+    STX textLineHelper+4
     :
     TXA
     PHA
@@ -1913,38 +1913,38 @@
     LDX counter+1
     STA talkTextBuffer, X ; stash word lengths
     INC counter+1
+    INC textLineHelper+4 ; number of words in segment
     INX
     LDA (pointer), Y
     AND #$0f
     STA talkTextBuffer, X
+    BEQ :+
+    INC textLineHelper+4 ; number of words in segment
+    :
     INC counter+1
     PLA
     TAX
     JSR IncrementPointerY
     INX
     CPX helper+1
-    BNE :-
-    LDA #0
+    BNE :--
     LDX counter+1
+    LDA #0
     STA talkTextBuffer, X
+    ; LDX textLineHelper+4
+    ; DEX
+    ; INC talkTextBuffer, X
     LDX #0 ; begin decompress segment payload
     STX helper2 ; storage for extra letter. starts empty
     NextWord:
+    DEC textLineHelper+4
     LDA talkTextBuffer, X
     STA helper+1 ; character length of next word
     BNE SameSegment
     TXA ; done with segment
     PHA ; stash talkTextBuffer index
     LDA helper
-    BEQ :++
-    DEC counter ; punctuation
-    LDX counter
-    CLC
-    ADC #_CM-1
-    CMP #_PR
     BEQ :+
-    JSR WriteTextChar ; replace last space with punctuation mark
-    :
     JMP NewSpace
     :
     TYA ; "tells you:"
@@ -2136,11 +2136,21 @@
     PLA
     LDX textLineHelper ; index of char in word
     STA wordBuffer, X
-    INC textLineHelper
     CMP #___ ; check if there are more characters to write
     BEQ :+
+    INC textLineHelper
     DEC helper+1 ; remaining chars in word
     JMP Done
+    :
+    LDA textLineHelper+4 ; check if there are remaining words in segment
+    BNE :+
+    LDA helper ; check punctuation type
+    BEQ :+
+    CLC
+    ADC #_CM-1
+    CMP #_PR ; '$' EOL
+    BEQ :+
+    STA wordBuffer, X ; replace last space with punctuation mark
     :
     LDA counter ; word is done
     CLC
@@ -2185,19 +2195,23 @@
     CPX #TEXT_POPUP_LINE_LEN
     BNE :-
     WordToLine: ; write finished word to line
+    INC textLineHelper
     LDX #0
     :
     TXA
     PHA
     LDA wordBuffer, X
     LDX counter
+    CPX #TEXT_POPUP_LINE_LEN
+    BCS :+
     STA popupTextLine1, X
+    :
     INC counter
     PLA
     TAX
     INX
     CPX textLineHelper
-    BNE :-
+    BNE :--
     ClearWordBuffer:
     LDA #0
     STA textLineHelper ; reset index of char in word
