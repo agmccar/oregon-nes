@@ -2131,16 +2131,70 @@
         JSR DrawAdornments
         JSR DoneBulkDrawing
 
-        LDA newgamePointer+16
+        LDA newgamePointer+16 ; "It is 1848. Your jumping off place ..."
         STA pointer
         LDA newgamePointer+17
         STA pointer+1
         LDA #$20
         STA bufferHelper
-        LDA #$e4
+        LDA #$c4
         STA bufferHelper+1
         JSR BufferDrawText
         
+        LDA #$21 ; Month selection list
+        STA pointer
+        LDA #$c6
+        STA pointer+1
+        LDX #0
+        STX counter
+        STX counter+1
+        :
+        TXA
+        PHA
+        LDX counter
+        LDA startingDateText, X
+        STA helper
+        INC counter
+        CLC
+        LDA counter+1
+        ADC helper
+        STA counter+1
+        INC counter+1
+        BufferStart_ helper, pointer, pointer+1
+            LDX counter
+            :
+            LDA startingDateText, X
+            JSR WriteByteToBuffer
+            INX
+            CPX counter+1
+            BNE :-
+            STX counter
+        JSR EndBufferWrite
+        CLC
+        LDA pointer+1
+        ADC #$20
+        STA pointer+1
+        LDA pointer
+        ADC #0
+        STA pointer
+        PLA
+        TAX
+        INX
+        CPX #6 ; number of options
+        BNE :--
+
+        ; "What is your choice?"
+        BufferStart_ #20, #$22, #$c4
+            LDX #0
+            :
+            LDA whatIsYourChoiceText+10, X
+            JSR WriteByteToBuffer
+            INX
+            CPX #20
+            BNE :-
+        JSR EndBufferWrite
+
+
         RTS
 .endproc
 
