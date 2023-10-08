@@ -2990,6 +2990,10 @@
         BNE :+
         JMP @menuNameParty
         :
+        CMP #MENU_NEWGAME_STARTDATE
+        BNE :+
+        JMP @menuStartDate
+        :
         RTS
         @menuOccupation:
             LDA #MENU_NEWGAME_NAMEPARTY
@@ -3039,6 +3043,22 @@
             STA fingerY
             JSR HighlightKeyboardKey
             RTS
+        @menuStartDate:
+            LDA fingerY
+            SEC
+            SBC #14
+            CMP #6
+            BEQ :+
+            CLC
+            ADC #3
+            STA dateMonth
+            LDA #MENU_NEWGAME_MATT_INTRO
+            STA menuOpen
+            RTS
+            :
+            LDA #MENU_NEWGAME_DATE_HELP
+            STA menuOpen
+            RTS
     CheckSelect:
         LDA #KEY_SELECT
         BIT buttons1
@@ -3076,6 +3096,10 @@
         CMP #MENU_NEWGAME_NAMEPARTY
         BNE :+
         JMP @menuNameParty
+        :
+        CMP #MENU_NEWGAME_STARTDATE
+        BNE :+
+        JMP @menuStartDate
         :
         RTS
         @menuOccupation:
@@ -3121,6 +3145,15 @@
             STA keyboardKey
             JSR HighlightKeyboardKey
             RTS
+        @menuStartDate:
+            LDX fingerY
+            INX
+            CPX #20
+            BNE :+
+            LDX #14 ; wrap to top
+            :
+            STX fingerY
+            RTS
     CheckUp:
         LDA #KEY_UP
         BIT buttons1
@@ -3135,6 +3168,10 @@
         CMP #MENU_NEWGAME_NAMEPARTY
         BNE :+
         JMP @menuNameParty
+        :
+        CMP #MENU_NEWGAME_STARTDATE
+        BNE :+
+        JMP @menuStartDate
         :
         RTS
         @menuOccupation:
@@ -3178,6 +3215,15 @@
             LDA helper
             STA keyboardKey
             JSR HighlightKeyboardKey
+            RTS
+        @menuStartDate:
+            LDX fingerY
+            DEX
+            CPX #13
+            BNE :+
+            LDX #19 ; wrap to bottom
+            :
+            STX fingerY
             RTS
     CheckLeft:
         LDA #KEY_LEFT

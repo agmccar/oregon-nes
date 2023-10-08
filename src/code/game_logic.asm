@@ -363,13 +363,20 @@
         ; JSR MoveFingerToSubmenu
         JMP Done
     NewGameStartDate:
-        ; LDA #%00000100      ; only main finger visible
-        ; STA fingerAttr
+        LDA #%00000100      ; only main finger visible, pointing right
+        STA fingerAttr
         ; JSR DrawStartDateSubmenu
-        ; LDX #6
-        ; LDY #21
-        ; JSR MoveFingerToSubmenu
-        ; JMP Done
+        LDA #0
+        STA fingerLastLastX
+        STA fingerLastLastY
+        STA fingerLastX
+        STA fingerLastY
+        LDA #4
+        STA fingerX
+        LDA #14
+        STA fingerY
+        JSR LoadBgNewGame
+        JMP Done
     NewGameOccHelp:
         LDA #0      ; no finger visible, pointing right
         STA fingerAttr
