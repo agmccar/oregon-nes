@@ -2025,6 +2025,10 @@
     BNE :+
     JMP StartDate
     :
+    CMP #MENU_NEWGAME_DATE_HELP
+    BNE :+
+    JMP DateHelp
+    :
     RTS
     Occupation:
         JSR StartBulkDrawing
@@ -2050,15 +2054,22 @@
         ADC #2
         STA bufferHelper+1
         :
+        LDA #$60
+        STA helper
+        CPX #6
+        BCC :+
+        LDA #$40
+        STA helper
+        :
         CLC
         LDA bufferHelper+1
-        ADC #$40
+        ADC helper
         STA bufferHelper+1
         LDA bufferHelper
         ADC #0
         STA bufferHelper
         CPX #10
-        BNE :--
+        BNE :---
         RTS
     OccupationHelp:
         JSR StartBulkDrawing
@@ -2195,6 +2206,32 @@
         JSR EndBufferWrite
 
 
+        RTS
+    DateHelp:
+        JSR StartBulkDrawing
+        JSR DrawAdornments
+        JSR DoneBulkDrawing
+
+        LDA newgamePointer+18 ; SelectMonthAdvice1 
+        STA pointer
+        LDA newgamePointer+19 ; "You attend a public meeting ..."
+        STA pointer+1
+        LDA #$20
+        STA bufferHelper
+        LDA #$c4
+        STA bufferHelper+1
+        JSR BufferDrawText
+
+        LDA newgamePointer+20 ; SelectMonthAdvice2 
+        STA pointer
+        LDA newgamePointer+21 ; "You attend a public meeting ..."
+        STA pointer+1
+        LDA #$21
+        STA bufferHelper
+        LDA #$84
+        STA bufferHelper+1
+        JSR BufferDrawText
+        JSR BufferDrawPressStart
         RTS
 .endproc
 
@@ -2990,9 +3027,17 @@
         BNE :+
         JMP @menuNameParty
         :
+        CMP #MENU_NEWGAME_NAMESCORRECT
+        BNE :+
+        JMP @menuNamesCorrect
+        :
         CMP #MENU_NEWGAME_STARTDATE
         BNE :+
         JMP @menuStartDate
+        :
+        CMP #MENU_NEWGAME_DATE_HELP
+        BNE :+
+        JMP @menuDateHelp
         :
         RTS
         @menuOccupation:
@@ -3047,7 +3092,7 @@
             LDA fingerY
             SEC
             SBC #14
-            CMP #6
+            CMP #5
             BEQ :+
             CLC
             ADC #3
@@ -3057,6 +3102,24 @@
             RTS
             :
             LDA #MENU_NEWGAME_DATE_HELP
+            STA menuOpen
+            RTS
+        @menuNamesCorrect:
+            LDA menuCursor
+            BEQ :+
+            JSR IncrementDate
+            JSR SetOpeningBalance
+            ; TODO: "Going back to 1848..."
+            ; LDA #GAMESTATE_STORE ; "Y"
+            ; STA gameState
+            LDA #MENU_NEWGAME_STARTDATE
+            STA menuOpen
+            RTS
+            :
+            ; "N"
+            RTS
+        @menuDateHelp:
+            LDA #MENU_NEWGAME_STARTDATE
             STA menuOpen
             RTS
     CheckSelect:

@@ -4,7 +4,7 @@
     CMP gameState
     BNE :+
     JSR UpdateGame
-    JMP Done
+    RTS
     :
     JSR ClearScreen
     LDA gameState
@@ -12,34 +12,33 @@
     CMP #GAMESTATE_TITLE
     BNE :+
     JSR InitStateTitle
-    JMP Done
+    RTS
     :
     CMP #GAMESTATE_TRAVELING
     BNE :+ 
     JSR InitStateTraveling
-    JMP Done
+    RTS
     :
     CMP #GAMESTATE_NEWGAME
     BNE :+ 
     JSR InitStateNewGame
-    JMP Done
+    RTS
     :
     CMP #GAMESTATE_STORE
     BNE :+ 
     JSR InitStateStore
-    JMP Done
+    RTS
     :
     CMP #GAMESTATE_LANDMARK
     BNE :+ 
     JSR InitStateLandmark
-    JMP Done
+    RTS
     :
     CMP #GAMESTATE_MAP
     BNE :+
     JSR InitStateMap
-    JMP Done
+    RTS
     :
-    Done:
     RTS
 .endproc
 
@@ -48,6 +47,10 @@
     CMP menuOpenLast
     BEQ :+
     JSR NewMenuOpened
+    LDA menuOpen
+    STA menuOpenLast    ; reset last menu open
+    LDA #0
+    STA frameCounter    ; reset framecounter
     JMP Done
     :
     LDA gameState
@@ -266,7 +269,11 @@
     BNE :+
     JMP Map
     :
-    JMP Done
+    CMP #MENU_NEWGAME_DATE_HELP
+    BNE :+
+    JMP NewGameDateHelp
+    :
+    RTS
     None:
         LDA #0
         STA fingerLastLastX
@@ -275,14 +282,14 @@
         CMP #GAMESTATE_TITLE
         BNE :+
         JSR InitStateTitle
-        JMP Done
+        RTS
         ; :
         ; CMP #GAMESTATE_NEWGAME
         ; BNE :+
         ; LDA #%00001100      ; both fingers visible, normal, pointing right
         ; STA fingerAttr
         ; JSR LoadBgNewGame
-        ; JMP Done
+        ; RTS
         :
         CMP #GAMESTATE_STORE
         BNE :+
@@ -290,14 +297,14 @@
         STA fingerAttr
         JSR RedrawFinger
         JSR LoadBgStore
-        JMP Done
+        RTS
         :
         CMP #GAMESTATE_LANDMARK
         BNE :+
         LDA #%00000000      ; neither finger visible
         STA fingerAttr
         JSR LoadBgLandmark
-        JMP Done
+        RTS
         :
         CMP #GAMESTATE_TRAVELING
         BNE :+
@@ -307,15 +314,15 @@
         CMP #MENU_TEXTPOPUP
         BEQ :+
         JSR LoadBgTraveling
-        JMP Done
+        RTS
         :
-        JMP Done
+        RTS
     TitleLearn:
         LDA #0 ;no fingers visible
         STA fingerAttr
         STA menuCursor ; use menuCursor to denote page number (0-6)
         JSR BufferDrawTitleLearn
-        JMP Done
+        RTS
     TitleTopTen:
         LDA #%00010101 ; "<>" finger visible
         STA fingerAttr
@@ -332,12 +339,12 @@
         LDY fingerY
         LDA #_N_
         JSR WriteTileToBuffer
-        JMP Done
+        RTS
     TitleSound:
         LDA #%0 ; no finger visible
         STA fingerAttr
         JSR BufferDrawTitleSound
-        JMP Done
+        RTS
     NewGameTyping:
         LDA #%00001100      ; both fingers visible, pointing right
         STA fingerAttr
@@ -347,7 +354,7 @@
         LDX #5
         LDY #18
         JSR MoveFingerToSubmenu
-        JMP Done
+        RTS
     NewGameOccupation:
         LDA #%00000100      ; only main finger visible, pointing right
         STA fingerAttr
@@ -361,7 +368,7 @@
         ; LDX #15
         ; LDY #7
         ; JSR MoveFingerToSubmenu
-        JMP Done
+        RTS
     NewGameStartDate:
         LDA #%00000100      ; only main finger visible, pointing right
         STA fingerAttr
@@ -376,7 +383,7 @@
         LDA #14
         STA fingerY
         JSR LoadBgNewGame
-        JMP Done
+        RTS
     NewGameOccHelp:
         LDA #0      ; no finger visible, pointing right
         STA fingerAttr
@@ -384,7 +391,7 @@
         ; LDY #1
         ; JSR MoveFingerToSubmenu
         JSR LoadBgNewGame
-        JMP Done
+        RTS
     NewGameNameParty:
         LDA #%00100000      ; keyboard key
         STA fingerAttr
@@ -399,7 +406,12 @@
         LDA #30
         STA frameCounter
         JSR HighlightKeyboardKey
-        JMP Done
+        RTS
+    NewGameDateHelp:
+        LDA #0      ; no finger visible, pointing right
+        STA fingerAttr
+        JSR LoadBgNewGame
+        RTS
     StoreSubmenu:
         LDA #%00011100      ; both fingers visible, main finger "up/down" arrows
         STA fingerAttr
@@ -408,19 +420,19 @@
         TAX
         LDY fingerY
         JSR MoveFingerToSubmenu
-        JMP Done
+        RTS
     MainMenu:
         LDA #%00000100      ; only finger visible, pointing right
         STA fingerAttr
         JSR UpdatePalette ; <- TODO refactor 
         JSR LoadBgTraveling
         JSR RedrawFinger
-        JMP Done
+        RTS
     Supplies:
         LDA #0 ;no fingers visible
         STA fingerAttr
         JSR LoadBgSupplies
-        JMP Done
+        RTS
     Pace:
         LDA #%00010100      ; only finger visible, up/down arrow
         STA fingerAttr
@@ -429,7 +441,7 @@
         JSR MoveFingerToSubmenu
         JSR DrawPaceSubmenu
         JSR RedrawFinger
-        JMP Done
+        RTS
     Rations:
         LDA #%00010100      ; only finger visible, up/down arrow
         STA fingerAttr
@@ -438,7 +450,7 @@
         JSR MoveFingerToSubmenu
         JSR DrawRationsSubmenu
         JSR RedrawFinger
-        JMP Done
+        RTS
     Rest:
         LDA #1
         STA wagonRest
@@ -449,13 +461,13 @@
         JSR MoveFingerToSubmenu
         JSR DrawRestSubmenu
         JSR RedrawFinger
-        JMP Done
+        RTS
     TextPopupYN:
     TextPopup:
         JSR BufferDrawTextPopup
-        JMP Done
+        RTS
         ; JSR BufferDrawTextPopup
-        ; JMP Done
+        ; RTS
     Map:
         LDA #0      ; no finger visible
         STA fingerAttr
@@ -463,19 +475,12 @@
         JSR RedrawFinger
         JSR LoadBgMap
         ;JSR DrawTrailSprites
-        JMP Done
+        RTS
     Talk:
         LDA #0 ;no fingers visible
         STA fingerAttr
         JSR LoadBgTalk
-        JMP Done
-
-    Done:
-    LDA menuOpen
-    STA menuOpenLast    ; reset last menu open
-    LDA #0
-    STA frameCounter    ; reset framecounter
-    RTS
+        RTS
 .endproc
 
 .proc Every60Frames
