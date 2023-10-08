@@ -776,6 +776,15 @@
 .endproc
 
 .proc LoadBgRiverCrossing
-    
+    RTS
+.endproc
+
+.proc LoadBgIndependence
+    JSR ClearScreen
+    JSR ClearAttributes
+    JSR StartBulkDrawing
+    JSR DrawLandmarkImage
+    JSR DoneBulkDrawing
+    JSR BufferDrawIntroTextBox
     RTS
 .endproc

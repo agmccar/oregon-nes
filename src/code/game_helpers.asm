@@ -1007,3 +1007,18 @@
     PLP
     RTS
 .endproc
+
+.proc PointerToNextLine
+    PHP
+    PHA
+    CLC
+    LDA pointer+1
+    ADC #$20
+    STA pointer+1
+    LDA pointer
+    ADC #0
+    STA pointer
+    PLA
+    PLP
+    RTS
+.endproc

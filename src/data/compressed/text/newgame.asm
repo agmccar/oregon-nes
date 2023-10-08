@@ -60,8 +60,8 @@ newgameOccupationHelpText2:
     .byte $00
 
 newgameGoingBackText:
-    ; 16 bytes
-    .byte $25,$54,$25,$cd,$04,$d6,$d1,$37,$da,$0a,$f2,$f9,$f5,$f9,$fb
+    ; 15 bytes
+    .byte $25,$54,$24,$cd,$04,$d6,$d1,$37,$da,$0a,$f2,$f9,$f5,$f9
     .byte $00
 
 newgameSelectMonthText:

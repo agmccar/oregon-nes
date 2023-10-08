@@ -209,6 +209,7 @@
     LoadLandmark:
         LDA #MENU_NONE
         STA menuOpen
+        INC location ; increment landmark (todo handle trail divide)
         LDA #GAMESTATE_LANDMARK
         STA gameState
         JMP Done
@@ -1702,13 +1703,7 @@
         DEX
         BNE @sq
     JSR EndBufferWrite
-    CLC
-    LDA pointer+1
-    ADC #$20
-    STA pointer+1
-    LDA pointer
-    ADC #0
-    STA pointer
+    JSR PointerToNextLine
     PLA
     TAX
     DEX
@@ -1962,13 +1957,7 @@
         CPX helper2
         BNE Rating
     JSR EndBufferWrite
-    CLC
-    LDA pointer+1
-    ADC #$20
-    STA pointer+1
-    LDA pointer
-    ADC #0
-    STA pointer
+    JSR PointerToNextLine
     PLA
     TAX
     DEX
@@ -2181,13 +2170,7 @@
             BNE :-
             STX counter
         JSR EndBufferWrite
-        CLC
-        LDA pointer+1
-        ADC #$20
-        STA pointer+1
-        LDA pointer
-        ADC #0
-        STA pointer
+        JSR PointerToNextLine
         PLA
         TAX
         INX
@@ -2784,13 +2767,7 @@
     DEX
     BNE :-
     JSR EndBufferWrite
-    CLC
-    LDA pointer+1
-    ADC #$20
-    STA pointer+1
-    LDA pointer
-    ADC #0
-    STA pointer
+    JSR PointerToNextLine
     PLA
     TAX
     DEX
@@ -2841,12 +2818,7 @@
     LDA helper+1
     ADC #TEXT_NAME_LEN
     STA helper+1
-    LDA pointer+1
-    ADC #$20
-    STA pointer+1
-    LDA pointer
-    ADC #0
-    STA pointer
+    JSR PointerToNextLine
     PLA
     TAX
     INX
@@ -2956,10 +2928,7 @@
             BEQ :+
             JSR IncrementDate
             JSR SetOpeningBalance
-            ; TODO: "Going back to 1848..."
-            ; LDA #GAMESTATE_STORE ; "Y"
-            ; STA gameState
-            LDA #MENU_NEWGAME_STARTDATE
+            LDA #MENU_NEWGAME_GOINGBACK
             STA menuOpen
             RTS
             :
@@ -3109,10 +3078,7 @@
             BEQ :+
             JSR IncrementDate
             JSR SetOpeningBalance
-            ; TODO: "Going back to 1848..."
-            ; LDA #GAMESTATE_STORE ; "Y"
-            ; STA gameState
-            LDA #MENU_NEWGAME_STARTDATE
+            LDA #MENU_NEWGAME_BEFORELEAVING1
             STA menuOpen
             RTS
             :
@@ -3451,5 +3417,103 @@
     JSR EndBufferWrite
 
 
+    RTS
+.endproc
+
+.proc BufferDrawGoingBackText
+    RTS
+.endproc
+
+.proc BufferDrawIntroTextBox
+    BufferStart_ #8, #$23, #$f0
+        LDA #$ff
+        LDX #8
+        :
+        JSR WriteByteToBuffer
+        DEX
+        BNE :-
+    JSR EndBufferWrite
+    
+    LDA menuOpen
+    CMP #MENU_NEWGAME_GOINGBACK
+    BNE BeforeLeaving1
+    LDA newgamePointer+14 ; newgameGoingBackText 
+    STA pointer
+    LDA newgamePointer+15 ; "Going back to 1848..."
+    STA pointer+1
+    LDA #$23
+    STA bufferHelper
+    LDA #$04
+    STA bufferHelper+1
+    JSR BufferDrawText
+    BufferStart_ #3, #$23, #$16
+        LDA #_PD
+        LDX #3
+        :
+        JSR WriteByteToBuffer
+        DEX
+        BNE :-
+    JSR EndBufferWrite
+    BeforeLeaving1:
+    CMP #MENU_NEWGAME_BEFORELEAVING1
+    BNE BeforeLeaving2
+    BufferStart_ #24, #$23, #$d8 ; attributes
+        LDX #3
+        :
+        TXA
+        PHA
+        LDA #%11001110
+        JSR WriteByteToBuffer
+        LDA #$ff
+        LDX #6
+        :
+        JSR WriteByteToBuffer
+        DEX
+        BNE :-
+        LDA #%00110011
+        JSR WriteByteToBuffer
+        PLA
+        TAX
+        DEX
+        BNE :--
+    JSR EndBufferWrite 
+    LDA #$21 ; text box
+    STA pointer
+    LDA #$82
+    STA pointer+1
+    JSR BufferDrawTextBoxTopRow
+    JSR PointerToNextLine
+    LDX #9
+    :
+    JSR BufferDrawTextBoxMiddleRow
+    JSR PointerToNextLine
+    DEX
+    BNE :-
+    JSR BufferDrawTextBoxBottomRow
+    LDA newgamePointer+22 ; newgameBeforeLeavingText1
+    STA pointer
+    LDA newgamePointer+23 ; "Before leaving Independence..."
+    STA pointer+1
+    LDA #$21
+    STA bufferHelper
+    LDA #$c4
+    STA bufferHelper+1
+    JSR BufferDrawText
+    JSR BufferDrawPressStart
+    RTS
+    BeforeLeaving2:
+    CMP #MENU_NEWGAME_BEFORELEAVING2
+    BEQ :+
+    RTS
+    :
+    LDA newgamePointer+24 ; newgameBeforeLeavingText2
+    STA pointer
+    LDA newgamePointer+23 ; "You can buy whatever you need..."
+    STA pointer+1
+    LDA #$23
+    STA bufferHelper
+    LDA #$04
+    STA bufferHelper+1
+    JSR BufferDrawText
     RTS
 .endproc

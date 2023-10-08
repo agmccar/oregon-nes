@@ -755,13 +755,7 @@
         LDA pointer+1
         SBC suppliesImageFood, X
         STA pointer+1
-        CLC
-        LDA pointer+1
-        ADC #$20
-        STA pointer+1
-        LDA pointer
-        ADC #0
-        STA pointer
+        JSR PointerToNextLine
         INX
         :
         LDA suppliesImageFood, X
@@ -1079,21 +1073,7 @@
     RTS
 .endproc
 
-.proc BufferDrawTextBox
-    LDA gameState
-    CMP #GAMESTATE_TITLE
-    BNE :+
-    LDA #$22
-    STA pointer
-    LDA #$62
-    STA pointer+1
-    JMP :++
-    :
-    LDA #$21
-    STA pointer
-    LDA #$42
-    STA pointer+1
-    :
+.proc BufferDrawTextBoxTopRow
     BufferStart #28, pointer, pointer+1 ; top row
         LDA #_RD
         JSR WriteByteToBuffer
@@ -1107,16 +1087,27 @@
         LDA #_LD
         JSR WriteByteToBuffer
     JSR EndBufferWrite
+    RTS
+.endproc
 
-    LDX #4 ; row 1-4
-    CLC
-    LDA pointer+1
-    ADC #$20
-    STA pointer+1
-    LDA pointer
-    ADC #0
-    STA pointer
-    :
+.proc BufferDrawTextBoxBottomRow
+    BufferStart #28, pointer, pointer+1 ; bottom row
+        LDA #_RU
+        JSR WriteByteToBuffer
+        LDA #_HR
+        LDX #0
+        :
+        JSR WriteByteToBuffer
+        INX
+        CPX #26
+        BNE :-
+        LDA #_LU
+        JSR WriteByteToBuffer
+    JSR EndBufferWrite
+    RTS
+.endproc
+
+.proc BufferDrawTextBoxMiddleRow
     TXA
     PHA
     BufferStart #28, pointer, pointer+1
@@ -1132,31 +1123,37 @@
         LDA #_VR
         JSR WriteByteToBuffer
     JSR EndBufferWrite
-    CLC
-    LDA pointer+1
-    ADC #$20
-    STA pointer+1
-    LDA pointer
-    ADC #0
-    STA pointer
     PLA
     TAX
-    DEX
-    BNE :--
+    RTS
+.endproc
 
-    BufferStart #28, pointer, pointer+1 ; bottom row
-        LDA #_RU
-        JSR WriteByteToBuffer
-        LDA #_HR
-        LDX #0
-        :
-        JSR WriteByteToBuffer
-        INX
-        CPX #26
-        BNE :-
-        LDA #_LU
-        JSR WriteByteToBuffer
-    JSR EndBufferWrite
+.proc BufferDrawTextBox
+    LDA gameState
+    CMP #GAMESTATE_TITLE
+    BNE :+
+    LDA #$22
+    STA pointer
+    LDA #$62
+    STA pointer+1
+    JMP :++
+    :
+    LDA #$21
+    STA pointer
+    LDA #$42
+    STA pointer+1
+    :
+    JSR BufferDrawTextBoxTopRow
+
+    LDX #4 ; row 1-4
+    JSR PointerToNextLine
+    :
+    JSR BufferDrawTextBoxMiddleRow
+    JSR PointerToNextLine
+    DEX
+    BNE :-
+
+    JSR BufferDrawTextBoxBottomRow
 
     CLC
     LDA pointer+1
@@ -1182,13 +1179,7 @@
         CPX #TEXT_POPUP_LINE_LEN
         BNE :-
     JSR EndBufferWrite
-    CLC
-    LDA pointer+1
-    ADC #$20
-    STA pointer+1
-    LDA pointer
-    ADC #0
-    STA pointer
+    JSR PointerToNextLine
 
     BufferStart #TEXT_POPUP_LINE_LEN, pointer, pointer+1 ; popup text line 2
         LDX #0
@@ -1232,13 +1223,7 @@
         CPX #$20
         BNE :-
     JSR EndBufferWrite
-    CLC
-    LDA pointer+1
-    ADC #$20
-    STA pointer+1
-    LDA pointer
-    ADC #0
-    STA pointer
+    JSR PointerToNextLine
     PLA
     TAX
     DEX

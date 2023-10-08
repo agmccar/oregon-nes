@@ -13,8 +13,7 @@
     LDA #0
     STA traveledMi
     STA dateDay             ; date will increment after choosing start month
-    LDA #$ff                ; default location (Independence, MO *minus one*)
-    STA location            ; location will increment, so start at #$ff
+    STA location
     LDA nextLandmarkDistance ; default next landmark: Indep,MO to KansRivXing
     STA nextMi
     LDA #5                  ; default 0.5" of accumulated rainfall
@@ -113,7 +112,6 @@
     STA fingerLastY
     STA menuOpen        ; no menu open
     STA wagonStatus     ; stopped, at landmark, no rest remaining
-    INC location        ; increment landmark (todo handle trail divide)
     LDX location
     LDA nextLandmarkDistance, X
     STA nextMi

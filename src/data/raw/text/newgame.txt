@@ -31,7 +31,7 @@ earns the least.
 
 ## GoingBackText
 
-Going back to 1848…$
+Going back to 1848$
 
 ## SelectMonthText
 
