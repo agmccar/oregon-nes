@@ -784,6 +784,9 @@
     JSR ClearAttributes
     JSR StartBulkDrawing
     JSR DrawLandmarkImage
+    LDA menuOpen
+    CMP #MENU_NEWGAME_GOINGBACK
+    BEQ :+
     LDY #0 ; text tiles chr
     JSR bankswitch_y
     LDA #<textTiles
@@ -803,33 +806,8 @@
     JSR UnpackData
     LDY #1
     JSR bankswitch_y
+    :
     JSR BufferDrawIntroTextBox
-    BufferStart_ #5, #$22, #$37
-    LDA #_DL
-    JSR WriteByteToBuffer
-    LDX #0
-    STX helper
-    :
-    LDA dollarsDigit, X
-    CPX #0
-    BNE :+
-    CMP #_0_
-    BNE :+
-    INX
-    JMP :-
-    :
-    JSR WriteByteToBuffer
-    INX
-    INC helper
-    CPX #4
-    BNE :--
-    LDA helper
-    CMP #3
-    BNE :+
-    LDA #_00
-    JSR WriteByteToBuffer
-    :
-    JSR EndBufferWrite
     JSR DoneBulkDrawing
     RTS
 .endproc

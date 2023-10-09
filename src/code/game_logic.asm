@@ -378,13 +378,11 @@
     CMP #MENU_NEWGAME_GOINGBACK
     BNE :+
     JSR LoadBgIndependence
-    JSR BufferDrawGoingBackText
     RTS
     :
     CMP #MENU_NEWGAME_BEFORELEAVING1
     BNE :+
     JSR LoadBgIndependence
-    JSR BufferDrawGoingBackText
     :
     RTS
     None:

@@ -3078,7 +3078,7 @@
             BEQ :+
             JSR IncrementDate
             JSR SetOpeningBalance
-            LDA #MENU_NEWGAME_BEFORELEAVING1
+            LDA #MENU_NEWGAME_GOINGBACK
             STA menuOpen
             RTS
             :
@@ -3420,10 +3420,6 @@
     RTS
 .endproc
 
-.proc BufferDrawGoingBackText
-    RTS
-.endproc
-
 .proc BufferDrawIntroTextBox
     BufferStart_ #8, #$23, #$f0
         LDA #$ff
@@ -3433,20 +3429,35 @@
         DEX
         BNE :-
     JSR EndBufferWrite
-    
+
     LDA menuOpen
     CMP #MENU_NEWGAME_GOINGBACK
-    BNE BeforeLeaving1
+    BEQ :+
+    JMP BeforeLeaving1
+    :
+    LDA #$22 ; text box
+    STA pointer
+    LDA #$02
+    STA pointer+1
+    JSR BufferDrawTextBoxTopRow
+    JSR PointerToNextLine
+    LDX #2
+    :
+    JSR BufferDrawTextBoxMiddleRow
+    JSR PointerToNextLine
+    DEX
+    BNE :-
+    JSR BufferDrawTextBoxBottomRow
     LDA newgamePointer+14 ; newgameGoingBackText 
     STA pointer
     LDA newgamePointer+15 ; "Going back to 1848..."
     STA pointer+1
-    LDA #$23
+    LDA #$22
     STA bufferHelper
-    LDA #$04
+    LDA #$24
     STA bufferHelper+1
     JSR BufferDrawText
-    BufferStart_ #3, #$23, #$16
+    BufferStart_ #3, #$22, #$36
         LDA #_PD
         LDX #3
         :
@@ -3454,9 +3465,24 @@
         DEX
         BNE :-
     JSR EndBufferWrite
+    BufferStart_ #8, #$23, #$e0 ; attributes
+        LDA #%11001110
+        JSR WriteByteToBuffer
+        LDA #$ff
+        LDX #6
+        :
+        JSR WriteByteToBuffer
+        DEX
+        BNE :-
+        LDA #%00110011
+        JSR WriteByteToBuffer
+    JSR EndBufferWrite
+    RTS
     BeforeLeaving1:
     CMP #MENU_NEWGAME_BEFORELEAVING1
-    BNE BeforeLeaving2
+    BEQ :+
+    JMP BeforeLeaving2
+    :
     BufferStart_ #24, #$23, #$d8 ; attributes
         LDX #3
         :
@@ -3476,7 +3502,7 @@
         TAX
         DEX
         BNE :--
-    JSR EndBufferWrite 
+    JSR EndBufferWrite
     LDA #$21 ; text box
     STA pointer
     LDA #$82
@@ -3499,6 +3525,32 @@
     LDA #$c4
     STA bufferHelper+1
     JSR BufferDrawText
+    BufferStart_ #5, #$22, #$37
+    LDA #_DL
+    JSR WriteByteToBuffer
+    LDX #0
+    STX helper
+    :
+    LDA dollarsDigit, X
+    CPX #0
+    BNE :+
+    CMP #_0_
+    BNE :+
+    INX
+    JMP :-
+    :
+    JSR WriteByteToBuffer
+    INX
+    INC helper
+    CPX #4
+    BNE :--
+    LDA helper
+    CMP #3
+    BNE :+
+    LDA #_00
+    JSR WriteByteToBuffer
+    :
+    JSR EndBufferWrite
     JSR BufferDrawPressStart
     RTS
     BeforeLeaving2:
