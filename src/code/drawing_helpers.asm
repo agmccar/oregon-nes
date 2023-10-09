@@ -495,6 +495,53 @@
     RTS
 .endproc
 
+.proc GetLandmarkImage
+    ; Clobbers all registers
+    ; Changes ROM bank
+    LDA #0
+    STA helper
+    LDY #7
+    :
+    LDA helper
+    CMP location
+    BEQ :+
+    TYA
+    CLC
+    ADC #7 ; landmarkImageMeta section length
+    TAY
+    INC helper
+    JMP :-
+    :
+    LDA #<landmarkImageMeta
+    STA pointer
+    LDA #>landmarkImageMeta
+    STA pointer+1
+    LDX #7
+    :
+    DEY
+    LDA (pointer), Y
+    PHA
+    DEX
+    BNE :-
+    PLA
+    STA pointer
+    PLA
+    STA pointer+1
+    PLA
+    STA helper+0
+    PLA
+    STA helper+1
+    PLA
+    STA helper2+0
+    PLA
+    STA helper2+1
+    PLA
+    TAY
+    JSR bankswitch_y
+    JSR CopyCHRPatternB
+    RTS
+.endproc
+
 .proc DrawLandmarkImage
     ; set palette
     LDA gameSettings
@@ -513,334 +560,9 @@
     CPX #$10
     BNE :-
     :
-    LDA location ; TODO this entire subroutine needs DRY
-    CMP #LOC_INDEPENDENCE
-    BNE :+
-    LDA #<independenceTiles
-    STA pointer
-    LDA #>independenceTiles
-    STA pointer+1
-    LDA #<independenceAttr
-    STA helper
-    LDA #>independenceAttr
-    STA helper+1
-    LDA #<independenceImage
-    STA helper2
-    LDA #>independenceImage
-    STA helper2+1
-    LDY #2
-    JSR bankswitch_y
-    JMP Attributes
-    :
-    CMP #LOC_KANSASRIVER
-    BNE :+
-    LDA #<kansasRiverTiles
-    STA pointer
-    LDA #>kansasRiverTiles
-    STA pointer+1
-    LDA #<kansasRiverAttr
-    STA helper
-    LDA #>kansasRiverAttr
-    STA helper+1
-    LDA #<kansasRiverImage
-    STA helper2
-    LDA #>kansasRiverImage
-    STA helper2+1
-    LDY #2
-    JSR bankswitch_y
-    JMP Attributes
-    :
-    CMP #LOC_BIGBLUERIVER
-    BNE :+
-    LDA #<bigBlueRiverTiles
-    STA pointer
-    LDA #>bigBlueRiverTiles
-    STA pointer+1
-    LDA #<bigBlueRiverAttr
-    STA helper
-    LDA #>bigBlueRiverAttr
-    STA helper+1
-    LDA #<bigBlueRiverImage
-    STA helper2
-    LDA #>bigBlueRiverImage
-    STA helper2+1
-    LDY #2
-    JSR bankswitch_y
-    JMP Attributes
-    :
-    CMP #LOC_FORTKEARNEY
-    BNE :+
-    LDA #<fortKearneyTiles
-    STA pointer
-    LDA #>fortKearneyTiles
-    STA pointer+1
-    LDA #<fortKearneyAttr
-    STA helper
-    LDA #>fortKearneyAttr
-    STA helper+1
-    LDA #<fortKearneyImage
-    STA helper2
-    LDA #>fortKearneyImage
-    STA helper2+1
-    LDY #2
-    JSR bankswitch_y
-    JMP Attributes
-    :
-    CMP #LOC_CHIMNEYROCK
-    BNE :+
-    LDA #<chimneyRockTiles
-    STA pointer
-    LDA #>chimneyRockTiles
-    STA pointer+1
-    LDA #<chimneyRockAttr
-    STA helper
-    LDA #>chimneyRockAttr
-    STA helper+1
-    LDA #<chimneyRockImage
-    STA helper2
-    LDA #>chimneyRockImage
-    STA helper2+1
-    LDY #3
-    JSR bankswitch_y
-    JMP Attributes
-    :
-    CMP #LOC_FORTLARAMIE
-    BNE :+
-    LDA #<fortLaramieTiles
-    STA pointer
-    LDA #>fortLaramieTiles
-    STA pointer+1
-    LDA #<fortLaramieAttr
-    STA helper
-    LDA #>fortLaramieAttr
-    STA helper+1
-    LDA #<fortLaramieImage
-    STA helper2
-    LDA #>fortLaramieImage
-    STA helper2+1
-    LDY #3
-    JSR bankswitch_y
-    JMP Attributes
-    :
-    CMP #LOC_INDEPENDENCEROCK
-    BNE :+
-    LDA #<independenceRockTiles
-    STA pointer
-    LDA #>independenceRockTiles
-    STA pointer+1
-    LDA #<independenceRockAttr
-    STA helper
-    LDA #>independenceRockAttr
-    STA helper+1
-    LDA #<independenceRockImage
-    STA helper2
-    LDA #>independenceRockImage
-    STA helper2+1
-    LDY #3
-    JSR bankswitch_y
-    JMP Attributes
-    :
-    CMP #LOC_SOUTHPASS
-    BNE :+
-    LDA #<southPassTiles
-    STA pointer
-    LDA #>southPassTiles
-    STA pointer+1
-    LDA #<southPassAttr
-    STA helper
-    LDA #>southPassAttr
-    STA helper+1
-    LDA #<southPassImage
-    STA helper2
-    LDA #>southPassImage
-    STA helper2+1
-    LDY #3
-    JSR bankswitch_y
-    JMP Attributes
-    :
-    CMP #LOC_FORTBRIDGER
-    BNE :+
-    LDA #<fortBridgerTiles
-    STA pointer
-    LDA #>fortBridgerTiles
-    STA pointer+1
-    LDA #<fortBridgerAttr
-    STA helper
-    LDA #>fortBridgerAttr
-    STA helper+1
-    LDA #<fortBridgerImage
-    STA helper2
-    LDA #>fortBridgerImage
-    STA helper2+1
-    LDY #4
-    JSR bankswitch_y
-    JMP Attributes
-    :
-    CMP #LOC_GREENRIVER
-    BNE :+
-    LDA #<greenRiverTiles
-    STA pointer
-    LDA #>greenRiverTiles
-    STA pointer+1
-    LDA #<greenRiverAttr
-    STA helper
-    LDA #>greenRiverAttr
-    STA helper+1
-    LDA #<greenRiverImage
-    STA helper2
-    LDA #>greenRiverImage
-    STA helper2+1
-    LDY #4
-    JSR bankswitch_y
-    JMP Attributes
-    :
-    CMP #LOC_SODASPRINGS
-    BNE :+
-    LDA #<sodaSpringsTiles
-    STA pointer
-    LDA #>sodaSpringsTiles
-    STA pointer+1
-    LDA #<sodaSpringsAttr
-    STA helper
-    LDA #>sodaSpringsAttr
-    STA helper+1
-    LDA #<sodaSpringsImage
-    STA helper2
-    LDA #>sodaSpringsImage
-    STA helper2+1
-    LDY #4
-    JSR bankswitch_y
-    JMP Attributes
-    :
-    CMP #LOC_FORTHALL
-    BNE :+
-    LDA #<fortHallTiles
-    STA pointer
-    LDA #>fortHallTiles
-    STA pointer+1
-    LDA #<fortHallAttr
-    STA helper
-    LDA #>fortHallAttr
-    STA helper+1
-    LDA #<fortHallImage
-    STA helper2
-    LDA #>fortHallImage
-    STA helper2+1
-    LDY #4
-    JSR bankswitch_y
-    JMP Attributes
-    :
-    CMP #LOC_SNAKERIVER
-    BNE :+
-    LDA #<snakeRiverTiles
-    STA pointer
-    LDA #>snakeRiverTiles
-    STA pointer+1
-    LDA #<snakeRiverAttr
-    STA helper
-    LDA #>snakeRiverAttr
-    STA helper+1
-    LDA #<snakeRiverImage
-    STA helper2
-    LDA #>snakeRiverImage
-    STA helper2+1
-    LDY #5
-    JSR bankswitch_y
-    JMP Attributes
-    :
-    CMP #LOC_FORTBOISE
-    BNE :+
-    LDA #<fortBoiseTiles
-    STA pointer
-    LDA #>fortBoiseTiles
-    STA pointer+1
-    LDA #<fortBoiseAttr
-    STA helper
-    LDA #>fortBoiseAttr
-    STA helper+1
-    LDA #<fortBoiseImage
-    STA helper2
-    LDA #>fortBoiseImage
-    STA helper2+1
-    LDY #5
-    JSR bankswitch_y
-    JMP Attributes
-    :
-    CMP #LOC_BLUEMOUNTAINS
-    BNE :+
-    LDA #<blueMountainsTiles
-    STA pointer
-    LDA #>blueMountainsTiles
-    STA pointer+1
-    LDA #<blueMountainsAttr
-    STA helper
-    LDA #>blueMountainsAttr
-    STA helper+1
-    LDA #<blueMountainsImage
-    STA helper2
-    LDA #>blueMountainsImage
-    STA helper2+1
-    LDY #5
-    JSR bankswitch_y
-    JMP Attributes
-    :
-    CMP #LOC_FORTWALLAWALLA
-    BNE :+
-    LDA #<fortWallaWallaTiles
-    STA pointer
-    LDA #>fortWallaWallaTiles
-    STA pointer+1
-    LDA #<fortWallaWallaAttr
-    STA helper
-    LDA #>fortWallaWallaAttr
-    STA helper+1
-    LDA #<fortWallaWallaImage
-    STA helper2
-    LDA #>fortWallaWallaImage
-    STA helper2+1
-    LDY #5
-    JSR bankswitch_y
-    JMP Attributes
-    :
-    CMP #LOC_THEDALLES
-    BNE :+
-    LDA #<theDallesTiles
-    STA pointer
-    LDA #>theDallesTiles
-    STA pointer+1
-    LDA #<theDallesAttr
-    STA helper
-    LDA #>theDallesAttr
-    STA helper+1
-    LDA #<theDallesImage
-    STA helper2
-    LDA #>theDallesImage
-    STA helper2+1
-    LDY #6
-    JSR bankswitch_y
-    JMP Attributes
-    :
-    CMP #LOC_WILLAMETTE
-    BNE :+
-    LDA #<willametteTiles
-    STA pointer
-    LDA #>willametteTiles
-    STA pointer+1
-    LDA #<willametteAttr
-    STA helper
-    LDA #>willametteAttr
-    STA helper+1
-    LDA #<willametteImage
-    STA helper2
-    LDA #>willametteImage
-    STA helper2+1
-    LDY #6
-    JSR bankswitch_y
-    JMP Attributes
-    :
-
-    Attributes:
-    JSR CopyCHRPatternB
+    LDA currentBank
+    PHA
+    JSR GetLandmarkImage
     LDA helper ; set attribute table
     STA pointer
     LDA helper+1
@@ -869,7 +591,6 @@
     INX
     CPX #8
     BNE :-
-
     LDA helper2   ; draw image
     STA pointer
     LDA helper2+1
@@ -884,8 +605,8 @@
     LDA #$40
     STA PPUADDR
     JSR UnpackData
-
-    LDY #1
+    PLA
+    TAY
     JSR bankswitch_y
     RTS
 .endproc
@@ -922,6 +643,48 @@
     LDA #$00
     STA PPUADDR
     JSR UnpackData
+    RTS
+.endproc
+
+.proc UnpackTilesMeta
+    ; Clobbers all registers, helper+0, pointer, counter
+    ; @param pointer: location of tile meta
+    LDA currentBank
+    PHA
+    LDY #5 ; length of tile meta segment
+    :
+    DEY
+    LDA (pointer), Y
+    PHA
+    CPY #0
+    BNE :-
+    PLA ; ROM bank number
+    TAY
+    JSR bankswitch_y
+    PLA ; Address of tile CHR
+    STA pointer
+    PLA
+    STA pointer+1
+    LDA #0
+    STA counter
+    PLA ; Number of rows of 16 tiles 
+    STA counter+1
+    LDA #0
+    STA PPUMASK
+    LDA PPUSTATUS
+    LDA #$10
+    STA helper
+    PLA ; Destination 'y-value' (row index) of tiles in CHRRAM
+    CLC
+    ADC helper
+    STA PPUADDR
+    LDA #0
+    STA PPUADDR
+    JSR UnpackData
+    PLA
+    TAY
+    JSR bankswitch_y
+    RTS
 .endproc
 
 .proc UnpackData
@@ -1155,25 +918,16 @@
 .endproc
 
 .proc DrawNamePartyImage
-    LDY #0 ; get image data
+
+    LDA #<namepartyTilesMeta 
+    STA pointer
+    LDA #>namepartyTilesMeta
+    STA pointer+1
+    JSR UnpackTilesMeta
+    
+    LDY #0
     JSR bankswitch_y
 
-    LDA #<namepartyTiles 
-    STA pointer
-    LDA #>namepartyTiles
-    STA pointer+1
-    LDA #$00 ; load 12x16x16 into counter (number of bytes to copy)
-    STA counter
-    LDA #$0C
-    STA counter+1
-    LDA #0
-    STA PPUMASK
-    LDA #$10
-    STA PPUADDR
-    LDA #$00
-    STA PPUADDR
-    JSR UnpackData
-    
     LDA #<namepartyAttr ; set attribute table
     STA pointer
     LDA #>namepartyAttr
@@ -1203,75 +957,27 @@
     LDA #$40
     STA PPUADDR
     JSR UnpackData
-    
-    ; LDA #<titleLogoTiles ; load tiles into pattern B
-    ; STA pointer
-    ; LDA #>titleLogoTiles
-    ; STA pointer+1
-    ; LDY #0
-    ; STY PPUMASK
-    ; LDY #$12
-    ; STY PPUADDR
-    ; LDY #$00
-    ; STY PPUADDR
-    ; LDX #$03
-    ; :
-    ; LDA (pointer), Y
-    ; STA PPUDATA
-    ; INY
-    ; BNE :-
-    ; INC pointer+1
-    ; DEX
-    ; BNE :-
-    
 
     LDY #1
     JSR bankswitch_y
+
     RTS
 .endproc
 
 .proc LoadTextCHR
-    LDY #0 ; text tiles chr
-    JSR bankswitch_y
-    LDA #<textTiles
+    LDA #<textTilesMeta
     STA pointer
-    LDA #>textTiles
+    LDA #>textTilesMeta
     STA pointer+1
-    LDA #$00
-    STA counter
-    LDA #$04
-    STA counter+1
-    LDA #0
-    STA PPUMASK
-    LDA #$1C
-    STA PPUADDR
-    LDA #$00
-    STA PPUADDR
-    JSR UnpackData
-    LDY #1
-    JSR bankswitch_y
+    JSR UnpackTilesMeta
     RTS
 .endproc
 
 .proc LoadMattCHR
-    LDY #0 ; text tiles chr
-    JSR bankswitch_y
-    LDA #<mattTiles
+    LDA #<mattTilesMeta
     STA pointer
-    LDA #>mattTiles
+    LDA #>mattTilesMeta
     STA pointer+1
-    LDA #$00
-    STA counter
-    LDA #$05
-    STA counter+1
-    LDA #0
-    STA PPUMASK
-    LDA #$10
-    STA PPUADDR
-    LDA #$00
-    STA PPUADDR
-    JSR UnpackData
-    LDY #1
-    JSR bankswitch_y
+    JSR UnpackTilesMeta
     RTS
 .endproc

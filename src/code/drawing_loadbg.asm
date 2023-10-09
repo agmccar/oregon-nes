@@ -173,23 +173,15 @@
     BNE :-
 
     ; tile chr
+    LDA #<suppliesTilesMeta
+    STA pointer
+    LDA #>suppliesTilesMeta
+    STA pointer+1
+    JSR UnpackTilesMeta
+
+
     LDY #0
     JSR bankswitch_y
-    LDA #<suppliesFoodTiles
-    STA pointer
-    LDA #>suppliesFoodTiles
-    STA pointer+1
-    LDA #$00
-    STA counter
-    LDA #$0a
-    STA counter+1
-    LDA #0
-    STA PPUMASK
-    LDA #$10
-    STA PPUADDR
-    LDA #$00
-    STA PPUADDR
-    JSR UnpackData
     LDA PPUSTATUS ; attributes
     LDA #$23
     STA PPUADDR

@@ -11,13 +11,14 @@
     .include "vars.asm"
 
 .segment "ROM0"
-    .include "tiles.asm" ; TODO deprecate
     .include "data/raw/text/top10default.asm"
     .include "data/compressed/image/suppliesTiles.asm"
     .include "data/compressed/image/textTiles.asm"
     .include "data/raw/image/suppliesImage.asm"
     .include "data/compressed/image/namepartyImage.asm"
     .include "data/compressed/image/mattImage.asm"
+tiles_chr: ; TODO deprecate
+    .incbin "data/raw/chr/tiles.chr"
 
 .segment "ROM1"
     .include "code/rom1.asm"
@@ -214,3 +215,4 @@ bankswitch_nosave:
 .include "code/game_gamepad.asm"
 .include "data/compressed/text/dictionary.asm"
 .include "data/compressed/text/talkPointer.asm"
+.include "tiles.asm"
