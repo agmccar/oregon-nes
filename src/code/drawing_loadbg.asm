@@ -804,7 +804,7 @@
     LDY #1
     JSR bankswitch_y
     JSR BufferDrawIntroTextBox
-    BufferStart_ #6, #$22, #$37
+    BufferStart_ #5, #$22, #$37
     LDA #_DL
     JSR WriteByteToBuffer
     LDX #0
@@ -823,12 +823,10 @@
     INC helper
     CPX #4
     BNE :--
-    LDA #_00
-    JSR WriteByteToBuffer
     LDA helper
     CMP #3
     BNE :+
-    LDA #___
+    LDA #_00
     JSR WriteByteToBuffer
     :
     JSR EndBufferWrite
