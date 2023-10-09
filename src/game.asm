@@ -17,6 +17,7 @@
     .include "data/compressed/image/textTiles.asm"
     .include "data/raw/image/suppliesImage.asm"
     .include "data/compressed/image/namepartyImage.asm"
+    .include "data/compressed/image/mattImage.asm"
 
 .segment "ROM1"
     .include "code/rom1.asm"

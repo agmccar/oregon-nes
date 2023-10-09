@@ -787,25 +787,7 @@
     LDA menuOpen
     CMP #MENU_NEWGAME_GOINGBACK
     BEQ :+
-    LDY #0 ; text tiles chr
-    JSR bankswitch_y
-    LDA #<textTiles
-    STA pointer
-    LDA #>textTiles
-    STA pointer+1
-    LDA #$00
-    STA counter
-    LDA #$04
-    STA counter+1
-    LDA #0
-    STA PPUMASK
-    LDA #$1C
-    STA PPUADDR
-    LDA #$00
-    STA PPUADDR
-    JSR UnpackData
-    LDY #1
-    JSR bankswitch_y
+    JSR LoadTextCHR
     :
     JSR BufferDrawIntroTextBox
     JSR DoneBulkDrawing

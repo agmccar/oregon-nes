@@ -1596,6 +1596,26 @@
     JSR WriteByteToBuffer
 .endmacro
 
+.proc DrawTextBox
+    ; X: addrHi
+    ; Y: addrLo
+    ; A: number of middle lines (ie not counting top/bot rows)
+    PHA
+    STX pointer
+    STY pointer+1
+    JSR BufferDrawTextBoxTopRow
+    JSR PointerToNextLine
+    PLA
+    TAX
+    :
+    JSR BufferDrawTextBoxMiddleRow
+    JSR PointerToNextLine
+    DEX
+    BNE :-
+    JSR BufferDrawTextBoxBottomRow
+    RTS
+.endproc
+
 .proc BufferClearTitle
     BufferStart_ #6, #$23, #$e1 ; clear attr
         LDA #$ff
@@ -2129,6 +2149,7 @@
     StartDate:
         JSR StartBulkDrawing
         JSR DrawAdornments
+        JSR LoadTextCHR
         JSR DoneBulkDrawing
 
         LDA newgamePointer+16 ; "It is 1848. Your jumping off place ..."
@@ -3008,6 +3029,14 @@
         BNE :+
         JMP @menuDateHelp
         :
+        CMP #MENU_NEWGAME_BEFORELEAVING1
+        BNE :+
+        JMP @menuBeforeLeaving1
+        :
+        CMP #MENU_NEWGAME_BEFORELEAVING2
+        BNE :+
+        JMP @menuBeforeLeaving2
+        :
         RTS
         @menuOccupation:
             LDA #MENU_NEWGAME_NAMEPARTY
@@ -3066,7 +3095,7 @@
             CLC
             ADC #3
             STA dateMonth
-            LDA #MENU_NEWGAME_MATT_INTRO
+            LDA #MENU_NEWGAME_BEFORELEAVING1
             STA menuOpen
             RTS
             :
@@ -3086,6 +3115,14 @@
             RTS
         @menuDateHelp:
             LDA #MENU_NEWGAME_STARTDATE
+            STA menuOpen
+            RTS
+        @menuBeforeLeaving1:
+            LDA #MENU_NEWGAME_BEFORELEAVING2
+            STA menuOpen
+            RTS
+        @menuBeforeLeaving2:
+            LDA #MENU_NEWGAME_MATT_INTRO
             STA menuOpen
             RTS
     CheckSelect:
@@ -3435,29 +3472,20 @@
     BEQ :+
     JMP BeforeLeaving1
     :
-    LDA #$22 ; text box
-    STA pointer
-    LDA #$02
-    STA pointer+1
-    JSR BufferDrawTextBoxTopRow
-    JSR PointerToNextLine
-    LDX #2
-    :
-    JSR BufferDrawTextBoxMiddleRow
-    JSR PointerToNextLine
-    DEX
-    BNE :-
-    JSR BufferDrawTextBoxBottomRow
+    LDX #$22 ; text box
+    LDY #$02
+    LDA #2
+    JSR DrawTextBox
     LDA newgamePointer+14 ; newgameGoingBackText 
     STA pointer
     LDA newgamePointer+15 ; "Going back to 1848..."
     STA pointer+1
     LDA #$22
     STA bufferHelper
-    LDA #$24
+    LDA #$25
     STA bufferHelper+1
     JSR BufferDrawText
-    BufferStart_ #3, #$22, #$36
+    BufferStart_ #3, #$22, #$37
         LDA #_PD
         LDX #3
         :
@@ -3503,19 +3531,10 @@
         DEX
         BNE :--
     JSR EndBufferWrite
-    LDA #$21 ; text box
-    STA pointer
-    LDA #$82
-    STA pointer+1
-    JSR BufferDrawTextBoxTopRow
-    JSR PointerToNextLine
-    LDX #9
-    :
-    JSR BufferDrawTextBoxMiddleRow
-    JSR PointerToNextLine
-    DEX
-    BNE :-
-    JSR BufferDrawTextBoxBottomRow
+    LDX #$21 ; text box
+    LDY #$82
+    LDA #9
+    JSR DrawTextBox
     LDA newgamePointer+22 ; newgameBeforeLeavingText1
     STA pointer
     LDA newgamePointer+23 ; "Before leaving Independence..."
@@ -3526,30 +3545,30 @@
     STA bufferHelper+1
     JSR BufferDrawText
     BufferStart_ #5, #$22, #$37
-    LDA #_DL
-    JSR WriteByteToBuffer
-    LDX #0
-    STX helper
-    :
-    LDA dollarsDigit, X
-    CPX #0
-    BNE :+
-    CMP #_0_
-    BNE :+
-    INX
-    JMP :-
-    :
-    JSR WriteByteToBuffer
-    INX
-    INC helper
-    CPX #4
-    BNE :--
-    LDA helper
-    CMP #3
-    BNE :+
-    LDA #_00
-    JSR WriteByteToBuffer
-    :
+        LDA #_DL
+        JSR WriteByteToBuffer
+        LDX #0
+        STX helper
+        :
+        LDA dollarsDigit, X
+        CPX #0
+        BNE :+
+        CMP #_0_
+        BNE :+
+        INX
+        JMP :-
+        :
+        JSR WriteByteToBuffer
+        INX
+        INC helper
+        CPX #4
+        BNE :--
+        LDA helper
+        CMP #3
+        BNE :+
+        LDA #_00
+        JSR WriteByteToBuffer
+        :
     JSR EndBufferWrite
     JSR BufferDrawPressStart
     RTS
@@ -3558,14 +3577,37 @@
     BEQ :+
     RTS
     :
+    BufferStart_ #16, #$23, #$e0 ; attributes
+        LDA #%11001110
+        JSR WriteByteToBuffer
+        LDX #6
+        LDA #$ff
+        :
+        JSR WriteByteToBuffer
+        DEX
+        BNE :-
+        LDA #%00110011
+        JSR WriteByteToBuffer
+        LDX #8
+        LDA #$ff
+        :
+        JSR WriteByteToBuffer
+        DEX
+        BNE :-
+    JSR EndBufferWrite
+    LDX #$22 ; text box
+    LDY #$02
+    LDA #5
+    JSR DrawTextBox
     LDA newgamePointer+24 ; newgameBeforeLeavingText2
     STA pointer
-    LDA newgamePointer+23 ; "You can buy whatever you need..."
+    LDA newgamePointer+25 ; "You can buy whatever you need..."
     STA pointer+1
-    LDA #$23
+    LDA #$22
     STA bufferHelper
-    LDA #$04
+    LDA #$44
     STA bufferHelper+1
     JSR BufferDrawText
+    JSR BufferDrawPressStart
     RTS
 .endproc

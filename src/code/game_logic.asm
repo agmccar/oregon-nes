@@ -377,12 +377,23 @@
     :
     CMP #MENU_NEWGAME_GOINGBACK
     BNE :+
+    LDA #0
+    STA frameCounter
+    STA menuCursor
     JSR LoadBgIndependence
     RTS
     :
     CMP #MENU_NEWGAME_BEFORELEAVING1
     BNE :+
     JSR LoadBgIndependence
+    :
+    CMP #MENU_NEWGAME_BEFORELEAVING2
+    BNE :+
+    JSR LoadBgIndependence
+    :
+    CMP #MENU_NEWGAME_MATT_INTRO
+    BNE :+
+    ;JSR LoadBgMatt
     :
     RTS
     None:
@@ -504,9 +515,15 @@
     NewGame:
         LDA menuOpen
         CMP #MENU_NEWGAME_NAMEPARTY
-        BEQ :+
-        RTS
+        BNE :+
+        JMP NameParty
         :
+        CMP #MENU_NEWGAME_GOINGBACK
+        BNE :+
+        JMP GoingBack
+        :
+        RTS
+        NameParty:
         LDA frameCounter ; blink cursor
         CMP #30
         BNE :+
@@ -536,4 +553,23 @@
             ; LDA #0
             ; STA frameCounter
             RTS
+        GoingBack:
+        LDA frameCounter ; blink cursor
+        CMP #60
+        BNE :+
+        JMP @sec1
+        :
+        RTS
+        @sec1: 
+            INC menuCursor
+            LDA #0
+            STA frameCounter
+            LDA menuCursor
+            CMP #3
+            BNE :+
+            LDA #MENU_NEWGAME_STARTDATE
+            STA menuOpen
+            :
+            RTS
+        RTS
 .endproc

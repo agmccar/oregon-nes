@@ -84,6 +84,18 @@ ammunition for your rifles$
 
 spare parts for your wagon$
 
+## MattsGeneralStore
+
+Matt's General Store Independence, Missouri$
+
+## MattWhichItem
+
+Which item would you like to buy?
+
+## MattPressStart
+
+Press START to leave$
+
 ## MattsBuySupplies1
 
 There are 2 oxen in a yoke; I recommend at least 3 yoke. I charge %40 a yoke.
