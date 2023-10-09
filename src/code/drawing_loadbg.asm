@@ -784,7 +784,54 @@
     JSR ClearAttributes
     JSR StartBulkDrawing
     JSR DrawLandmarkImage
-    JSR DoneBulkDrawing
+    LDY #0 ; text tiles chr
+    JSR bankswitch_y
+    LDA #<textTiles
+    STA pointer
+    LDA #>textTiles
+    STA pointer+1
+    LDA #$00
+    STA counter
+    LDA #$04
+    STA counter+1
+    LDA #0
+    STA PPUMASK
+    LDA #$1C
+    STA PPUADDR
+    LDA #$00
+    STA PPUADDR
+    JSR UnpackData
+    LDY #1
+    JSR bankswitch_y
     JSR BufferDrawIntroTextBox
+    BufferStart_ #6, #$22, #$37
+    LDA #_DL
+    JSR WriteByteToBuffer
+    LDX #0
+    STX helper
+    :
+    LDA dollarsDigit, X
+    CPX #0
+    BNE :+
+    CMP #_0_
+    BNE :+
+    INX
+    JMP :-
+    :
+    JSR WriteByteToBuffer
+    INX
+    INC helper
+    CPX #4
+    BNE :--
+    LDA #_00
+    JSR WriteByteToBuffer
+    LDA helper
+    CMP #3
+    BNE :+
+    LDA #___
+    JSR WriteByteToBuffer
+    :
+    JSR EndBufferWrite
+    JSR DoneBulkDrawing
     RTS
 .endproc

@@ -14,6 +14,7 @@
     .include "tiles.asm" ; TODO deprecate
     .include "data/raw/text/top10default.asm"
     .include "data/compressed/image/suppliesTiles.asm"
+    .include "data/compressed/image/textTiles.asm"
     .include "data/raw/image/suppliesImage.asm"
     .include "data/compressed/image/namepartyImage.asm"
 

@@ -616,8 +616,7 @@
     STA dollarsDigit+3
     LDA #_4_
     STA dollarsDigit+1
-    LDX occupation
-    LDA occupationAttribute, X
+    LDA occupation
     LSR             ; shift occupationAttribute to only starting cash
     LSR
     LSR

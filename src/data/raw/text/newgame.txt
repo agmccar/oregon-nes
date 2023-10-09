@@ -53,7 +53,7 @@ will still be cool.
 ## BeforeLeavingText1
 
 Before leaving Independence, you should buy equipment and supplies.
-You have ……………… in cash, but you don't have to spend it all now.
+You have …………… in cash, but you don't have to spend it all now.
 
 ## BeforeLeavingText2
 
