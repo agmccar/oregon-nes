@@ -3122,8 +3122,10 @@
             STA menuOpen
             RTS
         @menuBeforeLeaving2:
-            LDA #MENU_NEWGAME_MATT_INTRO
+            LDA #MENU_NEWGAME_MATT
             STA menuOpen
+            LDA #0
+            STA menuCursor
             RTS
     CheckSelect:
         LDA #KEY_SELECT
@@ -3385,8 +3387,6 @@
         @menuNamesCorrect:
             JSR ToggleYN
             RTS
-    ; Done:
-    RTS
 .endproc
 
 .proc NameKeyHelper

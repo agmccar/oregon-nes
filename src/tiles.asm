@@ -20,19 +20,19 @@ suppliesTilesMeta:
     .byte 0, <suppliesFoodTiles, >suppliesFoodTiles, 10, 0
 
 suppliesFoodTilesMeta:
-    .byte 0, <suppliesFoodTiles, >suppliesFoodTiles, 2, 0
+    .byte 0, <suppliesFoodTiles, >suppliesFoodTiles, 2, 5
 
 suppliesPartsTilesMeta:
-    .byte 0, <suppliesPartsTiles, >suppliesPartsTiles, 2, 0
+    .byte 0, <suppliesPartsTiles, >suppliesPartsTiles, 2, 5
 
 suppliesOxenTilesMeta:
-    .byte 0, <suppliesOxenTiles, >suppliesOxenTiles, 2, 0
+    .byte 0, <suppliesOxenTiles, >suppliesOxenTiles, 2, 5
 
 suppliesClothesTilesMeta:
-    .byte 0, <suppliesClothesTiles, >suppliesClothesTiles, 2, 0
+    .byte 0, <suppliesClothesTiles, >suppliesClothesTiles, 2, 5
 
 suppliesBulletsTilesMeta:
-    .byte 0, <suppliesBulletsTiles, >suppliesBulletsTiles, 2, 0
+    .byte 0, <suppliesBulletsTiles, >suppliesBulletsTiles, 2, 5
 
 namepartyTilesMeta:
     .byte 0, <namepartyTiles, >namepartyTiles, 12, 0

@@ -785,3 +785,71 @@
     JSR DoneBulkDrawing
     RTS
 .endproc
+
+.proc LoadBgMatt
+    LDA menuCursor
+    CMP #0 ; "Hello, I'm Matt" page 1
+    BNE :+
+    JSR ClearScreen
+    JSR ClearAttributes
+    JSR StartBulkDrawing
+
+    LDA #<mattTilesMeta
+    STA pointer
+    LDA #>mattTilesMeta
+    STA pointer+1
+    JSR UnpackTilesMeta
+
+    LDY #0
+    JSR bankswitch_y
+
+    LDA #<mattAttr ; set attribute table
+    STA pointer
+    LDA #>mattAttr
+    STA pointer+1
+    LDA #8*8
+    STA counter
+    LDA #0
+    STA counter+1
+    LDA PPUSTATUS
+    LDA #$23
+    STA PPUADDR
+    LDA #$C0
+    STA PPUADDR
+    JSR UnpackData
+
+    LDA #<mattImage ; draw Matt
+    STA pointer
+    LDA #>mattImage
+    STA pointer+1
+    LDA #$20 ; 17x$20 tiles for matt image (#$220)
+    STA counter
+    LDA #$02
+    STA counter+1
+    LDA PPUSTATUS
+    LDA #$21
+    STA PPUADDR
+    LDA #$00
+    STA PPUADDR
+    JSR UnpackData
+
+
+    JSR DoneBulkDrawing
+    LDY #1
+    JSR bankswitch_y
+
+    LDA newgamePointer+26 ; MattsGeneralStoreHello
+    STA pointer
+    LDA newgamePointer+27
+    STA pointer+1
+    
+    LDA #$20
+    STA bufferHelper
+    LDA #$84
+    STA bufferHelper+1
+    JSR BufferDrawText
+    JSR BufferDrawPressStart
+    :
+
+    RTS
+.endproc

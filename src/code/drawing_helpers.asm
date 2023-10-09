@@ -647,6 +647,7 @@
 .endproc
 
 .proc UnpackTilesMeta
+    ; Must only occur during Bulk drawing
     ; Clobbers all registers, helper+0, pointer, counter
     ; @param pointer: location of tile meta
     LDA currentBank
@@ -968,15 +969,6 @@
     LDA #<textTilesMeta
     STA pointer
     LDA #>textTilesMeta
-    STA pointer+1
-    JSR UnpackTilesMeta
-    RTS
-.endproc
-
-.proc LoadMattCHR
-    LDA #<mattTilesMeta
-    STA pointer
-    LDA #>mattTilesMeta
     STA pointer+1
     JSR UnpackTilesMeta
     RTS

@@ -386,14 +386,17 @@
     CMP #MENU_NEWGAME_BEFORELEAVING1
     BNE :+
     JSR LoadBgIndependence
+    RTS
     :
     CMP #MENU_NEWGAME_BEFORELEAVING2
     BNE :+
     JSR LoadBgIndependence
+    RTS
     :
-    CMP #MENU_NEWGAME_MATT_INTRO
+    CMP #MENU_NEWGAME_MATT
     BNE :+
-    ;JSR LoadBgMatt
+    JSR LoadBgMatt
+    RTS
     :
     RTS
     None:
