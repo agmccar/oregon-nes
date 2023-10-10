@@ -925,7 +925,7 @@
     LDA #>namepartyTilesMeta
     STA pointer+1
     JSR UnpackTilesMeta
-    
+
     LDA #<namepartyImageMeta
     STA pointer
     LDA #>namepartyImageMeta

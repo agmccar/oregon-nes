@@ -800,43 +800,13 @@
     STA pointer+1
     JSR UnpackTilesMeta
 
-    LDY #0
-    JSR bankswitch_y
-
-    LDA #<mattAttr ; set attribute table
+    LDA #<mattImageMeta
     STA pointer
-    LDA #>mattAttr
+    LDA #>mattImageMeta
     STA pointer+1
-    LDA #8*8
-    STA counter
-    LDA #0
-    STA counter+1
-    LDA PPUSTATUS
-    LDA #$23
-    STA PPUADDR
-    LDA #$C0
-    STA PPUADDR
-    JSR UnpackData
-
-    LDA #<mattImage ; draw Matt
-    STA pointer
-    LDA #>mattImage
-    STA pointer+1
-    LDA #$20 ; 17x$20 tiles for matt image (#$220)
-    STA counter
-    LDA #$02
-    STA counter+1
-    LDA PPUSTATUS
-    LDA #$21
-    STA PPUADDR
-    LDA #$00
-    STA PPUADDR
-    JSR UnpackData
-
-
+    JSR UnpackImageMeta
+    
     JSR DoneBulkDrawing
-    LDY #1
-    JSR bankswitch_y
 
     LDA newgamePointer+26 ; MattsGeneralStoreHello
     STA pointer
@@ -847,7 +817,7 @@
     LDA #$84
     STA bufferHelper+1
     JSR BufferDrawText
-    
+
     JSR BufferDrawPressStart
     :
 

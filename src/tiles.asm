@@ -49,6 +49,9 @@ namepartyTilesMeta:
 namepartyImageMeta:
     .byte 0, 64, $23, $c0, <namepartyAttr, >namepartyAttr, $01, $a0, $20, $40, <namepartyImage, >namepartyImage
 
+mattImageMeta:
+    .byte 0, 64, $23, $c0, <mattAttr, >mattAttr, $02, $20, $21, $00, <mattImage, >mattImage
+
 ; Meta-values associated with landmark images.
 ; Sections of 7 bytes are ordered by location index.
 ; $00, $00, $00, $00, $00, $00, $00
