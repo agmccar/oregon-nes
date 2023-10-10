@@ -139,6 +139,13 @@ suppliesText:
     .byte _LB,___,_F_,_O_,_O_,_D_,___
     .byte _C_,_A_,_S_,_H_,___,___,___
 
+mattSuppliesText:
+    .byte 4,_O_,_X_,_E_,_N_
+    .byte 4,_F_,_O_,_O_,_D_
+    .byte 8,_C_,_L_,_O_,_T_,_H_,_I_,_N_,_G_
+    .byte 10,_A_,_M_,_M_,_U_,_N_,_I_,_T_,_I_,_O_,_N_
+    .byte 11,_S_,_P_,_A_,_R_,_E_,___,_P_,_A_,_R_,_T_,_S_
+
 healthText:
     .byte _G_,_O_,_O_,_D_,___,___,___,___,___
     .byte _F_,_A_,_I_,_R_,___,___,___,___,___

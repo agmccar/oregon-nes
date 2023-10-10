@@ -1059,7 +1059,7 @@
     RTS
 .endproc
 
-.proc BufferDrawBlankLine
+.proc BufferDrawBlankLine ; TODO deprecate (use BufferDrawBlankBox)
     ; pointer: nametable address
     BufferStart #$20, pointer, pointer+1
         LDA #___
@@ -2295,5 +2295,66 @@
         JSR WriteByteToBuffer
     JSR EndBufferWrite
 
+    RTS
+.endproc
+
+.proc BufferDrawBlankBox
+    ; @param bufferHelper[+0,+1]: tilemap address of top left corner
+    ; @param X: width of box in tiles
+    ; @param Y: height of box in tiles
+    ; Clobbers all registers
+    STX bufferHelper+2
+    :
+    TYA
+    PHA
+    BufferStart_ bufferHelper+2, bufferHelper, bufferHelper+1
+    LDX bufferHelper+2
+    LDA #0
+    :
+    JSR WriteByteToBuffer
+    DEX
+    BNE :-
+    JSR EndBufferWrite
+    CLC
+    LDA bufferHelper+1
+    ADC #$20
+    STA bufferHelper+1
+    LDA bufferHelper
+    ADC #0
+    STA bufferHelper
+    PLA
+    TAY
+    DEY
+    BNE :--
+    RTS
+.endproc
+
+.proc BufferDrawGreenLine
+    ; @param Y: tilemap y index
+    LDA #$20
+    STA bufferHelper
+    LDA #$08
+    STA bufferHelper+1
+    :
+    CPY #0
+    BEQ :+
+    CLC
+    LDA bufferHelper+1
+    ADC #$20
+    STA bufferHelper+1
+    LDA bufferHelper
+    ADC #0
+    STA bufferHelper
+    DEY
+    JMP :-
+    :
+    BufferStart_ #22, bufferHelper, bufferHelper+1
+    LDX #22
+    LDA #TILE_GREEN_LINE
+    :
+    JSR WriteByteToBuffer
+    DEX
+    BNE :-
+    JSR EndBufferWrite
     RTS
 .endproc

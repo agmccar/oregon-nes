@@ -3007,86 +3007,86 @@
         LDA menuOpen
         CMP #MENU_NEWGAME_OCCUPATION
         BNE :+
-        JMP @menuOccupation
+            JMP @menuOccupation
         :
         CMP #MENU_NEWGAME_OCC_HELP
         BNE :+
-        LDA #MENU_NEWGAME_OCCUPATION
-        STA menuOpen
-        RTS
+            LDA #MENU_NEWGAME_OCCUPATION
+            STA menuOpen
+            RTS
         :
         CMP #MENU_NEWGAME_NAMEPARTY
         BNE :++
-        LDA keyboardKey
-        CMP #KEYBOARD_DONE
-        BNE :+
-        JSR PressedDoneNextName
-        RTS
-        :
-        LDA #KEYBOARD_DONE ; jump to "Done"
-        STA keyboardKey
-        LDA #22
-        STA fingerX
-        LDA #25
-        STA fingerY
-        JSR HighlightKeyboardKey
-        RTS
+            LDA keyboardKey
+            CMP #KEYBOARD_DONE
+            BNE :+
+            JSR PressedDoneNextName
+            RTS
+            :
+            LDA #KEYBOARD_DONE ; jump to "Done"
+            STA keyboardKey
+            LDA #22
+            STA fingerX
+            LDA #25
+            STA fingerY
+            JSR HighlightKeyboardKey
+            RTS
         :
         CMP #MENU_NEWGAME_NAMESCORRECT
         BNE :++
-        LDA menuCursor
-        BEQ :+
-        JSR IncrementDate
-        JSR SetOpeningBalance
-        LDA #MENU_NEWGAME_GOINGBACK
-        STA menuOpen
-        RTS
-        :
-        ; TODO "N" selected 
-        RTS
+            LDA menuCursor
+            BEQ :+
+            JSR IncrementDate
+            JSR SetOpeningBalance
+            LDA #MENU_NEWGAME_GOINGBACK
+            STA menuOpen
+            RTS
+            :
+            ; TODO "N" selected 
+            RTS
         :
         CMP #MENU_NEWGAME_STARTDATE
         BNE :++
-        LDA fingerY
-        SEC
-        SBC #14
-        CMP #5
-        BEQ :+
-        CLC
-        ADC #3
-        STA dateMonth
-        LDA #MENU_NEWGAME_BEFORELEAVING1
-        STA menuOpen
-        RTS
-        :
-        LDA #MENU_NEWGAME_DATE_HELP
-        STA menuOpen
-        RTS
+            LDA fingerY
+            SEC
+            SBC #14
+            CMP #5
+            BEQ :+
+            CLC
+            ADC #3
+            STA dateMonth
+            LDA #MENU_NEWGAME_BEFORELEAVING1
+            STA menuOpen
+            RTS
+            :
+            LDA #MENU_NEWGAME_DATE_HELP
+            STA menuOpen
+            RTS
         :
         CMP #MENU_NEWGAME_DATE_HELP
         BNE :+
-        LDA #MENU_NEWGAME_STARTDATE
-        STA menuOpen
-        RTS
+            LDA #MENU_NEWGAME_STARTDATE
+            STA menuOpen
+            RTS
         :
         CMP #MENU_NEWGAME_BEFORELEAVING1
         BNE :+
-        LDA #MENU_NEWGAME_BEFORELEAVING2
-        STA menuOpen
-        RTS
+            LDA #MENU_NEWGAME_BEFORELEAVING2
+            STA menuOpen
+            RTS
         :
         CMP #MENU_NEWGAME_BEFORELEAVING2
         BNE :+
-        LDA #MENU_NEWGAME_MATT
-        STA menuOpen
-        LDA #0
-        STA menuCursor
-        RTS
+            LDA #MENU_NEWGAME_MATT
+            STA menuOpen
+            LDA #0
+            STA menuCursor
+            RTS
         :
         CMP #MENU_NEWGAME_MATT
         BNE :+
-        INC menuCursor
-        JSR LoadBgMatt
+            INC menuCursor
+            JSR LoadBgMatt
         :
         RTS
         @menuOccupation:
@@ -3600,5 +3600,167 @@
     STA bufferHelper+1
     JSR BufferDrawText
     JSR BufferDrawPressStart
+    RTS
+.endproc
+
+.proc LoadBgMatt ; TODO DRY
+    LDA menuCursor
+    CMP #0
+    BNE Page2
+        JSR ClearScreen ; "Hello, I'm Matt" page 1
+        JSR ClearAttributes
+        JSR StartBulkDrawing
+
+        LDA #<mattTilesMeta
+        STA pointer
+        LDA #>mattTilesMeta
+        STA pointer+1
+        JSR UnpackTilesMeta
+
+        LDA #<mattImageMeta
+        STA pointer
+        LDA #>mattImageMeta
+        STA pointer+1
+        JSR UnpackImageMeta
+
+        JSR DoneBulkDrawing
+
+        LDA newgamePointer+26 ; MattsGeneralStoreHello
+        STA pointer
+        LDA newgamePointer+27
+        STA pointer+1
+        LDA #$20
+        STA bufferHelper
+        LDA #$84
+        STA bufferHelper+1
+        JSR BufferDrawText
+
+        LDA newgamePointer+28 ; newgameMattsSupplies1
+        STA pointer
+        LDA newgamePointer+29
+        STA pointer+1
+        LDA #$21
+        STA bufferHelper
+        LDA #$68
+        STA bufferHelper+1
+        JSR BufferDrawText
+
+        LDA newgamePointer+30 ; newgameMattsSupplies2
+        STA pointer
+        LDA newgamePointer+31
+        STA pointer+1
+        LDA #$21
+        STA bufferHelper
+        LDA #$c8
+        STA bufferHelper+1
+        JSR BufferDrawText
+
+        JSR BufferDrawPressStart
+        RTS
+    Page2:
+        CMP #1 ; "Hello, I'm Matt" page 2
+        BEQ :+
+        JMP GenStoreInit
+        :
+
+        LDA #$21 ; erase text from previous page
+        STA bufferHelper
+        LDA #$68
+        STA bufferHelper+1
+        LDX #24
+        LDY #5
+        JSR BufferDrawBlankBox
+
+        LDA newgamePointer+32 ; newgameMattsSupplies3
+        STA pointer
+        LDA newgamePointer+33
+        STA pointer+1
+        LDA #$21
+        STA bufferHelper
+        LDA #$68
+        STA bufferHelper+1
+        JSR BufferDrawText
+
+        LDA newgamePointer+34 ; newgameMattsSupplies4
+        STA pointer
+        LDA newgamePointer+35
+        STA pointer+1
+        LDA #$21
+        STA bufferHelper
+        LDA #$c8
+        STA bufferHelper+1
+        JSR BufferDrawText
+
+        LDA newgamePointer+36 ; newgameMattsSupplies5
+        STA pointer
+        LDA newgamePointer+37
+        STA pointer+1
+        LDA #$22
+        STA bufferHelper
+        LDA #$28
+        STA bufferHelper+1
+        JSR BufferDrawText
+
+        JSR BufferDrawPressStart
+        RTS
+    GenStoreInit:
+        CMP #2 ; General store main menu, initially
+        BEQ :+
+        JMP Page4
+        :
+        LDA #$20 ; erase text from previous page
+        STA bufferHelper
+        LDA #$84
+        STA bufferHelper+1
+        LDX #23
+        LDY #4
+        JSR BufferDrawBlankBox
+
+        LDY #3
+        JSR BufferDrawGreenLine
+
+        LDA newgamePointer+38 ; MattsGeneralStore
+        STA pointer
+        LDA newgamePointer+39
+        STA pointer+1
+        LDA #$20
+        STA bufferHelper
+        LDA #$88
+        STA bufferHelper+1
+        JSR BufferDrawText
+
+        GenStoreAgain:
+        LDA #$20 ; erase to the right of Matt
+        STA bufferHelper
+        LDA #$c8
+        STA bufferHelper+1
+        LDX #24
+        LDY #21
+        JSR BufferDrawBlankBox
+        LDA #$23
+        STA bufferHelper
+        LDA #$64
+        STA bufferHelper+1
+        LDX #24
+        LDY #1
+        JSR BufferDrawBlankBox
+        LDA #$20
+        STA pointer
+        LDA #$f2
+        STA pointer+1
+        JSR BufferDrawDateText
+        BufferStart_ #6, #$23, #$d2 ; attributes for green line
+        LDX #6
+        LDA #$fa
+        :
+        JSR WriteByteToBuffer
+        DEX
+        BNE :-
+        JSR EndBufferWrite
+        LDY #8
+        JSR BufferDrawGreenLine
+        RTS
+    Page4:
+        JMP GenStoreAgain
     RTS
 .endproc

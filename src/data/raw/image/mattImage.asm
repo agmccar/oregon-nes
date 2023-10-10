@@ -39,6 +39,6 @@ mattImage:; 17 rows
 
 mattAttr:
 	.byte $05,$05,$a5,$a5,$a5,$a5,$a5,$25,$ff,$ff,$ff,$ff,$ff,$ff,$ff,$ff
-	.byte $00,$00,$fa,$fa,$fa,$fa,$fa,$fa,$aa,$22,$ff,$ff,$ff,$ff,$ff,$ff
-	.byte $aa,$22,$fa,$fa,$fa,$fa,$fa,$fa,$aa,$22,$ff,$ff,$ff,$ff,$ff,$ff
-	.byte $f0,$f0,$ff,$ff,$ff,$ff,$ff,$f3,$55,$55,$55,$55,$55,$55,$55,$55
+	.byte $00,$00,$ff,$ff,$ff,$ff,$ff,$ff,$aa,$22,$ff,$ff,$ff,$ff,$ff,$ff
+	.byte $aa,$22,$ff,$ff,$ff,$ff,$ff,$ff,$aa,$22,$ff,$ff,$ff,$ff,$ff,$ff
+	.byte $f0,$f0,$ff,$ff,$ff,$ff,$ff,$ff,$55,$55,$55,$55,$55,$55,$55,$55
