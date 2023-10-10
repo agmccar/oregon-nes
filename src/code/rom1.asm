@@ -3011,31 +3011,82 @@
         :
         CMP #MENU_NEWGAME_OCC_HELP
         BNE :+
-        JMP @menuOccupationHelp
+        LDA #MENU_NEWGAME_OCCUPATION
+        STA menuOpen
+        RTS
         :
         CMP #MENU_NEWGAME_NAMEPARTY
+        BNE :++
+        LDA keyboardKey
+        CMP #KEYBOARD_DONE
         BNE :+
-        JMP @menuNameParty
+        JSR PressedDoneNextName
+        RTS
+        :
+        LDA #KEYBOARD_DONE ; jump to "Done"
+        STA keyboardKey
+        LDA #22
+        STA fingerX
+        LDA #25
+        STA fingerY
+        JSR HighlightKeyboardKey
+        RTS
         :
         CMP #MENU_NEWGAME_NAMESCORRECT
-        BNE :+
-        JMP @menuNamesCorrect
+        BNE :++
+        LDA menuCursor
+        BEQ :+
+        JSR IncrementDate
+        JSR SetOpeningBalance
+        LDA #MENU_NEWGAME_GOINGBACK
+        STA menuOpen
+        RTS
+        :
+        ; TODO "N" selected 
+        RTS
         :
         CMP #MENU_NEWGAME_STARTDATE
-        BNE :+
-        JMP @menuStartDate
+        BNE :++
+        LDA fingerY
+        SEC
+        SBC #14
+        CMP #5
+        BEQ :+
+        CLC
+        ADC #3
+        STA dateMonth
+        LDA #MENU_NEWGAME_BEFORELEAVING1
+        STA menuOpen
+        RTS
+        :
+        LDA #MENU_NEWGAME_DATE_HELP
+        STA menuOpen
+        RTS
         :
         CMP #MENU_NEWGAME_DATE_HELP
         BNE :+
-        JMP @menuDateHelp
+        LDA #MENU_NEWGAME_STARTDATE
+        STA menuOpen
+        RTS
         :
         CMP #MENU_NEWGAME_BEFORELEAVING1
         BNE :+
-        JMP @menuBeforeLeaving1
+        LDA #MENU_NEWGAME_BEFORELEAVING2
+        STA menuOpen
+        RTS
         :
         CMP #MENU_NEWGAME_BEFORELEAVING2
         BNE :+
-        JMP @menuBeforeLeaving2
+        LDA #MENU_NEWGAME_MATT
+        STA menuOpen
+        LDA #0
+        STA menuCursor
+        RTS
+        :
+        CMP #MENU_NEWGAME_MATT
+        BNE :+
+        INC menuCursor
+        JSR LoadBgMatt
         :
         RTS
         @menuOccupation:
@@ -3066,66 +3117,6 @@
             STA menuOpen
             RTS
             :
-            RTS
-        @menuOccupationHelp:
-            LDA #MENU_NEWGAME_OCCUPATION
-            STA menuOpen
-            RTS
-        @menuNameParty:
-            LDA keyboardKey
-            CMP #KEYBOARD_DONE
-            BNE :+
-            JSR PressedDoneNextName
-            RTS
-            :
-            LDA #KEYBOARD_DONE ; jump to "Done"
-            STA keyboardKey
-            LDA #22
-            STA fingerX
-            LDA #25
-            STA fingerY
-            JSR HighlightKeyboardKey
-            RTS
-        @menuStartDate:
-            LDA fingerY
-            SEC
-            SBC #14
-            CMP #5
-            BEQ :+
-            CLC
-            ADC #3
-            STA dateMonth
-            LDA #MENU_NEWGAME_BEFORELEAVING1
-            STA menuOpen
-            RTS
-            :
-            LDA #MENU_NEWGAME_DATE_HELP
-            STA menuOpen
-            RTS
-        @menuNamesCorrect:
-            LDA menuCursor
-            BEQ :+
-            JSR IncrementDate
-            JSR SetOpeningBalance
-            LDA #MENU_NEWGAME_GOINGBACK
-            STA menuOpen
-            RTS
-            :
-            ; "N"
-            RTS
-        @menuDateHelp:
-            LDA #MENU_NEWGAME_STARTDATE
-            STA menuOpen
-            RTS
-        @menuBeforeLeaving1:
-            LDA #MENU_NEWGAME_BEFORELEAVING2
-            STA menuOpen
-            RTS
-        @menuBeforeLeaving2:
-            LDA #MENU_NEWGAME_MATT
-            STA menuOpen
-            LDA #0
-            STA menuCursor
             RTS
     CheckSelect:
         LDA #KEY_SELECT

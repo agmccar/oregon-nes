@@ -21,17 +21,18 @@
 - [x] choose occupation menu
 - [x] Name party members graphics
 - [x] name party members input
-- [ ] decide which month to leave menu
-- [ ] independence graphic + text boxes screens
+- [x] decide which month to leave menu
+- [x] independence graphic + text boxes screens
 
 ## Shop screen
 
 - [ ] Matts general store intro text/menus
-- [ ] shop screen graphics
-    - [ ] matt
-    - [ ] compress chr tiles 
+- [x] shop screen graphics
+    - [x] matt
+    - [x] compress chr tiles 
     - [x] rewrite check supplies screen
 - [ ] prices increase at each fort
+- [ ] Buy supplies screen
 
 ## River crossing
 
@@ -99,7 +100,6 @@
 - [x] stop to rest
 - [ ] drought events don't pause the game
 - [ ] shortcuts
-- [ ] swap out menu option to hunt with Buy Supplies when appropriate
 
 ## Map screen
 
