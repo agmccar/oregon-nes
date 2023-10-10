@@ -926,41 +926,11 @@
     STA pointer+1
     JSR UnpackTilesMeta
     
-    LDY #0
-    JSR bankswitch_y
-
-    LDA #<namepartyAttr ; set attribute table
+    LDA #<namepartyImageMeta
     STA pointer
-    LDA #>namepartyAttr
+    LDA #>namepartyImageMeta
     STA pointer+1
-    LDA #8*8
-    STA counter
-    LDA #0
-    STA counter+1
-    LDA PPUSTATUS
-    LDA #$23
-    STA PPUADDR
-    LDA #$C0
-    STA PPUADDR
-    JSR UnpackData
-
-    LDA #<namepartyImage   ; draw image
-    STA pointer
-    LDA #>namepartyImage
-    STA pointer+1
-    LDA #$a0 ; 13x$20 tiles for nameparty image (#$1a0)
-    STA counter
-    LDA #$01
-    STA counter+1
-    LDA PPUSTATUS
-    LDA #$20
-    STA PPUADDR
-    LDA #$40
-    STA PPUADDR
-    JSR UnpackData
-
-    LDY #1
-    JSR bankswitch_y
+    JSR UnpackImageMeta
 
     RTS
 .endproc
@@ -971,5 +941,54 @@
     LDA #>textTilesMeta
     STA pointer+1
     JSR UnpackTilesMeta
+    RTS
+.endproc
+
+.proc UnpackImageMeta
+    LDA currentBank
+    PHA
+    LDY #12 ; length of ImageMeta segment
+    :
+    DEY
+    LDA (pointer), Y
+    PHA
+    CPY #0
+    BNE :-
+    PLA ; ROM bank number
+    TAY
+    JSR bankswitch_y
+    PLA ; Attr bytes length
+    STA counter
+    LDA #0
+    STA counter+1
+    LDA PPUSTATUS
+    PLA ; Target PPU addr for attributes
+    STA PPUADDR
+    PLA
+    STA PPUADDR
+    PLA ; Address of image attribute data
+    STA pointer
+    PLA
+    STA pointer+1
+    JSR UnpackData
+    
+    PLA ; Tiles in image (Rows * $20)
+    STA counter+1
+    PLA
+    STA counter
+    LDA PPUSTATUS
+    PLA ; Target PPU addr for image
+    STA PPUADDR
+    PLA
+    STA PPUADDR
+    PLA ; Address of image data
+    STA pointer
+    PLA
+    STA pointer+1
+    JSR UnpackData
+
+    PLA
+    TAY
+    JSR bankswitch_y
     RTS
 .endproc

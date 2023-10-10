@@ -842,12 +842,12 @@
     STA pointer
     LDA newgamePointer+27
     STA pointer+1
-    
     LDA #$20
     STA bufferHelper
     LDA #$84
     STA bufferHelper+1
     JSR BufferDrawText
+    
     JSR BufferDrawPressStart
     :
 
