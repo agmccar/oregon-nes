@@ -805,7 +805,7 @@
     LDA #>mattImageMeta
     STA pointer+1
     JSR UnpackImageMeta
-    
+
     JSR DoneBulkDrawing
 
     LDA newgamePointer+26 ; MattsGeneralStoreHello
@@ -815,6 +815,26 @@
     LDA #$20
     STA bufferHelper
     LDA #$84
+    STA bufferHelper+1
+    JSR BufferDrawText
+
+    LDA newgamePointer+28 ; MattsGeneralStoreHello
+    STA pointer
+    LDA newgamePointer+29
+    STA pointer+1
+    LDA #$21
+    STA bufferHelper
+    LDA #$68
+    STA bufferHelper+1
+    JSR BufferDrawText
+
+    LDA newgamePointer+30 ; MattsGeneralStoreHello
+    STA pointer
+    LDA newgamePointer+31
+    STA pointer+1
+    LDA #$21
+    STA bufferHelper
+    LDA #$c8
     STA bufferHelper+1
     JSR BufferDrawText
 

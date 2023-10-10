@@ -66,23 +66,23 @@ what you need:$
 
 ## MattsSupplies1
 
-a team of oxen to pull your wagon$
+- a team of oxen to pull your wagon$
 
 ## MattsSupplies2
 
-clothing for both summer and winter$
+- clothing for both summer and winter$
 
 ## MattsSupplies3
 
-plenty of food for the trip$
+- plenty of food for the trip$
 
 ## MattsSupplies4
 
-ammunition for your rifles$
+- ammunition for your rifles$
 
 ## MattsSupplies5
 
-spare parts for your wagon$
+- spare parts for your wagon$
 
 ## MattsGeneralStore
 

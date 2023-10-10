@@ -38,27 +38,29 @@ namepartyTilesMeta:
     .byte 0, <namepartyTiles, >namepartyTiles, 12, 0
 
 ; Meta-values associated with general images
-; $00, $00, $00,$00, $00,$00, $00,$00, $00,$00, $00,$00
-;  ||   ||   ||||||   ||||||   ||||||   ||||||   ++++++ Address of image data
-;  ||   ||   ||||||   ||||||   ||||||   ++++++--------- Target PPU addr for image
-;  ||   ||   ||||||   ||||||   ++++++------------------ Tiles in image (Rows * $20)
-;  ||   ||   ||||||   ++++++--------------------------- Address of image attribute data
-;  ||   ||   ++++++------------------------------------ Target PPU addr for attributes
-;  ||   ++--------------------------------------------- Attr bytes length
-;  ++-------------------------------------------------- ROM bank number
+; 0,0,0,0,0,0,0,0,0,0,0,0
+; | | ||| ||| ||| ||| +++ Address of image data
+; | | ||| ||| ||| +++---- Target PPU addr for image
+; | | ||| ||| +++-------- Tiles in image (Rows * $20)
+; | | ||| +++------------ Address of image attribute data
+; | | +++---------------- Target PPU addr for attributes
+; | +-------------------- Attr bytes length
+; +---------------------- ROM bank number
 namepartyImageMeta:
-    .byte 0, 64, $23, $c0, <namepartyAttr, >namepartyAttr, $01, $a0, $20, $40, <namepartyImage, >namepartyImage
+    .byte 0, 64, $23, $c0, <namepartyAttr, >namepartyAttr
+    .byte $01, $a0, $20, $40, <namepartyImage, >namepartyImage
 
 mattImageMeta:
-    .byte 0, 64, $23, $c0, <mattAttr, >mattAttr, $02, $20, $21, $00, <mattImage, >mattImage
+    .byte 0, 64, $23, $c0, <mattAttr, >mattAttr
+    .byte $02, $20, $21, $00, <mattImage, >mattImage
 
 ; Meta-values associated with landmark images.
 ; Sections of 7 bytes are ordered by location index.
-; $00, $00, $00, $00, $00, $00, $00
-;  |||||||   |||||||   |||||||   ++ ROM bank number, must match game.asm
-;  |||||||   |||||||   +++++++----- Address of landmark image
-;  |||||||   +++++++--------------- Address of landmark image attributes
-;  +++++++------------------------- Address of landmark tile CHR
+; 0,0,0,0,0,0,0
+; ||| ||| ||| + ROM bank number, must match game.asm
+; ||| ||| +++-- Address of landmark image
+; ||| +++------ Address of landmark image attributes
+; +++---------- Address of landmark tile CHR
 landmarkImageMeta:
     .byte <independenceTiles, >independenceTiles, <independenceAttr, >independenceAttr, <independenceImage, >independenceImage, 2
     .byte <kansasRiverTiles, >kansasRiverTiles, <kansasRiverAttr, >kansasRiverAttr, <kansasRiverImage, >kansasRiverImage, 2

@@ -109,28 +109,28 @@ newgameMattsGeneralStoreHello:
     .byte $00
 
 newgameMattsSupplies1:
-    ; 20 bytes
-    .byte $45,$14,$24,$24,$45,$13,$08,$dc,$14,$ba,$0b,$0a,$95,$0c,$e8,$03,$53,$1d,$09
+    ; 22 bytes
+    .byte $55,$11,$42,$42,$44,$50,$eb,$13,$08,$dc,$14,$ba,$0b,$0a,$95,$0c,$e8,$03,$53,$1d,$09
     .byte $00
 
 newgameMattsSupplies2:
-    ; 22 bytes
-    .byte $35,$83,$46,$36,$d2,$47,$01,$04,$b7,$07,$59,$01,$e2,$5b,$dc,$02,$05,$7c,$04,$e3,$02
+    ; 24 bytes
+    .byte $45,$18,$34,$63,$60,$eb,$d2,$47,$01,$04,$b7,$07,$59,$01,$e2,$5b,$dc,$02,$05,$7c,$04,$e3,$02
     .byte $00
 
 newgameMattsSupplies3:
-    ; 17 bytes
-    .byte $35,$62,$43,$34,$2e,$0b,$4b,$14,$d5,$2a,$54,$07,$01,$11,$57,$df
+    ; 19 bytes
+    .byte $45,$16,$24,$33,$40,$eb,$2e,$0b,$4b,$14,$d5,$2a,$54,$07,$01,$11,$57,$df
     .byte $00
 
 newgameMattsSupplies4:
-    ; 19 bytes
-    .byte $25,$a3,$46,$27,$dc,$3d,$16,$d8,$09,$d5,$07,$e8,$03,$e1,$e1,$2c,$db,$06
+    ; 21 bytes
+    .byte $35,$1a,$34,$60,$eb,$27,$dc,$3d,$16,$d8,$09,$d5,$07,$e8,$03,$e1,$e1,$2c,$db,$06
     .byte $00
 
 newgameMattsSupplies5:
-    ; 17 bytes
-    .byte $35,$55,$34,$50,$71,$0d,$17,$0d,$30,$d5,$07,$e8,$03,$53,$1d,$09
+    ; 18 bytes
+    .byte $35,$15,$53,$45,$eb,$71,$0d,$17,$0d,$30,$d5,$07,$e8,$03,$53,$1d,$09
     .byte $00
 
 newgameMattsGeneralStore:
