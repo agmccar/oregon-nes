@@ -11,6 +11,7 @@ oregonTopTen:       .res 10*(8+2) ; 10 x (8-letter name + 16 bits for score)
 gravestone:         .res 8+32 ; name + epitaph 
 
 ;----------- above this line, memory is preserved on soft reset
+MEM_PRESERVED = 107 ; amount of bytes preserved on soft reset
 
 dateText:           .res TEXT_DATE_LEN
 popupTextLine1:     .res TEXT_POPUP_LINE_LEN

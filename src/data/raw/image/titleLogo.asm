@@ -1,4 +1,3 @@
-; TODO compress
 
 titleLogoTiles:
     .incbin "../chr/titleLogo.chr"

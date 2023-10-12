@@ -1,3 +1,4 @@
+
 ; Meta-values associated with collections of tiles.
 ; $00, $00, 00, $00, $00
 ;  ||   ||||||   ||   ++ Destination 'y-value' (row index) of tiles in CHRRAM
@@ -10,11 +11,14 @@ textTilesMeta:
 mattTilesMeta:
     .byte 0, <mattTiles, >mattTiles, 5, 0
 
+; wagonTilesMeta: TODO
+;     .byte 0, <wagonTiles, >wagonTiles, 4, 8
+
 adornmentTilesMeta:
-    .byte 6, <adornmentTiles, >adornmentTiles, 2, 0
+    .byte 0, <adornmentTiles, >adornmentTiles, 2, 0
 
 titleLogoTilesMeta:
-    .byte 6, <titleLogoTiles, >titleLogoTiles, 3, 2
+    .byte 0, <titleLogoTiles, >titleLogoTiles, 3, 2
 
 suppliesTilesMeta:
     .byte 0, <suppliesFoodTiles, >suppliesFoodTiles, 10, 0
@@ -38,14 +42,15 @@ namepartyTilesMeta:
     .byte 0, <namepartyTiles, >namepartyTiles, 12, 0
 
 ; Meta-values associated with general images
-; 0,0,0,0,0,0,0,0,0,0,0,0
-; | | ||| ||| ||| ||| +++ Address of image data
-; | | ||| ||| ||| +++---- Target PPU addr for image
-; | | ||| ||| +++-------- Tiles in image (Rows * $20)
-; | | ||| +++------------ Address of image attribute data
-; | | +++---------------- Target PPU addr for attributes
-; | +-------------------- Attr bytes length
-; +---------------------- ROM bank number
+; 0,0,0,0,0,0
+; | | ||| +++ Address of image attribute data
+; | | +++---- Target PPU addr for attributes
+; | +-------- Attr bytes length
+; +---------- ROM bank number
+; 0,0,0,0,0,0
+; ||| ||| +++ Address of image data
+; ||| +++---- Target PPU addr for image. if 0,0: use helper
+; +++-------- Tiles in image (Rows * $20)
 namepartyImageMeta:
     .byte 0, 64, $23, $c0, <namepartyAttr, >namepartyAttr
     .byte $01, $a0, $20, $40, <namepartyImage, >namepartyImage
@@ -53,6 +58,14 @@ namepartyImageMeta:
 mattImageMeta:
     .byte 0, 64, $23, $c0, <mattAttr, >mattAttr
     .byte $02, $20, $21, $00, <mattImage, >mattImage
+
+adornmentImageMeta:
+    .byte 0, 0, 0, 0, 0, 0
+    .byte $00, $40, 0, 0, <adornmentImage, >adornmentImage
+
+titleLogoImageMeta:
+    .byte 0, 0, 0, 0, 0, 0
+    .byte $00, $80, $20, $60, <titleLogoImage, >titleLogoImage
 
 ; Meta-values associated with landmark images.
 ; Sections of 7 bytes are ordered by location index.
