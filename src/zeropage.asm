@@ -31,7 +31,6 @@ bufferHelper:       .res 4
 oxenFrame:          .res 1 
 
 
-
 ; HUD --------------------------------------------------------------------------
 
 keyboardKey:        .res 1 ; keyboard key (letter/symbol) currently selected
@@ -59,18 +58,6 @@ fingerLastX:        .res 1 ; last pos for graphics refresh
 fingerLastY:        .res 1 ;
 fingerLastLastX:    .res 1 ; previous last pos (for submenus)
 fingerLastLastY:    .res 1 ;
-
-dollarsDigit:       .res 4 ; dollars in inventory
-foodLbsDigit:       .res 4 ; lbs of food in inventory
-clothingDigit:      .res 4 ; sets of clothing in inventory
-bulletsDigit:       .res 4 ; bullets in inventory
-oxenDigit:          .res 4 ; oxen in inventory
-cartDollarsDigit:   .res 4 ; dollar cost of shopping cart
-cartFoodLbsDigit:   .res 4 ; lbs of food in shopping cart
-cartClothingDigit:  .res 4 ; sets of clothing in shopping cart
-cartBulletsDigit:   .res 4 ; bullets in shopping cart
-cartOxenDigit:      .res 4 ; oxen in shopping cart
-cartHelperDigit:    .res 4 ; shameless hack
 
 
 ; Wagon ------------------------------------------------------------------------
@@ -108,27 +95,53 @@ wagonRest:          .res 1 ; days of rest/delay remaining.
 
 ; Supplies ---------------------------------------------------------------------
 
-dollars:            .res 2  ; dollars in inventory
+oxenHeadcount:      .res 2  ; oxen in inventory
 foodLbs:            .res 2  ; lbs of food in inventory
 clothing:           .res 2  ; sets of clothing in inventory
 bullets:            .res 2  ; bullets in inventory
-oxenHeadcount:      .res 2  ; oxen in inventory
-cartDollars:        .res 2  ; dollar cost of entire shopping cart
-cartFoodLbs:        .res 1  ; x10 lbs of food in shopping cart
-cartClothing:       .res 1  ; sets of clothing in shopping cart TODO: Must allow more than 19 sets of clothing in cart!
-cartBullets:        .res 1  ; x10 bullets in shopping cart
-cartOxen:           .res 1  ; oxen in shopping cart
-cost:               .res 2  ; helper for calculating cost
-costhelper:         .res 2
 
+; spare parts in inventory
+; %00000000 
+;  ||||||++ wagon wheels
+;  ||||++-- wagon axles
+;  ||++---- wagon tongues
+;  ++------ unused
+spareParts:         .res 1
+dollars:            .res 2  ; dollars in inventory
+
+oxenDigit:          .res 4 ; oxen in inventory
+foodLbsDigit:       .res 4 ; lbs of food in inventory
+clothingDigit:      .res 4 ; sets of clothing in inventory
+bulletsDigit:       .res 4 ; bullets in inventory
+dollarsDigit:       .res 4 ; dollars in inventory
+
+
+; Shopping ---------------------------------------------------------------------
+
+cartOxen:           .res 2  ; oxen in shopping cart
+cartFoodLbs:        .res 2  ; lbs of food in shopping cart
+cartClothing:       .res 2  ; sets of clothing in shopping cart
+cartBullets:        .res 2  ; bullets in shopping cart
+
+; spare parts in shopping cart
 ; %00000000
 ;  ||||||++ wagon wheels
 ;  ||||++-- wagon axles
 ;  ||++---- wagon tongues
 ;  ++------ unused
-spareParts:         .res 1  ; spare parts in inventory
-cartSpareParts:     .res 1  ; spare parts in shopping cart
+cartSpareParts:     .res 1
+cartDollars:        .res 2  ; dollar cost of entire shopping cart
 
+cartOxenDigit:      .res 4 ; cost of oxen in shopping cart
+cartFoodLbsDigit:   .res 4 ; cost of food in shopping cart
+cartClothingDigit:  .res 4 ; cost of clothing in shopping cart
+cartBulletsDigit:   .res 4 ; cost of bullets in shopping cart
+cartSparePartsDigit: .res 4 ; cost of spare parts in shopping cart
+cartDollarsDigit:   .res 4 ; total cost of shopping cart
+cartHelperDigit:    .res 6 ; shameless hack
+
+cost:               .res 2 ; helper for calculating cost
+costhelper:         .res 2 ; helper for calculating cost
 
 ; Party ------------------------------------------------------------------------
 
@@ -162,4 +175,4 @@ location:           .res 1
 
 
 ;-------------------------------------------------------------------------------
-; remaining: $66
+; remaining: $74

@@ -96,44 +96,40 @@ Which item would you like to buy?
 
 Press START to leave$
 
-## MattsBuySupplies1
+## MattOxenText
 
 There are 2 oxen in a yoke; I recommend at least 3 yoke. I charge %40 a yoke.
-How many do you want?
 
-## MattsBuySupplies2
+## MattFoodText
 
 I recommend you take at least 200 pounds of food for each person in your
 family. I see that you have 5 people in all. You'll need flour, sugar,
 bacon, and coffee. My price is 20 cents a pound.
-How many pounds of food do you want?
 
-## MattsBuySupplies3
+## MattClothingText
 
 You'll need warm clothing in the mountains. I recommend taking at least
 2 sets of clothes per person. Each set is %10.
-How many sets of clothes do you want?
 
-## MattsBuySupplies4
+## MattBulletsText
 
 I sell ammunition in boxes of 20 bullets. Each box costs %2.
-How many boxes do you want?
 
-## MattsBuySupplies5
+## MattSparePartsText
 
 It's a good idea to have a few spare parts for your wagon. Here are the
 prices:$
 # wagon wheel  - %10 each
 # wagon axle   - %10 each
 # wagon tongue - %10 each
-How many wagon$
+# How many wagon$
 # wheels?
 # axles?
 # tongues?
-# Bill so far:
-# Amount you have:
-# Which item would you like to buy?
-# Press SPACE BAR to leave store
+
+## MattHowManyText
+
+How many do you want?
 
 ## MattsGoodLuck
 

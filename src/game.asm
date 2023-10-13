@@ -163,6 +163,8 @@ resetSentinalKey:
 
 .proc main
     JSR ReadController1
+    LDA buttons1
+    STA buttons1Last    ; Remember last controller inputs
     JSR CheckGameState
     JMP main
 .endproc

@@ -3,89 +3,89 @@
     LDX #18 ; draw "The Oregon Top Ten"
     JSR StartBufferWrite
         LDA #18
-        JSR WriteByteToBuffer
+        WBB
         LDA #$20
-        JSR WriteByteToBuffer
+        WBB
         LDA #$87
-        JSR WriteByteToBuffer
+        WBB
         LDX #0
         :
         LDA topTenHeaderText, X
-        JSR WriteByteToBuffer
+        WBB
         INX
         CPX #18
         BNE :-
-    JSR EndBufferWrite
+    EBW
 
     LDX #5 ; draw column headers
     JSR StartBufferWrite
         LDA #5
-        JSR WriteByteToBuffer
+        WBB
         LDA #$20
-        JSR WriteByteToBuffer
+        WBB
         LDA #$c4
-        JSR WriteByteToBuffer
+        WBB
         LDA #TILE_COL_HEADER ; vert line
-        JSR WriteByteToBuffer
+        WBB
         LDX #0
         :
         LDA topTenColumnText, X
-        JSR WriteByteToBuffer
+        WBB
         INX
         CPX #4
         BNE :-
-    JSR EndBufferWrite
+    EBW
     LDX #7
     JSR StartBufferWrite
         LDA #7
-        JSR WriteByteToBuffer
+        WBB
         LDA #$20
-        JSR WriteByteToBuffer
+        WBB
         LDA #$cc
-        JSR WriteByteToBuffer
+        WBB
         LDA #TILE_COL_HEADER ; vert line
-        JSR WriteByteToBuffer
+        WBB
         LDX #4
         :
         LDA topTenColumnText, X
-        JSR WriteByteToBuffer
+        WBB
         INX
         CPX #10
         BNE :-
-    JSR EndBufferWrite
+    EBW
     LDX #7
     JSR StartBufferWrite
         LDA #7
-        JSR WriteByteToBuffer
+        WBB
         LDA #$20
-        JSR WriteByteToBuffer
+        WBB
         LDA #$d4
-        JSR WriteByteToBuffer
+        WBB
         LDA #TILE_COL_HEADER ; vert line
-        JSR WriteByteToBuffer
+        WBB
         LDX #10
         :
         LDA topTenColumnText, X
-        JSR WriteByteToBuffer
+        WBB
         INX
         CPX #16
         BNE :-
-    JSR EndBufferWrite
+    EBW
     LDX #6
     JSR StartBufferWrite
         LDA #6
-        JSR WriteByteToBuffer
+        WBB
         LDA #$23
-        JSR WriteByteToBuffer
+        WBB
         LDA #$c9
-        JSR WriteByteToBuffer
+        WBB
         LDA #%01011111
         LDX #6
         :
-        JSR WriteByteToBuffer
+        WBB
         DEX
         BNE :-
-    JSR EndBufferWrite
+    EBW
 
 
 
@@ -104,21 +104,21 @@
     LDX #27
     JSR StartBufferWrite
         LDA #27
-        JSR WriteByteToBuffer
+        WBB
         LDA pointer
-        JSR WriteByteToBuffer
+        WBB
         LDA pointer+1
-        JSR WriteByteToBuffer
+        WBB
         LDX helper
         :
         LDA oregonTopTen, X
-        JSR WriteByteToBuffer ; write name
+        WBB ; write name
         INX
         CPX helper+1
         BNE :-
         LDA #___ ; two spaces
-        JSR WriteByteToBuffer
-        JSR WriteByteToBuffer
+        WBB
+        WBB
         LDA oregonTopTen, X ; stash this row's score
         STA counter+1
         INX
@@ -140,13 +140,13 @@
         BNE :+
         LDA #___
         :
-        JSR WriteByteToBuffer ; score (decimal characters)
+        WBB ; score (decimal characters)
         INX
         CPX #4
         BNE :--
         LDA #___ ; two spaces
-        JSR WriteByteToBuffer
-        JSR WriteByteToBuffer
+        WBB
+        WBB
         LDA counter+1
         CMP topTenRating ; Good enough for "Trail Guide"?
         BCC Adventurer
@@ -178,11 +178,11 @@
         STA helper2
         Rating:
         LDA topTenRating, X
-        JSR WriteByteToBuffer
+        WBB
         INX
         CPX helper2
         BNE Rating
-    JSR EndBufferWrite
+    EBW
     JSR PointerToNextLine
     PLA
     TAX
@@ -220,14 +220,14 @@
 .endproc
 
 .proc BufferClearTitle
-    BufferStart #6, #$23, #$e1 ; clear attr
+    SBW #6, #$23, #$e1 ; clear attr
         LDA #$ff
         LDX #6
         :
-        JSR WriteByteToBuffer
+        WBB
         DEX
         BNE :-
-    JSR EndBufferWrite
+    EBW
 
     LDX #14 ; clear 14 rows of tiles
     LDA #$21
@@ -237,15 +237,15 @@
     Line:
     TXA
     PHA
-    BufferStart #$20, pointer+1, pointer
+    SBW #$20, pointer+1, pointer
         LDX #0
         LDA #___
         :
-        JSR WriteByteToBuffer
+        WBB
         INX
         CPX #$20
         BNE :-
-    JSR EndBufferWrite
+    EBW
     CLC
     LDA pointer
     ADC #$20
@@ -281,15 +281,15 @@
     BEQ :+
     JMP Done
     :
-    BufferStart #TEXT_POPUP_LINE_LEN, #$22, #$a4
+    SBW #TEXT_POPUP_LINE_LEN, #$22, #$a4
         LDX #0 ; colors text
         :
         LDA titleColorsText, X
-        JSR WriteByteToBuffer
+        WBB
         INX
         CPX #TEXT_POPUP_LINE_LEN
         BNE :-
-    JSR EndBufferWrite
+    EBW
     
     LDA #$22 ; color squares
     STA pointer
@@ -299,7 +299,7 @@
     ColorSquares:
     TXA
     PHA
-    BufferStart #24, pointer, pointer+1
+    SBW #24, pointer, pointer+1
         LDX #4
         LDA #TILE_LIGHT_SQ
         STA helper
@@ -307,15 +307,15 @@
         TXA
         PHA
         LDA #0
-        JSR WriteByteToBuffer
+        WBB
         LDX #4
         :
         LDA helper
-        JSR WriteByteToBuffer
+        WBB
         DEX
         BNE :-
         LDA #0
-        JSR WriteByteToBuffer
+        WBB
         PLA
         TAX
         CPX #4
@@ -325,26 +325,26 @@
         :
         DEX
         BNE @sq
-    JSR EndBufferWrite
+    EBW
     JSR PointerToNextLine
     PLA
     TAX
     DEX
     BNE ColorSquares
     
-    BufferStart #6, #$23, #$e1 ; colorsquare attributes 
+    SBW #6, #$23, #$e1 ; colorsquare attributes 
         LDA #0
-        JSR WriteByteToBuffer
+        WBB
         LDA #%10001000
-        JSR WriteByteToBuffer
+        WBB
         LDA #$aa
-        JSR WriteByteToBuffer
-        JSR WriteByteToBuffer
+        WBB
+        WBB
         LDA #%00100010
-        JSR WriteByteToBuffer
+        WBB
         LDA #0
-        JSR WriteByteToBuffer
-    JSR EndBufferWrite
+        WBB
+    EBW
 
     Done:
     JSR BufferDrawPressStart
@@ -378,16 +378,16 @@
     BPL :+
     JMP Done
     :
-    BufferStart #4, #$21, #$cb
+    SBW #4, #$21, #$cb
     LDA #_O_
-    JSR WriteByteToBuffer
+    WBB
     LDA #_N_
-    JSR WriteByteToBuffer
+    WBB
     LDA #_PD
-    JSR WriteByteToBuffer
+    WBB
     LDA #___
-    JSR WriteByteToBuffer
-    JSR EndBufferWrite
+    WBB
+    EBW
     Done:
     LDA gameSettings
     EOR #$80
@@ -433,19 +433,19 @@
     LDX #21
     JSR StartBufferWrite ; "On Arriving In Oregon"
         LDA #21
-        JSR WriteByteToBuffer
+        WBB
         LDA #$20
-        JSR WriteByteToBuffer
+        WBB
         LDA #$85
-        JSR WriteByteToBuffer
+        WBB
         LDX #0
         :
         LDA topTenHelpText, X
-        JSR WriteByteToBuffer
+        WBB
         INX
         CPX #21
         BNE :-
-    JSR EndBufferWrite
+    EBW
 
     DEC menuCursor
     LDA menuCursor
@@ -522,61 +522,61 @@
     LDX #8
     JSR StartBufferWrite ; color column headers
         LDA #8
-        JSR WriteByteToBuffer
+        WBB
         LDA pointer
-        JSR WriteByteToBuffer
+        WBB
         LDA pointer+1
-        JSR WriteByteToBuffer
+        WBB
         LDX #0
         :
         LDA helper
-        JSR WriteByteToBuffer
+        WBB
         INX
         CPX #8
         BNE :-
-    JSR EndBufferWrite
+    EBW
 
-    BufferStart helper+1, helper2, helper2+1 ; "Health of"/"Resources of"
+    SBW helper+1, helper2, helper2+1 ; "Health of"/"Resources of"
     LDA #TILE_COL_HEADER
-    JSR WriteByteToBuffer
+    WBB
     LDX counter
     :
     LDA topTenHelpText, X
-    JSR WriteByteToBuffer
+    WBB
     INX
     CPX counter+1
     BNE :-
-    JSR EndBufferWrite
+    EBW
     CLC
     LDA helper2+1
     ADC #$20
     STA helper2+1
-    BufferStart helper+1, helper2, helper2+1
+    SBW helper+1, helper2, helper2+1
     LDA #TILE_COL_HEADER
-    JSR WriteByteToBuffer
+    WBB
     LDA #___
     LDX helper+1
     DEX
     :
-    JSR WriteByteToBuffer
+    WBB
     DEX
     BNE :-
-    JSR EndBufferWrite
+    EBW
     CLC
     LDA helper2+1
     ADC menuCursor
     STA helper2+1
     INC helper2+1
     INC helper2+1
-    BufferStart #5, helper2, helper2+1 ; "Party"
+    SBW #5, helper2, helper2+1 ; "Party"
     LDX #42
     :
     LDA topTenHelpText, X
-    JSR WriteByteToBuffer
+    WBB
     INX
     CPX #47
     BNE :-
-    JSR EndBufferWrite
+    EBW
 
     SEC ; next column header
     LDA helper2+1
@@ -585,31 +585,31 @@
     CLC
     ADC helper+1
     STA helper2+1
-    BufferStart #11, helper2, helper2+1 ; "Points per"
+    SBW #11, helper2, helper2+1 ; "Points per"
     LDA #TILE_COL_HEADER
-    JSR WriteByteToBuffer
+    WBB
     LDX #47
     :
     LDA topTenHelpText, X
-    JSR WriteByteToBuffer
+    WBB
     INX
     CPX #57
     BNE :-
-    JSR EndBufferWrite
+    EBW
     CLC
     LDA helper2+1
     ADC #$20
     STA helper2+1
-    BufferStart #11, helper2, helper2+1 
+    SBW #11, helper2, helper2+1 
     LDA #TILE_COL_HEADER
-    JSR WriteByteToBuffer
+    WBB
     LDA #___
     LDX #10
     :
-    JSR WriteByteToBuffer
+    WBB
     DEX
     BNE :-
-    JSR EndBufferWrite
+    EBW
     CLC
     LDA helper2+1
     ADC menuCursor
@@ -631,15 +631,15 @@
     ADC #6
     STA counter+1
     :
-    BufferStart #6, helper2, helper2+1 ; "Person"/"Item  "
+    SBW #6, helper2, helper2+1 ; "Person"/"Item  "
     LDX counter
     :
     LDA topTenHelpText, X
-    JSR WriteByteToBuffer
+    WBB
     INX
     CPX counter+1
     BNE :-
-    JSR EndBufferWrite
+    EBW
 
     LDA #$22
     STA pointer
@@ -653,7 +653,7 @@
     STA counter
     STA counter+1
     :
-    BufferStart #9, pointer, pointer+1
+    SBW #9, pointer, pointer+1
         LDX counter
         CLC
         LDA counter
@@ -661,24 +661,24 @@
         STA counter
         :
         LDA healthText, X
-        JSR WriteByteToBuffer
+        WBB
         INX
         CPX counter
         BNE :-
-    JSR EndBufferWrite
+    EBW
     CLC
     LDA pointer+1
     ADC #14
     STA pointer+1
-    BufferStart #3, pointer, pointer+1
+    SBW #3, pointer, pointer+1
         SEC
         LDA #_5_
         SBC counter+1
-        JSR WriteByteToBuffer
+        WBB
         LDA #_0_
-        JSR WriteByteToBuffer
-        JSR WriteByteToBuffer
-    JSR EndBufferWrite
+        WBB
+        WBB
+    EBW
     CLC
     LDA pointer+1
     ADC #$20-14
@@ -693,15 +693,15 @@
     RTS
 
     Pg2:
-    BufferStart #5, #$22, #$24 ; "wagon"
+    SBW #5, #$22, #$24 ; "wagon"
         LDX #0
         :
         LDA topTenResourcesText, X
-        JSR WriteByteToBuffer
+        WBB
         INX
         CPX #5
         BNE :-
-    JSR EndBufferWrite
+    EBW
     LDX #23
     LDY #17
     LDA #_5_
@@ -711,146 +711,146 @@
     LDA #_0_
     JSR WriteTileToBuffer
 
-    BufferStart #2, #$22, #$44 ; "ox"
+    SBW #2, #$22, #$44 ; "ox"
         LDX #5
         :
         LDA topTenResourcesText, X
-        JSR WriteByteToBuffer
+        WBB
         INX
         CPX #7
         BNE :-
-    JSR EndBufferWrite
+    EBW
     LDX #24
     LDY #18
     LDA #_4_
     JSR WriteTileToBuffer
 
-    BufferStart #16, #$22, #$64 ; "spare wagon part"
+    SBW #16, #$22, #$64 ; "spare wagon part"
         LDX #7
         :
         LDA topTenResourcesText, X
-        JSR WriteByteToBuffer
+        WBB
         INX
         CPX #23
         BNE :-
-    JSR EndBufferWrite
+    EBW
     LDX #24
     LDY #19
     LDA #_2_
     JSR WriteTileToBuffer
 
-    BufferStart #15, #$22, #$84 ; "set of clothing"
+    SBW #15, #$22, #$84 ; "set of clothing"
         LDX #23
         :
         LDA topTenResourcesText, X
-        JSR WriteByteToBuffer
+        WBB
         INX
         CPX #38
         BNE :-
-    JSR EndBufferWrite
+    EBW
     LDX #24
     LDY #20
     LDA #_2_
     JSR WriteTileToBuffer
 
-    BufferStart #17, #$22, #$A4 ; "bullets (each 50)"
+    SBW #17, #$22, #$A4 ; "bullets (each 50)"
         LDX #38
         :
         LDA topTenResourcesText, X
-        JSR WriteByteToBuffer
+        WBB
         INX
         CPX #45
         BNE :-
         LDA #___
-        JSR WriteByteToBuffer
+        WBB
         LDA #_OP
-        JSR WriteByteToBuffer
+        WBB
         LDX #0
         :
         LDA topTenResourcesEachText, X
-        JSR WriteByteToBuffer
+        WBB
         INX
         CPX #4
         BNE :-
         LDA #___
-        JSR WriteByteToBuffer
+        WBB
         LDA #_5_
-        JSR WriteByteToBuffer
+        WBB
         LDA #_0_
-        JSR WriteByteToBuffer
+        WBB
         LDA #_CP
-        JSR WriteByteToBuffer
-    JSR EndBufferWrite
+        WBB
+    EBW
     LDX #24
     LDY #21
     LDA #_1_
     JSR WriteTileToBuffer
 
-    BufferStart #16, #$22, #$C4 ; "food (each 25 lb)"
+    SBW #16, #$22, #$C4 ; "food (each 25 lb)"
         LDX #45
         :
         LDA topTenResourcesText, X
-        JSR WriteByteToBuffer
+        WBB
         INX
         CPX #49
         BNE :-
         LDA #___
-        JSR WriteByteToBuffer
+        WBB
         LDA #_OP
-        JSR WriteByteToBuffer
+        WBB
         LDX #0
         :
         LDA topTenResourcesEachText, X
-        JSR WriteByteToBuffer
+        WBB
         INX
         CPX #4
         BNE :-
         LDA #___
-        JSR WriteByteToBuffer
+        WBB
         LDA #_2_
-        JSR WriteByteToBuffer
+        WBB
         LDA #_5_
-        JSR WriteByteToBuffer
+        WBB
         LDA #___
-        JSR WriteByteToBuffer
+        WBB
         LDA #_LB
-        JSR WriteByteToBuffer
+        WBB
         LDA #_CP
-        JSR WriteByteToBuffer
-    JSR EndBufferWrite
+        WBB
+    EBW
     LDX #24
     LDY #22
     LDA #_1_
     JSR WriteTileToBuffer
 
-    BufferStart #14, #$22, #$E4 ; "cash (each $5)"
+    SBW #14, #$22, #$E4 ; "cash (each $5)"
         LDX #49
         :
         LDA topTenResourcesText, X
-        JSR WriteByteToBuffer
+        WBB
         INX
         CPX #53
         BNE :-
         LDA #___
-        JSR WriteByteToBuffer
+        WBB
         LDA #_OP
-        JSR WriteByteToBuffer
+        WBB
         LDX #0
         :
         LDA topTenResourcesEachText, X
-        JSR WriteByteToBuffer
+        WBB
         INX
         CPX #4
         BNE :-
         LDA #___
-        JSR WriteByteToBuffer
+        WBB
         LDA #_DL
-        JSR WriteByteToBuffer
+        WBB
         LDA #_5_
-        JSR WriteByteToBuffer
+        WBB
         LDA #_CP
-        JSR WriteByteToBuffer
-    JSR EndBufferWrite
+        WBB
+    EBW
     LDX #24
     LDY #23
     LDA #_1_
@@ -1096,16 +1096,16 @@
 
     LDA whatIsYourChoiceText
     STA helper ; draw "You may:"
-    BufferStart whatIsYourChoiceText, #$21, #$44
+    SBW whatIsYourChoiceText, #$21, #$44
         INC helper
         LDX #1
         :
         LDA whatIsYourChoiceText, X
-        JSR WriteByteToBuffer
+        WBB
         INX
         CPX helper
         BNE :-
-    JSR EndBufferWrite
+    EBW
 
     LDA #$21 ; draw options
     STA helper
@@ -1121,21 +1121,21 @@
     LDX helper2+1
     TYA
     PHA
-    BufferStart helper2+1, helper, helper+1
+    SBW helper2+1, helper, helper+1
         LDX #0
         :
         TXA
         PHA
         LDX helper2
         LDA titleOptionsText, X
-        JSR WriteByteToBuffer
+        WBB
         PLA
         TAX
         INX
         INC helper2
         CPX helper2+1
         BNE :-
-    JSR EndBufferWrite
+    EBW
     CLC
     LDA helper+1
     ADC #$40
@@ -1151,33 +1151,33 @@
     DEY
     BNE Option
 
-    BufferStart #3, #$22, #$71 ; sound On or Off
+    SBW #3, #$22, #$71 ; sound On or Off
         LDA #_O_
-        JSR WriteByteToBuffer
+        WBB
         LDA gameSettings
         BPL :+
         LDA #_F_
-        JSR WriteByteToBuffer
+        WBB
         LDA #_F_
-        JSR WriteByteToBuffer
+        WBB
         JMP :++
         :
         LDA #_N_
-        JSR WriteByteToBuffer
+        WBB
         LDA #___
-        JSR WriteByteToBuffer
+        WBB
         :
-    JSR EndBufferWrite
+    EBW
 
     ; draw "What is your choice?"
-    BufferStart #20, #$22, #$C4
+    SBW #20, #$22, #$C4
         LDX #10
         :
         LDA whatIsYourChoiceText, X
-        JSR WriteByteToBuffer
+        WBB
         INX
         CPX #30
         BNE :-
-    JSR EndBufferWrite
+    EBW
     RTS
 .endproc

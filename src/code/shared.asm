@@ -34,27 +34,19 @@
     INX
     CPX #8*5
     BNE :-
-    LDX #dollarsDigit       ; reset digits
-    LDY #dollars
-    JSR SetDigitFromValue
-    LDX #foodLbsDigit
-    LDY #foodLbs
-    JSR SetDigitFromValue
-    LDX #clothingDigit
-    LDY #clothing
-    JSR SetDigitFromValue
-    LDX #bulletsDigit
-    LDY #bullets
-    JSR SetDigitFromValue
-    LDX #oxenDigit
-    LDY #oxenHeadcount
-    JSR SetDigitFromValue
-    LDX #nextDigit
-    LDY #nextMi
-    JSR SetDigitFromValue
-    LDX #traveledDigit
-    LDY #traveledMi
-    JSR SetDigitFromValue
+    SetDigit #dollarsDigit, #dollars
+    SetDigit #foodLbsDigit, #foodLbs
+    SetDigit #clothingDigit, #clothing
+    SetDigit #bulletsDigit, #bullets
+    SetDigit #oxenDigit, #oxenHeadcount
+    SetDigit #nextDigit, #nextMi
+    SetDigit #traveledDigit, #traveledMi
+    SetDigit #cartOxenDigit, #cartOxen
+    SetDigit #cartFoodLbsDigit, #cartFoodLbs
+    SetDigit #cartClothingDigit, #cartClothing
+    SetDigit #cartBulletsDigit, #cartBullets
+    SetDigit #cartSparePartsDigit, #cartBullets ; hack
+    SetDigit #cartDollarsDigit, #cartDollars
     LDA #%00000100      ; main fingers visible, pointing right
     STA fingerAttr
     LDA #0              ; initialize cursor
@@ -83,38 +75,38 @@
     RTS
 .endproc
 
-.proc InitStateStore
-    LDY #BANK_STORE
-    JSR bankswitch_y
-    LDA #%00000100      ; main finger visible, pointing right
-    STA fingerAttr
-    LDA #0              ; initialize cursor
-    STA fingerLastX     ; (5x,6y) tiles from top left, facing R
-    STA fingerLastY
-    LDA #MENU_NONE
-    STA menuOpen
-    LDA #2
-    STA fingerX
-    LDA #8
-    STA fingerY
-    LDA #_0_            ; default empty shopping cart
-    LDX #0
-    :
-    STA cartDollarsDigit, X
-    INX
-    CPX #20
-    BNE :-
-    LDA #0
-    LDX #0
-    :
-    STA cartDollars, X
-    INX
-    CPX #7
-    BNE :-
-    STA cartSpareParts
-    JSR LoadBgStore     ; Load background
-    RTS
-.endproc
+; .proc InitStateStore
+;     LDY #BANK_STORE
+;     JSR bankswitch_y
+;     LDA #%00000100      ; main finger visible, pointing right
+;     STA fingerAttr
+;     LDA #0              ; initialize cursor
+;     STA fingerLastX     ; (5x,6y) tiles from top left, facing R
+;     STA fingerLastY
+;     LDA #MENU_NONE
+;     STA menuOpen
+;     LDA #2
+;     STA fingerX
+;     LDA #8
+;     STA fingerY
+;     LDA #_0_            ; default empty shopping cart
+;     LDX #0
+;     :
+;     STA cartDollarsDigit, X
+;     INX
+;     CPX #20
+;     BNE :-
+;     LDA #0
+;     LDX #0
+;     :
+;     STA cartDollars, X
+;     INX
+;     CPX #7
+;     BNE :-
+;     STA cartSpareParts
+;     JSR LoadBgStore     ; Load background
+;     RTS
+; .endproc
 
 .proc InitStateLandmark
     LDY #BANK_LANDMARK
@@ -283,14 +275,14 @@
         TAX
         JSR SetPpuAddrPointerFromXY
         LDA #1
-        JSR WriteByteToBuffer
+        WBB
         LDA pointer
-        JSR WriteByteToBuffer
+        WBB
         LDA pointer+1
-        JSR WriteByteToBuffer
+        WBB
         PLA
-        JSR WriteByteToBuffer
-    JSR EndBufferWrite
+        WBB
+    EBW
     RTS
 .endproc
 
@@ -412,7 +404,7 @@
 .endproc
 
 .proc UpdatePalette
-    BufferStart #$20, #$3f, #$00
+    SBW #$20, #$3f, #$00
         LDX #0
         :
         LDA gameSettings
@@ -423,11 +415,11 @@
         :
         LDA paletteMono, X
         :
-        JSR WriteByteToBuffer
+        WBB
         INX
         CPX #$20
         BNE :---
-    JSR EndBufferWrite
+    EBW
     RTS
 .endproc
 
@@ -438,19 +430,19 @@
     DEY
     DEY
     JSR SetPpuAddrPointerFromXY
-    BufferStart #16, pointer, pointer+1
+    SBW #16, pointer, pointer+1
         LDA #_RD
-        JSR WriteByteToBuffer
+        WBB
         LDA #_HR
         LDX #0
         :
-        JSR WriteByteToBuffer
+        WBB
         INX
         CPX #14
         BNE :-
         LDA #_LD
-        JSR WriteByteToBuffer
-    JSR EndBufferWrite
+        WBB
+    EBW
     LDX #3                  ; vertical bars (left)
     LDY fingerY
     DEY
@@ -485,19 +477,19 @@
     INY
     INY
     JSR SetPpuAddrPointerFromXY
-    BufferStart #16, pointer, pointer+1
+    SBW #16, pointer, pointer+1
         LDA #_RU
-        JSR WriteByteToBuffer
+        WBB
         LDA #_HR
         LDX #0
         :
-        JSR WriteByteToBuffer
+        WBB
         INX
         CPX #14
         BNE :-
         LDA #_LU
-        JSR WriteByteToBuffer
-    JSR EndBufferWrite
+        WBB
+    EBW
     RTS
 .endproc
 
@@ -620,77 +612,77 @@
 .endproc
 
 .proc BufferDrawPressStart
-    BufferStart #$20, #$23, #$40
+    SBW #$20, #$23, #$40
         LDA #___
         LDX #0
         :
-        JSR WriteByteToBuffer
+        WBB
         INX
         CPX #$20
         BNE :-
-    JSR EndBufferWrite
-    BufferStart #$20, #$23, #$60
+    EBW
+    SBW #$20, #$23, #$60
         LDX #0
         :
         LDA pressStartText, X
-        JSR WriteByteToBuffer
+        WBB
         INX
         CPX #$20
         BNE :-
-    JSR EndBufferWrite
+    EBW
     RTS
 .endproc
 
 .proc BufferDrawTextBoxTopRow
-    BufferStart #28, pointer, pointer+1 ; top row
+    SBW #28, pointer, pointer+1 ; top row
         LDA #_RD
-        JSR WriteByteToBuffer
+        WBB
         LDA #_HR
         LDX #0
         :
-        JSR WriteByteToBuffer
+        WBB
         INX
         CPX #26
         BNE :-
         LDA #_LD
-        JSR WriteByteToBuffer
-    JSR EndBufferWrite
+        WBB
+    EBW
     RTS
 .endproc
 
 .proc BufferDrawTextBoxBottomRow
-    BufferStart #28, pointer, pointer+1 ; bottom row
+    SBW #28, pointer, pointer+1 ; bottom row
         LDA #_RU
-        JSR WriteByteToBuffer
+        WBB
         LDA #_HR
         LDX #0
         :
-        JSR WriteByteToBuffer
+        WBB
         INX
         CPX #26
         BNE :-
         LDA #_LU
-        JSR WriteByteToBuffer
-    JSR EndBufferWrite
+        WBB
+    EBW
     RTS
 .endproc
 
 .proc BufferDrawTextBoxMiddleRow
     TXA
     PHA
-    BufferStart #28, pointer, pointer+1
+    SBW #28, pointer, pointer+1
         LDA #_VR
-        JSR WriteByteToBuffer
+        WBB
         LDA #___
         LDX #0
         :
-        JSR WriteByteToBuffer
+        WBB
         INX
         CPX #26
         BNE :-
         LDA #_VR
-        JSR WriteByteToBuffer
-    JSR EndBufferWrite
+        WBB
+    EBW
     PLA
     TAX
     RTS
@@ -738,41 +730,41 @@
     SBC #0
     STA pointer
 
-    BufferStart #TEXT_POPUP_LINE_LEN, pointer, pointer+1 ; popup text line 1
+    SBW #TEXT_POPUP_LINE_LEN, pointer, pointer+1 ; popup text line 1
         LDX #0
         :
         LDA popupTextLine1, X
-        JSR WriteByteToBuffer
+        WBB
         INX
         CPX #TEXT_POPUP_LINE_LEN
         BNE :-
-    JSR EndBufferWrite
+    EBW
     JSR PointerToNextLine
 
-    BufferStart #TEXT_POPUP_LINE_LEN, pointer, pointer+1 ; popup text line 2
+    SBW #TEXT_POPUP_LINE_LEN, pointer, pointer+1 ; popup text line 2
         LDX #0
         :
         LDA popupTextLine2, X
-        JSR WriteByteToBuffer
+        WBB
         INX
         CPX #TEXT_POPUP_LINE_LEN
         BNE :-
-    JSR EndBufferWrite
+    EBW
 
     RTS
 .endproc
 
 .proc BufferDrawTextPopup
 
-    BufferStart #16, #$23, #$D0 ; attributes
+    SBW #16, #$23, #$D0 ; attributes
         LDX #0
         :
         LDA attrPopupText, X
-        JSR WriteByteToBuffer
+        WBB
         INX
         CPX #16
         BNE :-
-    JSR EndBufferWrite
+    EBW
     
     LDA #$22 ; erase "Press A to size up the situation"
     STA pointer
@@ -782,29 +774,29 @@
     :
     TXA
     PHA
-    BufferStart #$20, pointer, pointer+1
+    SBW #$20, pointer, pointer+1
         LDA #TILE_GRASS
         LDX #0
         :
-        JSR WriteByteToBuffer
+        WBB
         INX
         CPX #$20
         BNE :-
-    JSR EndBufferWrite
+    EBW
     JSR PointerToNextLine
     PLA
     TAX
     DEX
     BNE :--
-    BufferStart #8, #$23, #$E0 ; grass color
+    SBW #8, #$23, #$E0 ; grass color
         LDA #$5A
         LDX #0
         :
-        JSR WriteByteToBuffer
+        WBB
         INX
         CPX #8
         BNE :-
-    JSR EndBufferWrite
+    EBW
 
     JSR BufferDrawTextBox
 
@@ -816,15 +808,15 @@
 .proc BufferDrawDateText
     ; @param pointer: nametable location
     JSR BufferClearTravelingHUDValue
-    BufferStart #TEXT_DATE_LEN, pointer, pointer+1
+    SBW #TEXT_DATE_LEN, pointer, pointer+1
         LDX #0
         :
         LDA dateText, X
-        JSR WriteByteToBuffer
+        WBB
         INX
         CPX #TEXT_DATE_LEN
         BNE :-
-    JSR EndBufferWrite
+    EBW
     :                   ; vblankwait for aesthetic reasons
     BIT PPUSTATUS
     BPL :-
@@ -834,7 +826,7 @@
 .proc BufferDrawWeatherText
     ; @param pointer: nametable location
     JSR BufferClearTravelingHUDValue
-    BufferStart #TEXT_WEATHER_LEN, pointer, pointer+1
+    SBW #TEXT_WEATHER_LEN, pointer, pointer+1
         LDX #0 ; weather text (temperature)
         STX helper
         LDY #0
@@ -854,13 +846,13 @@
         JMP :--
         :
         LDA weatherText, X
-        JSR WriteByteToBuffer
+        WBB
         INX
         INC helper
         LDA helper
         CMP #TEXT_WEATHER_LEN
         BNE :-
-    JSR EndBufferWrite
+    EBW
     :                   ; vblankwait for aesthetic reasons
     BIT PPUSTATUS
     BPL :-
@@ -870,7 +862,7 @@
 .proc BufferDrawHealthText
     ; @param pointer: nametable location
     JSR BufferClearTravelingHUDValue
-    BufferStart #TEXT_HEALTH_LEN, pointer, pointer+1
+    SBW #TEXT_HEALTH_LEN, pointer, pointer+1
         LDA wagonHealth
         CMP #35
         BCS :+
@@ -893,13 +885,13 @@
         STY helper
         :
         LDA healthText, X
-        JSR WriteByteToBuffer
+        WBB
         INX
         INC helper
         LDA helper
         CMP #TEXT_HEALTH_LEN
         BNE :-
-    JSR EndBufferWrite
+    EBW
     :                   ; vblankwait for aesthetic reasons
     BIT PPUSTATUS
     BPL :-
@@ -1149,19 +1141,19 @@
     LDX counter
     JSR StartBufferWrite
         LDA counter
-        JSR WriteByteToBuffer
+        WBB
         LDA bufferHelper
-        JSR WriteByteToBuffer
+        WBB
         LDA bufferHelper+1
-        JSR WriteByteToBuffer
+        WBB
         LDX #0
         :
         LDA popupTextLine1, X
-        JSR WriteByteToBuffer
+        WBB
         INX
         CPX counter
         BNE :-
-    JSR EndBufferWrite
+    EBW
     PLA
     TAX
     RTS
@@ -1217,19 +1209,19 @@
     LDX #TEXT_POPUP_LINE_LEN ; write line to screen
     JSR StartBufferWrite
         LDA #TEXT_POPUP_LINE_LEN
-        JSR WriteByteToBuffer
+        WBB
         LDA bufferHelper
-        JSR WriteByteToBuffer
+        WBB
         LDA bufferHelper+1
-        JSR WriteByteToBuffer
+        WBB
         LDX #0
         :
         LDA popupTextLine1, X
-        JSR WriteByteToBuffer
+        WBB
         INX
         CPX #TEXT_POPUP_LINE_LEN
         BNE :-
-    JSR EndBufferWrite
+    EBW
     PLA ; unstash Y
     TAY
     CLC ; write a "carriage return" to screen
@@ -1283,14 +1275,14 @@
 .proc HighlightKeyboardKey
     LDA #60
     STA frameCounter
-    BufferStart #$10, #$23, #$e8
+    SBW #$10, #$23, #$e8
         LDX #$10
         LDA #$ff
         :
-        JSR WriteByteToBuffer
+        WBB
         DEX
         BNE :-
-    JSR EndBufferWrite
+    EBW
 
     LDA #$23
     STA pointer
@@ -1353,10 +1345,10 @@
     ; 21  fb fe fb fe fb fe fb fe fb fe
     ; 23  bf ef bf ef bf ef bf ef bf ef
     ; 25  fb fe fb fe fb fe fb    fb+fe
-    BufferStart #1, pointer, pointer+1
+    SBW #1, pointer, pointer+1
         LDA helper
-        JSR WriteByteToBuffer
-    JSR EndBufferWrite
+        WBB
+    EBW
 
     RTS
 .endproc
@@ -1370,14 +1362,14 @@
     :
     TYA
     PHA
-    BufferStart bufferHelper+2, bufferHelper, bufferHelper+1
+    SBW bufferHelper+2, bufferHelper, bufferHelper+1
     LDX bufferHelper+2
     LDA #0
     :
-    JSR WriteByteToBuffer
+    WBB
     DEX
     BNE :-
-    JSR EndBufferWrite
+    EBW
     CLC
     LDA bufferHelper+1
     ADC #$20
@@ -1389,6 +1381,38 @@
     TAY
     DEY
     BNE :--
+    RTS
+.endproc
+
+.proc BufferDrawDollarAmount
+    ; @param A: cartDigit zero page address
+    ; @param bufferHelper destination tilemap address to write text
+    STA pointer
+    LDA #0
+    STA pointer+1
+    LDA #_DL
+    STA cartHelperDigit
+    LDY #0
+    LDX #1
+    :
+    LDA (pointer), Y
+    STA cartHelperDigit, X
+    INX
+    INY
+    CPY #4
+    BNE :-
+    LDA #_00
+    STA cartHelperDigit+5
+
+    SBW #6, bufferHelper, bufferHelper+1
+        LDX #0
+        :
+        LDA cartHelperDigit, X
+        WBB
+        INX
+        CPX #6
+        BNE :-
+    EBW
     RTS
 .endproc
 
@@ -2707,11 +2731,11 @@
     BNE :+ 
     JSR InitStateNewGame
     RTS
-    :
-    CMP #GAMESTATE_STORE
-    BNE :+ 
-    JSR InitStateStore
-    RTS
+    ; :
+    ; CMP #GAMESTATE_STORE
+    ; BNE :+ 
+    ; JSR InitStateStore
+    ; RTS
     :
     CMP #GAMESTATE_LANDMARK
     BNE :+ 
@@ -2801,36 +2825,33 @@
     CMP #GAMESTATE_TRAVELING
     BNE :+
     JSR GamepadTraveling
-    JMP Done
+    RTS
     :
     CMP #GAMESTATE_TITLE
     BNE :+
     JSR GamepadTitle
-    JMP Done
+    RTS
     :
     CMP #GAMESTATE_NEWGAME
     BNE :+
     JSR GamepadNewGame
-    JMP Done
+    RTS
     :
     CMP #GAMESTATE_STORE
     BNE :+
-    JSR GamepadStore
-    JMP Done
+    ; JSR GamepadStore
+    RTS
     :
     CMP #GAMESTATE_LANDMARK
     BNE :+
     JSR GamepadLandmark
-    JMP Done
+    RTS
     :
     CMP #GAMESTATE_MAP
     BNE :+
     JSR GamepadMap
-    JMP Done
+    RTS
     :
-    Done:
-    LDA buttons1
-    STA buttons1Last    ; Remember last controller inputs
     RTS
 .endproc
 
@@ -2842,206 +2863,206 @@
     ; A-register should contain menuOpen.
     CMP #MENU_NONE      ; which menu was just opened?
     BNE :+
-    JMP None
+        JMP None
     :
     CMP #MENU_TITLE_LEARN
     BNE :+
-    LDA #0
-    STA menuCursor ; use menuCursor to denote page number (0-6)
-    JSR BufferDrawTitleLearn
-    RTS
+        LDA #0
+        STA menuCursor ; use menuCursor to denote page number (0-6)
+        JSR BufferDrawTitleLearn
+        RTS
     :
     CMP #MENU_TITLE_TOPTEN
     BNE :+
-    LDA #%00010101 ; "<>" finger visible
-    STA fingerAttr
-    LDA #26
-    STA fingerX
-    LDA #22
-    STA fingerY
-    LDA #0 ; Y/N (default N)
-    STA menuCursor
-    STA fingerLastY
-    JSR ClearScreen
-    JSR BufferDrawTopTen
-    LDX fingerX
-    LDY fingerY
-    LDA #_N_
-    JSR WriteTileToBuffer
-    RTS
+        LDA #%00010101 ; "<>" finger visible
+        STA fingerAttr
+        LDA #26
+        STA fingerX
+        LDA #22
+        STA fingerY
+        LDA #0 ; Y/N (default N)
+        STA menuCursor
+        STA fingerLastY
+        JSR ClearScreen
+        JSR BufferDrawTopTen
+        LDX fingerX
+        LDY fingerY
+        LDA #_N_
+        JSR WriteTileToBuffer
+        RTS
     :
     CMP #MENU_TITLE_SOUND
     BNE :+
-    JSR BufferDrawTitleSound
-    RTS
+        JSR BufferDrawTitleSound
+        RTS
     :
     CMP #MENU_NEWGAME_OCCUPATION
     BNE :+
-    LDA #%00000100      ; only main finger visible, pointing right
-    STA fingerAttr
-    LDA #4
-    STA fingerX
-    LDA #10
-    STA fingerY
-    JSR LoadBgNewGame
-    ; JSR RedrawFinger
-    ; JSR DrawOccupationMenu
-    ; LDX #15
-    ; LDY #7
-    ; JSR MoveFingerToSubmenu
-    RTS
+        LDA #%00000100      ; only main finger visible, pointing right
+        STA fingerAttr
+        LDA #4
+        STA fingerX
+        LDA #10
+        STA fingerY
+        JSR LoadBgNewGame
+        ; JSR RedrawFinger
+        ; JSR DrawOccupationMenu
+        ; LDX #15
+        ; LDY #7
+        ; JSR MoveFingerToSubmenu
+        RTS
     :
     CMP #MENU_NEWGAME_OCC_HELP
     BNE :+
-    JSR LoadBgNewGame
-    RTS
+        JSR LoadBgNewGame
+        RTS
     :
     CMP #MENU_NEWGAME_NAMEPARTY
     BNE :+
-    LDA #%00100000      ; keyboard key
-    STA fingerAttr
-    LDA #6
-    STA fingerX
-    LDA #21
-    STA fingerY
-    JSR LoadBgNewGame
-    LDA #30
-    STA frameCounter
-    JSR HighlightKeyboardKey
-    RTS
+        LDA #%00100000      ; keyboard key
+        STA fingerAttr
+        LDA #6
+        STA fingerX
+        LDA #21
+        STA fingerY
+        JSR LoadBgNewGame
+        LDA #30
+        STA frameCounter
+        JSR HighlightKeyboardKey
+        RTS
     :
     CMP #MENU_NEWGAME_STARTDATE
     BNE :+
-    LDA #%00000100      ; only main finger visible, pointing right
-    STA fingerAttr
-    LDA #0
-    STA fingerLastLastX
-    STA fingerLastLastY
-    STA fingerLastX
-    STA fingerLastY
-    LDA #4
-    STA fingerX
-    LDA #14
-    STA fingerY
-    JSR LoadBgNewGame
-    RTS
+        LDA #%00000100      ; only main finger visible, pointing right
+        STA fingerAttr
+        LDA #0
+        STA fingerLastLastX
+        STA fingerLastLastY
+        STA fingerLastX
+        STA fingerLastY
+        LDA #4
+        STA fingerX
+        LDA #14
+        STA fingerY
+        JSR LoadBgNewGame
+        RTS
     :
     CMP #MENU_STORE_ITEM1
     BNE :+
-    LDA #7
-    PHA
-    JMP StoreSubmenu
+        LDA #7
+        PHA
+        JMP StoreSubmenu
     :
     CMP #MENU_STORE_ITEM2
     BNE :+
-    LDA #7
-    PHA
-    JMP StoreSubmenu
+        LDA #7
+        PHA
+        JMP StoreSubmenu
     :
     CMP #MENU_STORE_ITEM4
     BNE :+
-    LDA #6
-    PHA
-    JMP StoreSubmenu
+        LDA #6
+        PHA
+        JMP StoreSubmenu
     :
     CMP #MENU_MAINMENU
     BNE :+
-    LDA #%00000100      ; only finger visible, pointing right
-    STA fingerAttr
-    JSR UpdatePalette ; <- TODO refactor 
-    JSR LoadBgTraveling
-    JSR RedrawFinger
-    RTS
+        LDA #%00000100      ; only finger visible, pointing right
+        STA fingerAttr
+        JSR UpdatePalette ; <- TODO refactor 
+        JSR LoadBgTraveling
+        JSR RedrawFinger
+        RTS
     :
     CMP #MENU_SUPPLIES
     BNE :+
-    JSR LoadBgSupplies
-    RTS
+        JSR LoadBgSupplies
+        RTS
     :
     CMP #MENU_PACE
     BNE :+
-    LDA #%00010100      ; only finger visible, up/down arrow
-    STA fingerAttr
-    LDX #12
-    LDY #17
-    JSR MoveFingerToSubmenu
-    JSR DrawPaceSubmenu
-    JSR RedrawFinger
-    RTS
+        LDA #%00010100      ; only finger visible, up/down arrow
+        STA fingerAttr
+        LDX #12
+        LDY #17
+        JSR MoveFingerToSubmenu
+        JSR DrawPaceSubmenu
+        JSR RedrawFinger
+        RTS
     :
     CMP #MENU_RATIONS
     BNE :+
-    LDA #%00010100      ; only finger visible, up/down arrow
-    STA fingerAttr
-    LDX #15
-    LDY #19
-    JSR MoveFingerToSubmenu
-    JSR DrawRationsSubmenu
-    JSR RedrawFinger
-    RTS
+        LDA #%00010100      ; only finger visible, up/down arrow
+        STA fingerAttr
+        LDX #15
+        LDY #19
+        JSR MoveFingerToSubmenu
+        JSR DrawRationsSubmenu
+        JSR RedrawFinger
+        RTS
     :
     CMP #MENU_REST
     BNE :+
-    LDA #1
-    STA wagonRest
-    LDA #%00010100      ; only finger visible, up/down arrow
-    STA fingerAttr
-    LDX #15
-    LDY #21
-    JSR MoveFingerToSubmenu
-    JSR DrawRestSubmenu
-    JSR RedrawFinger
-    RTS
+        LDA #1
+        STA wagonRest
+        LDA #%00010100      ; only finger visible, up/down arrow
+        STA fingerAttr
+        LDX #15
+        LDY #21
+        JSR MoveFingerToSubmenu
+        JSR DrawRestSubmenu
+        JSR RedrawFinger
+        RTS
     :
     CMP #MENU_TALK
     BNE :+
-    JSR LoadBgTalk
-    RTS
+        JSR LoadBgTalk
+        RTS
     :
     CMP #MENU_TEXTPOPUP
     BNE :+
-    JSR BufferDrawTextPopup
-    RTS
+        JSR BufferDrawTextPopup
+        RTS
     :
     CMP #MENU_TEXTPOPUP_YN
     BNE :+
-    JSR BufferDrawTextPopup
-    RTS
+        JSR BufferDrawTextPopup
+        RTS
     :
     CMP #MENU_MAP
     BNE :+
-    JSR MoveFingerToSubmenu
-    JSR RedrawFinger
-    JSR LoadBgMap
-    RTS
+        JSR MoveFingerToSubmenu
+        JSR RedrawFinger
+        JSR LoadBgMap
+        RTS
     :
     CMP #MENU_NEWGAME_DATE_HELP
     BNE :+
-    JSR LoadBgNewGame
-    RTS
+        JSR LoadBgNewGame
+        RTS
     :
     CMP #MENU_NEWGAME_GOINGBACK
     BNE :+
-    LDA #0
-    STA frameCounter
-    STA menuCursor
-    JSR LoadBgIndependence
-    RTS
+        LDA #0
+        STA frameCounter
+        STA menuCursor
+        JSR LoadBgIndependence
+        RTS
     :
     CMP #MENU_NEWGAME_BEFORELEAVING1
     BNE :+
-    JSR LoadBgIndependence
-    RTS
+        JSR LoadBgIndependence
+        RTS
     :
     CMP #MENU_NEWGAME_BEFORELEAVING2
     BNE :+
-    JSR LoadBgIndependence
-    RTS
+        JSR LoadBgIndependence
+        RTS
     :
     CMP #MENU_NEWGAME_MATT
     BNE :+
-    JSR LoadBgMatt
-    RTS
+        JSR LoadBgMatt
+        RTS
     :
     RTS
     None:
@@ -3060,14 +3081,14 @@
         ; STA fingerAttr
         ; JSR LoadBgNewGame
         ; RTS
-        :
-        CMP #GAMESTATE_STORE
-        BNE :+
-        LDA #%00001100      ; both fingers visible, normal, pointing right
-        STA fingerAttr
-        JSR RedrawFinger
-        JSR LoadBgStore
-        RTS
+        ; :
+        ; CMP #GAMESTATE_STORE
+        ; BNE :+
+        ; LDA #%00001100      ; both fingers visible, normal, pointing right
+        ; STA fingerAttr
+        ; JSR RedrawFinger
+        ; JSR LoadBgStore
+        ; RTS
         :
         CMP #GAMESTATE_LANDMARK
         BNE :+
@@ -3183,21 +3204,21 @@
         :
         RTS
         @sec1: 
-            ; BufferStart #2, #$3f, #$06
+            ; SBW #2, #$3f, #$06
             ; LDA #C_GREY
-            ; JSR WriteByteToBuffer
+            ; WBB
             ; LDA #C_WHITE
-            ; JSR WriteByteToBuffer
-            ; JSR EndBufferWrite
+            ; WBB
+            ; EBW
             ; INC frameCounter
             RTS
         @sec2:
-            ; BufferStart #2, #$3f, #$06
+            ; SBW #2, #$3f, #$06
             ; LDA #C_WHITE
-            ; JSR WriteByteToBuffer
+            ; WBB
             ; LDA #C_GREY
-            ; JSR WriteByteToBuffer
-            ; JSR EndBufferWrite
+            ; WBB
+            ; EBW
             ; LDA #0
             ; STA frameCounter
             RTS

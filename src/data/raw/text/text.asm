@@ -235,24 +235,24 @@ riverAttribute:
         ; Widths (ft): 
         ; Depths (ft): 
 
-generalStoreText:
-    .byte _G_,_E_,_N_,_E_,_R_,_A_,_L_,___,_S_,_T_,_O_,_R_,_E_
-storeColumnHeaderText:
-    .byte _B_,_U_,_Y_,___
-    .byte _I_,_T_,_E_,_M_
-    .byte _E_,_A_,_C_,_H_
-    .byte _C_,_O_,_S_,_T_
+; generalStoreText:
+;     .byte _G_,_E_,_N_,_E_,_R_,_A_,_L_,___,_S_,_T_,_O_,_R_,_E_
+; storeColumnHeaderText:
+;     .byte _B_,_U_,_Y_,___
+;     .byte _I_,_T_,_E_,_M_
+;     .byte _E_,_A_,_C_,_H_
+;     .byte _C_,_O_,_S_,_T_
 storeTotalText:
     .byte _T_,_O_,_T_,_A_,_L_,___,_B_,_I_,_L_,_L_,_CL
     .byte _Y_,_O_,_U_,___,_H_,_A_,_V_,_E_,_CL
-storeNameText:
-    .byte ___,___,___,___,___,___,_M_,_A_,_T_,_T_,_AP,_S_
-    .byte _F_,_O_,_R_,_T_,___,_K_,_E_,_A_,_R_,_N_,_E_,_Y_
-    .byte _F_,_O_,_R_,_T_,___,_L_,_A_,_R_,_A_,_M_,_I_,_E_
-    .byte _F_,_O_,_R_,_T_,___,_B_,_R_,_I_,_D_,_G_,_E_,_R_
-    .byte _F_,_O_,_R_,_T_,___,_H_,_A_,_L_,_L_,___,___,___
-    .byte _F_,_O_,_R_,_T_,___,_B_,_O_,_I_,_S_,_E_,___,___
-    .byte _W_,_A_,_L_,_L_,_A_,___,_W_,_A_,_L_,_L_,_A_,___
+; storeNameText:
+;     .byte ___,___,___,___,___,___,_M_,_A_,_T_,_T_,_AP,_S_
+;     .byte _F_,_O_,_R_,_T_,___,_K_,_E_,_A_,_R_,_N_,_E_,_Y_
+;     .byte _F_,_O_,_R_,_T_,___,_L_,_A_,_R_,_A_,_M_,_I_,_E_
+;     .byte _F_,_O_,_R_,_T_,___,_B_,_R_,_I_,_D_,_G_,_E_,_R_
+;     .byte _F_,_O_,_R_,_T_,___,_H_,_A_,_L_,_L_,___,___,___
+;     .byte _F_,_O_,_R_,_T_,___,_B_,_O_,_I_,_S_,_E_,___,___
+;     .byte _W_,_A_,_L_,_L_,_A_,___,_W_,_A_,_L_,_L_,_A_,___
 
 ; independencePrices:
 ;     $20.00   ; Oxen
