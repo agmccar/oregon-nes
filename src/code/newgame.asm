@@ -26,9 +26,9 @@
     :
     RTS
     Occupation:
-        JSR StartBulkDrawing
+        SBD
         JSR DrawAdornments
-        JSR DoneBulkDrawing
+        EBD
         LDX #0 ; newgameSelectOccupationText
         LDA #$20
         STA bufferHelper
@@ -67,9 +67,9 @@
         BNE :---
         RTS
     OccupationHelp:
-        JSR StartBulkDrawing
+        SBD
         JSR DrawAdornments
-        JSR DoneBulkDrawing
+        EBD
         LDX #10 ; newgameOccupationHelpText1
         LDA #$20
         STA bufferHelper
@@ -95,11 +95,11 @@
         JSR BufferDrawPressStart
         RTS
     NameParty:
-        JSR StartBulkDrawing
+        SBD
         LoadCHR #<namepartyTilesMeta, #>namepartyTilesMeta
         LoadImage #<namepartyImageMeta, #>namepartyImageMeta
         JSR DrawMenuKeyboard
-        JSR DoneBulkDrawing
+        EBD
         SBW #29, #$22, #$02
             LDX #0
             :
@@ -130,10 +130,10 @@
         EBW
         RTS
     StartDate:
-        JSR StartBulkDrawing
+        SBD
         JSR DrawAdornments
         JSR LoadTextCHR
-        JSR DoneBulkDrawing
+        EBD
 
         LDA newgamePointer+16 ; "It is 1848. Your jumping off place ..."
         STA pointer
@@ -195,9 +195,9 @@
 
         RTS
     DateHelp:
-        JSR StartBulkDrawing
+        SBD
         JSR DrawAdornments
-        JSR DoneBulkDrawing
+        EBD
 
         LDA newgamePointer+18 ; SelectMonthAdvice1 
         STA pointer
@@ -359,41 +359,7 @@
         :
         LDA menuOpen
         CMP #MENU_NEWGAME_NAMEPARTY
-        BNE :+
-            JMP @menuNameParty
-        :
-        LDA menuOpen
-        CMP #MENU_NEWGAME_NAMESCORRECT
-        BNE :++
-            LDA menuCursor
-            BEQ :+
-            JSR IncrementDate
-            JSR SetOpeningBalance
-            LDA #MENU_NEWGAME_GOINGBACK
-            STA menuOpen
-            RTS
-            :
-            ; TODO "N"
-            RTS
-        :
-        LDA menuOpen
-        CMP #MENU_NEWGAME_MATT
-        BNE :++
-            LDA menuCursor
-            CMP #2 ; matt's wares menu
-            BNE :+
-                CLC
-                LDA fingerY
-                STA menuCursor
-                LDA #0
-                STA fingerAttr ; todo
-                JSR LoadBgMatt
-                RTS
-            :
-            RTS
-        :
-        RTS
-        @menuNameParty:
+        BNE :++++
             LDA keyboardKey ; Done?
             CMP #KEYBOARD_DONE
             BNE :+
@@ -435,6 +401,22 @@
             JSR WriteTileToBuffer
             JSR HighlightKeyboardKey
             RTS
+        :
+        LDA menuOpen
+        CMP #MENU_NEWGAME_NAMESCORRECT
+        BNE :++
+            LDA menuCursor
+            BEQ :+
+            JSR IncrementDate
+            JSR SetOpeningBalance
+            LDA #MENU_NEWGAME_GOINGBACK
+            STA menuOpen
+            RTS
+            :
+            ; TODO "N"
+            RTS
+        :
+        RTS
     CheckB:
         LDA #KEY_B
         BIT buttons1
@@ -443,23 +425,7 @@
         :
         LDA menuOpen
         CMP #MENU_NEWGAME_NAMEPARTY
-        BNE :+
-        JMP @menuNameParty
-        :
-        LDA menuOpen
-        CMP #MENU_NEWGAME_MATT
-        BNE :++
-            LDA menuCursor
-            CMP #3 ; "press start to leave"
-            BNE :+
-                LDA #9 ; jump back to matt's wares menu
-                STA fingerX
-                LDA #10
-                STA fingerY
-                DEC menuCursor
-        :
-        RTS
-        @menuNameParty:
+        BNE :+++++
             DEC nameCursor
             JSR NameKeyHelper
             LDA nameCursor
@@ -490,6 +456,8 @@
             INC nameCursor
             :
             RTS
+        :
+        RTS
     CheckStart:
         LDA #KEY_START
         BIT buttons1
@@ -534,7 +502,7 @@
             STA menuOpen
             RTS
             :
-            ; LDA #MENU_NEWGAME_CHANGENAME ; "N" selected
+            ; LDA #MENU_NEWGAME_CHANGENAME ; todo "N" selected
             ; STA menuOpen
                 ; LDA #$23 ; clear text line
                 ; STA bufferHelper
@@ -587,52 +555,8 @@
         :
         CMP #MENU_NEWGAME_BEFORELEAVING2
         BNE :+
-            LDA #MENU_NEWGAME_MATT
-            STA menuOpen
-            LDA #0
-            STA menuCursor
-            RTS
-        :
-        CMP #MENU_NEWGAME_MATT
-        BNE :+++++
-            INC menuCursor
-            LDA menuCursor
-            CMP #1
-            BNE :+
-                JSR LoadBgMatt
-                RTS
-            :
-            LDA menuCursor
-            CMP #2 ; matt page 2
-            BNE :+
-                LDA #%00000100      ; only main finger visible, pointing right
-                STA fingerAttr
-                LDA #0
-                STA fingerLastLastX
-                STA fingerLastLastY
-                STA fingerLastX
-                STA fingerLastY
-                LDA #9
-                STA fingerX
-                LDA #10
-                STA fingerY
-                JSR LoadBgMatt
-                RTS
-            :
-            LDA menuCursor
-            CMP #3 ; matt general store
-            BNE :+
-                LDA #6 ; jump to "Press start to leave"
-                STA fingerX
-                LDA #26
-                STA fingerY
-                RTS
-            :
-            LDA menuCursor
-            CMP #4 ; pressed start to leave
-            BNE :+
-
-            :
+            LDA #GAMESTATE_MATT
+            STA gameState
             RTS
         :
         RTS
@@ -673,11 +597,7 @@
         :
         LDA menuOpen
         CMP #MENU_NEWGAME_OCCUPATION
-        BNE :+
-        JMP @menuOccupation
-        :
-        RTS
-        @menuOccupation:
+        BNE :++
             LDX fingerY
             INX
             INX
@@ -688,6 +608,8 @@
             :
             STX fingerY
             RTS
+        :
+        RTS
     CheckDown:
         LDA #KEY_DOWN
         BIT buttons1
@@ -710,35 +632,6 @@
         :
         CMP #MENU_NEWGAME_NAMEPARTY
         BNE :+
-        JMP @menuNameParty
-        :
-        CMP #MENU_NEWGAME_STARTDATE
-        BNE :++
-            LDX fingerY
-            INX
-            CPX #20
-            BNE :+
-            LDX #14 ; wrap to top
-            :
-            STX fingerY
-            RTS
-        :
-        CMP #MENU_NEWGAME_MATT
-        BNE :++
-            LDA menuCursor
-            CMP #2 ; matt's wares menu
-            BNE :++
-            LDX fingerY
-            INX
-            CPX #15
-            BNE :+
-            LDX #10 ; wrap to top
-            :
-            STX fingerY
-            RTS
-        :
-        RTS
-        @menuNameParty:
             LDX fingerY
             INX
             INX
@@ -770,6 +663,19 @@
             STA keyboardKey
             JSR HighlightKeyboardKey
             RTS
+        :
+        CMP #MENU_NEWGAME_STARTDATE
+        BNE :++
+            LDX fingerY
+            INX
+            CPX #20
+            BNE :+
+            LDX #14 ; wrap to top
+            :
+            STX fingerY
+            RTS
+        :
+        RTS
     CheckUp:
         LDA #KEY_UP
         BIT buttons1
@@ -792,35 +698,6 @@
         :
         CMP #MENU_NEWGAME_NAMEPARTY
         BNE :+
-        JMP @menuNameParty
-        :
-        CMP #MENU_NEWGAME_STARTDATE
-        BNE :++
-            LDX fingerY
-            DEX
-            CPX #13
-            BNE :+
-            LDX #19 ; wrap to bottom
-            :
-            STX fingerY
-            RTS
-        :
-        CMP #MENU_NEWGAME_MATT
-        BNE :++
-            LDA menuCursor
-            CMP #2 ; matt's wares menu
-            BNE :++
-            LDX fingerY
-            DEX
-            CPX #9
-            BNE :+
-            LDX #14 ; wrap to bottom
-            :
-            STX fingerY
-            RTS
-        :
-        RTS
-        @menuNameParty:
             LDX fingerY
             DEX
             DEX
@@ -851,6 +728,19 @@
             STA keyboardKey
             JSR HighlightKeyboardKey
             RTS
+        :
+        CMP #MENU_NEWGAME_STARTDATE
+        BNE :++
+            LDX fingerY
+            DEX
+            CPX #13
+            BNE :+
+            LDX #19 ; wrap to bottom
+            :
+            STX fingerY
+            RTS
+        :
+        RTS
     CheckLeft:
         LDA #KEY_LEFT
         BIT buttons1
@@ -859,16 +749,7 @@
         :
         LDA menuOpen
         CMP #MENU_NEWGAME_NAMEPARTY
-        BNE :+
-        JMP @menuNameParty
-        :
-        LDA menuOpen
-        CMP #MENU_NEWGAME_NAMESCORRECT
-        BNE :+
-        JMP @menuNamesCorrect
-        :
-        RTS
-        @menuNameParty:
+        BNE :++
             LDX fingerX
             DEX
             DEX
@@ -894,9 +775,14 @@
             STA keyboardKey
             JSR HighlightKeyboardKey
             RTS
-        @menuNamesCorrect:
+        :
+        LDA menuOpen
+        CMP #MENU_NEWGAME_NAMESCORRECT
+        BNE :+
             JSR ToggleYN
             RTS
+        :
+        RTS
     CheckRight:
         LDA #KEY_RIGHT
         BIT buttons1
@@ -906,15 +792,6 @@
         LDA menuOpen
         CMP #MENU_NEWGAME_NAMEPARTY
         BNE :+
-        JMP @menuNameParty
-        :
-        LDA menuOpen
-        CMP #MENU_NEWGAME_NAMESCORRECT
-        BNE :+
-        JMP @menuNamesCorrect
-        :
-        RTS
-        @menuNameParty:
             LDX fingerX
             INX
             INX
@@ -942,9 +819,14 @@
             STA keyboardKey
             JSR HighlightKeyboardKey
             RTS
-        @menuNamesCorrect:
+        :
+        LDA menuOpen
+        CMP #MENU_NEWGAME_NAMESCORRECT
+        BNE :+
             JSR ToggleYN
             RTS
+        :
+        RTS
 .endproc
 
 .proc NameKeyHelper
@@ -1030,10 +912,7 @@
     BEQ :+
     JMP BeforeLeaving1
     :
-    LDX #$22 ; text box
-    LDY #$02
-    LDA #2
-    JSR DrawTextBox
+    BDrawTextBox #$22, #$02, #28, #2
     LDA newgamePointer+14 ; newgameGoingBackText 
     STA pointer
     LDA newgamePointer+15 ; "Going back to 1848..."
@@ -1089,10 +968,7 @@
         DEX
         BNE :--
     EBW
-    LDX #$21 ; text box
-    LDY #$82
-    LDA #9
-    JSR DrawTextBox
+    BDrawTextBox #$21, #$82, #28, #9
     LDA newgamePointer+22 ; newgameBeforeLeavingText1
     STA pointer
     LDA newgamePointer+23 ; "Before leaving Independence..."
@@ -1153,10 +1029,7 @@
         DEX
         BNE :-
     EBW
-    LDX #$22 ; text box
-    LDY #$02
-    LDA #5
-    JSR DrawTextBox
+    BDrawTextBox #$22, #$02, #28, #5
     LDA newgamePointer+24 ; newgameBeforeLeavingText2
     STA pointer
     LDA newgamePointer+25 ; "You can buy whatever you need..."
@@ -1170,377 +1043,10 @@
     RTS
 .endproc
 
-.proc LoadBgMatt
-    LDA menuCursor
-    CMP #0
-    BNE Page2
-        JSR ClearScreen ; "Hello, I'm Matt" page 1
-        JSR ClearAttributes
-        JSR StartBulkDrawing
-
-        LoadCHR #<mattTilesMeta, #>mattTilesMeta
-        LoadImage #<mattImageMeta, #>mattImageMeta
-
-        JSR DoneBulkDrawing
-        JSR SetPaletteSupplies
-
-        ; MattsGeneralStoreHello
-        BDrawText newgamePointer+26, newgamePointer+27, #$20, #$84
-
-        ; newgameMattsSupplies1
-        BDrawText newgamePointer+28, newgamePointer+29, #$21, #$68
-
-        ; newgameMattsSupplies2
-        BDrawText newgamePointer+30, newgamePointer+31, #$21, #$c8
-
-        JSR BufferDrawPressStart
-        RTS
-    Page2:
-        CMP #1 ; "Hello, I'm Matt" page 2
-        BEQ :+
-        JMP GenStoreInit
-        :
-
-        ; erase text from previous page
-        BDrawBlankBox #$21, #$68, #24, #5
-
-        ; newgameMattsSupplies3
-        BDrawText newgamePointer+32, newgamePointer+33, #$21, #$68
-
-        ; newgameMattsSupplies4
-        BDrawText newgamePointer+34, newgamePointer+35, #$21, #$c8
-
-        ; newgameMattsSupplies5
-        BDrawText newgamePointer+36, newgamePointer+37, #$22, #$28
-
-        JSR BufferDrawPressStart
-        RTS
-    GenStoreInit:
-        CMP #2 ; General store main menu, initially
-        BEQ :+
-        JMP Explain
-        :
-
-        ; erase text from previous page
-        BDrawBlankBox #$20, #$84, #23, #4
-
-        LDY #3 ; green line
-        JSR BufferDrawGreenLine
-
-        ; newgameMattsGeneralStore
-        BDrawText newgamePointer+38, newgamePointer+39, #$20, #$88
-
-    GenStoreAgain:
-        ; erase to the right of Matt
-        BDrawBlankBox #$20, #$c8, #24, #21
-        BDrawBlankBox #$23, #$64, #24, #1
-
-        BDrawDateText #$20, #$f2
-
-        SBW #6, #$23, #$d2 ; green line
-            LDX #6 ; attributes
-            LDA #$fa
-            :
-            WBB
-            DEX
-            BNE :-
-        EBW
-        LDY #8
-        JSR BufferDrawGreenLine
-
-        LDA #$21 ; Draw item menu
-        STA bufferHelper
-        LDA #$4b
-        STA bufferHelper+1
-        LDX #5 ; number of menu options
-        LDA #0
-        STA counter ; beginning of word index
-        LDA mattSuppliesText
-        STA helper ; length of word
-        STA counter+1 ; end of word index
-        :
-        TXA
-        PHA
-        SBW helper, bufferHelper, bufferHelper+1
-            INC counter+1
-            INC counter
-            LDX counter
-            :
-            LDA mattSuppliesText, X
-            WBB
-            INX
-            CPX counter+1
-            BNE :-
-            LDA mattSuppliesText, X
-            STA helper
-            STX counter
-            CLC
-            LDA counter+1
-            ADC mattSuppliesText, X
-            STA counter+1
-        EBW
-        CLC
-        LDA bufferHelper+1
-        ADC #$20
-        STA bufferHelper+1
-        LDA bufferHelper
-        ADC #0
-        STA bufferHelper
-        PLA
-        TAX
-        DEX
-        BNE :--
-
-        ; Draw item costs
-        BDrawDollarAmount #$21, #$57, #cartOxenDigit
-        BDrawDollarAmount #$21, #$77, #cartFoodLbsDigit
-        BDrawDollarAmount #$21, #$97, #cartClothingDigit
-        BDrawDollarAmount #$21, #$b7, #cartBulletsDigit
-        BDrawDollarAmount #$21, #$d7, #cartSparePartsDigit
-
-        SBW #6, #$23, #$e2 ; green line
-            LDX #6 ; attributes
-            LDA #$fa
-            :
-            WBB
-            DEX
-            BNE :-
-        EBW
-        LDY #16
-        JSR BufferDrawGreenLine
-        
-        SBW #11, #$22, #$4b ; "Total bill:"
-            LDX #0
-            :
-            LDA storeTotalText, X
-            WBB
-            INX
-            CPX #11
-            BNE :-
-        EBW
-        BDrawDollarAmount #$22, #$57, #cartDollarsDigit
-
-        SBW #9, #$22, #$ad ; "You have:"
-            LDX #11
-            :
-            LDA storeTotalText, X
-            WBB
-            INX
-            CPX #20
-            BNE :-
-        EBW
-        BDrawDollarAmount #$22, #$b7, #dollarsDigit
-        
-        ; newgameMattWhichItem: "Which item would you like to buy?"
-        BDrawText newgamePointer+40, newgamePointer+41, #$22, #$e8
-
-        ; newgameMattPressStart: "Press start to leave"
-        BDrawText newgamePointer+42, newgamePointer+43, #$23, #$48
-
-        RTS
-    Explain:
-        CMP #10
-        BCS :+
-        RTS
-        :
-        
-        SBW #6, #$23, #$d2 ; erase to the right of Matt
-            LDX #6 ; attributes
-            LDA #$ff
-            :
-            WBB
-            DEX
-            BNE :-
-        EBW
-        SBW #6, #$23, #$e2
-            LDX #6 ; attributes
-            LDA #$ff
-            :
-            WBB
-            DEX
-            BNE :-
-        EBW
-        BDrawBlankBox #$20, #$c8, #24, #21
-
-        SBW #6, #$23, #$ca ; green line
-            LDX #6 ; attributes
-            LDA #$af
-            :
-            WBB
-            DEX
-            BNE :-
-        EBW
-        LDY #6
-        JSR BufferDrawGreenLine
-
-        JSR StartBulkDrawing
-        LDA menuCursor ; Image
-        CMP #10
-        BNE :+
-        LoadCHR #<suppliesOxenTilesMeta, #>suppliesOxenTilesMeta
-        LoadImage #<suppliesMattOxenImageMeta, #>suppliesMattOxenImageMeta
-        JMP Image
-        :
-        CMP #11
-        BNE :+
-        LoadCHR #<suppliesFoodTilesMeta, #>suppliesFoodTilesMeta
-        LoadImage #<suppliesMattFoodImageMeta, #>suppliesMattFoodImageMeta
-        JMP Image
-        :
-        CMP #12
-        BNE :+
-        LoadCHR #<suppliesClothesTilesMeta, #>suppliesClothesTilesMeta
-        LoadImage #<suppliesMattClothesImageMeta, #>suppliesMattClothesImageMeta
-        JMP Image
-        :
-        CMP #13
-        BNE :+
-        LoadCHR #<suppliesBulletsTilesMeta, #>suppliesBulletsTilesMeta
-        LoadImage #<suppliesMattBulletsImageMeta, #>suppliesMattBulletsImageMeta
-        JMP Image
-        :
-        CMP #14
-        BNE :+
-        LoadCHR #<suppliesPartsTilesMeta, #>suppliesPartsTilesMeta
-        LoadImage #<suppliesMattPartsImageMeta, #>suppliesMattPartsImageMeta
-        JMP Image
-        :
-        RTS
-    Image:
-        JSR DoneBulkDrawing
-
-        SEC ; Matt's thoughts on the item
-        LDA menuCursor
-        SBC #10
-        ASL
-        ADC #44
-        TAX
-        LDA newgamePointer, X
-        STA helper
-        INX
-        LDA newgamePointer, X
-        STA helper+1
-        BDrawText helper, helper+1, #$21, #$08
-        
-        CLC ; newline+newline
-        LDA bufferHelper+1
-        ADC #$40
-        STA bufferHelper+1
-        LDA bufferHelper
-        ADC #0
-        STA bufferHelper
-
-        LDA menuCursor
-        CMP #14 ; spare parts?
-        BEQ :+
-        ; "How many do you want?"
-        BDrawText newgamePointer+54, newgamePointer+55, bufferHelper, bufferHelper+1
-        JMP Footer
-        :
-        LDA #21 ; suppliesText index
-        STA counter
-        LDA #28
-        STA counter+1
-        LDX #3
-        CLC
-        LDA bufferHelper+1
-        ADC #2
-        STA bufferHelper+1
-        :
-        TXA
-        PHA
-        SBW #7+1+11, bufferHelper, bufferHelper+1
-            LDX counter
-            :
-            LDA suppliesText, X
-            WBB
-            INX
-            CPX counter+1
-            BNE :-
-            LDA #___
-            WBB
-            LDX #42 ; index of "- $10.00 each"
-            :
-            LDA mattSuppliesText, X
-            WBB
-            INX
-            CPX #42+11
-            BNE :-
-        EBW
-        CLC
-        LDA bufferHelper+1
-        ADC #$20
-        STA bufferHelper+1
-        LDA bufferHelper
-        ADC #0
-        STA bufferHelper
-        CLC
-        LDA counter
-        ADC #7
-        STA counter
-        LDA counter+1
-        ADC #7
-        STA counter+1
-        PLA
-        TAX
-        DEX
-        BNE :---
-        CLC
-        LDA bufferHelper+1
-        ADC #$1e
-        STA bufferHelper+1
-        LDA bufferHelper
-        ADC #0
-        STA bufferHelper
-        ; "How many wagon ___?"
-        BDrawText newgamePointer+56, newgamePointer+57, bufferHelper, bufferHelper+1
-        CLC
-        LDA bufferHelper+1
-        ADC #15
-        STA bufferHelper+1
-        SBW #7, #$22, #$37
-            LDX #7*3
-            :
-            LDA suppliesText, X
-            WBB
-            INX
-            CPX #7*4-1
-            BNE :-
-            LDA #_QU
-            WBB
-        EBW
-
-    Footer:
-        SBW #12, #$23, #$48 ; "Bill so far:"
-            LDX #0
-            :
-            LDA mattBillSoFar, X
-            WBB
-            INX
-            CPX #12
-            BNE :-
-        EBW
-        SBW #6, #$23, #$55 ; "$____.00"
-            LDA #_DL
-            WBB
-            LDX #0
-            :
-            LDA cartDollarsDigit, X
-            WBB
-            INX
-            CPX #4
-            BNE :-
-            LDA #_00
-            WBB
-        EBW
-
-        RTS
-.endproc
-
 .proc LoadBgIndependence
     JSR ClearScreen
     JSR ClearAttributes
-    JSR StartBulkDrawing
+    SBD
     JSR DrawLandmarkImage
     LDA menuOpen
     CMP #MENU_NEWGAME_GOINGBACK
@@ -1548,7 +1054,7 @@
     JSR LoadTextCHR
     :
     JSR BufferDrawIntroTextBox
-    JSR DoneBulkDrawing
+    EBD
     RTS
 .endproc
 
@@ -1602,35 +1108,5 @@
     CPY #0
     BNE :--
     Done:
-    RTS
-.endproc
-
-.proc BufferDrawGreenLine
-    ; @param Y: tilemap y index
-    LDA #$20
-    STA bufferHelper
-    LDA #$08
-    STA bufferHelper+1
-    :
-    CPY #0
-    BEQ :+
-    CLC
-    LDA bufferHelper+1
-    ADC #$20
-    STA bufferHelper+1
-    LDA bufferHelper
-    ADC #0
-    STA bufferHelper
-    DEY
-    JMP :-
-    :
-    SBW #22, bufferHelper, bufferHelper+1
-    LDX #22
-    LDA #TILE_GREEN_LINE
-    :
-    WBB
-    DEX
-    BNE :-
-    EBW
     RTS
 .endproc

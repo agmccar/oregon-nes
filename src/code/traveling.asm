@@ -2,7 +2,7 @@
 .proc LoadBgTraveling
     JSR ClearScreen
     JSR ClearAttributes ; default palette
-    JSR StartBulkDrawing
+    SBD
     LDA menuOpen
     CMP #MENU_MAINMENU
     BNE :+
@@ -86,7 +86,7 @@
 
         JMP Done
     Done:
-    JSR DoneBulkDrawing
+    EBD
     RTS
 .endproc
 
@@ -218,7 +218,7 @@
 .proc LoadBgMap
     JSR ClearScreen
     JSR ClearAttributes
-    JSR StartBulkDrawing
+    SBD
     LDA PPUSTATUS ; map palette
     LDA #$3F
     STA PPUADDR
@@ -322,7 +322,7 @@
     PLA
     TAY
     JSR bankswitch_y
-    JSR DoneBulkDrawing
+    EBD
     JSR BufferDrawMapTitle
     JSR LoadTrailSprites
     JSR BufferDrawPressStart
@@ -332,9 +332,9 @@
 .proc LoadBgTalk
     JSR ClearScreen
     JSR ClearAttributes
-    JSR StartBulkDrawing
+    SBD
     JSR DrawAdornments
-    JSR DoneBulkDrawing
+    EBD
     JSR BufferDrawTalkText
     JSR BufferDrawPressStart
     RTS
@@ -343,7 +343,7 @@
 .proc LoadBgSupplies
     JSR ClearScreen
     JSR ClearAttributes ; default palette
-    JSR StartBulkDrawing
+    SBD
     LDX #16
     LDY #2
     JSR SetPpuAddrPointerFromXY
@@ -388,7 +388,7 @@
     TAY
     JSR bankswitch_y
 
-    JSR DoneBulkDrawing
+    EBD
     JSR BufferDrawSupplies
     JSR BufferDrawPressStart
     RTS

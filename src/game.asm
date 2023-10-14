@@ -34,6 +34,7 @@
 
 .segment "ROM1"
     .include "code/newgame.asm"
+    .include "code/matt.asm"
     .include "data/compressed/text/newgame.asm"
     .include "code/store.asm"
     .include "code/traveling.asm"

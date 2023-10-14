@@ -403,10 +403,10 @@
     LDX #0                  ; default palette
     JSR UpdatePalette
     
-    JSR StartBulkDrawing ; draw adornments
+    SBD ; draw adornments
     JSR DrawAdornments
     JSR DrawTitleLogo
-    JSR DoneBulkDrawing
+    EBD
     JSR BufferDrawTitleOptions
 
     LDA #%10010000
@@ -426,9 +426,9 @@
     LDA menuCursor
     CMP #3
     BNE :+
-    JSR StartBulkDrawing
+    SBD
     JSR DrawAdornments
-    JSR DoneBulkDrawing
+    EBD
     :
     LDX #21
     JSR StartBufferWrite ; "On Arriving In Oregon"

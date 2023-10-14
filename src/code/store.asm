@@ -2,7 +2,7 @@
 ; .proc LoadBgStore
 ;     JSR ClearScreen
 ;     JSR ClearAttributes         ; default palette
-;     JSR StartBulkDrawing
+;     SBD
 ;     LDA location
 ;     CMP #$FF
 ;     BEQ :++
@@ -512,7 +512,7 @@
 ;         LDA #_00
 ;         STA PPUDATA
 ;     Done:
-;     JSR DoneBulkDrawing
+;     EBD
 ;     RTS
 ; .endproc
 

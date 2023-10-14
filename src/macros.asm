@@ -37,6 +37,15 @@
     JSR BufferDrawBlankBox
 .endmacro
 
+.macro BDrawTextBox ppuAddrHi, ppuAddrLo, width, height
+    LDX ppuAddrHi
+    LDY ppuAddrLo
+    LDA width
+    STA helper
+    LDA height
+    JSR DrawTextBox
+.endmacro
+
 .macro BDrawDateText ppuAddrHi, ppuAddrLo
     LDA ppuAddrHi
     STA pointer
@@ -77,4 +86,12 @@
 
 .macro EBW
     JSR EndBufferWrite
+.endmacro
+
+.macro SBD
+    JSR StartBulkDrawing
+.endmacro
+
+.macro EBD
+    JSR EndBulkDrawing
 .endmacro

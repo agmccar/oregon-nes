@@ -142,13 +142,13 @@
 .endproc
 
 .proc LoadBgLandmark
-    JSR StartBulkDrawing
+    SBD
     JSR DrawLandmarkImage ; also sets attributes
     LDX #0
     LDY #22
     JSR SetPpuAddrPointerFromXY
     JSR DrawLandmarkTitle
-    JSR DoneBulkDrawing
+    EBD
     JSR BufferDrawPressStart
     RTS
 .endproc

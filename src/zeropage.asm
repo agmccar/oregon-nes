@@ -118,7 +118,7 @@ dollarsDigit:       .res 4 ; dollars in inventory
 
 ; Shopping ---------------------------------------------------------------------
 
-cartOxen:           .res 2  ; oxen in shopping cart
+cartOxen:           .res 2  ; oxen in shopping cart (yokes at matt's store)
 cartFoodLbs:        .res 2  ; lbs of food in shopping cart
 cartClothing:       .res 2  ; sets of clothing in shopping cart
 cartBullets:        .res 2  ; bullets in shopping cart
@@ -129,7 +129,7 @@ cartBullets:        .res 2  ; bullets in shopping cart
 ;  ||||++-- wagon axles
 ;  ||++---- wagon tongues
 ;  ++------ unused
-cartSpareParts:     .res 1
+cartSpareParts:     .res 2
 cartDollars:        .res 2  ; dollar cost of entire shopping cart
 
 cartOxenDigit:      .res 4 ; cost of oxen in shopping cart

@@ -2,10 +2,10 @@
 ; Init states ------------------------------------------------------------------
 
 .proc InitStateTitle
-    JSR StartBulkDrawing
+    SBD
     JSR LoadTextCHR
     ;JSR LoadWagonCHR TODO
-    JSR DoneBulkDrawing
+    EBD
     LDY #BANK_TITLE
     JSR bankswitch_y
     LDA #$18
@@ -75,38 +75,22 @@
     RTS
 .endproc
 
-; .proc InitStateStore
-;     LDY #BANK_STORE
-;     JSR bankswitch_y
-;     LDA #%00000100      ; main finger visible, pointing right
-;     STA fingerAttr
-;     LDA #0              ; initialize cursor
-;     STA fingerLastX     ; (5x,6y) tiles from top left, facing R
-;     STA fingerLastY
-;     LDA #MENU_NONE
-;     STA menuOpen
-;     LDA #2
-;     STA fingerX
-;     LDA #8
-;     STA fingerY
-;     LDA #_0_            ; default empty shopping cart
-;     LDX #0
-;     :
-;     STA cartDollarsDigit, X
-;     INX
-;     CPX #20
-;     BNE :-
-;     LDA #0
-;     LDX #0
-;     :
-;     STA cartDollars, X
-;     INX
-;     CPX #7
-;     BNE :-
-;     STA cartSpareParts
-;     JSR LoadBgStore     ; Load background
-;     RTS
-; .endproc
+.proc InitStateMatt
+    LDA #MENU_MATT_INTRO1
+    STA menuOpen
+    LDA #0
+    STA fingerAttr
+    STA menuCursor
+    STA fingerLastLastX
+    STA fingerLastLastY
+    STA fingerLastX
+    STA fingerLastY
+    LDA #9
+    STA fingerX
+    LDA #10
+    STA fingerY
+    RTS
+.endproc
 
 .proc InitStateLandmark
     LDY #BANK_LANDMARK
@@ -291,7 +275,8 @@
 .proc DrawTextBox
     ; X: addrHi
     ; Y: addrLo
-    ; A: number of middle lines (ie not counting top/bot rows)
+    ; A: number of middle lines (ie height-2)
+    ; helper: width of box
     PHA
     STX pointer
     STY pointer+1
@@ -634,7 +619,11 @@
 .endproc
 
 .proc BufferDrawTextBoxTopRow
-    SBW #28, pointer, pointer+1 ; top row
+    ; @param helper: width of box
+    ; @param pointer: ppu tilemap addr to draw
+    SBW helper, pointer, pointer+1 ; top row
+        DEC helper
+        DEC helper
         LDA #_RD
         WBB
         LDA #_HR
@@ -642,16 +631,22 @@
         :
         WBB
         INX
-        CPX #26
+        CPX helper
         BNE :-
         LDA #_LD
         WBB
     EBW
+    INC helper
+    INC helper
     RTS
 .endproc
 
 .proc BufferDrawTextBoxBottomRow
-    SBW #28, pointer, pointer+1 ; bottom row
+    ; @param helper: width of box
+    ; @param pointer: ppu tilemap addr to draw
+    SBW helper, pointer, pointer+1 ; bottom row
+        DEC helper
+        DEC helper
         LDA #_RU
         WBB
         LDA #_HR
@@ -659,18 +654,22 @@
         :
         WBB
         INX
-        CPX #26
+        CPX helper
         BNE :-
         LDA #_LU
         WBB
     EBW
+    INC helper
+    INC helper
     RTS
 .endproc
 
 .proc BufferDrawTextBoxMiddleRow
     TXA
     PHA
-    SBW #28, pointer, pointer+1
+    SBW helper, pointer, pointer+1
+        DEC helper
+        DEC helper
         LDA #_VR
         WBB
         LDA #___
@@ -678,11 +677,13 @@
         :
         WBB
         INX
-        CPX #26
+        CPX helper
         BNE :-
         LDA #_VR
         WBB
     EBW
+    INC helper
+    INC helper
     PLA
     TAX
     RTS
@@ -703,6 +704,8 @@
     LDA #$42
     STA pointer+1
     :
+    LDA #28
+    STA helper
     JSR BufferDrawTextBoxTopRow
 
     LDX #4 ; row 1-4
@@ -1447,7 +1450,7 @@
     RTS
 .endproc
 
-.proc DoneBulkDrawing
+.proc EndBulkDrawing
     LDA #0              ; reset scroll position
     STA PPUSCROLL
     STA PPUSCROLL
@@ -1460,7 +1463,7 @@
 .endproc
 
 .proc ClearScreen
-    JSR StartBulkDrawing
+    SBD
     LDX #0 ; clear sprites
     LDA #$FE
     :
@@ -1532,12 +1535,12 @@
     INY
     CPY #2
     BNE @attributeLoop
-    JSR DoneBulkDrawing
+    EBD
     RTS
 .endproc
 
 .proc ClearAttributes
-    JSR StartBulkDrawing
+    SBD
     LDA PPUSTATUS
     LDA #$23
     STA PPUADDR
@@ -1550,12 +1553,12 @@
     INX
     CPX #0
     BNE :-
-    JSR DoneBulkDrawing
+    EBD
     RTS
 .endproc
 
 .proc DrawMenuKeyboard
-    JSR StartBulkDrawing
+    SBD
 
     KBLine0:
         LDA #$22 ; Line 0  top border
@@ -1725,7 +1728,7 @@
         LDA #_LU ;corner
         STA PPUDATA
 
-    JSR DoneBulkDrawing
+    EBD
     RTS
 .endproc
 
@@ -2728,41 +2731,43 @@
     LDA lastGameState
     CMP gameState
     BNE :+
-    JSR UpdateGame
-    RTS
+        JSR UpdateGame
+        JSR Every60Frames
+        JSR DrawFinger
+        RTS
     :
     JSR ClearScreen
     LDA gameState
     STA lastGameState
     CMP #GAMESTATE_TITLE
     BNE :+
-    JSR InitStateTitle
-    RTS
+        JSR InitStateTitle
+        RTS
     :
     CMP #GAMESTATE_TRAVELING
     BNE :+ 
-    JSR InitStateTraveling
-    RTS
+        JSR InitStateTraveling
+        RTS
     :
     CMP #GAMESTATE_NEWGAME
     BNE :+ 
-    JSR InitStateNewGame
-    RTS
-    ; :
-    ; CMP #GAMESTATE_STORE
-    ; BNE :+ 
-    ; JSR InitStateStore
-    ; RTS
+        JSR InitStateNewGame
+        RTS
+    :
+    CMP #GAMESTATE_MATT
+    BNE :+ 
+        JSR InitStateMatt
+        RTS
     :
     CMP #GAMESTATE_LANDMARK
     BNE :+ 
-    JSR InitStateLandmark
-    RTS
+        JSR InitStateLandmark
+        RTS
     :
     CMP #GAMESTATE_MAP
     BNE :+
-    JSR InitStateMap
-    RTS
+        JSR InitStateMap
+        RTS
     :
     RTS
 .endproc
@@ -2771,58 +2776,36 @@
     LDA menuOpen
     CMP menuOpenLast
     BEQ :+
-    JSR NewMenuOpened
-    LDA menuOpen
-    STA menuOpenLast    ; reset last menu open
-    LDA #0
-    STA frameCounter    ; reset framecounter
-    JMP Done
+        JSR NewMenuOpened
+        LDA menuOpen
+        STA menuOpenLast    ; reset last menu open
+        LDA #0
+        STA frameCounter    ; reset framecounter
+        RTS
     :
     LDA gameState
     CMP #GAMESTATE_TITLE
     BNE :+
-    ; scramble the PRNG seed while we are on the title screen.
-    JSR RandomNumberGenerator
-    STA helper
-    JSR RandomNumberGenerator
-    STA helper+1
-    LDA helper
-    STA seed
-    LDA helper+1
-    STA seed+1
-    JMP Done
+        ; scramble the PRNG seed while we are on the title screen.
+        JSR RandomNumberGenerator
+        STA helper
+        JSR RandomNumberGenerator
+        STA helper+1
+        LDA helper
+        STA seed
+        LDA helper+1
+        STA seed+1
+        RTS
     :
     CMP #GAMESTATE_TRAVELING
-    BNE :+ 
-    JMP Traveling
-    :
-    CMP #GAMESTATE_NEWGAME
-    BNE :+ 
-    JMP Done
-    :
-    CMP #GAMESTATE_STORE
-    BNE :+ 
-    JMP Done
-    :
-    CMP #GAMESTATE_LANDMARK
-    BNE :+ 
-    JMP Done
-    :
-    CMP #GAMESTATE_MAP
-    BNE :+
-    JMP Done
-    :
-    JMP Done
-    Traveling:
+    BNE :++
         LDA menuOpen
         CMP #MENU_NONE
         BNE :+
         JSR ProcessEventQueue
         :
-        JMP Done
-    Done:
-    JSR Every60Frames
-    JSR DrawFinger
+        RTS
+    :
     RTS
 .endproc
 
@@ -2854,9 +2837,9 @@
     JSR GamepadNewGame
     RTS
     :
-    CMP #GAMESTATE_STORE
+    CMP #GAMESTATE_MATT
     BNE :+
-    ; JSR GamepadStore
+    JSR GamepadMatt
     RTS
     :
     CMP #GAMESTATE_LANDMARK
@@ -3076,8 +3059,14 @@
         JSR LoadBgIndependence
         RTS
     :
-    CMP #MENU_NEWGAME_MATT
-    BNE :+
+    CMP #MENU_MATT_INTRO1
+    BCS :+
+    JMP :+++
+    :
+    CMP #MENU_MATT_GOODLUCK+1
+    BCC :+
+    JMP :++
+    :
         JSR LoadBgMatt
         RTS
     :
@@ -3089,40 +3078,33 @@
         LDA gameState
         CMP #GAMESTATE_TITLE
         BNE :+
-        JSR InitStateTitle
-        RTS
-        ; :
-        ; CMP #GAMESTATE_NEWGAME
-        ; BNE :+
-        ; LDA #%00001100      ; both fingers visible, normal, pointing right
-        ; STA fingerAttr
-        ; JSR LoadBgNewGame
-        ; RTS
-        ; :
-        ; CMP #GAMESTATE_STORE
-        ; BNE :+
-        ; LDA #%00001100      ; both fingers visible, normal, pointing right
-        ; STA fingerAttr
-        ; JSR RedrawFinger
-        ; JSR LoadBgStore
-        ; RTS
+            JSR InitStateTitle
+            RTS
+        :
+        CMP #GAMESTATE_MATT
+        BNE :+
+            LDA #%00000100 ; finger pointing right
+            STA fingerAttr
+            JSR LoadBgMatt
+            JSR RedrawFinger
+            RTS
         :
         CMP #GAMESTATE_LANDMARK
         BNE :+
-        LDA #%00000000      ; neither finger visible
-        STA fingerAttr
-        JSR LoadBgLandmark
-        RTS
+            LDA #%00000000      ; neither finger visible
+            STA fingerAttr
+            JSR LoadBgLandmark
+            RTS
         :
         CMP #GAMESTATE_TRAVELING
         BNE :+
-        LDA #%00000000      ; neither finger visible
-        STA fingerAttr
-        LDA menuOpenLast
-        CMP #MENU_TEXTPOPUP
-        BEQ :+
-        JSR LoadBgTraveling
-        RTS
+            LDA #%00000000      ; neither finger visible
+            STA fingerAttr
+            LDA menuOpenLast
+            CMP #MENU_TEXTPOPUP
+            BEQ :+
+            JSR LoadBgTraveling
+            RTS
         :
         RTS
     StoreSubmenu:

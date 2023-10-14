@@ -130,7 +130,7 @@ KEYBOARD_DONE = (TEXT_KEYBOARD_LEN*3)-2
 ; Game states
 GAMESTATE_TITLE     = 0 ; title screen
 GAMESTATE_NEWGAME   = 1 ; set party member names, select occupation
-GAMESTATE_STORE     = 2 ; general store interface
+GAMESTATE_MATT      = 2 ; matt's general store
 GAMESTATE_LANDMARK  = 3 ; at a landmark/town/river/etc
 GAMESTATE_MAP       = 4 ; looking at the map ; todo merge with Traveling?
 GAMESTATE_TRAVELING = 5 ; main game state - traveling the trail
@@ -172,11 +172,21 @@ MENU_NEWGAME_OCC_HELP       = 19 ; new game occupation explanation screen
 MENU_NEWGAME_NAMEPARTY      = 20 ; new game name party screen
 MENU_NEWGAME_NAMESCORRECT   = 21 ; "Are these names correct?"
 MENU_NEWGAME_DATE_HELP      = 22 ; "Ask for advice" on starting month selection
-MENU_NEWGAME_MATT           = 23 ; Matt's General Store
-MENU_NEWGAME_GOINGBACK      = 24 ; "Going back to 1848..."
-MENU_NEWGAME_BEFORELEAVING1 = 25 ; "Before leaving..."
-MENU_NEWGAME_BEFORELEAVING2 = 26 ; "You can buy whatever you need..."
-MENU_NEWGAME_CHANGENAME     = 27 ; "Change which name?"
+MENU_NEWGAME_GOINGBACK      = 23 ; "Going back to 1848..."
+MENU_NEWGAME_BEFORELEAVING1 = 24 ; "Before leaving..."
+MENU_NEWGAME_BEFORELEAVING2 = 25 ; "You can buy whatever you need..."
+MENU_NEWGAME_CHANGENAME     = 26 ; "Change which name?"
+MENU_MATT_INTRO1 = 27
+MENU_MATT_INTRO2 = 28
+MENU_MATT_OXEN = 29
+MENU_MATT_FOOD = 30
+MENU_MATT_CLOTHING = 31
+MENU_MATT_AMMO = 32
+MENU_MATT_WHEELS = 33
+MENU_MATT_AXLES = 34
+MENU_MATT_TONGUES = 35
+MENU_MATT_GOODLUCK = 36
+
 
 OPT_CONTINUE    = 0
 OPT_SUPPLIES    = 1
