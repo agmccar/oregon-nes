@@ -1073,19 +1073,7 @@
 
 .proc BufferDrawSupplies
 
-    LDA gameSettings
-    AND #1
-    BNE :++
-    SBW #$10, #$3f, #$00
-        LDX #0
-        :
-        LDA suppliesPalette, X
-        WBB
-        INX
-        CPX #$10
-        BNE :-
-    EBW
-    :
+    JSR SetPaletteSupplies
 
     LDA currentBank
     PHA

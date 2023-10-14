@@ -159,6 +159,10 @@ mattSuppliesText:
     .byte 8,_C_,_L_,_O_,_T_,_H_,_I_,_N_,_G_
     .byte 10,_A_,_M_,_M_,_U_,_N_,_I_,_T_,_I_,_O_,_N_
     .byte 11,_S_,_P_,_A_,_R_,_E_,___,_P_,_A_,_R_,_T_,_S_
+    .byte _HY,___,_DL,_1_,_0_,_00,___,_E_,_A_,_C_,_H_
+
+mattBillSoFar:
+    .byte _B_,_I_,_L_,_L_,___,_S_,_O_,___,_F_,_A_,_R_,_CL
 
 healthText:
     .byte _G_,_O_,_O_,_D_,___,___,___,___,___

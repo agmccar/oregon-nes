@@ -20,7 +20,7 @@
 
 newgameSelectOccupationText:
     ; 28 bytes
-    .byte $52,$45,$26,$43,$42,$60,$dc,$05,$e8,$da,$04,$43,$14,$58,$de,$2f,$10,$4c,$d4,$01,$11,$57,$df,$0a,$06,$1c,$09
+    .byte $52,$45,$26,$43,$42,$60,$dc,$05,$e8,$da,$04,$43,$14,$58,$de,$2f,$10,$4d,$d4,$01,$11,$57,$df,$0a,$06,$1c,$09
     .byte $00
 
 newgameSelectOccupationBanker:
@@ -45,7 +45,7 @@ newgameSelectOccupationHelp:
 
 newgameOccupationHelpText1:
     ; 82 bytes
-    .byte $33,$92,$65,$40,$e3,$1a,$e5,$1f,$04,$d6,$0a,$06,$1c,$09,$0f,$dd,$ea,$e3,$08,$bd
+    .byte $33,$92,$65,$40,$e3,$1a,$e5,$1f,$04,$d6,$0a,$06,$1c,$09,$0f,$dd,$ea,$e3,$08,$be
     .byte $31,$32,$61,$60,$29,$e3,$2c,$e8,$03,$ea,$e1,$08,$d1,$05,$da,$02
     .byte $72,$64,$45,$38,$38,$41,$92,$16,$e8,$03,$ea,$0c,$34,$e5,$10,$06,$10,$09,$21,$d5,$06,$e2,$3f,$2f,$d8,$07,$05,$43,$02,$e5,$37,$07,$01,$05,$39,$0d,$df,$0b,$e3,$02,$06,$55,$0d,$dc,$02
     .byte $00
@@ -56,12 +56,12 @@ newgameOccupationHelpText2:
     .byte $31,$36,$34,$23,$01,$73,$0d,$d3,$02,$e8,$03,$34,$45,$0a,$e3,$42
     .byte $33,$34,$63,$70,$01,$10,$06,$17,$de,$04,$31,$e8,$03,$d3,$07,$02,$45
     .byte $11,$90,$01,$02,$26,$06,$d4
-    .byte $72,$36,$53,$86,$26,$33,$65,$35,$01,$26,$0d,$dc,$02,$08,$44,$e2,$01,$1c,$e1,$08,$e3,$07,$b2,$5b,$d1,$02,$14,$df,$de,$04,$31,$05,$d3,$01,$65,$05,$da,$02,$08,$44,$e2,$01,$1f,$08,$12
+    .byte $72,$36,$53,$86,$26,$33,$65,$35,$01,$26,$0d,$dc,$02,$08,$44,$e2,$01,$1c,$e1,$08,$e3,$07,$b3,$5b,$d1,$02,$14,$df,$de,$04,$31,$05,$d3,$01,$65,$05,$da,$02,$08,$44,$e2,$01,$1f,$08,$12
     .byte $00
 
 newgameGoingBackText:
     ; 15 bytes
-    .byte $25,$54,$24,$af,$04,$d6,$d1,$39,$da,$0a,$f2,$f9,$f5,$f9
+    .byte $25,$54,$24,$b0,$04,$d6,$d1,$39,$da,$0a,$f2,$f9,$f5,$f9
     .byte $00
 
 newgameSelectMonthText:
@@ -69,7 +69,7 @@ newgameSelectMonthText:
     .byte $22,$22,$40,$16,$0f,$f2,$f9,$f5,$f9
     .byte $41,$47,$35,$36,$2c,$e8,$03,$e1,$d9,$5b,$df,$04,$d6,$14,$d5,$2f,$39,$26,$06,$06,$1c,$09,$0f,$04,$d3,$17,$0b,$d3,$0b,$79
     .byte $12,$80,$dc,$0f,$e2,$03,$57
-    .byte $42,$34,$65,$52,$5c,$e8,$03,$a9,$12,$d3,$15,$38,$19,$bb,$22,$dc,$09,$01,$0a,$db,$08,$45,$04,$d3,$17,$0b,$d3,$0b,$79
+    .byte $42,$34,$65,$52,$5c,$e8,$03,$aa,$12,$d3,$15,$38,$19,$bc,$22,$dc,$09,$01,$0a,$db,$08,$45,$04,$d3,$17,$0b,$d3,$0b,$79
     .byte $00
 
 newgameSelectMonthAdvice1:
@@ -80,11 +80,11 @@ newgameSelectMonthAdvice1:
 newgameSelectMonthAdvice2:
     ; 142 bytes
     .byte $31,$23,$53,$50,$2c,$e8,$03,$db,$08,$45,$0a,$de,$08,$e1,$9a
-    .byte $52,$55,$23,$53,$44,$23,$01,$02,$19,$09,$ea,$e3,$66,$05,$e8,$d6,$1a,$1d,$d5,$06,$e8,$03,$18,$e7,$0b,$0a,$08,$e3
+    .byte $52,$55,$23,$53,$44,$23,$01,$02,$19,$09,$ea,$e3,$66,$05,$e8,$d6,$1a,$1e,$d5,$06,$e8,$03,$18,$e7,$0b,$0a,$08,$e3
     .byte $31,$23,$53,$40,$2c,$e8,$03,$db,$08,$45,$0a,$36,$13,$d4
     .byte $52,$33,$33,$26,$66,$50,$e8,$03,$dc,$2d,$28,$62,$11,$0a,$06,$1c,$09,$d1,$26,$06,$19,$04,$e3,$02,$d2,$35,$07
     .byte $41,$23,$52,$43,$54,$2c,$e8,$03,$db,$08,$e5,$08,$e3,$76,$12,$01,$02,$d8,$20,$82,$32,$d4
-    .byte $62,$54,$25,$53,$37,$45,$24,$01,$02,$19,$d8,$0c,$d1,$1c,$3a,$0b,$d6,$1a,$1d,$05,$d3,$01,$19,$08,$01,$02,$23,$0c,$12,$d8,$0c,$d1,$15,$2b,$db
+    .byte $62,$54,$25,$53,$37,$45,$24,$01,$02,$19,$d8,$0c,$d1,$1c,$3a,$0b,$d6,$1a,$1e,$05,$d3,$01,$19,$08,$01,$02,$23,$0c,$12,$d8,$0c,$d1,$15,$2b,$db
     .byte $00
 
 newgameBeforeLeavingText1:
@@ -110,12 +110,12 @@ newgameMattsGeneralStoreHello:
 
 newgameMattsSupplies1:
     ; 22 bytes
-    .byte $55,$11,$42,$42,$44,$50,$eb,$13,$08,$dc,$14,$b8,$0b,$0a,$94,$0c,$e8,$03,$53,$1e,$09
+    .byte $55,$11,$42,$42,$44,$50,$eb,$13,$08,$dc,$14,$b9,$0b,$0a,$94,$0c,$e8,$03,$53,$1d,$09
     .byte $00
 
 newgameMattsSupplies2:
     ; 24 bytes
-    .byte $45,$18,$34,$63,$60,$eb,$d2,$3b,$01,$04,$b5,$06,$59,$01,$e2,$5b,$dc,$02,$05,$7b,$04,$e3,$02
+    .byte $45,$18,$34,$63,$60,$eb,$d2,$3b,$01,$04,$b6,$06,$59,$01,$e2,$5b,$dc,$02,$05,$7b,$04,$e3,$02
     .byte $00
 
 newgameMattsSupplies3:
@@ -130,7 +130,7 @@ newgameMattsSupplies4:
 
 newgameMattsSupplies5:
     ; 18 bytes
-    .byte $35,$15,$53,$45,$eb,$71,$0d,$17,$0d,$31,$d5,$06,$e8,$03,$53,$1e,$09
+    .byte $35,$15,$53,$45,$eb,$71,$0d,$17,$0d,$31,$d5,$06,$e8,$03,$53,$1d,$09
     .byte $00
 
 newgameMattsGeneralStore:
@@ -151,7 +151,7 @@ newgameMattPressStart:
 
 newgameMattOxenText:
     ; 49 bytes
-    .byte $72,$53,$14,$21,$51,$92,$51,$40,$01,$02,$08,$3a,$f3,$b8,$0b,$04,$2d,$de,$47,$ed,$41,$15,$35,$dc,$0b,$d3,$13,$db,$08,$12,$f4,$e8,$de,$47
+    .byte $72,$53,$14,$21,$51,$92,$51,$40,$01,$02,$08,$3a,$f3,$b9,$0b,$04,$2d,$de,$47,$ed,$41,$15,$35,$dc,$0b,$d3,$13,$db,$08,$12,$f4,$e8,$de,$47
     .byte $32,$16,$31,$40,$d8,$22,$0d,$72,$fe,$f5,$f1,$2d,$de,$47
     .byte $00
 
@@ -181,13 +181,18 @@ newgameMattBulletsText:
 
 newgameMattSparePartsText:
     ; 48 bytes
-    .byte $72,$41,$44,$24,$13,$55,$34,$50,$16,$ea,$e2,$1e,$2b,$d3,$38,$08,$0a,$34,$e5,$08,$d5,$19,$71,$0d,$17,$0d,$31,$d5,$06,$e8,$03,$53,$1e,$09
+    .byte $72,$41,$44,$24,$13,$55,$34,$50,$16,$ea,$e2,$1d,$2b,$d3,$38,$08,$0a,$34,$e5,$08,$d5,$19,$71,$0d,$17,$0d,$31,$d5,$06,$e8,$03,$53,$1d,$09
     .byte $25,$43,$37,$d7,$02,$08,$3a,$01,$17,$e1,$37,$07,$ee
     .byte $00
 
 newgameMattHowManyText:
     ; 16 bytes
-    .byte $34,$34,$23,$40,$d7,$4f,$dc,$05,$e8,$6d,$e8,$03,$e6,$05,$e3
+    .byte $34,$34,$23,$40,$d7,$4b,$dc,$05,$e8,$6d,$e8,$03,$e6,$05,$e3
+    .byte $00
+
+newgameMattHowManySpareText:
+    ; 11 bytes
+    .byte $25,$34,$50,$d7,$4b,$dc,$05,$a8,$1d,$09
     .byte $00
 
 newgameMattsGoodLuck:
@@ -200,7 +205,7 @@ newgameMattsGoodLuck:
 
 newgameNowLoadingText:
     ; 15 bytes
-    .byte $25,$37,$36,$28,$e6,$3b,$4c,$04,$d6,$01,$19,$1e,$09,$fb
+    .byte $25,$37,$36,$28,$e6,$3b,$4d,$04,$d6,$01,$19,$1d,$09,$fb
     .byte $00
 
 newgamePointer:
@@ -232,5 +237,6 @@ newgamePointer:
     .byte <newgameMattBulletsText,>newgameMattBulletsText
     .byte <newgameMattSparePartsText,>newgameMattSparePartsText
     .byte <newgameMattHowManyText,>newgameMattHowManyText
+    .byte <newgameMattHowManySpareText,>newgameMattHowManySpareText
     .byte <newgameMattsGoodLuck,>newgameMattsGoodLuck
     .byte <newgameNowLoadingText,>newgameNowLoadingText

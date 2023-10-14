@@ -119,17 +119,14 @@ I sell ammunition in boxes of 20 bullets. Each box costs %2.
 
 It's a good idea to have a few spare parts for your wagon. Here are the
 prices:$
-# wagon wheel  - %10 each
-# wagon axle   - %10 each
-# wagon tongue - %10 each
-# How many wagon$
-# wheels?
-# axles?
-# tongues?
 
 ## MattHowManyText
 
 How many do you want?
+
+## MattHowManySpareText
+
+How many wagon$
 
 ## MattsGoodLuck
 

@@ -1416,6 +1416,23 @@
     RTS
 .endproc
 
+.proc SetPaletteSupplies
+    LDA gameSettings
+    AND #1
+    BNE :++
+    SBW #$10, #$3f, #$00
+        LDX #0
+        :
+        LDA suppliesPalette, X
+        WBB
+        INX
+        CPX #$10
+        BNE :-
+    EBW
+    :
+    RTS
+.endproc
+
 ; Bulk drawing -----------------------------------------------------------------
 
 .proc StartBulkDrawing

@@ -96,40 +96,37 @@
         RTS
     NameParty:
         JSR StartBulkDrawing
-        JSR DrawNamePartyImage
+        LoadCHR #<namepartyTilesMeta, #>namepartyTilesMeta
+        LoadImage #<namepartyImageMeta, #>namepartyImageMeta
         JSR DrawMenuKeyboard
         JSR DoneBulkDrawing
         SBW #29, #$22, #$02
-        LDX #0
-        :
-        LDA newgameNamePartyWhatText, X
-        WBB
-        INX
-        CPX #29
-        BNE :-
+            LDX #0
+            :
+            LDA newgameNamePartyWhatText, X
+            WBB
+            INX
+            CPX #29
+            BNE :-
         EBW
 
         SBW #13, #$22, #$22
-        LDX #0
-        :
-        LDA newgameNamePartyPersonText, X
-        WBB
-        INX
-        CPX #13
-        BNE :-
-
-
-
-        
+            LDX #0
+            :
+            LDA newgameNamePartyPersonText, X
+            WBB
+            INX
+            CPX #13
+            BNE :-
         EBW
         
         SBW #TEXT_NAME_LEN, #$22, #$37
-        LDX #8
-        LDA #_UL
-        :
-        WBB
-        DEX
-        BNE :-
+            LDX #8
+            LDA #_UL
+            :
+            WBB
+            DEX
+            BNE :-
         EBW
         RTS
     StartDate:
@@ -597,8 +594,14 @@
             RTS
         :
         CMP #MENU_NEWGAME_MATT
-        BNE :++++
+        BNE :+++++
             INC menuCursor
+            LDA menuCursor
+            CMP #1
+            BNE :+
+                JSR LoadBgMatt
+                RTS
+            :
             LDA menuCursor
             CMP #2 ; matt page 2
             BNE :+
@@ -614,14 +617,18 @@
                 LDA #10
                 STA fingerY
                 JSR LoadBgMatt
+                RTS
             :
+            LDA menuCursor
             CMP #3 ; matt general store
             BNE :+
                 LDA #6 ; jump to "Press start to leave"
                 STA fingerX
                 LDA #26
                 STA fingerY
+                RTS
             :
+            LDA menuCursor
             CMP #4 ; pressed start to leave
             BNE :+
 
@@ -1171,10 +1178,11 @@
         JSR ClearAttributes
         JSR StartBulkDrawing
 
-        UnpTilesMeta #<mattTilesMeta, #>mattTilesMeta
-        UnpImageMeta #<mattImageMeta, #>mattImageMeta
+        LoadCHR #<mattTilesMeta, #>mattTilesMeta
+        LoadImage #<mattImageMeta, #>mattImageMeta
 
         JSR DoneBulkDrawing
+        JSR SetPaletteSupplies
 
         ; MattsGeneralStoreHello
         BDrawText newgamePointer+26, newgamePointer+27, #$20, #$84
@@ -1365,7 +1373,43 @@
         LDY #6
         JSR BufferDrawGreenLine
 
-        SEC
+        JSR StartBulkDrawing
+        LDA menuCursor ; Image
+        CMP #10
+        BNE :+
+        LoadCHR #<suppliesOxenTilesMeta, #>suppliesOxenTilesMeta
+        LoadImage #<suppliesMattOxenImageMeta, #>suppliesMattOxenImageMeta
+        JMP Image
+        :
+        CMP #11
+        BNE :+
+        LoadCHR #<suppliesFoodTilesMeta, #>suppliesFoodTilesMeta
+        LoadImage #<suppliesMattFoodImageMeta, #>suppliesMattFoodImageMeta
+        JMP Image
+        :
+        CMP #12
+        BNE :+
+        LoadCHR #<suppliesClothesTilesMeta, #>suppliesClothesTilesMeta
+        LoadImage #<suppliesMattClothesImageMeta, #>suppliesMattClothesImageMeta
+        JMP Image
+        :
+        CMP #13
+        BNE :+
+        LoadCHR #<suppliesBulletsTilesMeta, #>suppliesBulletsTilesMeta
+        LoadImage #<suppliesMattBulletsImageMeta, #>suppliesMattBulletsImageMeta
+        JMP Image
+        :
+        CMP #14
+        BNE :+
+        LoadCHR #<suppliesPartsTilesMeta, #>suppliesPartsTilesMeta
+        LoadImage #<suppliesMattPartsImageMeta, #>suppliesMattPartsImageMeta
+        JMP Image
+        :
+        RTS
+    Image:
+        JSR DoneBulkDrawing
+
+        SEC ; Matt's thoughts on the item
         LDA menuCursor
         SBC #10
         ASL
@@ -1378,35 +1422,119 @@
         STA helper+1
         BDrawText helper, helper+1, #$21, #$08
         
-        ; "How many ___ do you want?"
-        CLC
+        CLC ; newline+newline
         LDA bufferHelper+1
         ADC #$40
         STA bufferHelper+1
         LDA bufferHelper
         ADC #0
         STA bufferHelper
-        BDrawText newgamePointer+54, newgamePointer+55, bufferHelper, bufferHelper+1
 
+        LDA menuCursor
+        CMP #14 ; spare parts?
+        BEQ :+
+        ; "How many do you want?"
+        BDrawText newgamePointer+54, newgamePointer+55, bufferHelper, bufferHelper+1
+        JMP Footer
+        :
+        LDA #21 ; suppliesText index
+        STA counter
+        LDA #28
+        STA counter+1
+        LDX #3
+        CLC
+        LDA bufferHelper+1
+        ADC #2
+        STA bufferHelper+1
+        :
+        TXA
+        PHA
+        SBW #7+1+11, bufferHelper, bufferHelper+1
+            LDX counter
+            :
+            LDA suppliesText, X
+            WBB
+            INX
+            CPX counter+1
+            BNE :-
+            LDA #___
+            WBB
+            LDX #42 ; index of "- $10.00 each"
+            :
+            LDA mattSuppliesText, X
+            WBB
+            INX
+            CPX #42+11
+            BNE :-
+        EBW
+        CLC
+        LDA bufferHelper+1
+        ADC #$20
+        STA bufferHelper+1
+        LDA bufferHelper
+        ADC #0
+        STA bufferHelper
+        CLC
+        LDA counter
+        ADC #7
+        STA counter
+        LDA counter+1
+        ADC #7
+        STA counter+1
+        PLA
+        TAX
+        DEX
+        BNE :---
+        CLC
+        LDA bufferHelper+1
+        ADC #$1e
+        STA bufferHelper+1
+        LDA bufferHelper
+        ADC #0
+        STA bufferHelper
+        ; "How many wagon ___?"
+        BDrawText newgamePointer+56, newgamePointer+57, bufferHelper, bufferHelper+1
+        CLC
+        LDA bufferHelper+1
+        ADC #15
+        STA bufferHelper+1
+        SBW #7, #$22, #$37
+            LDX #7*3
+            :
+            LDA suppliesText, X
+            WBB
+            INX
+            CPX #7*4-1
+            BNE :-
+            LDA #_QU
+            WBB
+        EBW
+
+    Footer:
+        SBW #12, #$23, #$48 ; "Bill so far:"
+            LDX #0
+            :
+            LDA mattBillSoFar, X
+            WBB
+            INX
+            CPX #12
+            BNE :-
+        EBW
+        SBW #6, #$23, #$55 ; "$____.00"
+            LDA #_DL
+            WBB
+            LDX #0
+            :
+            LDA cartDollarsDigit, X
+            WBB
+            INX
+            CPX #4
+            BNE :-
+            LDA #_00
+            WBB
+        EBW
 
         RTS
-.endproc
-
-.proc DrawNamePartyImage
-
-    LDA #<namepartyTilesMeta 
-    STA pointer
-    LDA #>namepartyTilesMeta
-    STA pointer+1
-    JSR UnpackTilesMeta
-
-    LDA #<namepartyImageMeta
-    STA pointer
-    LDA #>namepartyImageMeta
-    STA pointer+1
-    JSR UnpackImageMeta
-
-    RTS
 .endproc
 
 .proc LoadBgIndependence

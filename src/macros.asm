@@ -11,7 +11,7 @@
     JSR BufferDrawText
 .endmacro
 
-.macro UnpTilesMeta tilesMetaAddrHi, tilesMetaAddrLo
+.macro LoadCHR tilesMetaAddrHi, tilesMetaAddrLo
     LDA tilesMetaAddrHi
     STA pointer
     LDA tilesMetaAddrLo
@@ -19,7 +19,7 @@
     JSR UnpackTilesMeta
 .endmacro
 
-.macro UnpImageMeta imageMetaAddrHi, imageMetaAddrLo
+.macro LoadImage imageMetaAddrHi, imageMetaAddrLo
     LDA imageMetaAddrHi
     STA pointer
     LDA imageMetaAddrLo

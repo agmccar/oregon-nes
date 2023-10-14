@@ -24,13 +24,16 @@
 - [x] decide which month to leave menu
 - [x] independence graphic + text boxes screens
 
-## Shop screen
+## Matt's general store
 
-- [ ] Matts general store intro text/menus
+- [x] Matts general store intro text/menus
 - [x] shop screen graphics
     - [x] matt
     - [x] compress chr tiles 
     - [x] rewrite check supplies screen
+
+## Buy supplies
+
 - [ ] prices increase at each fort
 - [ ] Buy supplies screen
 
@@ -182,3 +185,5 @@
 - [ ] MECC loading screen
 - [ ] ROM1 use meaningful filenames instead of `rom1.asm`
 - [ ] use `.charmap` instead of `_T_,_H_,_I_,_S_,___,_N_,_O_,_N_,_S_,_E_,_N_,_S_,_E_`
+- [ ] don't reload bg at "Before leaving" screens
+- [ ] third packbits segment type: run of incrementing bytes (eg 1,2,3,4..)

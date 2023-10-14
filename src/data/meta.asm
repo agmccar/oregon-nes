@@ -67,6 +67,26 @@ titleLogoImageMeta:
     .byte 0, 0, 0, 0, 0, 0
     .byte $00, $80, $20, $60, <titleLogoImage, >titleLogoImage
 
+suppliesMattFoodImageMeta:
+    .byte 0, 16, $23, $e8, <suppliesMattFoodAttr, >suppliesMattFoodAttr
+    .byte $00, $a0, $22, $80, <suppliesMattFoodImage, >suppliesMattFoodImage
+
+suppliesMattPartsImageMeta:
+    .byte 0, 16, $23, $e8, <suppliesMattPartsAttr, >suppliesMattPartsAttr
+    .byte $00, $c0, $22, $60, <suppliesMattPartsImage, >suppliesMattPartsImage
+
+suppliesMattOxenImageMeta:
+    .byte 0, 16, $23, $e8, <suppliesMattOxenAttr, >suppliesMattOxenAttr
+    .byte $00, $a0, $22, $80, <suppliesMattOxenImage, >suppliesMattOxenImage
+
+suppliesMattClothesImageMeta:
+    .byte 0, 16, $23, $e8, <suppliesMattClothesAttr, >suppliesMattClothesAttr
+    .byte $00, $60, $22, $a0, <suppliesMattClothesImage, >suppliesMattClothesImage
+
+suppliesMattBulletsImageMeta:
+    .byte 0, 16, $23, $e8, <suppliesMattBulletsAttr, >suppliesMattBulletsAttr
+    .byte $00, $a0, $22, $80, <suppliesMattBulletsImage, >suppliesMattBulletsImage
+
 ; Meta-values associated with landmark images.
 ; Sections of 7 bytes are ordered by location index.
 ; 0,0,0,0,0,0,0
