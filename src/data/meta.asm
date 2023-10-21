@@ -11,8 +11,17 @@ textTilesMeta:
 mattTilesMeta:
     .byte 0, <mattTiles, >mattTiles, 5, 0
 
-; wagonTilesMeta: TODO
-;     .byte 0, <wagonTiles, >wagonTiles, 4, 8
+horizonPlainsTilesMeta:
+    .byte BANK_TRAVELING, <horizonPlainsTiles, >horizonPlainsTiles, 4, 0
+
+horizonMountainsTilesMeta:
+    .byte BANK_TRAVELING, <horizonMountainsTiles, >horizonMountainsTiles, 4, 0
+
+wagonTilesMeta:
+    .byte BANK_TRAVELING, <wagonTiles, >wagonTiles, 4, 8
+
+mapTilesMeta:
+    .byte 0, <mapTiles, >mapTiles, 13, 0
 
 adornmentTilesMeta:
     .byte 0, <adornmentTiles, >adornmentTiles, 2, 0
@@ -81,11 +90,23 @@ suppliesMattOxenImageMeta:
 
 suppliesMattClothesImageMeta:
     .byte 0, 16, $23, $e8, <suppliesMattClothesAttr, >suppliesMattClothesAttr
-    .byte $00, $60, $22, $a0, <suppliesMattClothesImage, >suppliesMattClothesImage
+    .byte $00, $60, $22, $c0, <suppliesMattClothesImage, >suppliesMattClothesImage
 
 suppliesMattBulletsImageMeta:
     .byte 0, 16, $23, $e8, <suppliesMattBulletsAttr, >suppliesMattBulletsAttr
     .byte $00, $a0, $22, $80, <suppliesMattBulletsImage, >suppliesMattBulletsImage
+
+horizonPlainsImageMeta:
+    .byte BANK_TRAVELING, 0, 0, 0, 0, 0
+    .byte $00, $40, $20, $80, <horizonPlainsImage, >horizonPlainsImage
+
+horizonMountainsImageMeta:
+    .byte BANK_TRAVELING, 0, 0, 0, 0, 0
+    .byte $00, $40, $20, $80, <horizonMountainsImage, >horizonMountainsImage
+
+mapImageMeta:
+    .byte 0, 0, 0, 0, 0, 0
+    .byte $03, $00, $20, $40, <mapImage, >mapImage
 
 ; Meta-values associated with landmark images.
 ; Sections of 7 bytes are ordered by location index.

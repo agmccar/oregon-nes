@@ -78,69 +78,6 @@
     RTS
 .endproc
 
-.proc DrawLandmarkTitle
-    ; pointer: ppuaddr 
-    LDA PPUSTATUS   ; set footer bar location
-    LDA pointer
-    STA PPUADDR
-    LDA pointer+1
-    STA PPUADDR
-    JSR DrawBlankLine   ; start footer bar
-    LDX location
-    JSR GetLandmarkText
-    LDA #32 ; draw landmark text line
-    SEC
-    SBC helper2
-    LSR
-    STA helper2+1
-    LDX #0
-    LDA #___
-    :
-    STA PPUDATA
-    INX
-    CPX helper2+1
-    BNE :-
-    LDY #0
-    :
-    LDA textLineHelper, Y
-    STA PPUDATA
-    INY
-    CPY helper2
-    BNE :-
-    LDA #32
-    SEC
-    SBC helper2
-    SBC helper2+1
-    TAX
-    LDA #___
-    :
-    CPX #0
-    BNE :+
-    JMP :++
-    :
-    STA PPUDATA
-    DEX
-    JMP :--
-    :
-    JSR DrawBlankLine   ; blank line
-    LDX #0          ; draw date text line
-    LDA #___
-    :
-    STA PPUDATA
-    INX
-    CPX #10
-    BNE :-
-    JSR DrawDateText
-    LDA #___
-    LDX #0
-    :
-    STA PPUDATA
-    INX
-    CPX #10
-    BNE :-
-    RTS
-.endproc
-
 .proc LoadBgLandmark
     SBD
     JSR DrawLandmarkImage ; also sets attributes

@@ -108,13 +108,14 @@ bullets:            .res 2  ; bullets in inventory
 ;  ++------ unused
 spareParts:         .res 1
 dollars:            .res 2  ; dollars in inventory
+cents:              .res 1
 
 oxenDigit:          .res 4 ; oxen in inventory
 foodLbsDigit:       .res 4 ; lbs of food in inventory
 clothingDigit:      .res 4 ; sets of clothing in inventory
 bulletsDigit:       .res 4 ; bullets in inventory
 dollarsDigit:       .res 4 ; dollars in inventory
-
+centsDigit:         .res 2 
 
 ; Shopping ---------------------------------------------------------------------
 
@@ -130,18 +131,28 @@ cartBullets:        .res 2  ; bullets in shopping cart
 ;  ||++---- wagon tongues
 ;  ++------ unused
 cartSpareParts:     .res 2
-cartDollars:        .res 2  ; dollar cost of entire shopping cart
+cartItem: .res 2
+cartTotalDollars:   .res 2  ; dollar cost of entire shopping cart
+cartTotalCents:     .res 1
+cartSubtotalDollars: .res 2
+cartSubtotalCents:   .res 1
 
-cartOxenDigit:      .res 4 ; cost of oxen in shopping cart
-cartFoodLbsDigit:   .res 4 ; cost of food in shopping cart
-cartClothingDigit:  .res 4 ; cost of clothing in shopping cart
-cartBulletsDigit:   .res 4 ; cost of bullets in shopping cart
-cartSparePartsDigit: .res 4 ; cost of spare parts in shopping cart
-cartDollarsDigit:   .res 4 ; total cost of shopping cart
-cartHelperDigit:    .res 6 ; shameless hack
+; decimal digits
+cartOxenCostDigit:  .res 6
+cartFoodLbsCostDigit:  .res 6
+cartClothingCostDigit:  .res 6
+cartBulletsCostDigit:  .res 6
+cartSparePartsCostDigit:  .res 6
+cartDollarsDigit:   .res 6
+cartSubtotalDigit: .res 6
+cartHelperDigit:    .res 6
+cartItemDigit: .res 4 
+costBase:           .res 1 ; cost in cents per lb of food
+costCursor: .res 1 ; 0: 1000s place, 1: 100s place, 2: 10s place, 3: 1s place
+; how much to add to cart subtotal if "up" button pressed
+cursorDollarsValue: .res 1
+cursorCentsValue:   .res 1
 
-cost:               .res 2 ; helper for calculating cost
-costhelper:         .res 2 ; helper for calculating cost
 
 ; Party ------------------------------------------------------------------------
 

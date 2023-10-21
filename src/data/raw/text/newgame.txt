@@ -133,6 +133,10 @@ How many wagon$
 Well then, you're ready to start. Good luck! You have a long and difficult
 journey ahead of you.
 
+## MattDontForget
+
+Don't forget, you'll need oxen to pull your wagon.
+
 ## NowLoadingText
 
 Now loading the wagon…$

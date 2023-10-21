@@ -84,12 +84,8 @@
         INX
         JSR BufferDrawText
         CLC
-        LDA bufferHelper+1
-        ADC #$40
-        STA bufferHelper+1
-        LDA bufferHelper
-        ADC #0
-        STA bufferHelper
+        JSR BufferHelperNextLine
+        JSR BufferHelperNextLine
         CPX #14
         BNE :-
         JSR BufferDrawPressStart
@@ -330,7 +326,7 @@
     LDY #25
     STY fingerY
     LDA #_Y_
-    JSR WriteTileToBuffer
+    WTB
     LDA #%00011111
     STA fingerAttr
     JSR DrawFinger
@@ -398,7 +394,7 @@
             TAX
             LDA helper+1 ; tile index to draw
             LDY #17 ; tiles from top
-            JSR WriteTileToBuffer
+            WTB
             JSR HighlightKeyboardKey
             RTS
         :
@@ -449,7 +445,7 @@
             TAX
             LDA #_UL ; tile index to draw
             LDY #17 ; tiles from top
-            JSR WriteTileToBuffer
+            WTB
             :
             BIT nameCursor
             BPL :+

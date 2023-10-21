@@ -465,12 +465,7 @@
     CMP #3
     BNE :+
     CLC
-    LDA bufferHelper+1
-    ADC #$80
-    STA bufferHelper+1
-    LDA bufferHelper
-    ADC #0
-    STA bufferHelper
+    JSR BufferHelperNextLine
     :
     JSR BufferDrawText
     JSR BufferDrawPressStart
@@ -705,11 +700,11 @@
     LDX #23
     LDY #17
     LDA #_5_
-    JSR WriteTileToBuffer
+    WTB
     LDX #24
     LDY #17
     LDA #_0_
-    JSR WriteTileToBuffer
+    WTB
 
     SBW #2, #$22, #$44 ; "ox"
         LDX #5
@@ -723,7 +718,7 @@
     LDX #24
     LDY #18
     LDA #_4_
-    JSR WriteTileToBuffer
+    WTB
 
     SBW #16, #$22, #$64 ; "spare wagon part"
         LDX #7
@@ -737,7 +732,7 @@
     LDX #24
     LDY #19
     LDA #_2_
-    JSR WriteTileToBuffer
+    WTB
 
     SBW #15, #$22, #$84 ; "set of clothing"
         LDX #23
@@ -751,7 +746,7 @@
     LDX #24
     LDY #20
     LDA #_2_
-    JSR WriteTileToBuffer
+    WTB
 
     SBW #17, #$22, #$A4 ; "bullets (each 50)"
         LDX #38
@@ -784,7 +779,7 @@
     LDX #24
     LDY #21
     LDA #_1_
-    JSR WriteTileToBuffer
+    WTB
 
     SBW #16, #$22, #$C4 ; "food (each 25 lb)"
         LDX #45
@@ -821,7 +816,7 @@
     LDX #24
     LDY #22
     LDA #_1_
-    JSR WriteTileToBuffer
+    WTB
 
     SBW #14, #$22, #$E4 ; "cash (each $5)"
         LDX #49
@@ -854,7 +849,7 @@
     LDX #24
     LDY #23
     LDA #_1_
-    JSR WriteTileToBuffer
+    WTB
     
     RTS
 .endproc

@@ -1013,7 +1013,7 @@
 ;             LDA decimalDigits, X
 ;             LDX fingerX
 ;             LDY fingerY
-;             JSR WriteTileToBuffer
+;             WTB
 ;             RTS
 ;             :
 ;             CMP #16
@@ -1042,7 +1042,7 @@
 ;             LDA decimalDigits, X
 ;             LDX fingerX
 ;             LDY fingerY
-;             JSR WriteTileToBuffer
+;             WTB
 ;             RTS
 ;             :
 ;             CMP #18
@@ -1077,7 +1077,7 @@
 ;             LDA decimalDigits, X
 ;             LDX fingerX
 ;             LDY fingerY
-;             JSR WriteTileToBuffer
+;             WTB
 ;             :
 ;             RTS
 ;         @menuItem2:
@@ -1190,7 +1190,7 @@
 ;             LDA decimalDigits, X
 ;             LDX fingerX
 ;             LDY fingerY
-;             JSR WriteTileToBuffer
+;             WTB
 ;             RTS
 ;             :
 ;             CMP #16
@@ -1219,7 +1219,7 @@
 ;             LDA decimalDigits, X
 ;             LDX fingerX
 ;             LDY fingerY
-;             JSR WriteTileToBuffer
+;             WTB
 ;             RTS
 ;             :
 ;             CMP #18
@@ -1254,7 +1254,7 @@
 ;             LDA decimalDigits, X
 ;             LDX fingerX
 ;             LDY fingerY
-;             JSR WriteTileToBuffer
+;             WTB
 ;             :
 ;             RTS
 ;         @menuItem2:

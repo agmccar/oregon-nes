@@ -141,9 +141,9 @@ GAMESTATE_HUNTING   = 7 ; hunting minigame
 BANK_TITLE = 0
 BANK_NEWGAME = 1
 BANK_STORE = 1
-BANK_LANDMARK = 1
+BANK_LANDMARK = 6
 ; BANK_MAP = 0
-BANK_TRAVELING = 1
+BANK_TRAVELING = 6
 ; BANK_RIVER = 0
 ; BANK_HUNTING = 0
 BANK_DATA = 0
@@ -219,16 +219,13 @@ LOC_THEDALLES           = 16
 LOC_WILLAMETTE          = 17
 
 SHORTCUT_DISTANCE = 125 ; miles. South Pass to Green River and Blue Mountains to The Dalles
-
-; Cost
-; %00000000
-;  |+++++++ number (0-127)
-;  +------- unit- 0:dollars, 1:cents 
-COST_OXEN       = 20
-COST_CLOTHES    = 10
-COST_BULLETS    = $81
-COST_PARTS      = 10
-COST_FOOD_LB    = $82
+ 
+COST_BASE         = 20 ; cents
+COST_OXEN         = 100 ; * costBase = Cost per ox
+COST_CLOTHES      = 50 ; * costBase = Cost per set of clothing
+COST_BULLETS_BOX  = 10 ; * costBase = Cost per box of 20 bullets
+COST_PARTS        = 50 ; * costBase = Cost per spare part
+COST_FOOD_LB      = 1 ; * costBase = Cost per lb of food
 
 ; Events (stuff happens/text pops up)
 EVENT_NONE              = 0

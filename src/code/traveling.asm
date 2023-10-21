@@ -3,6 +3,7 @@
     JSR ClearScreen
     JSR ClearAttributes ; default palette
     SBD
+    LoadCHR #<textTilesMeta, #>textTilesMeta
     LDA menuOpen
     CMP #MENU_MAINMENU
     BNE :+
@@ -26,6 +27,17 @@
         JSR BufferDrawHealthText
         JMP Done
     @menuNone:
+        LoadCHR #<wagonTilesMeta, #>wagonTilesMeta
+        LDA location
+        CMP #LOC_FORTLARAMIE
+        BCS :+
+        LoadCHR #<horizonPlainsTilesMeta, #>horizonPlainsTilesMeta
+        LoadImage #<horizonPlainsImageMeta, #>horizonPlainsImageMeta
+        JMP :++
+        :
+        LoadCHR #<horizonMountainsTilesMeta, #>horizonMountainsTilesMeta
+        LoadImage #<horizonMountainsImageMeta, #>horizonMountainsImageMeta
+        :
         LDA PPUSTATUS
         LDA #$23
         STA PPUADDR
@@ -37,32 +49,6 @@
         STA PPUDATA
         DEX
         BNE :-
-        LDA PPUSTATUS
-        LDA #$20
-        STA PPUADDR
-        LDX #0 ; temp- draw horizon
-        LDA location
-        CMP #LOC_FORTLARAMIE
-        BCS :++
-        LDA #$80
-        STA PPUADDR
-        :
-        LDA bgPlains, X
-        STA PPUDATA
-        INX
-        CPX #$40
-        BNE :-
-        JMP :+++
-        :
-        LDA #$60
-        STA PPUADDR
-        :
-        LDA bgMountains, X
-        STA PPUDATA
-        INX
-        CPX #$60
-        BNE :-
-        :
         LDA PPUSTATUS
         LDA #$21
         STA PPUADDR
@@ -238,19 +224,10 @@
     INX
     CPX #$20
     BNE :---
-    LDA currentBank
-    PHA
-    LDY #BANK_DATA ; get image data
-    JSR bankswitch_y
-    LDA #<mapTiles 
-    STA pointer
-    LDA #>mapTiles
-    STA pointer+1
-    LDA #<mapImage
-    STA helper2
-    LDA #>mapImage
-    STA helper2+1
-    JSR CopyCHRPatternB
+    
+    LoadCHR #<mapTilesMeta, #>mapTilesMeta
+    LoadImage #<mapImageMeta, #>mapImageMeta
+    
     LDA PPUSTATUS ; draw letterbox (top)
     LDA #$20
     STA PPUADDR
@@ -304,24 +281,21 @@
     DEX
     BNE :-
 
-    LDA helper2 ; set attribute table
-    STA pointer
-    LDA helper2+1
-    STA pointer+1
-    LDA #$00
-    STA counter
-    LDA #$03
-    STA counter+1
-    LDA PPUSTATUS
-    LDA #$20
-    STA PPUADDR
-    LDA #$40
-    STA PPUADDR
-    JSR UnpackData
-
-    PLA
-    TAY
-    JSR bankswitch_y
+    ; LDA helper2 ; set attribute table
+    ; STA pointer
+    ; LDA helper2+1
+    ; STA pointer+1
+    ; LDA #$00
+    ; STA counter
+    ; LDA #$03
+    ; STA counter+1
+    ; LDA PPUSTATUS
+    ; LDA #$20
+    ; STA PPUADDR
+    ; LDA #$40
+    ; STA PPUADDR
+    ; JSR UnpackData
+    
     EBD
     JSR BufferDrawMapTitle
     JSR LoadTrailSprites
@@ -361,17 +335,8 @@
     BNE :-
 
     ; tile chr
-    LDA #<suppliesTilesMeta
-    STA pointer
-    LDA #>suppliesTilesMeta
-    STA pointer+1
-    JSR UnpackTilesMeta
+    LoadCHR #<suppliesTilesMeta, #>suppliesTilesMeta
 
-
-    LDA currentBank
-    PHA
-    LDY #BANK_DATA
-    JSR bankswitch_y
     LDA PPUSTATUS ; attributes
     LDA #$23
     STA PPUADDR
@@ -384,9 +349,6 @@
     INX
     CPX #7*8
     BNE :-
-    PLA
-    TAY
-    JSR bankswitch_y
 
     EBD
     JSR BufferDrawSupplies
@@ -653,7 +615,7 @@
             ADC #_0_
             LDX fingerX
             LDY fingerY
-            JSR WriteTileToBuffer
+            WTB
             JSR DrawRestSubmenu
             JSR RedrawFinger
             JMP Done
@@ -754,7 +716,7 @@
             ADC #_0_
             LDX fingerX
             LDY fingerY
-            JSR WriteTileToBuffer
+            WTB
             JSR DrawRestSubmenu
             JSR RedrawFinger
             JMP Done
@@ -789,27 +751,27 @@
     LDX #4  ; vertical bars (left)
     LDY #16
     LDA #_VR
-    JSR WriteTileToBuffer
+    WTB
     LDX #4
     LDY #17
     LDA #_VR
-    JSR WriteTileToBuffer
+    WTB
     LDX #4
     LDY #18
     LDA #_VR
-    JSR WriteTileToBuffer
+    WTB
     LDX #22  ; vertical bars (right)
     LDY #16
     LDA #_VR
-    JSR WriteTileToBuffer
+    WTB
     LDX #22
     LDY #17
     LDA #_VR
-    JSR WriteTileToBuffer
+    WTB
     LDX #22
     LDY #18
     LDA #_VR
-    JSR WriteTileToBuffer
+    WTB
 
     LDX #4 ; bottom row of menu
     LDY #19
@@ -896,27 +858,27 @@
     LDX #4  ; vertical bars (left)
     LDY #18
     LDA #_VR
-    JSR WriteTileToBuffer
+    WTB
     LDX #4
     LDY #19
     LDA #_VR
-    JSR WriteTileToBuffer
+    WTB
     LDX #4
     LDY #20
     LDA #_VR
-    JSR WriteTileToBuffer
+    WTB
     LDX #26  ; vertical bars (right)
     LDY #18
     LDA #_VR
-    JSR WriteTileToBuffer
+    WTB
     LDX #26
     LDY #19
     LDA #_VR
-    JSR WriteTileToBuffer
+    WTB
     LDX #26
     LDY #20
     LDA #_VR
-    JSR WriteTileToBuffer
+    WTB
 
     LDX #4 ; bottom row of menu
     LDY #21
@@ -1005,27 +967,27 @@
     LDX #4  ; vertical bars (left)
     LDY #20
     LDA #_VR
-    JSR WriteTileToBuffer
+    WTB
     LDX #4
     LDY #21
     LDA #_VR
-    JSR WriteTileToBuffer
+    WTB
     LDX #4
     LDY #22
     LDA #_VR
-    JSR WriteTileToBuffer
+    WTB
     LDX #22  ; vertical bars (right)
     LDY #20
     LDA #_VR
-    JSR WriteTileToBuffer
+    WTB
     LDX #22
     LDY #21
     LDA #_VR
-    JSR WriteTileToBuffer
+    WTB
     LDX #22
     LDY #22
     LDA #_VR
-    JSR WriteTileToBuffer
+    WTB
 
     LDX #4 ; bottom row of menu
     LDY #23
@@ -1074,11 +1036,6 @@
 .proc BufferDrawSupplies
 
     JSR SetPaletteSupplies
-
-    LDA currentBank
-    PHA
-    LDY #BANK_DATA ; get image data
-    JSR bankswitch_y
 
     LDA #5
     STA counter
@@ -1136,10 +1093,6 @@
     INX
     DEC counter
     BNE :---
-    
-    PLA
-    TAY
-    JSR bankswitch_y
 
     SBW #12, #$20, #$B0 ; oxenDigit
         LDX #0
@@ -1674,21 +1627,6 @@
     RTS
 .endproc
 
-.proc BufferClearTravelingHUDValue
-    SBW #12, pointer, pointer+1
-        LDX #12
-        LDA #___
-        :
-        WBB
-        DEX
-        BNE :-
-    EBW
-    :                   ; vblankwait for aesthetic reasons
-    BIT PPUSTATUS
-    BPL :-
-    RTS
-.endproc
-
 .proc BufferDrawFoodText
     ; @param pointer: nametable location
     JSR BufferClearTravelingHUDValue
@@ -1878,48 +1816,6 @@
     RTS
 .endproc
 
-.proc BufferDrawTalkText
-    LDA location ; get memory location of compressed talk text
-    ASL
-    CLC
-    ADC talkOption
-    ADC talkOption
-    TAX
-    LDA talkPointer, X
-    STA pointer
-    INX
-    LDA talkPointer, X
-    STA pointer+1
-    LDA #$20 ; PPU address - start at top left
-    STA bufferHelper
-    LDA #$E4
-    STA bufferHelper+1
-
-    LDA currentBank
-    PHA
-    LDA location ; bankswitch to get text data
-    LSR
-    LSR
-    CLC
-    ADC #2
-    TAY
-    JSR bankswitch_y
-
-    JSR BufferDrawText
-    PLA
-    TAY
-    JSR bankswitch_y
-
-    INC talkOption ; increment talkOption
-    LDA talkOption
-    CMP #3
-    BNE :+
-    LDA #0
-    STA talkOption
-    :
-    RTS
-.endproc
-
 .proc LoadTrailSprites
     LDX #39*4 ; map legend
     :
@@ -1954,6 +1850,69 @@
     ; LDA #0
     ; STA PPUADDR
     ; STA PPUADDR
+    RTS
+.endproc
+
+.proc DrawLandmarkTitle
+    ; pointer: ppuaddr 
+    LDA PPUSTATUS   ; set footer bar location
+    LDA pointer
+    STA PPUADDR
+    LDA pointer+1
+    STA PPUADDR
+    JSR DrawBlankLine   ; start footer bar
+    LDX location
+    JSR GetLandmarkText
+    LDA #32 ; draw landmark text line
+    SEC
+    SBC helper2
+    LSR
+    STA helper2+1
+    LDX #0
+    LDA #___
+    :
+    STA PPUDATA
+    INX
+    CPX helper2+1
+    BNE :-
+    LDY #0
+    :
+    LDA textLineHelper, Y
+    STA PPUDATA
+    INY
+    CPY helper2
+    BNE :-
+    LDA #32
+    SEC
+    SBC helper2
+    SBC helper2+1
+    TAX
+    LDA #___
+    :
+    CPX #0
+    BNE :+
+    JMP :++
+    :
+    STA PPUDATA
+    DEX
+    JMP :--
+    :
+    JSR DrawBlankLine   ; blank line
+    LDX #0          ; draw date text line
+    LDA #___
+    :
+    STA PPUDATA
+    INX
+    CPX #10
+    BNE :-
+    JSR DrawDateText
+    LDA #___
+    LDX #0
+    :
+    STA PPUDATA
+    INX
+    CPX #10
+    BNE :-
     RTS
 .endproc
 

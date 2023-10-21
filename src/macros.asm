@@ -95,3 +95,22 @@
 .macro EBD
     JSR EndBulkDrawing
 .endmacro
+
+.macro WTB
+    JSR WriteTileToBuffer
+.endmacro
+
+.macro MakeChange dollarsAddr, centsAddr
+    LDA #0
+    STA helper+1
+    STA helper2+1
+    LDA dollarsAddr
+    STA helper
+    LDA centsAddr
+    STA helper2
+    JSR CheckCents
+.endmacro
+
+.macro CPA val
+    CMP val
+.endmacro

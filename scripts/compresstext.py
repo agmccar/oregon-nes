@@ -5,7 +5,7 @@ import argparse
 
 TEXTLINE_TILES = 4*6
 PUNCT = {
-    " ": 0,
+    " ": 0, # "tells you:"
     "@": 1, # actually a comma
     ".": 2,
     "!": 3,

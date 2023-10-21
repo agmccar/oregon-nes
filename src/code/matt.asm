@@ -39,21 +39,81 @@
         JMP GenStore
     :
     CMP #MENU_MATT_OXEN
-    BCS :+
-    JMP :+++
+    BNE :+
+        LDA #40
+        STA cursorDollarsValue
+        LDA #0
+        STA cursorCentsValue
+        STA cartOxen
+        STA cartOxen+1
+        SetDigit #cartOxenCostDigit, #cartOxen
+        LDX #11
+        JMP Explain
     :
-    CMP #MENU_MATT_WHEELS+1
-    BCC :+
-    JMP :++
+    CMP #MENU_MATT_FOOD
+    BNE :+
+        LDA #0
+        STA cursorDollarsValue
+        STA cartFoodLbs
+        STA cartFoodLbs+1
+        SetDigit #cartFoodLbsCostDigit, #cartFoodLbs
+        LDA #20
+        STA cursorCentsValue
+        LDX #14
+        JMP Explain
     :
+    CMP #MENU_MATT_CLOTHING
+    BNE :+
+        LDA #10
+        STA cursorDollarsValue
+        LDA #0
+        STA cursorCentsValue
+        STA cartClothing
+        STA cartClothing+1
+        SetDigit #cartClothingCostDigit, #cartClothing
+        LDX #12
+        JMP Explain
+    :
+    CMP #MENU_MATT_AMMO
+    BNE :+
+        LDA #2
+        STA cursorDollarsValue
+        LDA #0
+        STA cursorCentsValue
+        STA cartBullets
+        STA cartBullets+1
+        SetDigit #cartBulletsCostDigit, #cartBullets
+        LDX #12
+        JMP Explain
+    :
+    CMP #MENU_MATT_WHEELS
+    BNE :+
+        LDA #10
+        STA cursorDollarsValue
+        LDA #0
+        STA cursorCentsValue
+        STA cartSpareParts
+        STA cartSpareParts+1
+        STA cartItem
+        STA cartItem+1
+        SetDigit #cartSparePartsCostDigit, #cartSpareParts
+        LDX #11
         JMP Explain
     :
     CMP #MENU_MATT_AXLES
     BNE :+
+        LDA #0
+        STA cartItem
+        STA cartItem+1
+        PHA
         JMP HowManyWagonX
     :
     CMP #MENU_MATT_TONGUES
     BNE :+
+        LDA #0
+        STA cartItem
+        STA cartItem+1
+        PHA
         JMP HowManyWagonX
     :
     CMP #MENU_MATT_GOODLUCK
@@ -63,6 +123,17 @@
     RTS
 
     GenStore:
+        LDa #0 ; zero out cart subtotal
+        STA cartSubtotalDollars
+        STA cartSubtotalDollars+1
+        STA cartSubtotalCents
+        STA cartItem
+        STA cartItem+1
+        LDA #3
+        STA costCursor
+        SetDigit #cartSubtotalDigit, #cartSubtotalDollars
+        SetDigit #cartItemDigit, #cartSubtotalDollars
+
         ; erase to the right of Matt
         BDrawBlankBox #$20, #$c8, #24, #21
         BDrawBlankBox #$23, #$64, #24, #1
@@ -132,24 +203,18 @@
             ADC mattSuppliesText, X
             STA counter+1
         EBW
-        CLC
-        LDA bufferHelper+1
-        ADC #$20
-        STA bufferHelper+1
-        LDA bufferHelper
-        ADC #0
-        STA bufferHelper
+        JSR BufferHelperNextLine
         PLA
         TAX
         DEX
         BNE :--
 
         ; Draw item costs
-        BDrawDollarAmount #$21, #$57, #cartOxenDigit
-        BDrawDollarAmount #$21, #$77, #cartFoodLbsDigit
-        BDrawDollarAmount #$21, #$97, #cartClothingDigit
-        BDrawDollarAmount #$21, #$b7, #cartBulletsDigit
-        BDrawDollarAmount #$21, #$d7, #cartSparePartsDigit
+        BDrawDollarAmount #$21, #$57, #cartOxenCostDigit
+        BDrawDollarAmount #$21, #$77, #cartFoodLbsCostDigit
+        BDrawDollarAmount #$21, #$97, #cartClothingCostDigit
+        BDrawDollarAmount #$21, #$b7, #cartBulletsCostDigit
+        BDrawDollarAmount #$21, #$d7, #cartSparePartsCostDigit
 
         SBW #6, #$23, #$e2 ; green line
             LDX #6 ; attributes
@@ -171,6 +236,7 @@
             CPX #11
             BNE :-
         EBW
+        JSR CalculateCartTotal ; calculate total bill
         BDrawDollarAmount #$22, #$57, #cartDollarsDigit
 
         SBW #9, #$22, #$ad ; "You have:"
@@ -192,6 +258,8 @@
 
         RTS
     Explain:
+        TXA
+        PHA
         SBW #6, #$23, #$d2 ; erase to the right of Matt
             LDX #6 ; attributes
             LDA #$ff
@@ -264,7 +332,6 @@
         RTS
     Image:
         EBD
-
         SEC ; Matt's thoughts on the item
         LDA menuOpen
         SBC #MENU_MATT_OXEN
@@ -278,13 +345,8 @@
         STA helper+1
         BDrawText helper, helper+1, #$21, #$08
         
-        CLC ; newline+newline
-        LDA bufferHelper+1
-        ADC #$40
-        STA bufferHelper+1
-        LDA bufferHelper
-        ADC #0
-        STA bufferHelper
+        JSR BufferHelperNextLine
+        JSR BufferHelperNextLine
 
         LDA menuOpen
         CMP #MENU_MATT_WHEELS ; spare parts?
@@ -323,13 +385,7 @@
             CPX #42+11
             BNE :-
         EBW
-        CLC
-        LDA bufferHelper+1
-        ADC #$20
-        STA bufferHelper+1
-        LDA bufferHelper
-        ADC #0
-        STA bufferHelper
+        JSR BufferHelperNextLine
         CLC
         LDA counter
         ADC #7
@@ -351,6 +407,8 @@
         ; "How many wagon ___?"
         BDrawText newgamePointer+56, newgamePointer+57, bufferHelper, bufferHelper+1
     HowManyWagonX:
+        LDA #_0_
+        STA cartItemDigit+3
         SEC
         LDA menuOpen
         SBC #MENU_MATT_WHEELS
@@ -391,11 +449,12 @@
         :
         LDY #17
         LDA #_QU
-        JSR WriteTileToBuffer
+        WTB
 
     Footer:
         ; SBW #8, #$22, #$89 ; box for number input
         BDrawTextBox #$22, #$89, cartSpareParts+1, #3
+
         SBW #12, #$23, #$48 ; "Bill so far:"
             LDX #0
             :
@@ -405,6 +464,7 @@
             CPX #12
             BNE :-
         EBW
+        JSR CalculateCartTotal
         SBW #6, #$23, #$55 ; "$____.00"
             LDA #_DL
             WBB
@@ -419,6 +479,41 @@
             WBB
         EBW
 
+        LDA #%00010100
+        STA fingerAttr
+        PLA
+        TAX
+        BEQ :+
+            LDY #22
+            JSR MoveFingerToSubmenu
+            JMP :++
+        :
+        JSR RedrawFinger
+        :
+        SEC
+        LDA fingerX
+        SBC #10
+        STA helper
+        SBW helper, #$22, #$cb
+            LDA #_UL
+            LDX helper
+            :
+            DEX
+            BEQ :+
+            WBB
+            JMP :-
+            :
+            LDA #_0_
+            WBB
+        EBW
+        LDA menuOpen
+        CMP #MENU_MATT_FOOD
+        BNE :+
+        LDA #_LB
+        LDX #16
+        LDY #22
+        WTB
+        :
         RTS
     GoodLuck:
         BDrawBlankBox #$20, #$68, #24, #24
@@ -459,12 +554,7 @@
     CPY #0
     BEQ :+
     CLC
-    LDA bufferHelper+1
-    ADC #$20
-    STA bufferHelper+1
-    LDA bufferHelper
-    ADC #0
-    STA bufferHelper
+    JSR BufferHelperNextLine
     DEY
     JMP :-
     :
@@ -586,30 +676,94 @@
             RTS
         :
         CMP #MENU_MATT_OXEN
-        BCS :+
-        JMP :+++
+        BNE :++
+            LDX #0
+            :
+            LDA cartSubtotalDigit, X
+            STA cartOxenCostDigit, X
+            INX
+            CPX #6
+            BNE :-
+            LDA cartItem
+            STA cartOxen
+            LDA cartItem+1
+            STA cartOxen+1
+            JMP GoBack
         :
-        CMP #MENU_MATT_AMMO+1
-        BCC :+
-        JMP :++
+        CMP #MENU_MATT_FOOD
+        BNE :++
+            LDX #0
+            :
+            LDA cartSubtotalDigit, X
+            STA cartFoodLbsCostDigit, X
+            INX
+            CPX #6
+            BNE :-
+            LDA cartItem
+            STA cartFoodLbs
+            LDA cartItem+1
+            STA cartFoodLbs+1
+            JMP GoBack
         :
+        CMP #MENU_MATT_CLOTHING
+        BNE :++
+            LDX #0
+            :
+            LDA cartSubtotalDigit, X
+            STA cartClothingCostDigit, X
+            INX
+            CPX #6
+            BNE :-
+            LDA cartItem
+            STA cartClothing
+            LDA cartItem+1
+            STA cartClothing+1
+            JMP GoBack
+        :
+        CMP #MENU_MATT_AMMO
+        BNE :++
+            LDX #0
+            :
+            LDA cartSubtotalDigit, X
+            STA cartBulletsCostDigit, X
+            INX
+            CPX #6
+            BNE :-
+            LDA cartItem
+            STA cartBullets
+            LDA cartItem+1
+            STA cartBullets+1
             GoBack:
-            LDA #MENU_NONE
-            STA menuOpen
+            JSR CloseSubmenu
             RTS
         :
         CMP #MENU_MATT_WHEELS
         BNE :+
+            NextSparePart:
+            CLC
+            LDA cartSpareParts
+            ADC cartItem
+            STA cartSpareParts
             INC menuOpen
             RTS
         :
         CMP #MENU_MATT_AXLES
         BNE :+
-            INC menuOpen
-            RTS
+            JMP NextSparePart
         :
         CMP #MENU_MATT_TONGUES
-        BNE :+
+        BNE :++
+            LDX #0
+            :
+            LDA cartSubtotalDigit, X
+            STA cartSparePartsCostDigit, X
+            INX
+            CPX #6
+            BNE :-
+            CLC
+            LDA cartSpareParts
+            ADC cartItem
+            STA cartSpareParts
             JMP GoBack
         :
         CMP #MENU_MATT_GOODLUCK
@@ -657,6 +811,55 @@
             STX fingerY
             RTS
         :
+        CMP #MENU_MATT_OXEN
+        BNE :+
+            LDA #2
+            STA counter
+            JSR CostCursorDown
+            RTS
+        :
+        CMP #MENU_MATT_FOOD
+        BNE :+
+            LDA #1
+            STA counter
+            JSR CostCursorDown
+            RTS
+        :
+        CMP #MENU_MATT_CLOTHING
+        BNE :+
+            LDA #1
+            STA counter
+            JSR CostCursorDown
+            RTS
+        :
+        CMP #MENU_MATT_AMMO
+        BNE :+
+            LDA #20
+            STA counter
+            JSR CostCursorDown
+            RTS
+        :
+        CMP #MENU_MATT_WHEELS
+        BNE :+
+            LDA #1
+            STA counter
+            JSR CostCursorDown
+            RTS
+        :
+        CMP #MENU_MATT_AXLES
+        BNE :+
+            LDA #4
+            STA counter
+            JSR CostCursorDown
+            RTS
+        :
+        CMP #MENU_MATT_TONGUES
+        BNE :+
+            LDA #16
+            STA counter
+            JSR CostCursorDown
+            RTS
+        :
         RTS
     CheckUp:
         LDA #KEY_UP
@@ -683,12 +886,83 @@
             STX fingerY
             RTS
         :
+        CMP #MENU_MATT_OXEN
+        BNE :+
+            LDA #2
+            STA counter
+            JSR CostCursorUp
+            RTS
+        :
+        CMP #MENU_MATT_FOOD
+        BNE :+
+            LDA #1
+            STA counter
+            JSR CostCursorUp
+            RTS
+        :
+        CMP #MENU_MATT_CLOTHING
+        BNE :+
+            LDA #1
+            STA counter
+            JSR CostCursorUp
+            RTS
+        :
+        CMP #MENU_MATT_AMMO
+        BNE :+
+            LDA #20
+            STA counter
+            JSR CostCursorUp
+            RTS
+        :
+        CMP #MENU_MATT_WHEELS
+        BNE :+
+            LDA #1
+            STA counter
+            JSR CostCursorUp
+            RTS
+        :
+        CMP #MENU_MATT_AXLES
+        BNE :+
+            LDA #4
+            STA counter
+            JSR CostCursorUp
+            RTS
+        :
+        CMP #MENU_MATT_TONGUES
+        BNE :+
+            LDA #16
+            STA counter
+            JSR CostCursorUp
+            RTS
+        :
         RTS
     CheckLeft:
         LDA #KEY_LEFT
         BIT buttons1
         BNE :+
         JMP CheckRight
+        :
+        LDA menuOpen
+        CMP #MENU_MATT_FOOD
+        BNE :++
+            ShiftCursorLeft:
+            DEC fingerX
+            LDA fingerX
+            CMP #10
+            BNE :+
+                INC fingerX
+                RTS
+            :
+            JSR CostCursorLeft
+            RTS
+        :
+        CMP #MENU_MATT_CLOTHING
+        BNE :+
+            JMP ShiftCursorLeft
+        :
+        CMP #MENU_MATT_AMMO
+        BNE :+
+            JMP ShiftCursorLeft
         :
         RTS
     CheckRight:
@@ -697,5 +971,564 @@
         BNE :+
         RTS
         :
+        LDA menuOpen
+        CMP #MENU_MATT_FOOD
+        BNE :++
+            ShiftCursorRight:
+            INC fingerX
+            LDA fingerX
+            CMP #15
+            BNE :+
+                DEC fingerX
+                RTS
+            :
+            JSR CostCursorRight
+            RTS
+        :
+        CMP #MENU_MATT_CLOTHING
+        BNE :+
+            JMP ShiftCursorRight
+        :
+        CMP #MENU_MATT_AMMO
+        BNE :+
+            JMP ShiftCursorRight
+        :
         RTS
+.endproc
+
+.proc CostCursorLeft
+    DEC costCursor
+    LDX costCursor
+    LDA cartItemDigit, X
+    CMP #_UL
+    BNE :+
+    LDA #_0_
+    STA cartItemDigit, X
+    LDX fingerX
+    LDY fingerY
+    WTB
+    :
+    LDA cursorDollarsValue
+    STA helper
+    LDA cursorCentsValue
+    STA helper+1
+    LDA #0
+    STA cursorDollarsValue
+    STA cursorCentsValue
+    LDX #10
+    :
+    CLC
+    LDA cursorDollarsValue
+    ADC helper
+    STA cursorDollarsValue
+    DEX
+    BNE :-
+    LDX #10
+    :
+    CLC
+    LDA cursorCentsValue
+    ADC helper+1
+    STA cursorCentsValue
+    LDA cursorCentsValue
+    CMP #100
+    BCC :+
+        SEC
+        LDA cursorCentsValue
+        SBC #100
+        STA cursorCentsValue
+        INC cursorDollarsValue
+    :
+    DEX
+    BNE :--
+    RTS
+.endproc
+
+.proc CostCursorRight
+    INC costCursor
+    LDA cursorDollarsValue
+    LSR
+    TAX
+    LDA cursorCentsValue
+    LSR
+    STA helper
+    LDA #0
+    STA cursorDollarsValue
+    STA cursorCentsValue
+    LDY #5
+    :
+    CPY #0
+    BNE :+
+    LDY #5
+    INC cursorDollarsValue
+    :
+    CPX #0
+    BEQ :+
+    DEY
+    DEX
+    JMP :--
+    :
+    CPY #5
+    BEQ :++
+    CPY #0
+    BEQ :++
+    STY helper+1
+    SEC
+    LDA #5
+    SBC helper+1
+    TAY
+    :
+    CLC
+    LDA cursorCentsValue
+    ADC #20
+    STA cursorCentsValue
+    DEY
+    BNE :-
+    :
+    LDX helper
+    LDY #5
+    :
+    CPY #0
+    BNE :+
+    LDY #5
+    INC cursorCentsValue
+    :
+    CPX #0
+    BEQ :+
+    DEY
+    DEX
+    JMP :--
+    :
+    RTS
+.endproc
+
+.proc CostCursorUp
+    ; param counter+0: item multiplier
+    LDA #0
+    STA cartItem
+    STA cartItem+1
+    LDX costCursor
+    LDA cartItemDigit, X
+    CMP #_UL
+    BNE :+
+    LDA #_0_
+    STA cartItemDigit, X
+    :
+    INC cartItemDigit, X
+    LDA cartItemDigit, X
+    CMP #_1_+1
+    BNE :+
+    LDA costCursor ; check for max 1999 lb food
+    BNE :+
+    LDA menuOpen
+    CMP #MENU_MATT_FOOD
+    BNE :+
+    LDA #_0_
+    STA cartItemDigit, X
+    LDX #1
+    JMP Wrap
+    :
+    LDA cartItemDigit, X
+    CMP #_3_+1
+    BNE :+
+    LDA menuOpen ; check for max 3 spare part
+    CMP #MENU_MATT_WHEELS
+    BCC :+
+    LDA #_0_
+    STA cartItemDigit, X
+    LDX #3
+    JMP Wrap
+    :
+    LDA cartItemDigit, X
+    CMP #_9_+1
+    BNE PreCount
+    LDA #_0_
+    STA cartItemDigit, X
+    LDX #9
+    Wrap:
+    SEC
+    LDA cartSubtotalDollars
+    SBC cursorDollarsValue
+    STA cartSubtotalDollars
+    LDA cartSubtotalDollars+1
+    SBC #0
+    STA cartSubtotalDollars+1
+    SEC
+    LDA cartSubtotalCents
+    SBC cursorCentsValue
+    STA cartSubtotalCents
+    MakeChange #cartSubtotalDollars, #cartSubtotalCents
+    DEX
+    BNE Wrap
+    JMP Count
+    PreCount:
+    CLC
+    LDA cartSubtotalDollars
+    ADC cursorDollarsValue
+    STA cartSubtotalDollars
+    LDA cartSubtotalDollars+1
+    ADC #0
+    STA cartSubtotalDollars+1
+    CLC
+    LDA cartSubtotalCents
+    ADC cursorCentsValue
+    STA cartSubtotalCents
+    MakeChange #cartSubtotalDollars, #cartSubtotalCents
+    Count:
+    JSR CountSubtotal
+    RTS
+.endproc
+
+.proc CostCursorDown
+    ; param counter+0: item multiplier
+    LDA #0
+    STA cartItem
+    STA cartItem+1
+    LDX costCursor
+    LDA cartItemDigit, X
+    CMP #_UL
+    BNE :+
+    LDA #_0_
+    STA cartItemDigit, X
+    :
+    DEC cartItemDigit, X
+    LDA cartItemDigit, X
+    CMP #_0_-1
+    BNE PreCount
+    LDA menuOpen
+    CMP #MENU_MATT_FOOD
+    BNE :+
+    LDA costCursor
+    BNE :+
+    LDA #_1_
+    STA cartItemDigit, X
+    LDX #1
+    JMP Wrap
+    :
+    LDA menuOpen
+    CMP #MENU_MATT_WHEELS
+    BCC :+
+    LDA #_3_
+    STA cartItemDigit, X
+    LDX #3
+    JMP Wrap
+    :
+    LDA #_9_
+    STA cartItemDigit, X
+    LDX #9
+    Wrap:
+    CLC
+    LDA cartSubtotalDollars
+    ADC cursorDollarsValue
+    STA cartSubtotalDollars
+    LDA cartSubtotalDollars+1
+    ADC #0
+    STA cartSubtotalDollars+1
+    CLC
+    LDA cartSubtotalCents
+    ADC cursorCentsValue
+    STA cartSubtotalCents
+    MakeChange #cartSubtotalDollars, #cartSubtotalCents
+    DEX
+    BNE Wrap
+    JMP Count
+    PreCount:
+    SEC
+    LDA cartSubtotalDollars
+    SBC cursorDollarsValue
+    STA cartSubtotalDollars
+    LDA cartSubtotalDollars+1
+    SBC #0
+    STA cartSubtotalDollars+1
+    SEC
+    LDA cartSubtotalCents
+    SBC cursorCentsValue
+    STA cartSubtotalCents
+    MakeChange #cartSubtotalDollars, #cartSubtotalCents
+    Count:
+    JSR CountSubtotal
+    RTS
+.endproc
+
+.proc CountSubtotal
+    Count:
+    LDA counter
+    BNE :+
+    LDX costCursor
+    LDA cartItemDigit, X
+    LDX fingerX
+    LDY fingerY
+    JSR WriteTileToBuffer
+    SetDigit #cartSubtotalDigit, #cartSubtotalDollars
+    RTS
+    :
+    DEC counter
+    Thousands:
+    LDA cartItemDigit
+    CMP #_UL
+    BEQ Hundreds
+    SEC
+    SBC #_0_
+    TAY
+    :
+    CPY #0
+    BEQ Hundreds
+    CLC
+    LDA cartItem
+    ADC #$e8
+    STA cartItem
+    LDA cartItem+1
+    ADC #$03
+    STA cartItem+1
+    DEY
+    JMP :-
+    Hundreds:
+    LDA cartItemDigit+1
+    CMP #_UL
+    BEQ Tens
+    SEC
+    SBC #_0_
+    TAY
+    :
+    CPY #0
+    BEQ Tens
+    CLC
+    LDA cartItem
+    ADC #100
+    STA cartItem
+    LDA cartItem+1
+    ADC #0
+    STA cartItem+1
+    DEY
+    JMP :-
+    Tens:
+    LDA cartItemDigit+2
+    CMP #_UL
+    BEQ Ones
+    SEC
+    SBC #_0_
+    TAY
+    :
+    CPY #0
+    BEQ Ones
+    CLC
+    LDA cartItem
+    ADC #10
+    STA cartItem
+    LDA cartItem+1
+    ADC #0
+    STA cartItem+1
+    DEY
+    JMP :-
+    Ones:
+    SEC
+    LDA cartItemDigit+3
+    SBC #_0_
+    CLC
+    ADC cartItem
+    STA cartItem
+    LDA cartItem+1
+    ADC #0
+    STA cartItem+1
+    JMP Count
+    RTS
+.endproc
+
+.proc CalculateCartTotal
+    LDA #0
+    STA cartTotalDollars
+    STA cartTotalDollars+1
+    STA cartTotalCents
+
+    LDX cartOxen
+    :
+    CPX #0
+    BEQ :+
+    CLC
+    LDA cartTotalDollars
+    ADC #20
+    STA cartTotalDollars
+    LDA cartTotalDollars+1
+    ADC #0
+    STA cartTotalDollars+1
+    DEX
+    JMP :-
+    :
+
+    LDA cartFoodLbs
+    STA counter
+    LDA cartFoodLbs+1
+    STA counter+1
+    :
+    SEC
+    LDA counter
+    SBC #5
+    STA counter
+    LDA counter+1
+    SBC #0
+    STA counter+1
+    BIT counter+1
+    BPL :+
+    CLC
+    LDA counter
+    ADC #5
+    STA counter
+    LDA counter+1
+    ADC #0
+    STA counter+1
+    JMP :++
+    :
+    CLC
+    LDA cartTotalDollars
+    ADC #1
+    STA cartTotalDollars
+    LDA cartTotalDollars+1
+    ADC #0
+    STA cartTotalDollars+1
+    JMP :--
+    :
+    LDX counter
+    :
+    CPX #0
+    BEQ :+
+    CLC
+    LDA cartTotalCents
+    ADC #20
+    STA cartTotalCents
+    DEX
+    JMP :-
+    :
+    MakeChange #cartTotalDollars, #cartTotalCents
+
+    LDX cartClothing
+    :
+    CPX #0
+    BEQ :+
+    CLC
+    LDA cartTotalDollars
+    ADC #10
+    STA cartTotalDollars
+    LDA cartTotalDollars+1
+    ADC #0
+    STA cartTotalDollars+1
+    DEX
+    JMP :-
+    :
+
+    LDA cartBullets
+    STA counter
+    LDA cartBullets+1
+    STA counter+1
+    :
+    SEC
+    LDA counter
+    SBC #20
+    STA counter
+    LDA counter+1
+    SBC #0
+    STA counter+1
+    BIT counter+1
+    BPL :+
+    CLC
+    LDA counter
+    ADC #20
+    STA counter
+    LDA counter+1
+    ADC #0
+    STA counter+1
+    JMP :++
+    :
+    CLC
+    LDA cartTotalDollars
+    ADC #2
+    STA cartTotalDollars
+    LDA cartTotalDollars+1
+    ADC #0
+    STA cartTotalDollars+1
+    JMP :--
+    :
+    LDX counter
+    :
+    CPX #0
+    BEQ :+
+    CLC
+    LDA cartTotalCents
+    ADC #10
+    STA cartTotalCents
+    DEX
+    JMP :-
+    :
+    MakeChange #cartTotalDollars, #cartTotalCents
+
+    LDA #0
+    STA helper
+    CLC
+    LDA cartSpareParts
+    AND #%00000011
+    ADC helper
+    STA helper
+    LDA cartSpareParts
+    AND #%00001100
+    LSR
+    LSR
+    ADC helper
+    STA helper
+    LDA cartSpareParts
+    AND #%00110000
+    LSR
+    LSR
+    LSR
+    LSR
+    ADC helper
+    STA helper
+    TAX
+    :
+    CLC
+    LDA cartTotalDollars
+    ADC #10
+    STA cartTotalDollars
+    DEX
+    BNE :-
+
+    SetDigit #cartDollarsDigit, #cartTotalDollars
+    RTS
+.endproc
+
+.proc CheckCents
+    LDY #0
+    LDA (helper2), Y
+    BPL :+
+    CLC
+    LDA (helper2), Y
+    ADC #100
+    STA (helper2), Y
+    SEC
+    LDY #0
+    LDA (helper), Y
+    SBC #1
+    STA (helper), Y
+    INY
+    LDA (helper), Y
+    SBC #0
+    STA (helper), Y
+    RTS
+    :
+    LDY #0
+    LDA (helper2), Y
+    CMP #100
+    BCC :+
+    SEC
+    LDA (helper2), Y
+    SBC #100
+    STA (helper2), Y
+    CLC
+    LDY #0
+    LDA (helper), Y
+    ADC #1
+    STA (helper), Y
+    INY
+    LDA (helper), Y
+    ADC #0
+    STA (helper), Y
+    :
+    RTS
 .endproc

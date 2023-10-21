@@ -18,6 +18,8 @@
     STA weather
     LDA #3                  ; default date March 1, 1848
     STA dateMonth
+    LDA #COST_BASE
+    STA costBase
     LDA #0
     STA traveledMi
     STA dateDay             ; date will increment after choosing start month
@@ -41,12 +43,6 @@
     SetDigit #oxenDigit, #oxenHeadcount
     SetDigit #nextDigit, #nextMi
     SetDigit #traveledDigit, #traveledMi
-    SetDigit #cartOxenDigit, #cartOxen
-    SetDigit #cartFoodLbsDigit, #cartFoodLbs
-    SetDigit #cartClothingDigit, #cartClothing
-    SetDigit #cartBulletsDigit, #cartBullets
-    SetDigit #cartSparePartsDigit, #cartBullets ; hack
-    SetDigit #cartDollarsDigit, #cartDollars
     LDA #%00000100      ; main fingers visible, pointing right
     STA fingerAttr
     LDA #0              ; initialize cursor
@@ -89,6 +85,15 @@
     STA fingerX
     LDA #10
     STA fingerY
+    SetDigit #cartOxenCostDigit, #cartOxen
+    SetDigit #cartFoodLbsCostDigit, #cartOxen
+    SetDigit #cartClothingCostDigit, #cartOxen
+    SetDigit #cartBulletsCostDigit, #cartOxen
+    SetDigit #cartSparePartsCostDigit, #cartOxen
+    SetDigit #cartDollarsDigit, #cartOxen
+    SetDigit #cartSubtotalDigit, #cartOxen
+    SetDigit #cartHelperDigit, #cartOxen
+    SetDigit #cartItemDigit, #cartOxen
     RTS
 .endproc
 
@@ -100,6 +105,7 @@
     STA fingerLastX     ; initialize cursor (5x,6y) tiles from top left
     STA fingerLastY
     STA menuOpen        ; no menu open
+    STA menuCursor
     STA wagonStatus     ; stopped, at landmark, no rest remaining
     LDX location
     LDA nextLandmarkDistance, X
@@ -108,17 +114,14 @@
     LDY #nextMi
     JSR SetDigitFromValue
 
-
     LDA #EVENT_NEXT_LANDMARK
     JSR QueueEvent
 
-    
     LDA #2
     STA fingerX
     LDA #10
     STA fingerY
     JSR LoadBgLandmark  ; Load background
-    RTS
     RTS
 .endproc
 
@@ -127,10 +130,14 @@
 .endproc
 
 .proc InitStateTraveling
+    LDY #BANK_TRAVELING
+    JSR bankswitch_y
     LDA #%00000100      ; only finger visible, pointing right
     STA fingerAttr
     STA fingerLastX     ; initialize cursor (5x,6y) tiles from top left
     STA fingerLastY
+    LDA #0
+    STA menuCursor
     LDA #MENU_MAINMENU
     STA menuOpen
     LDA wagonStatus
@@ -142,8 +149,6 @@
     STA fingerX
     LDA #11
     STA fingerY
-    ;JSR LoadDefaultCHR
-    JSR LoadBgTraveling  ; Load background
     RTS
 .endproc
 
@@ -318,18 +323,18 @@
     :
     LDA #___
     DEY
-    JSR WriteTileToBuffer
+    WTB
     LDX fingerLastX
     LDY fingerLastY
     LDA #___
     INY
-    JSR WriteTileToBuffer
+    WTB
     JMP :++
     :
     LDX fingerLastX
     LDY fingerLastY
     LDA #___
-    JSR WriteTileToBuffer
+    WTB
     :
     LDX fingerLastLastX     ; are we in a submenu?
     LDY fingerLastLastY 
@@ -343,7 +348,7 @@
     BIT fingerAttr
     BEQ :+
     LDA #_PR
-    JSR WriteTileToBuffer
+    WTB
     :                       ; draw finger at new position
     LDA #%00000100          ; check if main finger is visible
     BIT fingerAttr
@@ -358,28 +363,28 @@
     BEQ :+
     INX
     LDA #_AR    ; arrow right
-    JSR WriteTileToBuffer
+    WTB
     LDX fingerX
     LDY fingerY
     DEX
     LDA #_AL    ; arrow left
-    JSR WriteTileToBuffer
+    WTB
     JMP :+++
     :
     INY
     LDA #_AD    ; arrow down
-    JSR WriteTileToBuffer
+    WTB
     LDX fingerX
     LDY fingerY
     DEY
     LDA #_AU    ; arrow up
-    JSR WriteTileToBuffer
+    WTB
     JMP :++
     :
     LDX fingerX
     LDY fingerY
     LDA #_PR
-    JSR WriteTileToBuffer
+    WTB
     :
     LDA fingerX             ; remember last finger position
     STA fingerLastX
@@ -432,30 +437,30 @@
     LDY fingerY
     DEY
     LDA #_VR
-    JSR WriteTileToBuffer
+    WTB
     LDX #3
     LDY fingerY
     LDA #_VR
-    JSR WriteTileToBuffer
+    WTB
     LDX #3
     LDY fingerY
     INY
     LDA #_VR
-    JSR WriteTileToBuffer
+    WTB
     LDX #18                 ; vertical bars (right)
     LDY fingerY
     DEY
     LDA #_VR
-    JSR WriteTileToBuffer
+    WTB
     LDX #18
     LDY fingerY
     LDA #_VR
-    JSR WriteTileToBuffer
+    WTB
     LDX #18
     LDY fingerY
     INY
     LDA #_VR
-    JSR WriteTileToBuffer
+    WTB
     LDX #2                  ; last row of submenu
     INX
     LDY fingerY
@@ -475,124 +480,6 @@
         LDA #_LU
         WBB
     EBW
-    RTS
-.endproc
-
-.proc IncreaseDigit
-    ; X: memory location of digit to increment
-    ; cost+0: bit 7: unit- 0:dollars, 1:cents
-    LDA #0
-    STA pointer+1
-    STX pointer
-    CPX #0
-    BNE Ones
-    JMP Done
-    Ones:
-        LDA fingerX
-        CMP #7 ; 1's place
-        BNE Tens
-        LDY #3
-        JMP Done
-    Tens:
-        CMP #6 ; 10's place
-        BNE Hundreds
-        LDY #2
-        JMP Done
-    Hundreds:
-        CMP #5 ; 100's place
-        BNE Thousands
-        LDY #1
-        JMP Done
-    Thousands:
-        LDY #0
-    Done:
-    LDA (pointer), Y
-    TAX
-    INX
-    CPX #_CL ; #_9_+1
-    BNE :+
-    LDX #_0_
-    :
-    BIT cost
-    BMI :+
-    LDA fingerX
-    CMP #7
-    BCS :+
-    CPX #_2_
-    BNE :+
-    LDX #_0_
-    :
-    LDA fingerX
-    CMP #5
-    BCS :+
-    CPX #_2_ ; #_1_+1
-    BNE :+
-    LDX #_0_
-    :
-    TXA
-    STA (pointer), Y
-    LDX fingerX
-    LDY fingerY
-    JSR WriteTileToBuffer
-    RTS
-.endproc
-
-.proc DecreaseDigit
-    ; X: memory location of digit to decrement
-    ; cost+0: bit 7: unit- 0:dollars, 1:cents
-    LDA #0
-    STA pointer+1
-    STX pointer
-    CPX #0
-    BNE Ones
-    JMP Done
-    Ones:
-        LDA fingerX
-        CMP #7 ; 1's place
-        BNE Tens
-        LDY #3
-        JMP Done
-    Tens:
-        CMP #6 ; 10's place
-        BNE Hundreds
-        LDY #2
-        JMP Done
-    Hundreds:
-        CMP #5 ; 100's place
-        BNE Thousands
-        LDY #1
-        JMP Done
-    Thousands:
-        LDY #0
-    Done:
-    LDA (pointer), Y
-    TAX
-    DEX
-    CPX #_Z_ ; #_0_-1
-    BNE :+
-    LDX #_9_
-    :
-    BIT cost
-    BMI :+
-    LDA fingerX
-    CMP #7
-    BCS :+
-    CPX #_9_
-    BNE :+
-    LDX #_1_
-    :
-    LDA fingerX
-    CMP #5
-    BCS :+
-    CPX #_9_ ; #_1_+1
-    BNE :+
-    LDX #_1_
-    :
-    TXA
-    STA (pointer), Y
-    LDX fingerX
-    LDY fingerY
-    JSR WriteTileToBuffer
     RTS
 .endproc
 
@@ -826,6 +713,21 @@
     RTS
 .endproc
 
+.proc BufferClearTravelingHUDValue
+    SBW #12, pointer, pointer+1
+        LDX #12
+        LDA #___
+        :
+        WBB
+        DEX
+        BNE :-
+    EBW
+    :                   ; vblankwait for aesthetic reasons
+    BIT PPUSTATUS
+    BPL :-
+    RTS
+.endproc
+
 .proc BufferDrawWeatherText
     ; @param pointer: nametable location
     JSR BufferClearTravelingHUDValue
@@ -992,8 +894,6 @@
     :
     TYA ; "tells you:"
     PHA
-
-    LDX counter
     LDA #___
     JSR WriteTextChar
     DEC counter
@@ -1001,35 +901,21 @@
     :
     LDA talkTellsYou, Y
     JSR WriteTextChar
-    LDA talkTellsYou, Y
-    INX
     INY
     CPY #10
     BNE :-
-
-    LDX counter
     LDA #___
-    :
     JSR WriteTextChar
-    INX
-    CPX #TEXT_POPUP_LINE_LEN
-    BNE :-
 
-    DEC counter
-    LDX counter
-    LDA #___
-    :
-    JSR WriteTextChar
-    INX
-    CPX #TEXT_POPUP_LINE_LEN
-    BNE :-
-    
-    LDA #1
-    STA textLineHelper+3 ; flag for 1 literal char
+    JSR BufferDrawTextBR
+
+    JSR BufferHelperNextLine
     LDA #_QT
     JSR WriteTextChar
+    
     PLA
     TAY
+
     PLA
     TAX ; unstash talkTextBuffer index
     JMP NextSegment
@@ -1207,41 +1093,7 @@
     BCS :+
     JMP WordToLine
     :
-    TYA ; no more room in line
-    PHA ; stash Y
-    LDX #TEXT_POPUP_LINE_LEN ; write line to screen
-    JSR StartBufferWrite
-        LDA #TEXT_POPUP_LINE_LEN
-        WBB
-        LDA bufferHelper
-        WBB
-        LDA bufferHelper+1
-        WBB
-        LDX #0
-        :
-        LDA popupTextLine1, X
-        WBB
-        INX
-        CPX #TEXT_POPUP_LINE_LEN
-        BNE :-
-    EBW
-    PLA ; unstash Y
-    TAY
-    CLC ; write a "carriage return" to screen
-    LDA bufferHelper+1
-    ADC #$20
-    STA bufferHelper+1
-    LDA bufferHelper
-    ADC #0
-    STA bufferHelper
-    LDX #0
-    STX counter ; reset index of char in line
-    LDA #___
-    :
-    STA popupTextLine1, X ; clear popupTextLine1
-    INX
-    CPX #TEXT_POPUP_LINE_LEN
-    BNE :-
+    JSR BufferDrawTextBR
     WordToLine: ; write finished word to line
     INC textLineHelper
     LDX #0
@@ -1272,6 +1124,39 @@
     BNE :-
     Done:
     LDX textLineHelper+2 ; unstash x
+    RTS
+.endproc
+
+.proc BufferDrawTextBR
+    TYA ; no more room in line
+    PHA ; stash Y
+    LDX #TEXT_POPUP_LINE_LEN ; write line to screen
+    JSR StartBufferWrite
+        LDA #TEXT_POPUP_LINE_LEN
+        WBB
+        LDA bufferHelper
+        WBB
+        LDA bufferHelper+1
+        WBB
+        LDX #0
+        :
+        LDA popupTextLine1, X
+        WBB
+        INX
+        CPX #TEXT_POPUP_LINE_LEN
+        BNE :-
+    EBW
+    PLA ; unstash Y
+    TAY
+    JSR BufferHelperNextLine
+    LDX #0
+    STX counter ; reset index of char in line
+    LDA #___
+    :
+    STA popupTextLine1, X ; clear popupTextLine1
+    INX
+    CPX #TEXT_POPUP_LINE_LEN
+    BNE :-
     RTS
 .endproc
 
@@ -1432,6 +1317,48 @@
         CPX #$10
         BNE :-
     EBW
+    :
+    RTS
+.endproc
+
+.proc BufferDrawTalkText
+    LDA location ; get memory location of compressed talk text
+    ASL
+    CLC
+    ADC talkOption
+    ADC talkOption
+    TAX
+    LDA talkPointer, X
+    STA pointer
+    INX
+    LDA talkPointer, X
+    STA pointer+1
+    LDA #$20 ; PPU address - start at top left
+    STA bufferHelper
+    LDA #$E4
+    STA bufferHelper+1
+
+    LDA currentBank
+    PHA
+    LDA location ; bankswitch to get text data
+    LSR
+    LSR
+    CLC
+    ADC #2
+    TAY
+    JSR bankswitch_y
+
+    JSR BufferDrawText
+    PLA
+    TAY
+    JSR bankswitch_y
+
+    INC talkOption ; increment talkOption
+    LDA talkOption
+    CMP #3
+    BNE :+
+    LDA #0
+    STA talkOption
     :
     RTS
 .endproc
@@ -2178,6 +2105,17 @@
 
 ; Helpers ----------------------------------------------------------------------
 
+.proc BufferHelperNextLine
+    CLC
+    LDA bufferHelper+1
+    ADC #$20
+    STA bufferHelper+1
+    LDA bufferHelper
+    ADC #0
+    STA bufferHelper
+    RTS
+.endproc
+
 .proc PointerToNextLine
     PHP
     PHA
@@ -2556,7 +2494,7 @@
     :
     LDX fingerX
     LDY fingerY
-    JSR WriteTileToBuffer
+    WTB
     RTS
 .endproc
 
@@ -2888,7 +2826,7 @@
         LDX fingerX
         LDY fingerY
         LDA #_N_
-        JSR WriteTileToBuffer
+        WTB
         RTS
     :
     CMP #MENU_TITLE_SOUND
@@ -3087,13 +3025,6 @@
             STA fingerAttr
             JSR LoadBgMatt
             JSR RedrawFinger
-            RTS
-        :
-        CMP #GAMESTATE_LANDMARK
-        BNE :+
-            LDA #%00000000      ; neither finger visible
-            STA fingerAttr
-            JSR LoadBgLandmark
             RTS
         :
         CMP #GAMESTATE_TRAVELING

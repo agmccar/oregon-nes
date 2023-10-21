@@ -20,10 +20,7 @@
     .include "data/compressed/image/suppliesTiles.asm"
     .include "data/compressed/image/textTiles.asm"
     .include "data/compressed/image/titleLogo.asm"
-    .include "data/raw/image/suppliesRaw.asm" ; todo compress
     .include "data/compressed/image/supplies.asm"
-    .include "data/raw/backgrounds.asm"
-    .include "data/raw/sprites.asm"
     .include "data/raw/climate.asm"
 
     .include "code/title.asm"
@@ -37,8 +34,6 @@
     .include "code/matt.asm"
     .include "data/compressed/text/newgame.asm"
     .include "code/store.asm"
-    .include "code/traveling.asm"
-    .include "code/landmark.asm"
 
 .segment "ROM2"
     .include "data/compressed/image/landmarkA.asm"
@@ -59,6 +54,14 @@
 .segment "ROM6"
     .include "data/compressed/image/landmarkE.asm"
     .include "data/compressed/text/talkE.asm"
+    .include "data/compressed/image/wagon.asm"
+    .include "data/compressed/image/horizonPlains.asm"
+    .include "data/compressed/image/horizonMountains.asm"
+    .include "data/raw/backgrounds.asm" ; todo deprecate
+    .include "data/raw/image/suppliesRaw.asm" ; todo compress
+    .include "data/raw/sprites.asm"
+    .include "code/landmark.asm"
+    .include "code/traveling.asm"
 
 .segment "RODATA" ; ROM7
     banktable:              ; Write to this table to switch banks.
