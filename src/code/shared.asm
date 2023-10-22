@@ -2760,6 +2760,10 @@
     DEX
     BNE :-
     LDA gameState
+    CMP lastGameState
+    BEQ :+
+    RTS
+    :
     CMP #GAMESTATE_TRAVELING
     BNE :+
     JSR GamepadTraveling
@@ -3008,6 +3012,11 @@
         JSR LoadBgMatt
         RTS
     :
+    CMP #MENU_MATT_LOADING
+    BNE :+
+        JSR LoadBgIndependence
+        RTS
+    :
     RTS
     None:
         LDA #0
@@ -3050,12 +3059,16 @@
 .endproc
 
 .proc Every60Frames
-    LDA gameState ; only on main traveling screen
+    LDA gameState
     CMP #GAMESTATE_TRAVELING
     BEQ Traveling
     CMP #GAMESTATE_NEWGAME
     BNE :+
     JMP NewGame
+    :
+    CMP #GAMESTATE_MATT
+    BNE :+
+    JMP Matt
     :
     RTS
     Traveling:
@@ -3153,7 +3166,7 @@
             ; STA frameCounter
             RTS
         GoingBack:
-        LDA frameCounter ; blink cursor
+        LDA frameCounter
         CMP #60
         BNE :+
         JMP @sec1
@@ -3170,6 +3183,26 @@
             STA menuOpen
             :
             RTS
+    Matt:
+        LDA menuOpen
+        CMP #MENU_MATT_LOADING
+        BEQ :+
+        RTS
+        :
+        LDA frameCounter
+        CMP #60
+        BEQ :+
+        RTS
+        : 
+        INC menuCursor
+        LDA #0
+        STA frameCounter
+        LDA menuCursor
+        CMP #3
+        BNE :+
+        LDA #GAMESTATE_LANDMARK
+        STA gameState
+        :
         RTS
 .endproc
 

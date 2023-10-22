@@ -940,103 +940,137 @@
     EBW
     RTS
     BeforeLeaving1:
-    CMP #MENU_NEWGAME_BEFORELEAVING1
-    BEQ :+
-    JMP BeforeLeaving2
-    :
-    SBW #24, #$23, #$d8 ; attributes
-        LDX #3
+        CMP #MENU_NEWGAME_BEFORELEAVING1
+        BEQ :+
+        JMP BeforeLeaving2
         :
-        TXA
-        PHA
-        LDA #%11001110
-        WBB
-        LDA #$ff
-        LDX #6
-        :
-        WBB
-        DEX
-        BNE :-
-        LDA #%00110011
-        WBB
-        PLA
-        TAX
-        DEX
-        BNE :--
-    EBW
-    BDrawTextBox #$21, #$82, #28, #9
-    LDA newgamePointer+22 ; newgameBeforeLeavingText1
-    STA pointer
-    LDA newgamePointer+23 ; "Before leaving Independence..."
-    STA pointer+1
-    LDA #$21
-    STA bufferHelper
-    LDA #$c4
-    STA bufferHelper+1
-    JSR BufferDrawText
-    SBW #5, #$22, #$37
-        LDA #_DL
-        WBB
-        LDX #0
-        STX helper
-        :
-        LDA dollarsDigit, X
-        CPX #0
-        BNE :+
-        CMP #_0_
-        BNE :+
-        INX
-        JMP :-
-        :
-        WBB
-        INX
-        INC helper
-        CPX #4
-        BNE :--
-        LDA helper
-        CMP #3
-        BNE :+
-        LDA #_00
-        WBB
-        :
-    EBW
-    JSR BufferDrawPressStart
-    RTS
+        SBW #24, #$23, #$d8 ; attributes
+            LDX #3
+            :
+            TXA
+            PHA
+            LDA #%11001110
+            WBB
+            LDA #$ff
+            LDX #6
+            :
+            WBB
+            DEX
+            BNE :-
+            LDA #%00110011
+            WBB
+            PLA
+            TAX
+            DEX
+            BNE :--
+        EBW
+        BDrawTextBox #$21, #$82, #28, #9
+        LDA newgamePointer+22 ; newgameBeforeLeavingText1
+        STA pointer
+        LDA newgamePointer+23 ; "Before leaving Independence..."
+        STA pointer+1
+        LDA #$21
+        STA bufferHelper
+        LDA #$c4
+        STA bufferHelper+1
+        JSR BufferDrawText
+        SBW #5, #$22, #$37
+            LDA #_DL
+            WBB
+            LDX #0
+            STX helper
+            :
+            LDA dollarsDigit, X
+            CPX #0
+            BNE :+
+            CMP #_0_
+            BNE :+
+            INX
+            JMP :-
+            :
+            WBB
+            INX
+            INC helper
+            CPX #4
+            BNE :--
+            LDA helper
+            CMP #3
+            BNE :+
+            LDA #_00
+            WBB
+            :
+        EBW
+        JSR BufferDrawPressStart
+        RTS
     BeforeLeaving2:
-    CMP #MENU_NEWGAME_BEFORELEAVING2
-    BEQ :+
-    RTS
-    :
-    SBW #16, #$23, #$e0 ; attributes
-        LDA #%11001110
-        WBB
-        LDX #6
-        LDA #$ff
+        CMP #MENU_NEWGAME_BEFORELEAVING2
+        BEQ :+
+        JMP GoingBack
         :
-        WBB
-        DEX
-        BNE :-
-        LDA #%00110011
-        WBB
-        LDX #8
-        LDA #$ff
+        SBW #16, #$23, #$e0 ; attributes
+            LDA #%11001110
+            WBB
+            LDX #6
+            LDA #$ff
+            :
+            WBB
+            DEX
+            BNE :-
+            LDA #%00110011
+            WBB
+            LDX #8
+            LDA #$ff
+            :
+            WBB
+            DEX
+            BNE :-
+        EBW
+        BDrawTextBox #$22, #$02, #28, #5
+        LDA newgamePointer+24 ; newgameBeforeLeavingText2
+        STA pointer
+        LDA newgamePointer+25 ; "You can buy whatever you need..."
+        STA pointer+1
+        LDA #$22
+        STA bufferHelper
+        LDA #$44
+        STA bufferHelper+1
+        JSR BufferDrawText
+        JSR BufferDrawPressStart
+        RTS
+    GoingBack:
+        CMP #MENU_MATT_LOADING
+        BEQ :+
+        RTS
         :
-        WBB
-        DEX
-        BNE :-
-    EBW
-    BDrawTextBox #$22, #$02, #28, #5
-    LDA newgamePointer+24 ; newgameBeforeLeavingText2
-    STA pointer
-    LDA newgamePointer+25 ; "You can buy whatever you need..."
-    STA pointer+1
-    LDA #$22
-    STA bufferHelper
-    LDA #$44
-    STA bufferHelper+1
-    JSR BufferDrawText
-    JSR BufferDrawPressStart
-    RTS
+        SBW #16, #$23, #$e0 ; attributes
+            LDA #%11001110
+            WBB
+            LDX #6
+            LDA #$ff
+            :
+            WBB
+            DEX
+            BNE :-
+            LDA #%00110011
+            WBB
+            LDX #8
+            LDA #$ff
+            :
+            WBB
+            DEX
+            BNE :-
+        EBW
+        BDrawTextBox #$22, #$02, #28, #5
+        LDA newgamePointer+62 ; newgameNowLoadingText
+        STA pointer
+        LDA newgamePointer+63 ; "Now loading the wagon..."
+        STA pointer+1
+        LDA #$22
+        STA bufferHelper
+        LDA #$44
+        STA bufferHelper+1
+        JSR BufferDrawText
+        RTS
 .endproc
 
 .proc LoadBgIndependence

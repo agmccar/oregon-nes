@@ -1094,6 +1094,7 @@
     DEC counter
     BNE :---
 
+    SetDigit #oxenDigit, #oxenHeadcount
     SBW #12, #$20, #$B0 ; oxenDigit
         LDX #0
         :
@@ -1117,6 +1118,7 @@
         BNE :--
     EBW
 
+    SetDigit #clothingDigit, #clothing
     SBW #12, #$20, #$F0 ; clothingDigit
         LDX #TEXT_SUPPLIES_LEN
         :
@@ -1140,6 +1142,7 @@
         BNE :--
     EBW
 
+    SetDigit #bulletsDigit, #bullets
     SBW #12, #$21, #$30 ; bulletsDigit
         LDX #TEXT_SUPPLIES_LEN*2
         :
@@ -1229,6 +1232,7 @@
         WBB
     EBW
 
+    SetDigit #foodLbsDigit, #foodLbs
     SBW #12, #$22, #$30 ; foodLbsDigit
         LDX #TEXT_SUPPLIES_LEN*6
         INX
@@ -1258,6 +1262,7 @@
         WBB
     EBW
 
+    SetDigit #dollarsDigit, #dollars
     SBW #12, #$22, #$70 ; dollars
         LDA #_C_
         WBB

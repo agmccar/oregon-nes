@@ -767,6 +767,35 @@
             JMP GoBack
         :
         CMP #MENU_MATT_GOODLUCK
+        BNE :++
+            LDA #0
+            STA menuCursor
+            LDA cartSpareParts ; Transfer cart to inventory
+            STA spareParts
+            LDX #0
+            :
+            LDA cartOxen, X
+            STA oxenHeadcount, X
+            INX
+            CPX #8
+            BNE :-
+            SEC
+            LDA dollars ; subtract cost of cart
+            SBC cartTotalDollars
+            STA dollars
+            LDA dollars+1
+            SBC cartTotalDollars+1
+            STA dollars+1
+            SEC
+            LDA cents
+            SBC cartTotalCents
+            STA cents
+            MakeChange #dollars, #cents
+            LDA #MENU_MATT_LOADING
+            STA menuOpen
+            RTS
+        :
+        CMP #MENU_MATT_LOADING
         BNE :+
             LDA #GAMESTATE_LANDMARK
             STA gameState

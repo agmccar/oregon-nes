@@ -139,4 +139,4 @@ Don't forget, you'll need oxen to pull your wagon.
 
 ## NowLoadingText
 
-Now loading the wagon…$
+Now loading the wagon$

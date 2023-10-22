@@ -210,8 +210,8 @@ newgameMattDontForget:
     .byte $00
 
 newgameNowLoadingText:
-    ; 16 bytes
-    .byte $25,$37,$36,$27,$e6,$39,$50,$04,$d6,$01,$d4,$13,$d6,$09,$fb
+    ; 15 bytes
+    .byte $25,$37,$35,$27,$e6,$39,$50,$04,$d6,$01,$d4,$13,$d6,$09
     .byte $00
 
 newgamePointer:
