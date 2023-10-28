@@ -144,10 +144,16 @@
     AND #%00001110
     ORA #%00000010
     STA wagonStatus     ; stopped, on the trail, no rest remaining
-    
+    LDX #TEXT_POPUP_LINE_LEN
+    LDA #0
+    :
+    STA popupTextLine1, X
+    STA popupTextLine2, X
+    DEX
+    BNE :-
     LDA #4
     STA fingerX
-    LDA #11
+    LDA #16
     STA fingerY
     RTS
 .endproc

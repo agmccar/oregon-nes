@@ -34,6 +34,8 @@
     .include "code/matt.asm"
     .include "data/compressed/text/newgame.asm"
     .include "code/store.asm"
+    .include "data/raw/hunting.asm"
+    .include "data/compressed/image/hunting.asm"
 
 .segment "ROM2"
     .include "data/compressed/image/landmarkA.asm"

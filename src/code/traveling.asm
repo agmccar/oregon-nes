@@ -7,25 +7,13 @@
     LDA menuOpen
     CMP #MENU_MAINMENU
     BNE :+
-    JMP @menuMain
+        JSR DrawHUDMainMenu
+        JMP Done
     :
     CMP #MENU_NONE
     BNE :+
     JMP @menuNone
     :
-    @menuMain:
-        JSR DrawHUDMainMenu
-        LDA #$20    ; weather text
-        STA pointer
-        LDA #$EC
-        STA pointer+1
-        JSR BufferDrawWeatherText
-        LDA #$21    ; Health text
-        STA pointer
-        LDA #$2C
-        STA pointer+1
-        JSR BufferDrawHealthText
-        JMP Done
     @menuNone:
         LoadCHR #<wagonTilesMeta, #>wagonTilesMeta
         LDA location
@@ -38,22 +26,14 @@
         LoadCHR #<horizonMountainsTilesMeta, #>horizonMountainsTilesMeta
         LoadImage #<horizonMountainsImageMeta, #>horizonMountainsImageMeta
         :
-        LDA PPUSTATUS
-        LDA #$23
-        STA PPUADDR
-        LDA #$C8
-        STA PPUADDR
+        PPU #$23, #$c8
         LDX #24
         LDA #%10101010
         :
         STA PPUDATA
         DEX
         BNE :-
-        LDA PPUSTATUS
-        LDA #$21
-        STA PPUADDR
-        LDA #$40
-        STA PPUADDR
+        PPU #$21, #$40
         LDX #0 ; draw ground
         LDA #TILE_GRASS
         :
@@ -66,118 +46,95 @@
         JSR BufferDrawTravelingHUDValues
         JSR BufferDrawPressStart
         JSR BufferDrawWagon
-    
-
-
-
-        JMP Done
     Done:
     EBD
     RTS
 .endproc
 
 .proc DrawHUDMainMenu
-    LDA PPUSTATUS   ; set color palette (attribute table)
-    LDA #$23
-    STA PPUADDR
-    LDA #$C0
-    STA PPUADDR
-    LDA #%11111111
-    LDX #0
-    :
-    STA PPUDATA
-    INX
-    CPX #8
-    BNE :-
-    LDA #%01111111
-    STA PPUDATA
-    LDA #%01011111
-    LDX #0
-    :
-    STA PPUDATA
-    INX
-    CPX #6
-    BNE :-
-    LDA #%11011111
-    STA PPUDATA
-    LDA #%11110111
-    STA PPUDATA
-    LDA #%11110101
-    LDX #0
-    :
-    STA PPUDATA
-    INX
-    CPX #6
-    BNE :-
-    LDA #%11111101
-    STA PPUDATA
-    LDA #%11111111
-    LDX #0
-    :
-    STA PPUDATA
-    INX
-    CPX #8*5
-    BNE :-
     LDX #0  ; draw landmark text
-    LDY #1
+    LDY #2
     JSR SetPpuAddrPointerFromXY
     JSR DrawLandmarkTitle
 
-    LDX #0  ; draw health and weather box
-    LDY #6
-    JSR SetPpuAddrPointerFromXY
-    LDA PPUSTATUS
-    LDA pointer
-    STA PPUADDR
-    LDA pointer+1
-    STA PPUADDR 
-    LDX #0 ; blank row
-    LDA #___
+    PPU #$23, #$c8 ; attributes
+    LDA #$7f
+    STA PPUDATA
+    LDA #$5f
+    LDX #6
     :
     STA PPUDATA
-    INX
-    CPX #35
+    DEX
     BNE :-
-    LDX #0 ; "WEATHER:"
+    LDA #$df
+    STA PPUDATA
+    LDA #$77
+    STA PPUDATA
+    LDA #$55
+    LDX #6
+    :
+    STA PPUDATA
+    DEX
+    BNE :-
+    LDA #$dd
+    STA PPUDATA
+
+    PPU #$20, #$c0 ; white box
+    LDA #___
+    LDX #$20*6
+    :
+    STA PPUDATA
+    DEX
+    BNE :-
+    
+    PPU #$20, #$e3 ; "Weather:"
+    LDX #0 
     :
     LDA hudMenuStatusText, X
     STA PPUDATA
     INX
     CPX #8
     BNE :-
-    LDX #0 ; blank row
-    LDA #___
-    :
-    STA PPUDATA
-    INX
-    CPX #57
-    BNE :-
-    LDX #8 ; "HEALTH:"
+    PPU #$21, #$04 ; "Health:"
     :
     LDA hudMenuStatusText, X
     STA PPUDATA
     INX
     CPX #15
     BNE :-
-    LDX #0 ; blank row
-    LDA #___
+    PPU #$21, #$26 ; "Pace:"
     :
+    LDA hudMenuStatusText, X
     STA PPUDATA
     INX
     CPX #20
     BNE :-
+    PPU #$21, #$43 ; "Rations:"
+    :
+    LDA hudMenuStatusText, X
+    STA PPUDATA
+    INX
+    CPX #28
+    BNE :-
+    JSR UpdateMainMenuHUDValues
+
+    PPU #$21, #$a2 ; "You may:"
+    LDX #1
+    :
+    LDA whatIsYourChoiceText, X
+    STA PPUDATA
+    INX
+    CPX #9
+    BNE :-
+
     LDA #0 ; start menu loop
     STA helper
     LDX #6
-    LDY #11
+    LDY #16
     JSR SetPpuAddrPointerFromXY
     LDX #0
     MenuLoop:
-    LDA PPUSTATUS ; start menu option line
-    LDA pointer
-    STA PPUADDR
-    LDA pointer+1
-    STA PPUADDR
+    PPU pointer, pointer+1 ; start menu option line
     :
     LDA hudMenu, X
     STA PPUDATA
@@ -192,12 +149,21 @@
     PHA
     LDX #6
     INY
-    INY
     JSR SetPpuAddrPointerFromXY
     PLA
     TAX
-    CPY #29
+    CPY #25
     BNE MenuLoop
+
+    PPU #$23, #$62 ; "What is your choice?"
+    LDX #10
+    :
+    LDA whatIsYourChoiceText, X
+    STA PPUDATA
+    INX
+    CPX #30
+    BNE :-
+
     RTS
 .endproc
 
@@ -550,10 +516,9 @@
             DEC menuCursor
             LDX fingerY
             DEX
-            DEX
-            CPX #9 ; check if fingerY is past top of menu
+            CPX #15 ; check if fingerY is past top of menu
             BNE :+
-            LDX #27 ; wrap to bottom of menu
+            LDX #24 ; wrap to bottom of menu
             LDA #8
             STA menuCursor
             :
@@ -652,10 +617,9 @@
             INC menuCursor
             LDX fingerY
             INX
-            INX
-            CPX #29 ; check if fingerY is past bottom of menu
+            CPX #25 ; check if fingerY is past bottom of menu
             BNE :+
-            LDX #11 ; wrap to top of menu
+            LDX #16 ; wrap to top of menu
             LDA #0
             STA menuCursor
             :
@@ -1567,12 +1531,7 @@
     RTS
 .endproc
 
-.proc BufferDrawMainMenuHUDValues
-    LDA menuOpen
-    CMP #MENU_MAINMENU
-    BNE Done
-    LDA wagonRest
-    BEQ Done
+.proc UpdateMainMenuHUDValues
     LDA #$20 ; draw date
     STA pointer
     LDA #$8A
@@ -1585,11 +1544,113 @@
     JSR BufferDrawWeatherText
     LDA #$21 ; draw health
     STA pointer
-    LDA #$2C
+    LDA #$0C
     STA pointer+1
     JSR BufferDrawHealthText
-    Done:
+    LDA #$21 ; draw pace
+    STA pointer
+    LDA #$2C
+    STA pointer+1
+    JSR BufferDrawPaceText
+    LDA #$21 ; draw rations
+    STA pointer
+    LDA #$4C
+    STA pointer+1
+    JSR BufferDrawRationsText
+    RTS
+.endproc
+
+.proc BufferDrawMainMenuHUDValues
+    LDA menuOpen
+    CMP #MENU_MAINMENU
+    BEQ :+
+    LDA wagonRest
+    BEQ :+
+    JSR UpdateMainMenuHUDValues
+    :
     RTS 
+.endproc
+
+.proc BufferDrawRationsText
+    ; @param pointer: nametable location
+    JSR BufferClearTravelingHUDValue
+    SBW #TEXT_RATIONS_LEN, pointer, pointer+1
+        LDA wagonSettings
+        AND #%00001100
+        LSR
+        LSR
+        TAX
+        DEX
+        LDA #0
+        STA counter
+        LDA #TEXT_RATIONS_LEN
+        STA counter+1
+        :
+        CPX #0
+        BEQ :+
+        CLC
+        LDA counter
+        ADC #TEXT_RATIONS_LEN
+        STA counter
+        CLC
+        LDA counter+1
+        ADC #TEXT_RATIONS_LEN
+        STA counter+1 
+        DEX
+        JMP :-
+        :
+        LDX counter
+        :
+        LDA rationsText, X
+        WBB
+        INX
+        CPX counter+1
+        BNE :-
+    EBW
+    :                   ; vblankwait for aesthetic reasons
+    BIT PPUSTATUS
+    BPL :-
+    RTS
+.endproc
+
+.proc BufferDrawPaceText
+    ; @param pointer: nametable location
+    JSR BufferClearTravelingHUDValue
+    SBW #TEXT_PACE_LEN, pointer, pointer+1
+        LDA wagonSettings
+        AND #%00000011
+        TAX
+        DEX
+        LDA #0
+        STA counter
+        LDA #TEXT_PACE_LEN
+        STA counter+1
+        :
+        CPX #0
+        BEQ :+
+        CLC
+        LDA counter
+        ADC #TEXT_PACE_LEN
+        STA counter
+        CLC
+        LDA counter+1
+        ADC #TEXT_PACE_LEN
+        STA counter+1 
+        DEX
+        JMP :-
+        :
+        LDX counter
+        :
+        LDA paceText, X
+        WBB
+        INX
+        CPX counter+1
+        BNE :-
+    EBW
+    :                   ; vblankwait for aesthetic reasons
+    BIT PPUSTATUS
+    BPL :-
+    RTS
 .endproc
 
 .proc BufferDrawTravelingHUDValues
@@ -1902,7 +1963,6 @@
     DEX
     JMP :--
     :
-    JSR DrawBlankLine   ; blank line
     LDX #0          ; draw date text line
     LDA #___
     :
@@ -1918,6 +1978,7 @@
     INX
     CPX #10
     BNE :-
+    JSR DrawBlankLine   ; blank line
     RTS
 .endproc
 

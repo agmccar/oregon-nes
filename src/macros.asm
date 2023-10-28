@@ -114,3 +114,11 @@
 .macro CPA val
     CMP val
 .endmacro
+
+.macro PPU hi, lo
+    LDA PPUSTATUS
+    LDA hi
+    STA PPUADDR
+    LDA lo
+    STA PPUADDR
+.endmacro
