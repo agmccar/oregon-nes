@@ -3535,7 +3535,7 @@
     ; maximum speed is 40mpd, at full health, 4+ oxen, in prairie terrain
     LDA wagonRest ; no distance if resting
     BEQ :+
-    JMP Done
+    RTS
     :
     LDA #80 ; x0.25 mpd = 20 mpd standard
     STA helper
@@ -3637,7 +3637,6 @@
     LDX #nextDigit
     LDY #nextMi
     JSR SetDigitFromValue
-    Done:
     RTS
 .endproc
 
@@ -3822,7 +3821,7 @@
     LDA weather
     CMP #WEATHER_RAINY
     BCS :+
-    JMP Done
+    RTS
     :
     CMP #WEATHER_SNOWY
     BCS :+++
@@ -3839,7 +3838,7 @@
     LDA accumulatedRain
     ADC helper2 ; 0.1" increments (+0.8" heavy rain or +0.2" light rain)
     STA accumulatedRain
-    JMP Done
+    RTS
     :
     CMP #WEATHER_VERY_SNOWY
     BCS :+
@@ -3854,7 +3853,6 @@
     LDA accumulatedSnow
     ADC helper2
     STA accumulatedSnow
-    Done:
     RTS
 .endproc
 
@@ -3862,7 +3860,7 @@
     LDA eventQueue ; proceed only if an event is queued
     CMP #EVENT_NONE
     BNE :+
-    JMP Done
+    RTS
     :
     TAY ; stash event ID in Y register
     LDA eventQueue+1    ; shift all queued events and decrement pointer 
@@ -3983,7 +3981,7 @@
     BNE :+
     JMP BrokenPart
     :
-    JMP Done
+    RTS
     NextLandmark:
         LDX #0
         :
@@ -4020,7 +4018,7 @@
         STA popupTextLine2, Y
         LDA #MENU_TEXTPOPUP
         STA menuOpen
-        JMP Done
+        RTS
     ReachedLandmark:
         LDX #0
         :
@@ -4043,7 +4041,7 @@
         STA popupTextLine2, Y
         LDA #MENU_TEXTPOPUP
         STA menuOpen
-        JMP Done
+        RTS
     LookAround:
         LDX #0
         :
@@ -4064,14 +4062,14 @@
         STA popupTextLine2, Y
         LDA #MENU_TEXTPOPUP_YN
         STA menuOpen
-        JMP Done
+        RTS
     LoadLandmark:
         LDA #MENU_NONE
         STA menuOpen
         INC location ; increment landmark (todo handle trail divide)
         LDA #GAMESTATE_LANDMARK
         STA gameState
-        JMP Done
+        RTS
     IndianFood:
         LDX #1
         LDY #0
@@ -4084,7 +4082,7 @@
         BNE :-
         LDA #MENU_TEXTPOPUP
         STA menuOpen
-        JMP Done
+        RTS
     Thunderstorm:
         LDX #1
         LDY #0
@@ -4108,7 +4106,7 @@
         STA popupTextLine2, Y
         LDA #MENU_TEXTPOPUP
         STA menuOpen
-        JMP Done
+        RTS
     Blizzard:
         LDX #1
         LDY #0
@@ -4132,7 +4130,7 @@
         STA popupTextLine2, Y
         LDA #MENU_TEXTPOPUP
         STA menuOpen
-        JMP Done
+        RTS
     HeavyFog:
         LDX #1
         LDY #0
@@ -4165,7 +4163,7 @@
         :
         LDA #MENU_TEXTPOPUP
         STA menuOpen
-        JMP Done
+        RTS
     HailStorm:
         LDX #1
         LDY #0
@@ -4198,7 +4196,7 @@
         :
         LDA #MENU_TEXTPOPUP
         STA menuOpen
-        JMP Done
+        RTS
     InjuredOx:
         LDX #1
         LDY #0
@@ -4245,7 +4243,7 @@
         :
         LDA #MENU_TEXTPOPUP
         STA menuOpen
-        JMP Done
+        RTS
     InjuredPerson: ; TODO DRY
         JSR RandomNumberGenerator ; select a random person
         AND #%00000111
@@ -4366,7 +4364,7 @@
         STA popupTextLine1, Y
         LDA #MENU_TEXTPOPUP
         STA menuOpen
-        JMP Done
+        RTS
     SnakeBite: ; TODO DRY
         JSR RandomNumberGenerator ; select a random person
         AND #%00000111
@@ -4461,7 +4459,7 @@
         STA popupTextLine1, Y
         LDA #MENU_TEXTPOPUP
         STA menuOpen
-        JMP Done
+        RTS
     LoseTrail:
         LDX #1
         LDY #0
@@ -4505,7 +4503,7 @@
         STA popupTextLine2, Y
         LDA #MENU_TEXTPOPUP
         STA menuOpen
-        JMP Done
+        RTS
     WrongTrail:
         LDX #1
         LDY #0
@@ -4549,7 +4547,7 @@
         STA popupTextLine2, Y
         LDA #MENU_TEXTPOPUP
         STA menuOpen
-        JMP Done
+        RTS
     RoughTrail:
         LDX #1
         LDY #0
@@ -4562,7 +4560,7 @@
         BNE :-
         LDA #MENU_TEXTPOPUP
         STA menuOpen
-        JMP Done
+        RTS
     ImpassibleTrail:
         LDX #1
         LDY #0
@@ -4606,7 +4604,7 @@
         STA popupTextLine2, Y
         LDA #MENU_TEXTPOPUP
         STA menuOpen
-        JMP Done
+        RTS
     WildFruit:
         LDX #1
         LDY #0
@@ -4619,17 +4617,17 @@
         BNE :-
         LDA #MENU_TEXTPOPUP
         STA menuOpen
-        JMP Done
+        RTS
     FireWagon:
-        JMP Done
+        RTS
     LostPerson:
-        JMP Done
+        RTS
     OxWandersOff:
-        JMP Done
+        RTS
     AbandonedWagon:
-        JMP Done
+        RTS
     Thief:
-        JMP Done
+        RTS
     BadWater:
         LDX #1
         LDY #0
@@ -4642,7 +4640,7 @@
         BNE :-
         LDA #MENU_TEXTPOPUP
         STA menuOpen
-        JMP Done
+        RTS
     LittleWater:
         LDX #1
         LDY #0
@@ -4655,7 +4653,7 @@
         BNE :-
         LDA #MENU_TEXTPOPUP
         STA menuOpen
-        JMP Done
+        RTS
     InadequateGrass:
         LDX #1
         LDY #0
@@ -4668,7 +4666,7 @@
         BNE :-
         LDA #MENU_TEXTPOPUP
         STA menuOpen
-        JMP Done
+        RTS
     Illness: ; TODO DRY
         JSR RandomNumberGenerator ; select a random person
         AND #%00000111
@@ -4780,13 +4778,9 @@
         STA popupTextLine1, Y
         LDA #MENU_TEXTPOPUP
         STA menuOpen
-        JMP Done
+        RTS
     BrokenPart:
-        JMP Done
-
-
-    Done:
-    RTS
+        RTS
 .endproc
 
 .proc QueueEvent

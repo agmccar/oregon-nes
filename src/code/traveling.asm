@@ -332,12 +332,12 @@
     :
     LDA wagonRest ; wait until no longer resting
     BEQ :+
-    JMP Done
+    RTS
     :
     LDA buttons1
     CMP buttons1Last
     BNE CheckA
-    JMP Done
+    RTS
     CheckA:
         LDA #KEY_A
         BIT buttons1
@@ -381,19 +381,19 @@
         BNE :+
         JMP @menuTextPopupYN
         :
-        JMP Done
+        RTS
         @menuTextPopup:
             JSR CloseTextPopup
             LDA #MENU_NONE
             STA menuOpen
-            JMP Done
+            RTS
         @menuTextPopupYN:
             JSR CloseTextPopup
             LDA #MENU_NONE
             STA menuOpen
             LDA #EVENT_LOAD_LANDMARK ; if yes selected
             JSR QueueEvent
-            JMP Done
+            RTS
             
         @menuNone:
             ; LDA #MENU_TEXTPOPUP
@@ -402,52 +402,52 @@
             STA menuOpen
             LDA #0
             STA menuCursor
-            JMP Done
+            RTS
         @menuMain:
             LDA menuCursor
             CMP #OPT_CONTINUE
             BNE :+
             LDA #MENU_NONE
             STA menuOpen
-            JMP Done
+            RTS
             :
             CMP #OPT_SUPPLIES
             BNE :+
             LDA #MENU_SUPPLIES
             STA menuOpen
-            JMP Done
+            RTS
             :
             CMP #OPT_MAP
             BNE :+
             LDA #MENU_MAP
             STA menuOpen
-            JMP Done
+            RTS
             :
             CMP #OPT_PACE
             BNE :+
             LDA #MENU_PACE
             STA menuOpen
-            JMP Done
+            RTS
             :
             CMP #OPT_RATIONS
             BNE :+
             LDA #MENU_RATIONS
             STA menuOpen
-            JMP Done
+            RTS
             :
             CMP #OPT_REST
             BNE :+
             LDA #MENU_REST
             STA menuOpen
-            JMP Done
+            RTS
             :
             CMP #OPT_TALK
             BNE :+
             LDA #MENU_TALK
             STA menuOpen
-            JMP Done
+            RTS
             :
-            JMP Done
+            RTS
         @menuMap:
         @menuPace:
         @menuRations:
@@ -456,7 +456,7 @@
         @menuTalk:
             LDA #MENU_MAINMENU
             STA menuOpen
-            JMP Done
+            RTS
         ; @menuOther:
         ; JSR CloseSubmenu...
     CheckB:
@@ -466,7 +466,7 @@
         BNE :+
         JMP CheckStart
         :
-        JMP Done
+        RTS
     CheckStart:
         LDA #KEY_START
         BIT buttons1
@@ -478,11 +478,11 @@
         BNE :+
         JMP @menuSupplies
         :
-        JMP Done
+        RTS
         @menuSupplies:
             LDA #MENU_MAINMENU
             STA menuOpen
-            JMP Done
+            RTS
     CheckUp:
         LDA #KEY_UP
         BIT buttons1
@@ -510,7 +510,7 @@
         BNE :+
         JMP @menuRest
         :
-        JMP Done
+        RTS
         @menuNone:
         @menuMain:
             DEC menuCursor
@@ -523,7 +523,7 @@
             STA menuCursor
             :
             STX fingerY
-            JMP Done
+            RTS
         @menuPace:
             LDA wagonSettings
             AND #%00000011
@@ -542,7 +542,7 @@
             STA wagonSettings
             JSR DrawPaceSubmenu
             JSR RedrawFinger
-            JMP Done
+            RTS
         @menuRations:
             LDA wagonSettings
             AND #%00001100
@@ -566,7 +566,7 @@
             STA wagonSettings
             JSR DrawRationsSubmenu
             JSR RedrawFinger
-            JMP Done
+            RTS
         @menuRest:
             INC wagonRest
             LDA wagonRest
@@ -583,7 +583,7 @@
             WTB
             JSR DrawRestSubmenu
             JSR RedrawFinger
-            JMP Done
+            RTS
     CheckDown:
         LDA #KEY_DOWN
         BIT buttons1
@@ -611,7 +611,7 @@
         BNE :+
         JMP @menuRest
         :
-        JMP Done
+        RTS
         @menuNone:
         @menuMain:
             INC menuCursor
@@ -624,7 +624,7 @@
             STA menuCursor
             :
             STX fingerY
-            JMP Done
+            RTS
         @menuPace:
             LDA wagonSettings
             AND #%00000011
@@ -643,7 +643,7 @@
             STA wagonSettings
             JSR DrawPaceSubmenu
             JSR RedrawFinger
-            JMP Done
+            RTS
         @menuRations:
             LDA wagonSettings
             AND #%00001100
@@ -667,7 +667,7 @@
             STA wagonSettings
             JSR DrawRationsSubmenu
             JSR RedrawFinger
-            JMP Done
+            RTS
         @menuRest:
             DEC wagonRest
             LDA wagonRest
@@ -683,10 +683,9 @@
             WTB
             JSR DrawRestSubmenu
             JSR RedrawFinger
-            JMP Done
+            RTS
     CheckLeft:
     CheckRight:
-    Done:
     RTS
 .endproc
 
@@ -1563,7 +1562,7 @@
 .proc BufferDrawMainMenuHUDValues
     LDA menuOpen
     CMP #MENU_MAINMENU
-    BEQ :+
+    BNE :+
     LDA wagonRest
     BEQ :+
     JSR UpdateMainMenuHUDValues
@@ -1657,7 +1656,7 @@
     LDA menuOpen
     CMP #MENU_NONE
     BEQ :+
-    JMP Done
+    RTS
     :
     LDA #$22 ; draw date
     STA pointer
@@ -1689,7 +1688,6 @@
     LDA #$10
     STA pointer+1
     JSR BufferDrawTraveledText
-    Done:
     RTS
 .endproc
 
@@ -1992,7 +1990,7 @@
     ; occurs in a single day.
     LDA wagonRest ; no random event if resting? TODO confirm
     BEQ :+
-    JMP Done
+    RTS
     :
     LDA #0
     STA helper ; flag to halt the random event engine: 1 is done
@@ -2001,141 +1999,135 @@
     LDA helper
     CMP #1
     BNE :+
-    JMP Done
+    RTS
     :
     JSR REThunderstorm
     LDA helper
     CMP #1
     BNE :+
-    JMP Done
+    RTS
     :
     JSR REBlizzard
     LDA helper
     CMP #1
     BNE :+
-    JMP Done
+    RTS
     :
     JSR REHeavyFog
     LDA helper
     CMP #1
     BNE :+
-    JMP Done
+    RTS
     :
     JSR REHailStorm
     LDA helper
     CMP #1
     BNE :+
-    JMP Done
+    RTS
     :
     JSR REInjuredOx
     LDA helper
     CMP #1
     BNE :+
-    JMP Done
+    RTS
     :
     JSR REInjuredPerson
     LDA helper
     CMP #1
     BNE :+
-    JMP Done
+    RTS
     :
     JSR RESnakeBite
     LDA helper
     CMP #1
     BNE :+
-    JMP Done
+    RTS
     :
     JSR RELoseTrail
     LDA helper
     CMP #1
     BNE :+
-    JMP Done
+    RTS
     :
     JSR REWrongTrail
     LDA helper
     CMP #1
     BNE :+
-    JMP Done
+    RTS
     :
     JSR RERoughTrail
     LDA helper
     CMP #1
     BNE :+
-    JMP Done
+    RTS
     :
     JSR REImpassibleTrail
     LDA helper
     CMP #1
     BNE :+
-    JMP Done
+    RTS
     :
     JSR REWildFruit
     LDA helper
     CMP #1
     BNE :+
-    JMP Done
+    RTS
     :
     JSR REFireWagon
     LDA helper
     CMP #1
     BNE :+
-    JMP Done
+    RTS
     :
     JSR RELostPerson
     LDA helper
     CMP #1
     BNE :+
-    JMP Done
+    RTS
     :
     JSR REOxWandersOff
     LDA helper
     CMP #1
     BNE :+
-    JMP Done
+    RTS
     :
     JSR REAbandonedWagon
     LDA helper
     CMP #1
     BNE :+
-    JMP Done
+    RTS
     :
     JSR REThief
     LDA helper
     CMP #1
     BNE :+
-    JMP Done
+    RTS
     :
     JSR REBadWater
     LDA helper
     CMP #1
     BNE :+
-    JMP Done
+    RTS
     :
     JSR RELittleWater
     LDA helper
     CMP #1
     BNE :+
-    JMP Done
+    RTS
     :
     JSR REInadequateGrass
     LDA helper
     CMP #1
     BNE :+
-    JMP Done
+    RTS
     :
     JSR REIllness
     LDA helper
     CMP #1
     BNE :+
-    JMP Done
+    RTS
     :
     JSR REBrokenPart
-    LDA helper
-    CMP #1
-    BNE :+
-    JMP Done
-    :
-    Done:
     RTS
 .endproc
 

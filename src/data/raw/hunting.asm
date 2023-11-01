@@ -204,3 +204,32 @@ bearSprites:
     .byte $b8,$b9,$ba,$bb
     .byte $ac,$ad,$ae,$af ; dead
     .byte $bc,$bd,$bd,$be
+
+; grass, trees
+; Independence to Kansas River
+; Kansas River to Big Blue River
+; Big Blue River to Fort Kearney
+
+; grass only
+; Fort Kearney to Chimney Rock
+; Chimney Rock to Fort Laramie
+; Fort Laramie to Independence Rock
+
+; trees, rocks
+; Independence Rock to South Pass
+; South Pass to Fort Bridger
+; Fort Bridger to Soda Springs
+; South Pass to Green River
+; Green River to Soda Springs
+; Soda Springs to Fort Hall
+
+; cactus, rocks
+; Fort Hall to Snake River
+; Snake River to Fort Boise
+; Fort Boise to Blue Mountains
+
+; trees only
+; Blue Mountains to Fort Walla Walla
+; Fort Walla Walla to The Dalles
+; Blue Mountains to The Dalles
+; The Dalles to WIllamette Valley (toll road)
