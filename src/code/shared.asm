@@ -155,6 +155,13 @@
     STA fingerX
     LDA #16
     STA fingerY
+    SetDigit #dollarsDigit, #dollars
+    SetDigit #foodLbsDigit, #foodLbs
+    SetDigit #clothingDigit, #clothing
+    SetDigit #bulletsDigit, #bullets
+    SetDigit #oxenDigit, #oxenHeadcount
+    SetDigit #nextDigit, #nextMi
+    SetDigit #traveledDigit, #traveledMi
     RTS
 .endproc
 
