@@ -420,9 +420,14 @@ def main(args):
     for loc in newgame_data:
         for i in range(len(newgame_data[loc])):
             segments = text_to_segments(newgame_data[loc][i]['quote_raw'])
-            # pp.pprint(segments)
-            # input()
             newgame_data[loc][i]['quote_segments'] = segments
+            for segment in segments:
+                mass_text += squish_segment(segment)
+    traveling_data = parse_raw_text('src/data/raw/text/traveling.txt')
+    for loc in traveling_data:
+        for i in range(len(traveling_data[loc])):
+            segments = text_to_segments(traveling_data[loc][i]['quote_raw'])
+            traveling_data[loc][i]['quote_segments'] = segments
             for segment in segments:
                 mass_text += squish_segment(segment)
     substr_dict = create_substr_dict(mass_text)
@@ -523,6 +528,23 @@ def main(args):
             b.append("$00") 
             newgame_data[page][i]['bytes'] = ",".join(b)
     write_asm('src/data/compressed/text/newgame.asm', substr_dict, data=newgame_data, pointer=True)
+
+    # 'traveling' text
+    for page in traveling_data:
+        for i in range(len(traveling_data[page])):
+            b = []
+            segments = text_to_segments(traveling_data[page][i]['quote_raw'])
+            traveling_data[page][i]['quote_byte_segments'] = []
+            for segment in segments:
+                if args.verbose:
+                    print(f"Compressing segment: {segment}")
+                bs = compress_segment(segment, substr_dict)
+                traveling_data[page][i]['quote_byte_segments'].append(bs)
+                b.append(bs)
+            traveling_data[page][i]['quote_byte_segments'].append("$00") # end of section
+            b.append("$00") 
+            traveling_data[page][i]['bytes'] = ",".join(b)
+    write_asm('src/data/compressed/text/traveling.asm', substr_dict, data=traveling_data, pointer=True)
 
 
 if __name__ == "__main__":
