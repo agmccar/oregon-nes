@@ -191,6 +191,7 @@
     CPX #$20
     BNE :---
     
+    LoadCHR #<trailSpritesTilesMeta, #>trailSpritesTilesMeta
     LoadCHR #<mapTilesMeta, #>mapTilesMeta
     LoadImage #<mapImageMeta, #>mapImageMeta
     

@@ -79,6 +79,7 @@
 .endproc
 
 .proc LoadBgLandmark
+    JSR ClearScreen
     SBD
     JSR DrawLandmarkImage ; also sets attributes
     LDX #0

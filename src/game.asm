@@ -64,6 +64,7 @@
     .include "data/raw/sprites.asm"
     .include "code/landmark.asm"
     .include "code/traveling.asm"
+    .include "data/compressed/text/traveling.asm"
 
 .segment "RODATA" ; ROM7
     banktable:              ; Write to this table to switch banks.

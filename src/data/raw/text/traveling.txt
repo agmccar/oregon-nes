@@ -1,0 +1,47 @@
+## ChangePaceText
+
+The pace at which you travel can change. Your choices are:$
+
+## ChangePaceHelpOption
+
+find out what these different paces mean$
+
+## ChangePaceHelpSteady
+
+steady - You travel about 8 hours a day, taking frequent rests. You
+take care not to get too tired.
+
+## ChangePaceHelpStrenuous
+
+strenuous - You travel about 12 hours a day, starting just after sunrise
+and stopping shortly before sunset. You stop to rest only when
+necessary. You finish each day feeling very tired.
+
+## ChangePaceHelpGrueling
+
+grueling - You travel about 16 hours a day, starting before sunrise
+and continuing until dark. You almost never stop to rest. You do not
+get enough sleep at night. You finish each day feeling absolutely
+exhausted, and your health suffers.
+
+## ChangeRationsText
+
+The amount of food the people in your party eat each day can change.
+These amounts are:$
+
+## ChangeRationsOptionFilling
+
+filling - meals are large and generous.
+
+## ChangeRationsOptionMeager
+
+meager - meals are small, but adequate.
+
+## ChangeRationsOptionBareBones
+
+bare bones - meals are very small; everyone stays hungry.
+
+## StopToRestText
+
+How many days would you like to rest?
+

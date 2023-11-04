@@ -53,6 +53,9 @@
 - [x] fix double reload bug
 - [ ] fix palette glitch
 - [ ] Conditional options: Talk to people, Hunt, Buy supplies
+- [ ] change pace
+- [ ] change rations
+- [ ] rest for x days
 
 ## Traveling screen
 

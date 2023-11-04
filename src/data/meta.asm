@@ -1,54 +1,61 @@
 
-; Meta-values associated with collections of tiles.
-; $00, $00, 00, $00, $00
-;  ||   ||||||   ||   ++ Destination 'y-value' (row index) of tiles in CHRRAM
-;  ||   ||||||   ++----- Number of rows of 16 tiles
-;  ||   ++++++---------- Address of tile CHR
-;  ++------------------- ROM bank number, must match game.asm
+; Meta-values associated with tile CHR.
+; $00, $00, 00, $00, $00, $00
+;  ||   ||||||   ||   ||   ++ hi byte of tilemap page to write on, $00 or $10
+;  ||   ||||||   ||   ++----- Destination 'y-value' (row index) of tiles in CHRRAM
+;  ||   ||||||   ++---------- Number of rows of 16 tiles ("height")
+;  ||   ++++++--------------- Address of tile CHR
+;  ++------------------------ ROM bank number, must match game.asm
 textTilesMeta:
-    .byte 0, <textTiles, >textTiles, 4, 12
+    .byte 0, <textTiles, >textTiles, 4, 12, $10
 
 mattTilesMeta:
-    .byte 0, <mattTiles, >mattTiles, 5, 0
+    .byte 0, <mattTiles, >mattTiles, 5, 0, $10
 
 horizonPlainsTilesMeta:
-    .byte BANK_TRAVELING, <horizonPlainsTiles, >horizonPlainsTiles, 4, 0
+    .byte BANK_TRAVELING, <horizonPlainsTiles, >horizonPlainsTiles, 4, 0, $10
 
 horizonMountainsTilesMeta:
-    .byte BANK_TRAVELING, <horizonMountainsTiles, >horizonMountainsTiles, 4, 0
+    .byte BANK_TRAVELING, <horizonMountainsTiles, >horizonMountainsTiles, 4, 0, $10
 
 wagonTilesMeta:
-    .byte BANK_TRAVELING, <wagonTiles, >wagonTiles, 4, 8
+    .byte BANK_TRAVELING, <wagonTiles, >wagonTiles, 4, 8, $10
 
 mapTilesMeta:
-    .byte 0, <mapTiles, >mapTiles, 13, 0
+    .byte 0, <mapTiles, >mapTiles, 13, 0, $10
 
 adornmentTilesMeta:
-    .byte 0, <adornmentTiles, >adornmentTiles, 2, 0
+    .byte 0, <adornmentTiles, >adornmentTiles, 2, 0, $10
 
 titleLogoTilesMeta:
-    .byte 0, <titleLogoTiles, >titleLogoTiles, 3, 2
+    .byte 0, <titleLogoTiles, >titleLogoTiles, 3, 2, $10
 
 suppliesTilesMeta:
-    .byte 0, <suppliesFoodTiles, >suppliesFoodTiles, 10, 0
+    .byte 0, <suppliesFoodTiles, >suppliesFoodTiles, 10, 0, $10
 
 suppliesFoodTilesMeta:
-    .byte 0, <suppliesFoodTiles, >suppliesFoodTiles, 2, 5
+    .byte 0, <suppliesFoodTiles, >suppliesFoodTiles, 2, 5, $10
 
 suppliesPartsTilesMeta:
-    .byte 0, <suppliesPartsTiles, >suppliesPartsTiles, 2, 5
+    .byte 0, <suppliesPartsTiles, >suppliesPartsTiles, 2, 5, $10
 
 suppliesOxenTilesMeta:
-    .byte 0, <suppliesOxenTiles, >suppliesOxenTiles, 2, 5
+    .byte 0, <suppliesOxenTiles, >suppliesOxenTiles, 2, 5, $10
 
 suppliesClothesTilesMeta:
-    .byte 0, <suppliesClothesTiles, >suppliesClothesTiles, 2, 5
+    .byte 0, <suppliesClothesTiles, >suppliesClothesTiles, 2, 5, $10
 
 suppliesBulletsTilesMeta:
-    .byte 0, <suppliesBulletsTiles, >suppliesBulletsTiles, 2, 5
+    .byte 0, <suppliesBulletsTiles, >suppliesBulletsTiles, 2, 5, $10
 
 namepartyTilesMeta:
-    .byte 0, <namepartyTiles, >namepartyTiles, 12, 0
+    .byte 0, <namepartyTiles, >namepartyTiles, 12, 0, $10
+
+trailSpritesTilesMeta:
+    .byte 0, <trailSpritesTiles, >trailSpritesTiles, 4, 11, $00
+
+landmarkSpritesTilesMeta:
+    .byte 1, <landmarkSpritesTiles, >landmarkSpritesTiles, 11, 0, $00
 
 ; Meta-values associated with general images
 ; 0,0,0,0,0,0

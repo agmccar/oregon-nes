@@ -1372,14 +1372,14 @@
 ; Bulk drawing -----------------------------------------------------------------
 
 .proc StartBulkDrawing
+    LDA #0
+    STA PPUMASK
     LDA #%00000000      ; turn off screen
     STA softPPUMASK
     ; STA PPUMASK
     :                   ; wait for vblank
     BIT PPUSTATUS
     BPL :-
-    LDA #0
-    STA PPUMASK
     RTS
 .endproc
 
@@ -1406,7 +1406,7 @@
     LDA #0
     STA OAMADDR ; tell PPU to prepare for transfer to OAM starting at byte zero
     LDA #$02
-    STA OAMDMA ; tell PPU to initiate transfer of 256 bytes $0200-$02ff into OAM
+    STA OAMDMA ; 256 bytes $0200-$02ff into OAM
 
     LDA PPUSTATUS       ; clear first screen tiles
     LDA #$20
@@ -1767,10 +1767,11 @@
 .proc UnpackTilesMeta
     ; Must only occur during Bulk drawing
     ; Clobbers all registers, helper+0, pointer, counter
+    ; @param helper+1: hi byte of tilemap page to write on, $00 or $10
     ; @param pointer: location of tile meta
     LDA currentBank
     PHA
-    LDY #5 ; length of tile meta segment
+    LDY #6 ; length of tile meta segment
     :
     DEY
     LDA (pointer), Y
@@ -1791,7 +1792,8 @@
     LDA #0
     STA PPUMASK
     LDA PPUSTATUS
-    LDA #$10
+    PLA
+    STA helper+1
     STA helper
     PLA ; Destination 'y-value' (row index) of tiles in CHRRAM
     CLC
@@ -2680,7 +2682,6 @@
         JSR DrawFinger
         RTS
     :
-    JSR ClearScreen
     LDA gameState
     STA lastGameState
     CMP #GAMESTATE_TITLE
@@ -3049,6 +3050,8 @@
             LDA menuOpenLast
             CMP #MENU_TEXTPOPUP
             BEQ :+
+            CMP #MENU_TEXTPOPUP_YN
+            BEQ :+
             JSR LoadBgTraveling
             RTS
         :
@@ -3221,11 +3224,11 @@
     LDA wagonRest
     BEQ Done
     Elapse:
+    JSR RandomEvent
     JSR UpdateWeather
     JSR UpdateSupplies
     JSR UpdateHealth
     JSR UpdateDistance
-    JSR RandomEvent
     JSR IncrementDate
     Done:
     RTS
@@ -4064,9 +4067,7 @@
         STA menuOpen
         RTS
     LoadLandmark:
-        LDA #MENU_NONE
-        STA menuOpen
-        INC location ; increment landmark (todo handle trail divide)
+        INC location
         LDA #GAMESTATE_LANDMARK
         STA gameState
         RTS

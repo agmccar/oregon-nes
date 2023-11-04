@@ -1,3 +1,5 @@
+trailSpritesTiles:
+	.incbin "../chr/trail_sprites.chr"
 mapTiles:
 	.incbin "../chr/map.chr"
 mapImage:
