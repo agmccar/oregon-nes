@@ -147,6 +147,7 @@ BANK_TRAVELING = 6
 ; BANK_RIVER = 0
 ; BANK_HUNTING = 0
 BANK_DATA = 0
+BANK_RANDOMEVENT = 1
 
 ; Menu states
 MENU_NONE                   = 0  ; all menus closed

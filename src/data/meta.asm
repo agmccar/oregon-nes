@@ -57,7 +57,29 @@ trailSpritesTilesMeta:
 landmarkSpritesTilesMeta:
     .byte 1, <landmarkSpritesTiles, >landmarkSpritesTiles, 11, 0, $00
 
+reBlizzardTilesMeta:
+    .byte BANK_RANDOMEVENT, <reBlizzardTiles, >reBlizzardTiles, 1, 4, $10
+
+reBrokenPartTilesMeta:
+    .byte BANK_RANDOMEVENT, <reBrokenPartTiles, >reBrokenPartTiles, 1, 4, $10
+
+reSnowboundTilesMeta:
+    .byte BANK_RANDOMEVENT, <reSnowboundTiles, >reSnowboundTiles, 1, 4, $10
+
+reThiefTilesMeta:
+    .byte BANK_RANDOMEVENT, <reThiefTiles, >reThiefTiles, 1, 4, $10
+
+reThunderstormTilesMeta:
+    .byte BANK_RANDOMEVENT, <reThunderstormTiles, >reThunderstormTiles, 1, 4, $10
+
+reWagonFireTilesMeta:
+    .byte BANK_RANDOMEVENT, <reWagonFireTiles, >reWagonFireTiles, 1, 4, $10
+
+reWildFruitTilesMeta:
+    .byte BANK_RANDOMEVENT, <reWildFruitTiles, >reWildFruitTiles, 1, 4, $10
+
 ; Meta-values associated with general images
+; TODO: images less than a screen wide?
 ; 0,0,0,0,0,0
 ; | | ||| +++ Address of image attribute data
 ; | | +++---- Target PPU addr for attributes

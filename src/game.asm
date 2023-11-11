@@ -12,7 +12,10 @@
     .include "vars.asm"
 
 .segment "ROM0"
+    ; shared
     .include "data/compressed/image/adornment.asm"
+
+    ; new game, matt's general store
     .include "data/compressed/image/map.asm"
     .include "data/compressed/image/matt.asm"
     .include "data/compressed/image/nameparty.asm"
@@ -23,48 +26,64 @@
     .include "data/compressed/image/supplies.asm"
     .include "data/raw/climate.asm"
 
+    ; title screen
     .include "code/title.asm"
     .include "data/compressed/text/learn.asm"
     .include "data/compressed/text/sound.asm"
     .include "data/compressed/text/top10.asm"
 
-
 .segment "ROM1"
+    ; new game, matt's general store
     .include "code/newgame.asm"
     .include "code/matt.asm"
     .include "data/compressed/text/newgame.asm"
     .include "code/store.asm"
+
+    ; random events
+    .include "data/raw/randomevents.asm"
+    .include "data/compressed/image/randomevents.asm"
+
+    ; hunting
     .include "data/raw/hunting.asm"
     .include "data/compressed/image/hunting.asm"
 
 .segment "ROM2"
+    ; landmark
     .include "data/compressed/image/landmarkA.asm"
     .include "data/compressed/text/talkA.asm"
 
 .segment "ROM3"
+    ; landmark
     .include "data/compressed/image/landmarkB.asm"
     .include "data/compressed/text/talkB.asm"
 
 .segment "ROM4"
+    ; landmark
     .include "data/compressed/image/landmarkC.asm"
     .include "data/compressed/text/talkC.asm"
 
 .segment "ROM5"
+    ; landmark
     .include "data/compressed/image/landmarkD.asm"
     .include "data/compressed/text/talkD.asm"
 
 .segment "ROM6"
+    ; landmark
     .include "data/compressed/image/landmarkE.asm"
     .include "data/compressed/text/talkE.asm"
+
+    ; traveling
     .include "data/compressed/image/wagon.asm"
     .include "data/compressed/image/horizonPlains.asm"
     .include "data/compressed/image/horizonMountains.asm"
-    .include "data/raw/backgrounds.asm" ; todo deprecate
+    .include "data/compressed/text/traveling.asm"
+    .include "data/raw/backgrounds.asm" ; wagon animation
     .include "data/raw/image/suppliesRaw.asm" ; todo compress
     .include "data/raw/sprites.asm"
-    .include "code/landmark.asm"
     .include "code/traveling.asm"
-    .include "data/compressed/text/traveling.asm"
+
+    ; landmark
+    .include "code/landmark.asm"
 
 .segment "RODATA" ; ROM7
     banktable:              ; Write to this table to switch banks.

@@ -40,12 +40,14 @@
 ## River crossing
 
 - [x] river crossing data tables: depth, width
-- [x] river crossing graphics
+- [x] river crossing graphics data
+- [ ] river crossing graphics implementation
 - [ ] river crossing logic
 
 ## The Dalles rafting minigame
 
-- [ ] rafting graphics
+- [ ] rafting graphics data
+- [ ] rafting graphics implementation
 - [ ] rafting logic
 
 ## Traveling main menu
@@ -95,13 +97,14 @@
   - [ ] Broken wagon part
   - [ ] Snow bound
 - [ ] random events graphics
-  - [ ] Severe thunderstorm
-  - [ ] Severe blizzard
-  - [ ] Find wild fruit
-  - [ ] Fire in the wagon
-  - [ ] Thief comes during the night
-  - [ ] Broken wagon part
-  - [ ] Snow bound
+  - [ ] implement
+  - [x] Severe thunderstorm
+  - [x] Severe blizzard
+  - [x] Find wild fruit
+  - [x] Fire in the wagon
+  - [x] Thief comes during the night
+  - [x] Broken wagon part
+  - [x] Snow bound
 - [ ] grass color
 - [x] stop to rest
 - [ ] drought events don't pause the game

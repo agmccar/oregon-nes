@@ -1607,9 +1607,9 @@
         CPX counter+1
         BNE :-
     EBW
-    :                   ; vblankwait for aesthetic reasons
-    BIT PPUSTATUS
-    BPL :-
+    ; :                   ; vblankwait for aesthetic reasons
+    ; BIT PPUSTATUS
+    ; BPL :-
     RTS
 .endproc
 
@@ -1647,9 +1647,9 @@
         CPX counter+1
         BNE :-
     EBW
-    :                   ; vblankwait for aesthetic reasons
-    BIT PPUSTATUS
-    BPL :-
+    ; :                   ; vblankwait for aesthetic reasons
+    ; BIT PPUSTATUS
+    ; BPL :-
     RTS
 .endproc
 
@@ -1713,9 +1713,9 @@
         CPX #47
         BNE :-
     EBW
-    :                   ; vblankwait for aesthetic reasons
-    BIT PPUSTATUS
-    BPL :-
+    ; :                   ; vblankwait for aesthetic reasons
+    ; BIT PPUSTATUS
+    ; BPL :-
     RTS
 .endproc
 
@@ -1740,9 +1740,9 @@
         CPX #52
         BNE :-
     EBW
-    :                   ; vblankwait for aesthetic reasons
-    BIT PPUSTATUS
-    BPL :-
+    ; :                   ; vblankwait for aesthetic reasons
+    ; BIT PPUSTATUS
+    ; BPL :-
     RTS
 .endproc
 
@@ -1767,9 +1767,9 @@
         CPX #52
         BNE :-
     EBW
-    :                   ; vblankwait for aesthetic reasons
-    BIT PPUSTATUS
-    BPL :-
+    ; :                   ; vblankwait for aesthetic reasons
+    ; BIT PPUSTATUS
+    ; BPL :-
     RTS
 .endproc
 
@@ -1998,134 +1998,112 @@
 
     JSR REIndianFood
     LDA helper
-    CMP #1
-    BNE :+
+    BEQ :+
     RTS
     :
     JSR REThunderstorm
     LDA helper
-    CMP #1
-    BNE :+
+    BEQ :+
     RTS
     :
     JSR REBlizzard
     LDA helper
-    CMP #1
-    BNE :+
+    BEQ :+
     RTS
     :
     JSR REHeavyFog
     LDA helper
-    CMP #1
-    BNE :+
+    BEQ :+
     RTS
     :
     JSR REHailStorm
     LDA helper
-    CMP #1
-    BNE :+
+    BEQ :+
     RTS
     :
     JSR REInjuredOx
     LDA helper
-    CMP #1
-    BNE :+
+    BEQ :+
     RTS
     :
     JSR REInjuredPerson
     LDA helper
-    CMP #1
-    BNE :+
+    BEQ :+
     RTS
     :
     JSR RESnakeBite
     LDA helper
-    CMP #1
-    BNE :+
+    BEQ :+
     RTS
     :
     JSR RELoseTrail
     LDA helper
-    CMP #1
-    BNE :+
+    BEQ :+
     RTS
     :
     JSR REWrongTrail
     LDA helper
-    CMP #1
-    BNE :+
+    BEQ :+
     RTS
     :
     JSR RERoughTrail
     LDA helper
-    CMP #1
-    BNE :+
+    BEQ :+
     RTS
     :
     JSR REImpassibleTrail
     LDA helper
-    CMP #1
-    BNE :+
+    BEQ :+
     RTS
     :
     JSR REWildFruit
     LDA helper
-    CMP #1
-    BNE :+
+    BEQ :+
     RTS
     :
     JSR REFireWagon
     LDA helper
-    CMP #1
-    BNE :+
+    BEQ :+
     RTS
     :
     JSR RELostPerson
     LDA helper
-    CMP #1
-    BNE :+
+    BEQ :+
     RTS
     :
     JSR REOxWandersOff
     LDA helper
-    CMP #1
-    BNE :+
+    BEQ :+
     RTS
     :
     JSR REAbandonedWagon
     LDA helper
-    CMP #1
-    BNE :+
+    BEQ :+
     RTS
     :
     JSR REThief
     LDA helper
-    CMP #1
-    BNE :+
+    BEQ :+
     RTS
     :
     JSR REBadWater
     LDA helper
-    CMP #1
-    BNE :+
+    BEQ :+
     RTS
     :
     JSR RELittleWater
     LDA helper
-    CMP #1
-    BNE :+
+    BEQ :+
     RTS
     :
     JSR REInadequateGrass
     LDA helper
-    CMP #1
-    BNE :+
+    BEQ :+
     RTS
     :
     JSR REIllness
     LDA helper
-    CMP #1
-    BNE :+
+    BEQ :+
     RTS
     :
     JSR REBrokenPart

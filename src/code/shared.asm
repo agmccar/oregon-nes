@@ -720,9 +720,9 @@
         CPX #TEXT_DATE_LEN
         BNE :-
     EBW
-    :                   ; vblankwait for aesthetic reasons
-    BIT PPUSTATUS
-    BPL :-
+    ; :                   ; vblankwait for aesthetic reasons
+    ; BIT PPUSTATUS
+    ; BPL :-
     RTS
 .endproc
 
@@ -771,9 +771,9 @@
         CMP #TEXT_WEATHER_LEN
         BNE :-
     EBW
-    :                   ; vblankwait for aesthetic reasons
-    BIT PPUSTATUS
-    BPL :-
+    ; :                   ; vblankwait for aesthetic reasons
+    ; BIT PPUSTATUS
+    ; BPL :-
     RTS
 .endproc
 
@@ -810,9 +810,9 @@
         CMP #TEXT_HEALTH_LEN
         BNE :-
     EBW
-    :                   ; vblankwait for aesthetic reasons
-    BIT PPUSTATUS
-    BPL :-
+    ; :                   ; vblankwait for aesthetic reasons
+    ; BIT PPUSTATUS
+    ; BPL :-
     RTS
 .endproc
 
@@ -3089,11 +3089,11 @@
     RTS
     Traveling:
         LDA frameCounter
-        CMP #60
+        CMP #30
         BNE :+
         JMP @sec1
         :
-        CMP #120
+        CMP #90
         BNE :+
         JMP @sec2
         :
