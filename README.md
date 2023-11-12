@@ -17,7 +17,9 @@ Play the original:
 - ca65 assembler: https://cc65.github.io/doc/ca65.html
 - GIMP: https://www.gimp.org/
 - Mesen emulator: https://github.com/SourMesen/Mesen2
-- Tile compression: https://bisqwit.iki.fi/source/tokumaru.html
+- Tokumaru compression algorithm: https://bisqwit.iki.fi/source/tokumaru.html
+- VS Code OSS: https://github.com/code-oss-dev/code
+- ca65 extension for VS Code: https://github.com/tlgkccampbell/code-ca65
 
 ### Screenshots
 
