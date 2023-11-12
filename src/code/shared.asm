@@ -1825,11 +1825,35 @@
     BNE :+
     LDA counter+1
     BNE :+
-    JMP Done
+    RTS
     :
     LDA (pointer), Y ; read header byte
-    BPL Literal
-    AND #$7f ; write repeated run of bytes
+    AND #$c0
+    CMP #$80
+    BEQ Run
+    CMP #$40
+    BEQ Increment
+    JMP Literal
+    Increment:
+    LDA (pointer), Y
+    AND #$3f
+    TAX
+    JSR IncrementPointerY
+    LDA (pointer), Y
+    :
+    STA PPUDATA
+    JSR DecrementCounter
+    DEX
+    CLC
+    ADC #1
+    CPX #0
+    BNE :-
+    JSR IncrementPointerY
+    JMP NextSegment
+
+    Run:
+    LDA (pointer), Y
+    AND #$3f ; write repeated run of bytes
     TAX
     JSR IncrementPointerY
     LDA (pointer), Y
@@ -1842,6 +1866,7 @@
     JSR IncrementPointerY
     JMP NextSegment
     Literal: ; write literal bytes
+    LDA (pointer), Y
     TAX
     JSR IncrementPointerY
     :
@@ -1853,8 +1878,6 @@
     CPX #0
     BNE :-
     JMP NextSegment
-    Done:
-    RTS
 .endproc
 
 .proc DrawAdornments
@@ -2678,6 +2701,31 @@
     RTS
 .endproc
 
+.proc ClearPopupTextLines
+    ; clobbers X
+    LDX #0
+    LDA #___
+    :
+    STA popupTextLine1, X
+    STA popupTextLine2, X
+    INX
+    CPX #TEXT_POPUP_LINE_LEN
+    BNE :-
+    RTS
+.endproc
+
+.proc Rest1To8Days
+    JSR RandomNumberGenerator
+    AND #7
+    TAX
+    INX
+    :
+    INC wagonRest
+    DEX
+    BNE :-
+    RTS
+.endproc
+
 ; Game logic -------------------------------------------------------------------
 
 .proc CheckGameState
@@ -2753,6 +2801,8 @@
     BNE :++
         LDA menuOpen
         CMP #MENU_NONE
+        BNE :+
+        LDA wagonRest
         BNE :+
         JSR ProcessEventQueue
         :
@@ -3867,10 +3917,11 @@
 .endproc
 
 .proc ProcessEventQueue
+    JSR ClearPopupTextLines
     LDA eventQueue ; proceed only if an event is queued
     CMP #EVENT_NONE
     BNE :+
-    RTS
+        RTS
     :
     TAY ; stash event ID in Y register
     LDA eventQueue+1    ; shift all queued events and decrement pointer 
@@ -3884,115 +3935,7 @@
     DEC eventQueuePointer
     TYA                ; unstash event ID
     CMP #EVENT_NEXT_LANDMARK  ; switch/case event id
-    BNE :+
-    JMP NextLandmark
-    :
-    CMP #EVENT_REACHED_LANDMARK
-    BNE :+
-    JMP ReachedLandmark
-    :
-    CMP #EVENT_LOAD_LANDMARK
-    BNE :+
-    JMP LoadLandmark
-    :
-    CMP #EVENT_LOOK_AROUND
-    BNE :+
-    JMP LookAround
-    :
-    CMP #EVENT_INDIAN_FOOD
-    BNE :+
-    JMP IndianFood
-    :
-    CMP #EVENT_THUNDERSTORM
-    BNE :+
-    JMP Thunderstorm
-    :
-    CMP #EVENT_BLIZZARD
-    BNE :+
-    JMP Blizzard
-    :
-    CMP #EVENT_HEAVY_FOG
-    BNE :+
-    JMP HeavyFog
-    :
-    CMP #EVENT_HAIL_STORM
-    BNE :+
-    JMP HailStorm
-    :
-    CMP #EVENT_INJURED_OX
-    BNE :+
-    JMP InjuredOx
-    :
-    CMP #EVENT_INJURED_PERSON
-    BNE :+
-    JMP InjuredPerson
-    :
-    CMP #EVENT_SNAKE_BITE
-    BNE :+
-    JMP SnakeBite
-    :
-    CMP #EVENT_LOSE_TRAIL
-    BNE :+
-    JMP LoseTrail
-    :
-    CMP #EVENT_WRONG_TRAIL
-    BNE :+
-    JMP WrongTrail
-    :
-    CMP #EVENT_ROUGH_TRAIL
-    BNE :+
-    JMP RoughTrail
-    :
-    CMP #EVENT_IMPASSIBLE_TRAIL
-    BNE :+
-    JMP ImpassibleTrail
-    :
-    CMP #EVENT_WILD_FRUIT
-    BNE :+
-    JMP WildFruit
-    :
-    CMP #EVENT_FIRE_WAGON
-    BNE :+
-    JMP FireWagon
-    :
-    CMP #EVENT_LOST_PERSON
-    BNE :+
-    JMP LostPerson
-    :
-    CMP #EVENT_OX_WANDERS_OFF
-    BNE :+
-    JMP OxWandersOff
-    :
-    CMP #EVENT_ABANDONED_WAGON
-    BNE :+
-    JMP AbandonedWagon
-    :
-    CMP #EVENT_THIEF
-    BNE :+
-    JMP Thief
-    :
-    CMP #EVENT_BAD_WATER
-    BNE :+
-    JMP BadWater
-    :
-    CMP #EVENT_LITTLE_WATER
-    BNE :+
-    JMP LittleWater
-    :
-    CMP #EVENT_INADEQUATE_GRASS
-    BNE :+
-    JMP InadequateGrass
-    :
-    CMP #EVENT_ILLNESS
-    BNE :+
-    JMP Illness
-    :
-    CMP #EVENT_BROKEN_PART
-    BNE :+
-    JMP BrokenPart
-    :
-    RTS
-    NextLandmark:
+    BNE :+++++
         LDX #0
         :
         LDA nextLandmarkText, X ; "it is "
@@ -4026,10 +3969,10 @@
         BNE :-
         LDA #_PD
         STA popupTextLine2, Y
-        LDA #MENU_TEXTPOPUP
-        STA menuOpen
-        RTS
-    ReachedLandmark:
+        JMP TextPopup
+    :
+    CMP #EVENT_REACHED_LANDMARK
+    BNE :+++
         LDX #0
         :
         LDA reachedLandmarkText, X ; "you have reached"
@@ -4049,10 +3992,17 @@
         BNE :-
         LDA #_PD
         STA popupTextLine2, Y
-        LDA #MENU_TEXTPOPUP
-        STA menuOpen
+        JMP TextPopup
+    :
+    CMP #EVENT_LOAD_LANDMARK
+    BNE :+
+        INC location
+        LDA #GAMESTATE_LANDMARK
+        STA gameState
         RTS
-    LookAround:
+    :
+    CMP #EVENT_LOOK_AROUND
+    BNE :+++
         LDX #0
         :
         LDA eventLookAroundText, X ; "Would you like to"
@@ -4073,12 +4023,9 @@
         LDA #MENU_TEXTPOPUP_YN
         STA menuOpen
         RTS
-    LoadLandmark:
-        INC location
-        LDA #GAMESTATE_LANDMARK
-        STA gameState
-        RTS
-    IndianFood:
+    :
+    CMP #EVENT_INDIAN_FOOD
+    BNE :++
         LDX #1
         LDY #0
         :
@@ -4088,10 +4035,11 @@
         INY
         CPY eventIndianFoodText
         BNE :-
-        LDA #MENU_TEXTPOPUP
-        STA menuOpen
-        RTS
-    Thunderstorm:
+        JMP TextPopup
+    :
+    CMP #EVENT_THUNDERSTORM
+    BNE :+++
+        LoadCHR #<reThunderstormTilesMeta, #>reThunderstormTilesMeta
         LDX #1
         LDY #0
         :
@@ -4112,10 +4060,12 @@
         BNE :-
         LDA #_PD
         STA popupTextLine2, Y
-        LDA #MENU_TEXTPOPUP
-        STA menuOpen
-        RTS
-    Blizzard:
+        INC wagonRest ; lose 1 day
+        JMP TextPopup
+    :
+    CMP #EVENT_BLIZZARD
+    BNE :+++
+        LoadCHR #<reBlizzardTilesMeta, #>reBlizzardTilesMeta
         LDX #1
         LDY #0
         :
@@ -4136,10 +4086,11 @@
         BNE :-
         LDA #_PD
         STA popupTextLine2, Y
-        LDA #MENU_TEXTPOPUP
-        STA menuOpen
-        RTS
-    HeavyFog:
+        INC wagonRest ; lose 1 day
+        JMP TextPopup
+    :
+    CMP #EVENT_HEAVY_FOG
+    BNE :++++++
         LDX #1
         LDY #0
         :
@@ -4149,6 +4100,11 @@
         INY
         CPY eventHeavyFogText
         BNE :-
+        JSR RandomNumberGenerator
+        AND #1
+        BNE :+
+        INC wagonRest ; 50% chance to lose 1 day
+        :
         LDA wagonRest
         BEQ :++
         LDA #_PD
@@ -4169,10 +4125,10 @@
         LDA #_PD
         STA popupTextLine2, Y
         :
-        LDA #MENU_TEXTPOPUP
-        STA menuOpen
-        RTS
-    HailStorm:
+        JMP TextPopup
+    :
+    CMP #EVENT_HAIL_STORM
+    BNE :+++++
         LDX #1
         LDY #0
         :
@@ -4182,14 +4138,13 @@
         INY
         CPY eventHailStormText
         BNE :-
+        JSR RandomNumberGenerator
+        AND #1
+        BNE :+
+        INC wagonRest ; 50% chance to lose 1 day
+        :
         LDA wagonRest
         BEQ :++
-        LDA #_PD
-        STA popupTextLine1, Y
-        LDA wagonRest
-        BNE :+
-        JMP :+++
-        :
         LDY #0
         LDX #1
         :
@@ -4202,10 +4157,10 @@
         LDA #_PD
         STA popupTextLine2, Y
         :
-        LDA #MENU_TEXTPOPUP
-        STA menuOpen
-        RTS
-    InjuredOx:
+        JMP TextPopup
+    :
+    CMP #EVENT_INJURED_OX
+    BNE :+++++++
         LDX #1
         LDY #0
         :
@@ -4249,6 +4204,250 @@
         LDA #_PD
         STA popupTextLine2, Y
         :
+        JMP TextPopup
+    :
+    CMP #EVENT_INJURED_PERSON
+    BNE :+
+        JMP InjuredPerson
+    :
+    CMP #EVENT_SNAKE_BITE
+    BNE :+
+        JMP SnakeBite
+    :
+    CMP #EVENT_LOSE_TRAIL
+    BNE :++++
+        JSR Rest1To8Days ; rest 1-8 days
+        LDX #1
+        LDY #0
+        :
+        LDA eventLoseTrailText, X
+        STA popupTextLine1, Y
+        INX
+        INY
+        CPY eventLoseTrailText
+        BNE :-
+        LDY #0
+        LDX #1
+        :
+        LDA eventLoseDaysText, X
+        STA popupTextLine2, Y
+        INX
+        INY
+        CPY eventLoseDaysText
+        BNE :-
+        TYA
+        PHA
+        DEY ; replace 1 day with X day(s)
+        DEY
+        DEY
+        DEY
+        DEY
+        CLC
+        LDA wagonRest
+        ADC #_0_
+        STA popupTextLine2, Y
+        PLA
+        TAY
+        LDA wagonRest
+        CMP #1
+        BEQ :+
+        LDA #_S_
+        STA popupTextLine2, Y
+        INY
+        :
+        LDA #_PD
+        STA popupTextLine2, Y
+        JMP TextPopup
+    :
+    CMP #EVENT_WRONG_TRAIL
+    BNE :++++
+        JSR Rest1To8Days ; rest 1-8 days
+        LDX #1
+        LDY #0
+        :
+        LDA eventWrongTrailText, X
+        STA popupTextLine1, Y
+        INX
+        INY
+        CPY eventWrongTrailText
+        BNE :-
+        LDY #0
+        LDX #1
+        :
+        LDA eventLoseDaysText, X
+        STA popupTextLine2, Y
+        INX
+        INY
+        CPY eventLoseDaysText
+        BNE :-
+        TYA
+        PHA
+        DEY ; replace 1 day with X day(s)
+        DEY
+        DEY
+        DEY
+        DEY
+        CLC
+        LDA wagonRest
+        ADC #_0_
+        STA popupTextLine2, Y
+        PLA
+        TAY
+        LDA wagonRest
+        CMP #1
+        BEQ :+
+        LDA #_S_
+        STA popupTextLine2, Y
+        INY
+        :
+        LDA #_PD
+        STA popupTextLine2, Y
+        JMP TextPopup
+    :
+    CMP #EVENT_ROUGH_TRAIL
+    BNE :++
+        LDX #1
+        LDY #0
+        :
+        LDA eventRoughTrailText, X
+        STA popupTextLine1, Y
+        INX
+        INY
+        CPY eventRoughTrailText
+        BNE :-
+        JMP TextPopup
+    :
+    CMP #EVENT_IMPASSIBLE_TRAIL
+    BNE :++++
+        JSR Rest1To8Days
+        LDX #1
+        LDY #0
+        :
+        LDA eventImpassibleTrailText, X
+        STA popupTextLine1, Y
+        INX
+        INY
+        CPY eventImpassibleTrailText
+        BNE :-
+        LDY #0
+        LDX #1
+        :
+        LDA eventLoseDaysText, X
+        STA popupTextLine2, Y
+        INX
+        INY
+        CPY eventLoseDaysText
+        BNE :-
+        TYA
+        PHA
+        DEY ; replace 1 day with X day(s)
+        DEY
+        DEY
+        DEY
+        DEY
+        CLC
+        LDA wagonRest
+        ADC #_0_
+        STA popupTextLine2, Y
+        PLA
+        TAY
+        LDA wagonRest
+        CMP #1
+        BEQ :+
+        LDA #_S_
+        STA popupTextLine2, Y
+        INY
+        :
+        LDA #_PD
+        STA popupTextLine2, Y
+        JMP TextPopup
+    :
+    CMP #EVENT_WILD_FRUIT
+    BNE :++
+        LoadCHR #<reWildFruitTilesMeta, #>reWildFruitTilesMeta
+        LDX #1
+        LDY #0
+        :
+        LDA eventWildFruitText, X
+        STA popupTextLine1, Y
+        INX
+        INY
+        CPY eventWildFruitText
+        BNE :-
+        JMP TextPopup
+    :
+    CMP #EVENT_FIRE_WAGON
+    BNE :+
+        LoadCHR #<reWagonFireTilesMeta, #>reWagonFireTilesMeta
+        JMP TextPopup
+    :
+    CMP #EVENT_LOST_PERSON
+    BNE :+
+        JMP TextPopup
+    :
+    CMP #EVENT_OX_WANDERS_OFF
+    BNE :+
+        JMP TextPopup
+    :
+    CMP #EVENT_ABANDONED_WAGON
+    BNE :+
+        JMP TextPopup
+    :
+    CMP #EVENT_THIEF
+    BNE :+
+        LoadCHR #<reThiefTilesMeta, #>reThiefTilesMeta
+        JMP TextPopup
+    :
+    CMP #EVENT_BAD_WATER
+    BNE :++
+        LDX #1
+        LDY #0
+        :
+        LDA eventBadWaterText, X
+        STA popupTextLine1, Y
+        INX
+        INY
+        CPY eventBadWaterText
+        BNE :-
+        JMP TextPopup
+    :
+    CMP #EVENT_LITTLE_WATER
+    BNE :++
+        LDX #1
+        LDY #0
+        :
+        LDA eventLittleWaterText, X
+        STA popupTextLine1, Y
+        INX
+        INY
+        CPY eventLittleWaterText
+        BNE :-
+        JMP TextPopup
+    :
+    CMP #EVENT_INADEQUATE_GRASS
+    BNE :++
+        LDX #1
+        LDY #0
+        :
+        LDA eventInadequateGrassText, X
+        STA popupTextLine1, Y
+        INX
+        INY
+        CPY eventInadequateGrassText
+        BNE :-
+        JMP TextPopup
+    :
+    CMP #EVENT_ILLNESS
+    BNE :+
+        JMP Illness
+    :
+    CMP #EVENT_BROKEN_PART
+    BNE :+
+        LoadCHR #<reBrokenPartTilesMeta, #>reBrokenPartTilesMeta
+        JMP TextPopup
+    :
+    RTS
+    TextPopup:
         LDA #MENU_TEXTPOPUP
         STA menuOpen
         RTS
@@ -4370,9 +4569,7 @@
         @writeIllness:
         LDA #_PD
         STA popupTextLine1, Y
-        LDA #MENU_TEXTPOPUP
-        STA menuOpen
-        RTS
+        JMP TextPopup
     SnakeBite: ; TODO DRY
         JSR RandomNumberGenerator ; select a random person
         AND #%00000111
@@ -4465,216 +4662,7 @@
         @writeIllness:
         LDA #_PD
         STA popupTextLine1, Y
-        LDA #MENU_TEXTPOPUP
-        STA menuOpen
-        RTS
-    LoseTrail:
-        LDX #1
-        LDY #0
-        :
-        LDA eventLoseTrailText, X
-        STA popupTextLine1, Y
-        INX
-        INY
-        CPY eventLoseTrailText
-        BNE :-
-        LDY #0
-        LDX #1
-        :
-        LDA eventLoseDaysText, X
-        STA popupTextLine2, Y
-        INX
-        INY
-        CPY eventLoseDaysText
-        BNE :-
-        TYA
-        PHA
-        DEY ; replace 1 day with X day(s)
-        DEY
-        DEY
-        DEY
-        DEY
-        CLC
-        LDA wagonRest
-        ADC #_0_
-        STA popupTextLine2, Y
-        PLA
-        TAY
-        LDA wagonRest
-        CMP #1
-        BEQ :+
-        LDA #_S_
-        STA popupTextLine2, Y
-        INY
-        :
-        LDA #_PD
-        STA popupTextLine2, Y
-        LDA #MENU_TEXTPOPUP
-        STA menuOpen
-        RTS
-    WrongTrail:
-        LDX #1
-        LDY #0
-        :
-        LDA eventWrongTrailText, X
-        STA popupTextLine1, Y
-        INX
-        INY
-        CPY eventWrongTrailText
-        BNE :-
-        LDY #0
-        LDX #1
-        :
-        LDA eventLoseDaysText, X
-        STA popupTextLine2, Y
-        INX
-        INY
-        CPY eventLoseDaysText
-        BNE :-
-        TYA
-        PHA
-        DEY ; replace 1 day with X day(s)
-        DEY
-        DEY
-        DEY
-        DEY
-        CLC
-        LDA wagonRest
-        ADC #_0_
-        STA popupTextLine2, Y
-        PLA
-        TAY
-        LDA wagonRest
-        CMP #1
-        BEQ :+
-        LDA #_S_
-        STA popupTextLine2, Y
-        INY
-        :
-        LDA #_PD
-        STA popupTextLine2, Y
-        LDA #MENU_TEXTPOPUP
-        STA menuOpen
-        RTS
-    RoughTrail:
-        LDX #1
-        LDY #0
-        :
-        LDA eventRoughTrailText, X
-        STA popupTextLine1, Y
-        INX
-        INY
-        CPY eventRoughTrailText
-        BNE :-
-        LDA #MENU_TEXTPOPUP
-        STA menuOpen
-        RTS
-    ImpassibleTrail:
-        LDX #1
-        LDY #0
-        :
-        LDA eventImpassibleTrailText, X
-        STA popupTextLine1, Y
-        INX
-        INY
-        CPY eventImpassibleTrailText
-        BNE :-
-        LDY #0
-        LDX #1
-        :
-        LDA eventLoseDaysText, X
-        STA popupTextLine2, Y
-        INX
-        INY
-        CPY eventLoseDaysText
-        BNE :-
-        TYA
-        PHA
-        DEY ; replace 1 day with X day(s)
-        DEY
-        DEY
-        DEY
-        DEY
-        CLC
-        LDA wagonRest
-        ADC #_0_
-        STA popupTextLine2, Y
-        PLA
-        TAY
-        LDA wagonRest
-        CMP #1
-        BEQ :+
-        LDA #_S_
-        STA popupTextLine2, Y
-        INY
-        :
-        LDA #_PD
-        STA popupTextLine2, Y
-        LDA #MENU_TEXTPOPUP
-        STA menuOpen
-        RTS
-    WildFruit:
-        LDX #1
-        LDY #0
-        :
-        LDA eventWildFruitText, X
-        STA popupTextLine1, Y
-        INX
-        INY
-        CPY eventWildFruitText
-        BNE :-
-        LDA #MENU_TEXTPOPUP
-        STA menuOpen
-        RTS
-    FireWagon:
-        RTS
-    LostPerson:
-        RTS
-    OxWandersOff:
-        RTS
-    AbandonedWagon:
-        RTS
-    Thief:
-        RTS
-    BadWater:
-        LDX #1
-        LDY #0
-        :
-        LDA eventBadWaterText, X
-        STA popupTextLine1, Y
-        INX
-        INY
-        CPY eventBadWaterText
-        BNE :-
-        LDA #MENU_TEXTPOPUP
-        STA menuOpen
-        RTS
-    LittleWater:
-        LDX #1
-        LDY #0
-        :
-        LDA eventLittleWaterText, X
-        STA popupTextLine1, Y
-        INX
-        INY
-        CPY eventLittleWaterText
-        BNE :-
-        LDA #MENU_TEXTPOPUP
-        STA menuOpen
-        RTS
-    InadequateGrass:
-        LDX #1
-        LDY #0
-        :
-        LDA eventInadequateGrassText, X
-        STA popupTextLine1, Y
-        INX
-        INY
-        CPY eventInadequateGrassText
-        BNE :-
-        LDA #MENU_TEXTPOPUP
-        STA menuOpen
-        RTS
+        JMP TextPopup
     Illness: ; TODO DRY
         JSR RandomNumberGenerator ; select a random person
         AND #%00000111
@@ -4784,11 +4772,7 @@
         ; TODO word wrap for great justice
         LDA #_PD ; "."
         STA popupTextLine1, Y
-        LDA #MENU_TEXTPOPUP
-        STA menuOpen
-        RTS
-    BrokenPart:
-        RTS
+        JMP TextPopup
 .endproc
 
 .proc QueueEvent

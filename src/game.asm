@@ -19,7 +19,6 @@
     .include "data/compressed/image/map.asm"
     .include "data/compressed/image/matt.asm"
     .include "data/compressed/image/nameparty.asm"
-    .include "data/compressed/image/rivercrossing.asm"
     .include "data/compressed/image/suppliesTiles.asm"
     .include "data/compressed/image/textTiles.asm"
     .include "data/compressed/image/titleLogo.asm"
@@ -81,6 +80,7 @@
     .include "data/raw/image/suppliesRaw.asm" ; todo compress
     .include "data/raw/sprites.asm"
     .include "code/traveling.asm"
+    ;.include "data/compressed/image/rivercrossing.asm"
 
     ; landmark
     .include "code/landmark.asm"

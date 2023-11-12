@@ -54,8 +54,8 @@ namepartyTilesMeta:
 trailSpritesTilesMeta:
     .byte 0, <trailSpritesTiles, >trailSpritesTiles, 4, 11, $00
 
-landmarkSpritesTilesMeta:
-    .byte 1, <landmarkSpritesTiles, >landmarkSpritesTiles, 11, 0, $00
+; landmarkSpritesTilesMeta:
+;     .byte 1, <landmarkSpritesTiles, >landmarkSpritesTiles, 11, 0, $00
 
 reBlizzardTilesMeta:
     .byte BANK_RANDOMEVENT, <reBlizzardTiles, >reBlizzardTiles, 1, 4, $10

@@ -2174,7 +2174,6 @@
     BCC AlmostDone
     JMP Done
     AlmostDone:
-    INC wagonRest ; lose 1 day
     LDA #EVENT_THUNDERSTORM
     JSR QueueEvent
     LDA #1
@@ -2198,7 +2197,6 @@
     BCC :+
     JMP Done
     :
-    INC wagonRest ; lose 1 day
     LDA #EVENT_BLIZZARD
     JSR QueueEvent
     LDA #1
@@ -2220,11 +2218,6 @@
     JSR RollRNG
     CMP #6*2
     BCS Done
-    JSR RandomNumberGenerator
-    AND #1
-    BNE :+
-    INC wagonRest ; 50% chance to lose 1 day
-    :
     LDA #EVENT_HEAVY_FOG
     JSR QueueEvent
     LDA #1
@@ -2246,11 +2239,6 @@
     JSR RollRNG
     CMP #6*2
     BCS Done
-    JSR RandomNumberGenerator
-    AND #1
-    BNE :+
-    INC wagonRest ; 50% chance to lose 1 day
-    :
     LDA #EVENT_HAIL_STORM
     JSR QueueEvent
     LDA #1
@@ -2351,14 +2339,6 @@
     BCC :+
     JMP Done
     :
-    JSR RandomNumberGenerator
-    AND #7
-    TAX
-    INX
-    :
-    INC wagonRest
-    DEX
-    BNE :-
     LDA #EVENT_LOSE_TRAIL
     JSR QueueEvent
     LDA #1
@@ -2376,14 +2356,6 @@
     BCC :+
     JMP Done
     :
-    JSR RandomNumberGenerator
-    AND #7
-    TAX
-    INX
-    :
-    INC wagonRest
-    DEX
-    BNE :-
     LDA #EVENT_WRONG_TRAIL
     JSR QueueEvent
     LDA #1
@@ -2424,14 +2396,6 @@
     BCC :+
     JMP Done
     :
-    JSR RandomNumberGenerator
-    AND #7
-    TAX
-    INX
-    :
-    INC wagonRest
-    DEX
-    BNE :-
     LDA #EVENT_IMPASSIBLE_TRAIL
     JSR QueueEvent
     LDA #1
@@ -2483,7 +2447,8 @@
     BCC :+
     JMP Done
     :
-
+    LDA #EVENT_FIRE_WAGON
+    JSR QueueEvent
     LDA #1
     STA helper
     Done:
@@ -2498,7 +2463,8 @@
     BCC :+
     JMP Done
     :
-
+    LDA #EVENT_LOST_PERSON
+    JSR QueueEvent
     LDA #1
     STA helper
     Done:
@@ -2513,7 +2479,8 @@
     BCC :+
     JMP Done
     :
-
+    LDA #EVENT_OX_WANDERS_OFF
+    JSR QueueEvent
     LDA #1
     STA helper
     Done:
@@ -2528,7 +2495,8 @@
     BCC :+
     JMP Done
     :
-
+    LDA #EVENT_ABANDONED_WAGON
+    JSR QueueEvent
     LDA #1
     STA helper
     Done:
@@ -2543,7 +2511,8 @@
     BCC :+
     JMP Done
     :
-
+    LDA #EVENT_THIEF
+    JSR QueueEvent
     LDA #1
     STA helper
     Done:
@@ -2667,7 +2636,8 @@
     BCC :+
     JMP Done
     :
-
+    LDA #EVENT_BROKEN_PART
+    JSR QueueEvent
     LDA #1
     STA helper
     Done:

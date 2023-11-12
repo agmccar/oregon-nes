@@ -1,5 +1,5 @@
-landmarkSpritesTiles:
-    .incbin "../chr/landmark_sprites.chr"
+; landmarkSpritesTiles:
+;     .incbin "../chr/landmark_sprites.chr"
 
 independenceTiles:
     .incbin "../chr/independence.chr"
