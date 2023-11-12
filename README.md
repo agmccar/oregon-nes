@@ -11,6 +11,14 @@ Check out R. Philip Bouchard's website and book:
 Play the original:
 - https://www.scullinsteel.com/apple2/#oregon_trail_1|oregon_trail_2
 
+### Tools used
+- NEXXT screen tool: https://frankengraphics.itch.io/nexxt
+- NES Space Checker: https://www.romhacking.net/utilities/1169/
+- ca65 assembler: https://cc65.github.io/doc/ca65.html
+- GIMP: https://www.gimp.org/
+- Mesen emulator: https://github.com/SourMesen/Mesen2
+- Tile compression: https://bisqwit.iki.fi/source/tokumaru.html
+
 ### Screenshots
 
 ![title screen](graphics/scratch/game_011.png?raw=true)
