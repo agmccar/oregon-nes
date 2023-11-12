@@ -8,6 +8,9 @@
 .segment "ZEROPAGE"
     .include "zeropage.asm"
 
+.segment "DECOMPRESS"
+    .import DecompressTokumaru
+
 .segment "BSS"
     .include "vars.asm"
 
@@ -106,18 +109,62 @@ bankswitch_nosave:
 resetSentinalKey:
     .byte _O_,_R_,_E_,_G_,_O_,_N_
 
+
+IdentifySystem:
+	; Enable NMI temporarily
+	lda #$80
+    sta softPPUCTRL
+	sta PPUCTRL
+	sta WhichSystem
+	ldx #0
+	ldy #0
+	lda NMIcounter
+    :
+    	cmp NMIcounter
+	beq :-
+	lda NMIcounter
+    @wait:
+	; Each iteration takes 11 cycles.
+	; NTSC NES: 29780 cycles or 2707 = $A93 iterations
+	; PAL NES:  33247 cycles or 3022 = $BCE iterations
+	; Dendy:    35464 cycles or 3224 = $C98 iterations
+	; so we can divide by $100 (rounding down), subtract ten,
+	; and end up with 0=ntsc, 1=pal, 2=dendy, 3=unknown
+	inx
+	Jne :+
+	iny
+    :
+    	cmp NMIcounter
+	Jeq @wait
+	tya
+	sec
+	sbc #10
+	cmp #3
+	bcc :+
+	lda #3
+    :
+    	sta WhichSystem
+	; Disable NMI again
+	lda #0
+    sta softPPUCTRL
+	sta PPUCTRL
+	rts
+
 .proc reset
     SEI
     CLD
     LDX #$FF
     TXS
     INX
+    STX softPPUCTRL
     STX PPUCTRL
+    STX softPPUMASK
     STX PPUMASK
     STX DMCFREQ
     : ; vblankwait
     BIT PPUSTATUS
     BPL :-
+	jsr IdentifySystem ; tokumaru
     LDX #0 ; Check for reset sentinal in memory
     LDY #0
     :
@@ -179,6 +226,19 @@ resetSentinalKey:
     BIT PPUSTATUS
     BPL :-
 
+    ; lda #$10 ; barf some data into chrrom
+    ; sta PPUADDR
+    ; lda #$00
+    ; sta PPUADDR
+    ; ldy #0
+    ; ldx #16
+    ; :
+    ; sty PPUDATA
+    ; dey
+    ; bne :-
+    ; dex
+    ; bne :-
+
     JSR ClearScreen
     LDA #%10010000      ; enable NMI, sprites use first pattern table
     STA softPPUCTRL
@@ -203,6 +263,7 @@ resetSentinalKey:
     PHA
     TYA
     PHA
+    inc NMIcounter
     LDA softPPUCTRL
     STA PPUCTRL
     LDA softPPUMASK

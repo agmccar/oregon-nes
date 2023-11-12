@@ -21,6 +21,16 @@ buttons1Last:       .res 1
 seed:               .res 2 ; PRNG seed
 bufferHelper:       .res 4
 
+; Tokumaru ---------------------------------------------------------------------
+
+.exportzp SourcePtr
+SourcePtr:   .res 2
+NMIcounter:  .res 1
+WhichSystem: .res 1
+DummyByte:   .res 1
+
+Byte1:       .res 1
+Byte2:       .res 1
 
 ; Graphics ---------------------------------------------------------------------
 
@@ -185,5 +195,6 @@ accumulatedSnow:    .res 1 ; 0.125 inch increments - max 32"
 location:           .res 1
 
 
-;-------------------------------------------------------------------------------
+
+
 ; remaining: $74

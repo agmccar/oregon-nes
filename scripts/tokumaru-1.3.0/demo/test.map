@@ -1,0 +1,60 @@
+Modules list:
+-------------
+decompress.o:
+    ZEROPAGE          Offs=000000  Size=000016  Align=00001  Fill=0000
+    DECOMPRESS        Offs=000000  Size=0000D5  Align=00001  Fill=0000
+main.o:
+    CODE              Offs=000000  Size=0000D3  Align=00001  Fill=0000
+    ZEROPAGE          Offs=000016  Size=000007  Align=00001  Fill=0000
+    IRQ               Offs=000000  Size=000001  Align=00001  Fill=0000
+    NMI               Offs=000000  Size=0005FC  Align=00001  Fill=0000
+    STARFIELD         Offs=000000  Size=000069  Align=00001  Fill=0000
+    SYSTEMDEP         Offs=000000  Size=00002D  Align=00001  Fill=0000
+    DELAY1            Offs=000000  Size=00002F  Align=00001  Fill=0000
+    DELAY2            Offs=000000  Size=000022  Align=00001  Fill=0000
+    TILEDATA          Offs=000000  Size=001627  Align=00001  Fill=0000
+    NAMETABLE         Offs=000000  Size=0007FE  Align=00100  Fill=0000
+    PALETTE           Offs=000000  Size=000020  Align=00001  Fill=0000
+    VECTORS           Offs=000000  Size=00000C  Align=00001  Fill=0000
+    INES_HEADER       Offs=000000  Size=000007  Align=00001  Fill=0000
+
+
+Segment list:
+-------------
+Name                   Start     End    Size  Align
+----------------------------------------------------
+INES_HEADER           000000  000006  000007  00001
+ZEROPAGE              000000  00001C  00001D  00001
+CODE                  00C000  00C0D2  0000D3  00001
+DECOMPRESS            00C0D3  00C1A7  0000D5  00001
+IRQ                   00C1A8  00C1A8  000001  00001
+NMI                   00C1A9  00C7A4  0005FC  00001
+STARFIELD             00C800  00C868  000069  00001
+SYSTEMDEP             00C880  00C8AC  00002D  00001
+TILEDATA              00C8AD  00DED3  001627  00001
+NAMETABLE             00DF00  00E6FD  0007FE  00100
+PALETTE               00E700  00E71F  000020  00001
+DELAY1                00E740  00E76E  00002F  00001
+DELAY2                00E780  00E7A1  000022  00001
+VECTORS               00FFF4  00FFFF  00000C  00001
+
+
+Exports list by name:
+---------------------
+DecompressTokumaru        00C0D3 RLA    SourcePtr                 000016 RLZ    
+
+
+
+Exports list by value:
+----------------------
+SourcePtr                 000016 RLZ    DecompressTokumaru        00C0D3 RLA    
+
+
+
+Imports list:
+-------------
+DecompressTokumaru (decompress.o):
+    main.o                    main.s:12
+SourcePtr (main.o):
+    decompress.o              decompress.s:75
+

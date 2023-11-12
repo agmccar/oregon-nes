@@ -3,6 +3,7 @@
 
 .proc InitStateTitle
     SBD
+    ; LoadCHR #<testChrMeta, #>testChrMeta
     JSR LoadTextCHR
     ;JSR LoadWagonCHR TODO
     EBD
@@ -1754,11 +1755,7 @@
 .endproc
 
 .proc LoadTextCHR
-    LDA #<textTilesMeta
-    STA pointer
-    LDA #>textTilesMeta
-    STA pointer+1
-    JSR UnpackTilesMeta
+    LoadCHR #<textTilesMeta,  #>textTilesMeta
     RTS
 .endproc
 
@@ -1771,7 +1768,7 @@
 ;     RTS
 ; .endproc
 
-.proc UnpackTilesMeta
+.proc DecompressTokumaruTilesMeta
     ; Must only occur during Bulk drawing
     ; Clobbers all registers, helper+0, pointer, counter
     ; @param helper+1: hi byte of tilemap page to write on, $00 or $10
@@ -1805,15 +1802,74 @@
     PLA ; Destination 'y-value' (row index) of tiles in CHRRAM
     CLC
     ADC helper
-    STA PPUADDR
-    LDA #0
-    STA PPUADDR
-    JSR UnpackData
+    TAX
+    LDA #$00
+    JSR DecompressTokumaruData
     PLA
     TAY
     JSR bankswitch_y
     RTS
 .endproc
+
+.proc DecompressTokumaruData
+    ; PPUADDR should be set immediately before this subroutine
+    ; @param pointer: location of compressed data 
+    ; @param counter: total unpacked bytes to write to PPUDATA
+	bit PPUSTATUS
+	stx PPUADDR
+	sta PPUADDR
+    lda pointer+0
+    sta SourcePtr+0
+    ldx pointer+1
+    stx SourcePtr+1
+	jmp DecompressTokumaru
+
+    RTS
+.endproc
+
+; .proc UnpackTilesMeta
+;     ; Must only occur during Bulk drawing
+;     ; Clobbers all registers, helper+0, pointer, counter
+;     ; @param helper+1: hi byte of tilemap page to write on, $00 or $10
+;     ; @param pointer: location of tile meta
+;     LDA currentBank
+;     PHA
+;     LDY #6 ; length of tile meta segment
+;     :
+;     DEY
+;     LDA (pointer), Y
+;     PHA
+;     CPY #0
+;     BNE :-
+;     PLA ; ROM bank number
+;     TAY
+;     JSR bankswitch_y
+;     PLA ; Address of tile CHR
+;     STA pointer
+;     PLA
+;     STA pointer+1
+;     LDA #0
+;     STA counter
+;     PLA ; Number of rows of 16 tiles 
+;     STA counter+1
+;     LDA #0
+;     STA PPUMASK
+;     LDA PPUSTATUS
+;     PLA
+;     STA helper+1
+;     STA helper
+;     PLA ; Destination 'y-value' (row index) of tiles in CHRRAM
+;     CLC
+;     ADC helper
+;     STA PPUADDR
+;     LDA #0
+;     STA PPUADDR
+;     JSR UnpackData
+;     PLA
+;     TAY
+;     JSR bankswitch_y
+;     RTS
+; .endproc
 
 .proc UnpackData
     ; PPUADDR should be set immediately before this subroutine
@@ -1886,11 +1942,7 @@
     LDY #BANK_DATA
     JSR bankswitch_y
 
-    LDA #<adornmentTilesMeta
-    STA pointer
-    LDA #>adornmentTilesMeta
-    STA pointer+1
-    JSR UnpackTilesMeta
+    LoadCHR #<adornmentTilesMeta, #>adornmentTilesMeta
 
     LDA gameState ; decide where to draw first adornment
     CMP #GAMESTATE_TITLE
@@ -2133,11 +2185,9 @@
     STA counter+1
     LDA #0
     STA PPUMASK
-    LDA #$10
-    STA PPUADDR
+    LDX #$10
     LDA #$00
-    STA PPUADDR
-    JSR UnpackData
+    JSR DecompressTokumaruData
     RTS
 .endproc
 

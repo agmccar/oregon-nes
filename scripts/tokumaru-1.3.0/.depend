@@ -1,0 +1,2 @@
+tokumaru.o: tokumaru.cc
+tokumaru.lo: tokumaru.cc

@@ -6,6 +6,8 @@
 ;  ||   ||||||   ++---------- Number of rows of 16 tiles ("height")
 ;  ||   ++++++--------------- Address of tile CHR
 ;  ++------------------------ ROM bank number, must match game.asm
+; testChrMeta:
+;     .byte 0, <testChr, >testChr, 16, 0, $00
 textTilesMeta:
     .byte 0, <textTiles, >textTiles, 4, 12, $10
 

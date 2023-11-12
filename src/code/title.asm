@@ -856,11 +856,7 @@
 
 .proc DrawTitleLogo
 
-    LDA #<titleLogoTilesMeta
-    STA pointer
-    LDA #>titleLogoTilesMeta
-    STA pointer+1
-    JSR UnpackTilesMeta
+    LoadCHR #<titleLogoTilesMeta, #>titleLogoTilesMeta
 
     LDA #<titleLogoImageMeta
     STA pointer
