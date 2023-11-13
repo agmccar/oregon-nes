@@ -281,6 +281,19 @@ def verify(a, b, verbose):
         if verbose: print('...OK')
         return True
 
+def aaaaa(a,asm_data,filename,asm_label,verbose):
+
+    if 0 and "landmark" in filename and ("Image" in asm_label or "Attr" in asm_label):
+        #input(f"{filename}: {asm_label}\n{[int(i[1:],16) for i in a.split(',')]}")
+        with open(f"src/data/raw/bin/{asm_label}.bin", "wb") as bf:
+            bf.write(bytes([int(i[1:],16) for i in a.split(',')]))
+
+        asm_data[filename][asm_label] = b = f".incbin \"../bin/{asm_label}.bin\""
+    else:
+        asm_data[filename][asm_label] = b = pack(a)
+        verify(a, b, verbose)
+    return b
+
 def main(args):
     verbose = args.verbose
     asm_filenames = []
@@ -306,15 +319,13 @@ def main(args):
                 for label in text[1:-1]:
                     i = label.split('\n')
                     a = parse(i[:-1])
-                    asm_data[filename][asm_label] = b = pack(a)
-                    verify(a, b, verbose)
+                    b = aaaaa(a,asm_data,filename,asm_label,verbose)
                     if 'incbin' not in b:
                         original_size[asm_label] = len(a.split(','))
                         packed_size[asm_label] = len(b.split(','))
                     asm_label = i[-1]
                 a = parse(text[-1].split('\n'))
-                asm_data[filename][asm_label] = b = pack(a)
-                verify(a, b, verbose)
+                b = aaaaa(a,asm_data,filename,asm_label,verbose)
                 if 'incbin' not in b:
                     original_size[asm_label] = len(a.split(','))
                     packed_size[asm_label] = len(b.split(','))
@@ -328,6 +339,7 @@ def main(args):
                     if verbose: print(f"Compressed {filename}\n")
             else:
                 if verbose: print(f"Skipped {filename}\n")
+    chr_filenames = []
     for filename in chr_filenames:
         with open(f"{filename}", 'rb') as f:
             if verbose: print(f"- {filename} -")

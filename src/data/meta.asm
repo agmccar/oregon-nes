@@ -151,17 +151,17 @@ landmarkImageMeta:
     .byte <kansasRiverTiles, >kansasRiverTiles, <kansasRiverAttr, >kansasRiverAttr, <kansasRiverImage, >kansasRiverImage, 2
     .byte <bigBlueRiverTiles, >bigBlueRiverTiles, <bigBlueRiverAttr, >bigBlueRiverAttr, <bigBlueRiverImage, >bigBlueRiverImage, 2
     .byte <fortKearneyTiles, >fortKearneyTiles, <fortKearneyAttr, >fortKearneyAttr, <fortKearneyImage, >fortKearneyImage, 2
-    .byte <chimneyRockTiles, >chimneyRockTiles, <chimneyRockAttr, >chimneyRockAttr, <chimneyRockImage, >chimneyRockImage, 3
+    .byte <chimneyRockTiles, >chimneyRockTiles, <chimneyRockAttr, >chimneyRockAttr, <chimneyRockImage, >chimneyRockImage, 2
     .byte <fortLaramieTiles, >fortLaramieTiles, <fortLaramieAttr, >fortLaramieAttr, <fortLaramieImage, >fortLaramieImage, 3
     .byte <independenceRockTiles, >independenceRockTiles, <independenceRockAttr, >independenceRockAttr, <independenceRockImage, >independenceRockImage, 3
     .byte <southPassTiles, >southPassTiles, <southPassAttr, >southPassAttr, <southPassImage, >southPassImage, 3
-    .byte <fortBridgerTiles, >fortBridgerTiles, <fortBridgerAttr, >fortBridgerAttr, <fortBridgerImage, >fortBridgerImage, 4
-    .byte <greenRiverTiles, >greenRiverTiles, <greenRiverAttr, >greenRiverAttr, <greenRiverImage, >greenRiverImage, 4
+    .byte <fortBridgerTiles, >fortBridgerTiles, <fortBridgerAttr, >fortBridgerAttr, <fortBridgerImage, >fortBridgerImage, 3
+    .byte <greenRiverTiles, >greenRiverTiles, <greenRiverAttr, >greenRiverAttr, <greenRiverImage, >greenRiverImage, 3
     .byte <sodaSpringsTiles, >sodaSpringsTiles, <sodaSpringsAttr, >sodaSpringsAttr, <sodaSpringsImage, >sodaSpringsImage, 4
     .byte <fortHallTiles, >fortHallTiles, <fortHallAttr, >fortHallAttr, <fortHallImage, >fortHallImage, 4
-    .byte <snakeRiverTiles, >snakeRiverTiles, <snakeRiverAttr, >snakeRiverAttr, <snakeRiverImage, >snakeRiverImage, 5
-    .byte <fortBoiseTiles, >fortBoiseTiles, <fortBoiseAttr, >fortBoiseAttr, <fortBoiseImage, >fortBoiseImage, 5
-    .byte <blueMountainsTiles, >blueMountainsTiles, <blueMountainsAttr, >blueMountainsAttr, <blueMountainsImage, >blueMountainsImage, 5
+    .byte <snakeRiverTiles, >snakeRiverTiles, <snakeRiverAttr, >snakeRiverAttr, <snakeRiverImage, >snakeRiverImage, 4
+    .byte <fortBoiseTiles, >fortBoiseTiles, <fortBoiseAttr, >fortBoiseAttr, <fortBoiseImage, >fortBoiseImage, 4
+    .byte <blueMountainsTiles, >blueMountainsTiles, <blueMountainsAttr, >blueMountainsAttr, <blueMountainsImage, >blueMountainsImage, 4
     .byte <fortWallaWallaTiles, >fortWallaWallaTiles, <fortWallaWallaAttr, >fortWallaWallaAttr, <fortWallaWallaImage, >fortWallaWallaImage, 5
-    .byte <theDallesTiles, >theDallesTiles, <theDallesAttr, >theDallesAttr, <theDallesImage, >theDallesImage, 6
-    .byte <willametteTiles, >willametteTiles, <willametteAttr, >willametteAttr, <willametteImage, >willametteImage, 6
+    .byte <theDallesTiles, >theDallesTiles, <theDallesAttr, >theDallesAttr, <theDallesImage, >theDallesImage, 5
+    .byte <willametteTiles, >willametteTiles, <willametteAttr, >willametteAttr, <willametteImage, >willametteImage, 5

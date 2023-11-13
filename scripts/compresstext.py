@@ -450,16 +450,16 @@ def main(args):
             b.append("$00") 
             talk_data[loc][i]['bytes'] = ",".join(b)
     write_asm('src/data/compressed/text/talkPointer.asm', substr_dict, data=talk_data, pointer=True, writeData=False, labelPrefix="talk")
-    talk_dataA = {i:talk_data[i] for i in [j for j in talk_data][:4]}
-    talk_dataB = {i:talk_data[i] for i in [j for j in talk_data][4:8]}
-    talk_dataC = {i:talk_data[i] for i in [j for j in talk_data][8:12]}
-    talk_dataD = {i:talk_data[i] for i in [j for j in talk_data][12:16]}
-    talk_dataE = {i:talk_data[i] for i in [j for j in talk_data][16:]}
+    talk_dataA = {i:talk_data[i] for i in [j for j in talk_data][:5]}
+    talk_dataB = {i:talk_data[i] for i in [j for j in talk_data][5:10]}
+    talk_dataC = {i:talk_data[i] for i in [j for j in talk_data][10:15]}
+    talk_dataD = {i:talk_data[i] for i in [j for j in talk_data][15:]}
+    # talk_dataE = {i:talk_data[i] for i in [j for j in talk_data][16:]}
     write_asm('src/data/compressed/text/talkA.asm', substr_dict, data=talk_dataA, labelPrefix="talk")
     write_asm('src/data/compressed/text/talkB.asm', substr_dict, data=talk_dataB, labelPrefix="talk")
     write_asm('src/data/compressed/text/talkC.asm', substr_dict, data=talk_dataC, labelPrefix="talk")
     write_asm('src/data/compressed/text/talkD.asm', substr_dict, data=talk_dataD, labelPrefix="talk")
-    write_asm('src/data/compressed/text/talkE.asm', substr_dict, data=talk_dataE, labelPrefix="talk")
+    #write_asm('src/data/compressed/text/talkE.asm', substr_dict, data=talk_dataE, labelPrefix="talk")
 
     # 'learn' text
     for page in learn_data:

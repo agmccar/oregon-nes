@@ -1377,6 +1377,49 @@
     RTS
 .endproc
 
+.proc BufferDrawImage
+    LDY #0
+    LDA (pointer), Y ; width
+    STA helper
+    INY
+    LDA (pointer), Y ; height
+    TAX
+    INY
+    LDA (pointer), Y ; ppuaddr hi
+    STA helper2
+    INY
+    LDA (pointer), Y ; ppuaddr lo
+    STA helper2+1
+    INY
+    STY helper+1
+    :
+    TXA
+    PHA
+    SBW helper, helper2, helper2+1
+        LDX #0
+        :
+        LDY helper+1
+        LDA (pointer), Y
+        WBB
+        INC helper+1
+        INX
+        CPX helper
+        BNE :-
+    EBW
+    CLC
+    LDA helper2+1
+    ADC #$20
+    STA helper2+1
+    LDA helper2
+    ADC #0
+    STA helper2
+    PLA
+    TAX
+    DEX
+    BNE :--
+    RTS
+.endproc
+
 ; Bulk drawing -----------------------------------------------------------------
 
 .proc StartBulkDrawing
@@ -1759,15 +1802,6 @@
     RTS
 .endproc
 
-; .proc LoadWagonCHR ; TODO
-;     LDA #<wagonTilesMeta
-;     STA pointer
-;     LDA #>wagonTilesMeta
-;     STA pointer+1
-;     JSR UnpackTilesMeta
-;     RTS
-; .endproc
-
 .proc DecompressTokumaruTilesMeta
     ; Must only occur during Bulk drawing
     ; Clobbers all registers, helper+0, pointer, counter
@@ -1826,50 +1860,6 @@
 
     RTS
 .endproc
-
-; .proc UnpackTilesMeta
-;     ; Must only occur during Bulk drawing
-;     ; Clobbers all registers, helper+0, pointer, counter
-;     ; @param helper+1: hi byte of tilemap page to write on, $00 or $10
-;     ; @param pointer: location of tile meta
-;     LDA currentBank
-;     PHA
-;     LDY #6 ; length of tile meta segment
-;     :
-;     DEY
-;     LDA (pointer), Y
-;     PHA
-;     CPY #0
-;     BNE :-
-;     PLA ; ROM bank number
-;     TAY
-;     JSR bankswitch_y
-;     PLA ; Address of tile CHR
-;     STA pointer
-;     PLA
-;     STA pointer+1
-;     LDA #0
-;     STA counter
-;     PLA ; Number of rows of 16 tiles 
-;     STA counter+1
-;     LDA #0
-;     STA PPUMASK
-;     LDA PPUSTATUS
-;     PLA
-;     STA helper+1
-;     STA helper
-;     PLA ; Destination 'y-value' (row index) of tiles in CHRRAM
-;     CLC
-;     ADC helper
-;     STA PPUADDR
-;     LDA #0
-;     STA PPUADDR
-;     JSR UnpackData
-;     PLA
-;     TAY
-;     JSR bankswitch_y
-;     RTS
-; .endproc
 
 .proc UnpackData
     ; PPUADDR should be set immediately before this subroutine
@@ -3967,7 +3957,6 @@
 .endproc
 
 .proc ProcessEventQueue
-    JSR ClearPopupTextLines
     LDA eventQueue ; proceed only if an event is queued
     CMP #EVENT_NONE
     BNE :+
@@ -3983,6 +3972,7 @@
     LDA #EVENT_NONE
     STA eventQueue+3
     DEC eventQueuePointer
+    JSR ClearPopupTextLines
     TYA                ; unstash event ID
     CMP #EVENT_NEXT_LANDMARK  ; switch/case event id
     BNE :+++++
@@ -4089,7 +4079,10 @@
     :
     CMP #EVENT_THUNDERSTORM
     BNE :+++
+        SBD
         LoadCHR #<reThunderstormTilesMeta, #>reThunderstormTilesMeta
+        EBD
+        BufferDrawImage #<reThunderstormImage, #>reThunderstormImage
         LDX #1
         LDY #0
         :
@@ -4115,7 +4108,10 @@
     :
     CMP #EVENT_BLIZZARD
     BNE :+++
+        SBD
         LoadCHR #<reBlizzardTilesMeta, #>reBlizzardTilesMeta
+        EBD
+        BufferDrawImage #<reBlizzardImage, #>reBlizzardImage
         LDX #1
         LDY #0
         :
@@ -4414,7 +4410,10 @@
     :
     CMP #EVENT_WILD_FRUIT
     BNE :++
+        SBD
         LoadCHR #<reWildFruitTilesMeta, #>reWildFruitTilesMeta
+        EBD
+        BufferDrawImage #<reWildFruitImage, #>reWildFruitImage
         LDX #1
         LDY #0
         :
@@ -4428,7 +4427,10 @@
     :
     CMP #EVENT_FIRE_WAGON
     BNE :+
+        SBD
         LoadCHR #<reWagonFireTilesMeta, #>reWagonFireTilesMeta
+        EBD
+        BufferDrawImage #<reWagonFireImage, #>reWagonFireImage
         JMP TextPopup
     :
     CMP #EVENT_LOST_PERSON
@@ -4445,7 +4447,10 @@
     :
     CMP #EVENT_THIEF
     BNE :+
+        SBD
         LoadCHR #<reThiefTilesMeta, #>reThiefTilesMeta
+        EBD
+        BufferDrawImage #<reThiefImage, #>reThiefImage
         JMP TextPopup
     :
     CMP #EVENT_BAD_WATER
@@ -4493,7 +4498,10 @@
     :
     CMP #EVENT_BROKEN_PART
     BNE :+
+        SBD
         LoadCHR #<reBrokenPartTilesMeta, #>reBrokenPartTilesMeta
+        EBD
+        BufferDrawImage #<reBrokenPartImage, #>reBrokenPartImage
         JMP TextPopup
     :
     RTS

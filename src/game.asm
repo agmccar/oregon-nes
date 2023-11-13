@@ -41,10 +41,6 @@
     .include "data/compressed/text/newgame.asm"
     .include "code/store.asm"
 
-    ; random events
-    .include "data/raw/randomevents.asm"
-    .include "data/compressed/image/randomevents.asm"
-
     ; hunting
     .include "data/raw/hunting.asm"
     .include "data/compressed/image/hunting.asm"
@@ -70,9 +66,6 @@
     .include "data/compressed/text/talkD.asm"
 
 .segment "ROM6"
-    ; landmark
-    .include "data/compressed/image/landmarkE.asm"
-    .include "data/compressed/text/talkE.asm"
 
     ; traveling
     .include "data/compressed/image/wagon.asm"
@@ -83,6 +76,9 @@
     .include "data/raw/image/suppliesRaw.asm" ; todo compress
     .include "data/raw/sprites.asm"
     .include "code/traveling.asm"
+    ; random events
+    .include "data/raw/randomevents.asm"
+    .include "data/compressed/image/randomevents.asm"
     ;.include "data/compressed/image/rivercrossing.asm"
 
     ; landmark

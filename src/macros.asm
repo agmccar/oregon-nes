@@ -69,6 +69,14 @@
     JSR BufferDrawDollarAmount
 .endmacro
 
+.macro BufferDrawImage addrHi, addrLo
+    LDA addrHi
+    STA pointer
+    LDA addrLo
+    STA pointer+1
+    JSR BufferDrawImage
+.endmacro
+
 .macro SBW len, addrHi, addrLo
     LDX len
     JSR StartBufferWrite
