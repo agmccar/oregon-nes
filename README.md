@@ -2,7 +2,7 @@
 
 Re-write of the original Oregon Trail for the Apple II. It's a work in progress. 
 
-Not affiliated with or endorsed by anyone.
+Not affiliated with or endorsed by anyone. (John K. said Good Luck!)
 
 Check out R. Philip Bouchard's website and book:
 - http://died-of-dysentery.com
@@ -16,7 +16,7 @@ Play the original:
 - NES Space Checker: https://www.romhacking.net/utilities/1169/
 - ca65 assembler: https://cc65.github.io/doc/ca65.html
 - GIMP: https://www.gimp.org/
-- Mesen emulator: https://github.com/SourMesen/Mesen2
+- Mesen emulator/debugger: https://github.com/SourMesen/Mesen2
 - Tokumaru compression algorithm: https://bisqwit.iki.fi/source/tokumaru.html
 - VS Code OSS: https://github.com/code-oss-dev/code
 - ca65 extension for VS Code: https://github.com/tlgkccampbell/code-ca65
