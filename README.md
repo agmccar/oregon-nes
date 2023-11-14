@@ -20,6 +20,7 @@ Play the original:
 - Tokumaru compression algorithm: https://bisqwit.iki.fi/source/tokumaru.html
 - VS Code OSS: https://github.com/code-oss-dev/code
 - ca65 extension for VS Code: https://github.com/tlgkccampbell/code-ca65
+- 6502 reference: https://www.nesdev.org/obelisk-6502-guide/
 
 ### Screenshots
 
