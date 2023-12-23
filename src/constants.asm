@@ -230,34 +230,42 @@ COST_PARTS        = 50 ; * costBase = Cost per spare part
 COST_FOOD_LB      = 1 ; * costBase = Cost per lb of food
 
 ; Events (stuff happens/text pops up)
-EVENT_NONE              = 0
-EVENT_NEXT_LANDMARK     = 1 ; "It is xxx miles to yyyy"
-EVENT_REACHED_LANDMARK  = 2 ; "you have reached yyyy"
-EVENT_LOOK_AROUND       = 27 ; "Would you like to look around"
-EVENT_LOAD_LANDMARK     = 26 ; change game state
-EVENT_INDIAN_FOOD       = 3
-EVENT_THUNDERSTORM      = 4
-EVENT_BLIZZARD          = 5
-EVENT_HEAVY_FOG         = 6
-EVENT_HAIL_STORM        = 7
-EVENT_INJURED_OX        = 8
-EVENT_INJURED_PERSON    = 9
-EVENT_SNAKE_BITE        = 10
-EVENT_LOSE_TRAIL        = 11
-EVENT_WRONG_TRAIL       = 12
-EVENT_ROUGH_TRAIL       = 13
-EVENT_IMPASSIBLE_TRAIL  = 14
-EVENT_WILD_FRUIT        = 15
-EVENT_FIRE_WAGON        = 16
-EVENT_LOST_PERSON       = 17
-EVENT_OX_WANDERS_OFF    = 18
-EVENT_ABANDONED_WAGON   = 19
-EVENT_THIEF             = 20
-EVENT_BAD_WATER         = 21
-EVENT_LITTLE_WATER      = 22
-EVENT_INADEQUATE_GRASS  = 23
-EVENT_ILLNESS           = 24
-EVENT_BROKEN_PART       = 25
+EVENT_NONE               = 0
+EVENT_NEXT_LANDMARK      = 1 ; "It is xxx miles to yyyy"
+EVENT_REACHED_LANDMARK   = 2 ; "you have reached yyyy"
+EVENT_INDIAN_FOOD        = 3
+EVENT_THUNDERSTORM       = 4
+EVENT_BLIZZARD           = 5
+EVENT_HEAVY_FOG          = 6
+EVENT_HAIL_STORM         = 7
+EVENT_INJURED_OX         = 8
+EVENT_INJURED_PERSON     = 9
+EVENT_SNAKE_BITE         = 10
+EVENT_LOSE_TRAIL         = 11
+EVENT_WRONG_TRAIL        = 12
+EVENT_ROUGH_TRAIL        = 13
+EVENT_IMPASSIBLE_TRAIL   = 14
+EVENT_WILD_FRUIT         = 15
+EVENT_FIRE_WAGON         = 16
+EVENT_LOST_PERSON        = 17
+EVENT_OX_WANDERS_OFF     = 18
+EVENT_ABANDONED_WAGON    = 19
+EVENT_THIEF              = 20
+EVENT_BAD_WATER          = 21
+EVENT_LITTLE_WATER       = 22
+EVENT_INADEQUATE_GRASS   = 23
+EVENT_ILLNESS            = 24
+EVENT_BROKEN_PART        = 25
+EVENT_LOOK_AROUND        = 26 ; "Would you like to look around"
+EVENT_LOAD_LANDMARK      = 27 ; change game state
+EVENT_CLEAR_THUNDERSTORM = 28 ; \
+EVENT_CLEAR_BLIZZARD     = 29 ; |
+EVENT_CLEAR_WILD_FRUIT   = 30 ; | clear random event graphic
+EVENT_CLEAR_THIEF        = 31 ; |
+EVENT_CLEAR_FIRE_WAGON   = 32 ; |
+EVENT_CLEAR_BROKEN_PART  = 33 ; /
+;EVENT_CLEAR_SNOWBOUND ;?
+EVENT_CLEAR_TEXT         = 34 ; automatically clear drought-related REs
 
 ; weatherText index
 WEATHER_VERY_COLD = 0

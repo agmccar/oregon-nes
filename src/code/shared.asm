@@ -1354,11 +1354,8 @@
 
     LDA currentBank
     PHA
-    LDA location ; bankswitch to get text data
-    LSR
-    LSR
-    CLC
-    ADC #2
+    LDY location ; bankswitch to get text data
+    LDA talkTextBank, Y
     TAY
     JSR bankswitch_y
 
@@ -3221,6 +3218,11 @@
             RTS
         @sec2:
             ; 2nd second: pause, update counters, roll for event
+            LDA eventQueue
+            CMP #EVENT_CLEAR_TEXT
+            BNE :+
+                JSR ProcessEventQueue
+            :
             LDA #%10000000
             STA oxenFrame
             JSR ElapseDay
@@ -4106,6 +4108,11 @@
         INC wagonRest ; lose 1 day
         JMP TextPopup
     :
+    CMP #EVENT_CLEAR_THUNDERSTORM
+    BNE :+
+        BDrawBlankBox reThunderstormImage+2, reThunderstormImage+3, reThunderstormImage+0, reThunderstormImage+1
+        RTS
+    :
     CMP #EVENT_BLIZZARD
     BNE :+++
         SBD
@@ -4134,6 +4141,11 @@
         STA popupTextLine2, Y
         INC wagonRest ; lose 1 day
         JMP TextPopup
+    :
+    CMP #EVENT_CLEAR_BLIZZARD
+    BNE :+
+        BDrawBlankBox reBlizzardImage+2, reBlizzardImage+3, reBlizzardImage+0, reBlizzardImage+1
+        RTS
     :
     CMP #EVENT_HEAVY_FOG
     BNE :++++++
@@ -4425,6 +4437,11 @@
         BNE :-
         JMP TextPopup
     :
+    CMP #EVENT_CLEAR_WILD_FRUIT
+    BNE :+
+        BDrawBlankBox reWildFruitImage+2, reWildFruitImage+3, reWildFruitImage+0, reWildFruitImage+1
+        RTS
+    :
     CMP #EVENT_FIRE_WAGON
     BNE :+
         SBD
@@ -4432,6 +4449,12 @@
         EBD
         BufferDrawImage #<reWagonFireImage, #>reWagonFireImage
         JMP TextPopup
+    :
+    CMP #EVENT_CLEAR_FIRE_WAGON
+    BNE :+
+        BDrawBlankBox reWagonFireImage+2, reWagonFireImage+3, reWagonFireImage+0, reWagonFireImage+1
+        JSR BufferDrawWagon
+        RTS
     :
     CMP #EVENT_LOST_PERSON
     BNE :+
@@ -4452,6 +4475,12 @@
         EBD
         BufferDrawImage #<reThiefImage, #>reThiefImage
         JMP TextPopup
+    :
+    CMP #EVENT_CLEAR_THIEF
+    BNE :+
+        BDrawBlankBox reThiefImage+2, reThiefImage+3, reThiefImage+0, reThiefImage+1
+        JSR BufferDrawWagon
+        RTS
     :
     CMP #EVENT_BAD_WATER
     BNE :++
@@ -4503,6 +4532,19 @@
         EBD
         BufferDrawImage #<reBrokenPartImage, #>reBrokenPartImage
         JMP TextPopup
+    :
+    CMP #EVENT_CLEAR_BROKEN_PART
+    BNE :+
+        BDrawBlankBox reBrokenPartImage+2, reBrokenPartImage+3, reBrokenPartImage+0, reBrokenPartImage+1
+        JSR BufferDrawWagon
+        RTS
+    :
+    CMP #EVENT_CLEAR_TEXT
+    BNE :+
+        JSR CloseTextPopup
+        LDA #MENU_NONE
+        STA menuOpen
+        RTS
     :
     RTS
     TextPopup:

@@ -165,3 +165,7 @@ landmarkImageMeta:
     .byte <fortWallaWallaTiles, >fortWallaWallaTiles, <fortWallaWallaAttr, >fortWallaWallaAttr, <fortWallaWallaImage, >fortWallaWallaImage, 5
     .byte <theDallesTiles, >theDallesTiles, <theDallesAttr, >theDallesAttr, <theDallesImage, >theDallesImage, 5
     .byte <willametteTiles, >willametteTiles, <willametteAttr, >willametteAttr, <willametteImage, >willametteImage, 5
+
+; talk text
+talkTextBank:
+    .byte 2,2,2,2,2,3,3,3,3,3,4,4,4,4,4,5,5,5

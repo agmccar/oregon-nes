@@ -2176,6 +2176,8 @@
     AlmostDone:
     LDA #EVENT_THUNDERSTORM
     JSR QueueEvent
+    LDA #EVENT_CLEAR_THUNDERSTORM
+    JSR QueueEvent
     LDA #1
     STA helper
     Done:
@@ -2198,6 +2200,8 @@
     JMP Done
     :
     LDA #EVENT_BLIZZARD
+    JSR QueueEvent
+    LDA #EVENT_CLEAR_BLIZZARD
     JSR QueueEvent
     LDA #1
     STA helper
@@ -2433,6 +2437,8 @@
     :
     LDA #EVENT_WILD_FRUIT
     JSR QueueEvent
+    LDA #EVENT_CLEAR_WILD_FRUIT
+    JSR QueueEvent
     LDA #1
     STA helper
     Done:
@@ -2448,6 +2454,8 @@
     JMP Done
     :
     LDA #EVENT_FIRE_WAGON
+    JSR QueueEvent
+    LDA #EVENT_CLEAR_FIRE_WAGON
     JSR QueueEvent
     LDA #1
     STA helper
@@ -2513,6 +2521,8 @@
     :
     LDA #EVENT_THIEF
     JSR QueueEvent
+    LDA #EVENT_CLEAR_THIEF
+    JSR QueueEvent
     LDA #1
     STA helper
     Done:
@@ -2532,6 +2542,8 @@
     ADC #20
     STA wagonHealth
     LDA #EVENT_BAD_WATER
+    JSR QueueEvent
+    LDA #EVENT_CLEAR_TEXT
     JSR QueueEvent
     LDA #1
     STA helper
@@ -2554,6 +2566,8 @@
     STA wagonHealth
     LDA #EVENT_LITTLE_WATER
     JSR QueueEvent
+    LDA #EVENT_CLEAR_TEXT
+    JSR QueueEvent
     LDA #1
     STA helper
     Done:
@@ -2571,6 +2585,8 @@
     BCS Done
     ; Inadequate Grass event effect does nothing?
     LDA #EVENT_INADEQUATE_GRASS
+    JSR QueueEvent
+    LDA #EVENT_CLEAR_TEXT
     JSR QueueEvent
     LDA #1
     STA helper
@@ -2637,6 +2653,8 @@
     JMP Done
     :
     LDA #EVENT_BROKEN_PART
+    JSR QueueEvent
+    LDA #EVENT_CLEAR_BROKEN_PART
     JSR QueueEvent
     LDA #1
     STA helper
