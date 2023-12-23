@@ -134,6 +134,7 @@ paceText:
     .byte _S_,_T_,_E_,_A_,_D_,_Y_,___,___,___
     .byte _S_,_T_,_R_,_E_,_N_,_U_,_O_,_U_,_S_
     .byte _G_,_R_,_U_,_E_,_L_,_I_,_N_,_G_,___
+    .byte _P_,_A_,_C_,_E_
 
 rationsText:
     .byte _B_,_A_,_R_,_E_,___,_B_,_O_,_N_,_E_,_S_

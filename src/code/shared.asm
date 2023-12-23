@@ -3024,12 +3024,15 @@
     :
     CMP #MENU_PACE
     BNE :+
-        LDA #%00010100      ; only finger visible, up/down arrow
+        LDA #%00000100      ; only finger visible, pointing right
         STA fingerAttr
-        LDX #12
-        LDY #17
+        LDX #4
+        LDY #13
         JSR MoveFingerToSubmenu
-        JSR DrawPaceSubmenu
+        LDA wagonSettings
+        AND #%00000011
+        STA menuCursor
+        JSR LoadBgPace
         JSR RedrawFinger
         RTS
     :

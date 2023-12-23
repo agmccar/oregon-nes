@@ -1,6 +1,26 @@
+## ChangePaceTitle
+
+Change pace$
+
+## ChangePaceCurrently
+
+(currently$
+
 ## ChangePaceText
 
 The pace at which you travel can change. Your choices are:$
+
+## ChangePaceSteady
+
+a steady pace$
+
+## ChangePaceStrenuous
+
+a strenuous pace$
+
+## ChangePaceGrueling
+
+a grueling pace$
 
 ## ChangePaceHelpOption
 

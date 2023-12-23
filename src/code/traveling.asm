@@ -526,23 +526,23 @@
             STX fingerY
             RTS
         @menuPace:
-            LDA wagonSettings
-            AND #%00000011
-            STA helper
-            LDA #%11111100
-            AND wagonSettings
-            STA wagonSettings
-            INC helper
-            LDA helper
-            AND #%00000011
-            CMP #0
-            BNE :+
-            LDA #1
-            :
-            ORA wagonSettings
-            STA wagonSettings
-            JSR DrawPaceSubmenu
-            JSR RedrawFinger
+            ; LDA wagonSettings
+            ; AND #%00000011
+            ; STA helper
+            ; LDA #%11111100
+            ; AND wagonSettings
+            ; STA wagonSettings
+            ; INC helper
+            ; LDA helper
+            ; AND #%00000011
+            ; CMP #0
+            ; BNE :+
+            ; LDA #1
+            ; :
+            ; ORA wagonSettings
+            ; STA wagonSettings
+            ; JSR DrawPaceSubmenu
+            ; JSR RedrawFinger
             RTS
         @menuRations:
             LDA wagonSettings
@@ -627,23 +627,23 @@
             STX fingerY
             RTS
         @menuPace:
-            LDA wagonSettings
-            AND #%00000011
-            STA helper
-            LDA #%11111100
-            AND wagonSettings
-            STA wagonSettings
-            DEC helper
-            LDA helper
-            AND #%00000011
-            CMP #0
-            BNE :+
-            LDA #3
-            :
-            ORA wagonSettings
-            STA wagonSettings
-            JSR DrawPaceSubmenu
-            JSR RedrawFinger
+            ; LDA wagonSettings
+            ; AND #%00000011
+            ; STA helper
+            ; LDA #%11111100
+            ; AND wagonSettings
+            ; STA wagonSettings
+            ; DEC helper
+            ; LDA helper
+            ; AND #%00000011
+            ; CMP #0
+            ; BNE :+
+            ; LDA #3
+            ; :
+            ; ORA wagonSettings
+            ; STA wagonSettings
+            ; JSR DrawPaceSubmenu
+            ; JSR RedrawFinger
             RTS
         @menuRations:
             LDA wagonSettings
@@ -694,110 +694,93 @@
     RTS
 .endproc
 
-.proc DrawPaceSubmenu
-    LDX #4 ; top row of menu
-    LDY #15
-    JSR SetPpuAddrPointerFromXY
-    SBW #19, pointer, pointer+1
-        LDA #_RD
+.proc LoadBgPace
+    JSR ClearScreen
+    JSR ClearAttributes
+    SBD
+    JSR DrawAdornments
+    EBD
+
+    ; Change pace
+    BDrawText travelingPointer+0, travelingPointer+1, #$20, #$ca
+    ; (currently "$pace")
+    BDrawText travelingPointer+2, travelingPointer+3, #$20, #$e5
+    LDA wagonSettings
+    AND #%00000011
+    CMP #1
+    BNE :+
+    LDA #9 ; strlen('"steady")')
+    LDY #8*0 ; paceText index 
+    JMP :+++
+    :
+    CMP #2
+    BNE :+
+    LDA #12 ; strlen('"strenuous")')
+    LDY #8*1 ; paceText index 
+    JMP :++
+    :
+    CMP #3
+    BNE :+
+    LDA #11 ; strlen('"grueling")')
+    LDY #8*2 ; paceText index 
+    :
+    STA helper
+    STY helper2
+    SBW helper, #$20, #$f0
+        LDA #_QT
         WBB
-        LDA #_HR
-        LDX #0
+        LDX helper
+        DEX
+        DEX
+        DEX
         :
+        LDY helper2
+        LDA paceText, Y
         WBB
-        INX
-        CPX #17
+        INC helper2
+        DEX
         BNE :-
-        LDA #_LD
+        LDA #_QT
+        WBB
+        LDA #_CP
         WBB
     EBW
+    
+    ; The pace at which you travel can change. Your choices are:
+    BDrawText travelingPointer+4, travelingPointer+5, #$21, #$24
 
-    LDX #4  ; vertical bars (left)
-    LDY #16
-    LDA #_VR
-    WTB
-    LDX #4
-    LDY #17
-    LDA #_VR
-    WTB
-    LDX #4
-    LDY #18
-    LDA #_VR
-    WTB
-    LDX #22  ; vertical bars (right)
-    LDY #16
-    LDA #_VR
-    WTB
-    LDX #22
-    LDY #17
-    LDA #_VR
-    WTB
-    LDX #22
-    LDY #18
-    LDA #_VR
-    WTB
+    ; a steady pace
+    ; a strenuous pace
+    ; a grueling pace
+    ; find out what these different paces mean
+    LDX #6
+    LDA #$21
+    STA bufferHelper
+    LDA #$a6
+    STA bufferHelper+1
+    :
+    LDA travelingPointer, X
+    STA pointer
+    INX
+    LDA travelingPointer, X
+    STA pointer+1
+    JSR BufferDrawText
+    JSR BufferHelperNextLine
+    JSR BufferHelperNextLine
+    INX
+    CPX #14
+    BNE :-
 
-    LDX #4 ; bottom row of menu
-    LDY #19
-    JSR SetPpuAddrPointerFromXY
-    SBW #19, pointer, pointer+1
-        LDA #_RU
-        WBB
-        LDA #_HR
-        LDX #0
+    ; What is your choice?
+    SBW #20, #$22, #$C4
+        LDX #10
         :
+        LDA whatIsYourChoiceText, X
         WBB
         INX
-        CPX #17
-        BNE :-
-        LDA #_LU
-        WBB
-    EBW
-
-    LDX #6  ; "PACE: xxxxxxxxx"
-    LDY #17
-    JSR SetPpuAddrPointerFromXY
-    SBW #15, pointer, pointer+1
-        LDX #15
-        :
-        LDA hudMenuStatusText, X
-        WBB
-        INX
-        CPX #20
-        BNE :-
-        LDA #___
-        WBB
-        LDX #0
-        LDY #0
-        STY helper+1
-        LDA wagonSettings
-        AND #%00000011
-        STA helper
-        DEC helper
-        :
-        CPY helper
-        BNE :+
-        JMP :++
-        :
-        INX
-        INC helper+1
-        LDA helper+1
-        CMP #TEXT_PACE_LEN
-        BNE :-
-        LDA #0
-        STA helper+1
-        INY
-        JMP :--
-        :
-        LDA paceText, X
-        WBB
-        INX
-        INC helper+1
-        LDA helper+1
-        CMP #TEXT_PACE_LEN
+        CPX #30
         BNE :-
     EBW
-
     RTS
 .endproc
 
