@@ -171,6 +171,11 @@
     JSR ClearScreen
     JSR ClearAttributes
     SBD
+    
+    LoadCHR #<trailSpritesTilesMeta, #>trailSpritesTilesMeta
+    LoadCHR #<mapTilesMeta, #>mapTilesMeta
+    LoadImage #<mapImageMeta, #>mapImageMeta
+    
     LDA PPUSTATUS ; map palette
     LDA #$3F
     STA PPUADDR
@@ -190,11 +195,7 @@
     INX
     CPX #$20
     BNE :---
-    
-    LoadCHR #<trailSpritesTilesMeta, #>trailSpritesTilesMeta
-    LoadCHR #<mapTilesMeta, #>mapTilesMeta
-    LoadImage #<mapImageMeta, #>mapImageMeta
-    
+
     LDA PPUSTATUS ; draw letterbox (top)
     LDA #$20
     STA PPUADDR
@@ -302,7 +303,12 @@
     BNE :-
 
     ; tile chr
-    LoadCHR #<suppliesTilesMeta, #>suppliesTilesMeta
+    ; LoadCHR #<suppliesTilesMeta, #>suppliesTilesMeta
+    LoadCHR #<suppliesFoodTilesMeta, #>suppliesFoodTilesMeta
+    LoadCHR #<suppliesPartsTilesMeta, #>suppliesPartsTilesMeta
+    LoadCHR #<suppliesOxenTilesMeta, #>suppliesOxenTilesMeta
+    LoadCHR #<suppliesClothesTilesMeta, #>suppliesClothesTilesMeta
+    LoadCHR #<suppliesBulletsTilesMeta, #>suppliesBulletsTilesMeta
 
     LDA PPUSTATUS ; attributes
     LDA #$23

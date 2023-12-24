@@ -1,11 +1,12 @@
 
 ; Meta-values associated with tile CHR.
 ; $00, $00, 00, $00, $00, $00
-;  ||   ||||||   ||   ||   ++ hi byte of tilemap page to write on, $00 or $10
-;  ||   ||||||   ||   ++----- Destination 'y-value' (row index) of tiles in CHRRAM
-;  ||   ||||||   ++---------- Number of rows of 16 tiles ("height")
-;  ||   ++++++--------------- Address of tile CHR
-;  ++------------------------ ROM bank number, must match game.asm
+;  ||   ||||||   ||   ||   |+- supplies bit- 1:yes 0:no
+;  ||   ||||||   ||   ||   +-- hi byte of tilemap page to write on, $00 or $10
+;  ||   ||||||   ||   ++------ Destination 'y-value' (row index) of tiles in CHRRAM
+;  ||   ||||||   ++----------- Number of rows of 16 tiles ("height")
+;  ||   ++++++---------------- Address of tile CHR
+;  ++------------------------- ROM bank number, must match game.asm
 ; testChrMeta:
 ;     .byte 0, <testChr, >testChr, 16, 0, $00
 textTilesMeta:
@@ -32,23 +33,20 @@ adornmentTilesMeta:
 titleLogoTilesMeta:
     .byte 0, <titleLogoTiles, >titleLogoTiles, 3, 2, $10
 
-suppliesTilesMeta:
-    .byte 0, <suppliesFoodTiles, >suppliesFoodTiles, 10, 0, $10
-
 suppliesFoodTilesMeta:
-    .byte 0, <suppliesFoodTiles, >suppliesFoodTiles, 2, 5, $10
+    .byte 0, <suppliesFoodTiles, >suppliesFoodTiles, 2, 0, $11
 
 suppliesPartsTilesMeta:
-    .byte 0, <suppliesPartsTiles, >suppliesPartsTiles, 2, 5, $10
+    .byte 0, <suppliesPartsTiles, >suppliesPartsTiles, 2, 2, $11
 
 suppliesOxenTilesMeta:
-    .byte 0, <suppliesOxenTiles, >suppliesOxenTiles, 2, 5, $10
+    .byte 0, <suppliesOxenTiles, >suppliesOxenTiles, 2, 4, $11
 
 suppliesClothesTilesMeta:
-    .byte 0, <suppliesClothesTiles, >suppliesClothesTiles, 2, 5, $10
+    .byte 0, <suppliesClothesTiles, >suppliesClothesTiles, 2, 6, $11
 
 suppliesBulletsTilesMeta:
-    .byte 0, <suppliesBulletsTiles, >suppliesBulletsTiles, 2, 5, $10
+    .byte 0, <suppliesBulletsTiles, >suppliesBulletsTiles, 2, 8, $11
 
 namepartyTilesMeta:
     .byte 0, <namepartyTiles, >namepartyTiles, 12, 0, $10

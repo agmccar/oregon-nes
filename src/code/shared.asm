@@ -1804,7 +1804,6 @@
 .proc DecompressTokumaruTilesMeta
     ; Must only occur during Bulk drawing
     ; Clobbers all registers, helper+0, pointer, counter
-    ; @param helper+1: hi byte of tilemap page to write on, $00 or $10
     ; @param pointer: location of tile meta
     LDA currentBank
     PHA
@@ -1829,13 +1828,26 @@
     LDA #0
     STA PPUMASK
     LDA PPUSTATUS
-    PLA
-    STA helper+1
-    STA helper
     PLA ; Destination 'y-value' (row index) of tiles in CHRRAM
+    STA helper
+    PLA ; hi byte of tilemap page to write on, $00 or $10
+    ROR ; check for supplies bit
+    BCC :+
+    ASL
     CLC
     ADC helper
     TAX
+    LDA gameState
+    CMP #GAMESTATE_MATT
+    BNE :++
+    LDX #$15
+    JMP :++
+    :
+    ROL
+    CLC
+    ADC helper
+    TAX
+    :
     LDA #$00
     JSR DecompressTokumaruData
     PLA
