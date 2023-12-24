@@ -348,55 +348,6 @@
         LDA menuOpen
         CMP #MENU_NONE
         BNE :+
-        JMP @menuNone
-        :
-        CMP #MENU_MAINMENU
-        BNE :+
-        JMP @menuMain
-        :
-        CMP #MENU_MAP
-        BNE :+
-        JMP @menuMap
-        :
-        CMP #MENU_PACE
-        BNE :+
-        JMP @menuPace
-        :
-        CMP #MENU_RATIONS
-        BNE :+
-        JMP @menuRations
-        :
-        CMP #MENU_REST
-        BNE :+
-        JMP @menuRest
-        :
-        CMP #MENU_TALK
-        BNE :+
-        JMP @menuTalk
-        :
-        CMP #MENU_TEXTPOPUP
-        BNE :+
-        JMP @menuTextPopup
-        :
-        CMP #MENU_TEXTPOPUP_YN
-        BNE :+
-        JMP @menuTextPopupYN
-        :
-        RTS
-        @menuTextPopup:
-            JSR CloseTextPopup
-            LDA #MENU_NONE
-            STA menuOpen
-            RTS
-        @menuTextPopupYN:
-            JSR CloseTextPopup
-            LDA #MENU_NONE
-            STA menuOpen
-            LDA #EVENT_LOAD_LANDMARK ; if yes selected
-            JSR QueueEvent
-            RTS
-            
-        @menuNone:
             ; LDA #MENU_TEXTPOPUP
             ; STA menuOpen ; testing popup window
             LDA #MENU_MAINMENU
@@ -404,6 +355,90 @@
             LDA #0
             STA menuCursor
             RTS
+        :
+        CMP #MENU_MAINMENU
+        BNE :+
+        JMP @menuMain
+        :
+        CMP #MENU_MAP
+        BNE :+
+            JSR CloseSubmenu
+            LDA #MENU_MAINMENU
+            STA menuOpen
+            RTS
+        :
+        CMP #MENU_PACE
+        BNE :++
+            LDA menuCursor
+            BNE :+
+            LDA #MENU_PACE_HELP
+            STA menuOpen
+            LDA #4
+            STA menuCursor
+            RTS
+            :
+            LDA wagonSettings
+            AND #%11111100
+            ORA menuCursor
+            STA wagonSettings
+            LDA #3
+            STA menuCursor
+            LDA #19
+            STA fingerY
+            LDA #MENU_MAINMENU
+            STA menuOpen
+            RTS
+        :
+        CMP #MENU_RATIONS
+        BNE :+
+            JSR CloseSubmenu
+            LDA #MENU_MAINMENU
+            STA menuOpen
+            RTS
+        :
+        CMP #MENU_REST
+        BNE :+
+            JSR CloseSubmenu
+            LDA #MENU_MAINMENU
+            STA menuOpen
+            RTS
+        :
+        CMP #MENU_TALK
+        BNE :+
+            LDA #MENU_MAINMENU
+            STA menuOpen
+            RTS
+        :
+        CMP #MENU_TEXTPOPUP
+        BNE :+
+            JSR CloseTextPopup
+            LDA #MENU_NONE
+            STA menuOpen
+            RTS
+        :
+        CMP #MENU_TEXTPOPUP_YN
+        BNE :+
+            JSR CloseTextPopup
+            LDA #MENU_NONE
+            STA menuOpen
+            LDA #EVENT_LOAD_LANDMARK ; if yes selected
+            JSR QueueEvent
+            RTS
+        :
+        CMP #MENU_PACE_HELP
+        BNE :++
+            LDA menuCursor
+            CMP #4
+            BNE :+
+            INC menuCursor
+            JSR LoadBgPaceHelp
+            RTS
+            :
+            LDA #MENU_PACE
+            STA menuOpen
+            RTS 
+        :
+        RTS
         @menuMain:
             LDA menuCursor
             CMP #OPT_CONTINUE
@@ -449,15 +484,6 @@
             RTS
             :
             RTS
-        @menuMap:
-        @menuPace:
-        @menuRations:
-        @menuRest:
-            JSR CloseSubmenu
-        @menuTalk:
-            LDA #MENU_MAINMENU
-            STA menuOpen
-            RTS
         ; @menuOther:
         ; JSR CloseSubmenu...
     CheckB:
@@ -491,29 +517,8 @@
         JMP CheckDown
         :
         LDA menuOpen
-        CMP #MENU_NONE
-        BNE :+
-        JMP @menuNone
-        :
         CMP #MENU_MAINMENU
-        BNE :+
-        JMP @menuMain
-        :
-        CMP #MENU_PACE
-        BNE :+
-        JMP @menuPace
-        :
-        CMP #MENU_RATIONS
-        BNE :+
-        JMP @menuRations
-        :
-        CMP #MENU_REST
-        BNE :+
-        JMP @menuRest
-        :
-        RTS
-        @menuNone:
-        @menuMain:
+        BNE :++
             DEC menuCursor
             LDX fingerY
             DEX
@@ -525,26 +530,30 @@
             :
             STX fingerY
             RTS
-        @menuPace:
-            ; LDA wagonSettings
-            ; AND #%00000011
-            ; STA helper
-            ; LDA #%11111100
-            ; AND wagonSettings
-            ; STA wagonSettings
-            ; INC helper
-            ; LDA helper
-            ; AND #%00000011
-            ; CMP #0
-            ; BNE :+
-            ; LDA #1
-            ; :
-            ; ORA wagonSettings
-            ; STA wagonSettings
-            ; JSR DrawPaceSubmenu
-            ; JSR RedrawFinger
+        :
+        CMP #MENU_PACE
+        BNE :+++
+            DEC menuCursor
+            LDX fingerY
+            DEX
+            DEX
+            CPX #17
+            BNE :+
+            LDA #3
+            STA menuCursor
+            JMP :++
+            :
+            CPX #11 ; check if fingerY is past top of menu
+            BNE :+
+            LDX #19 ; wrap to bottom of menu
+            LDA #0
+            STA menuCursor
+            :
+            STX fingerY
             RTS
-        @menuRations:
+        :
+        CMP #MENU_RATIONS
+        BNE :++
             LDA wagonSettings
             AND #%00001100
             LSR
@@ -568,7 +577,9 @@
             JSR DrawRationsSubmenu
             JSR RedrawFinger
             RTS
-        @menuRest:
+        :
+        CMP #MENU_REST
+        BNE :++
             INC wagonRest
             LDA wagonRest
             CMP #10
@@ -585,6 +596,8 @@
             JSR DrawRestSubmenu
             JSR RedrawFinger
             RTS
+        :
+        RTS
     CheckDown:
         LDA #KEY_DOWN
         BIT buttons1
@@ -592,29 +605,8 @@
         JMP CheckLeft
         :
         LDA menuOpen
-        CMP #MENU_NONE
-        BNE :+
-        JMP @menuNone
-        :
         CMP #MENU_MAINMENU
-        BNE :+
-        JMP @menuMain
-        :
-        CMP #MENU_PACE
-        BNE :+
-        JMP @menuPace
-        :
-        CMP #MENU_RATIONS
-        BNE :+
-        JMP @menuRations
-        :
-        CMP #MENU_REST
-        BNE :+
-        JMP @menuRest
-        :
-        RTS
-        @menuNone:
-        @menuMain:
+        BNE :++
             INC menuCursor
             LDX fingerY
             INX
@@ -626,26 +618,30 @@
             :
             STX fingerY
             RTS
-        @menuPace:
-            ; LDA wagonSettings
-            ; AND #%00000011
-            ; STA helper
-            ; LDA #%11111100
-            ; AND wagonSettings
-            ; STA wagonSettings
-            ; DEC helper
-            ; LDA helper
-            ; AND #%00000011
-            ; CMP #0
-            ; BNE :+
-            ; LDA #3
-            ; :
-            ; ORA wagonSettings
-            ; STA wagonSettings
-            ; JSR DrawPaceSubmenu
-            ; JSR RedrawFinger
+        :
+        CMP #MENU_PACE
+        BNE :+++
+            INC menuCursor
+            LDX fingerY
+            INX
+            INX
+            CPX #19
+            BNE :+
+            LDA #0
+            STA menuCursor
+            JMP :++
+            :
+            CPX #21 ; check if fingerY is past bottom of menu
+            BNE :+
+            LDX #13 ; wrap to top of menu
+            LDA #1
+            STA menuCursor
+            :
+            STX fingerY
             RTS
-        @menuRations:
+        :
+        CMP #MENU_RATIONS
+        BNE :++
             LDA wagonSettings
             AND #%00001100
             LSR
@@ -669,7 +665,9 @@
             JSR DrawRationsSubmenu
             JSR RedrawFinger
             RTS
-        @menuRest:
+        :
+        CMP #MENU_REST
+        BNE :++
             DEC wagonRest
             LDA wagonRest
             BNE :+
@@ -685,12 +683,30 @@
             JSR DrawRestSubmenu
             JSR RedrawFinger
             RTS
+        :
+        RTS
     CheckLeft:
     CheckRight:
     RTS
 .endproc
 
 .proc GamepadMap
+    RTS
+.endproc
+
+.proc LoadBgPaceHelp
+    JSR ClearScreen
+    JSR ClearAttributes
+    LDA menuCursor
+    CMP #4
+    BNE :+
+    BDrawText travelingPointer+14, travelingPointer+15, #$20, #$84
+    BDrawText travelingPointer+16, travelingPointer+17, #$21, #$44
+    JMP :++
+    :
+    BDrawText travelingPointer+18, travelingPointer+19, #$20, #$84
+    :
+    JSR BufferDrawPressStart
     RTS
 .endproc
 
@@ -710,19 +726,19 @@
     CMP #1
     BNE :+
     LDA #9 ; strlen('"steady")')
-    LDY #8*0 ; paceText index 
+    LDY #TEXT_PACE_LEN*0 ; paceText index 
     JMP :+++
     :
     CMP #2
     BNE :+
     LDA #12 ; strlen('"strenuous")')
-    LDY #8*1 ; paceText index 
+    LDY #TEXT_PACE_LEN*1 ; paceText index 
     JMP :++
     :
     CMP #3
     BNE :+
     LDA #11 ; strlen('"grueling")')
-    LDY #8*2 ; paceText index 
+    LDY #TEXT_PACE_LEN*2 ; paceText index 
     :
     STA helper
     STY helper2

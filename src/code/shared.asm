@@ -3026,14 +3026,23 @@
     BNE :+
         LDA #%00000100      ; only finger visible, pointing right
         STA fingerAttr
-        LDX #4
-        LDY #13
-        JSR MoveFingerToSubmenu
         LDA wagonSettings
         AND #%00000011
         STA menuCursor
+        ASL
+        ADC #11
+        LDX #4
+        TAY
+        JSR MoveFingerToSubmenu
         JSR LoadBgPace
         JSR RedrawFinger
+        RTS
+    :
+    CMP #MENU_PACE_HELP
+    BNE :+
+        LDA #%00000000      ; finger invisible
+        STA fingerAttr
+        JSR LoadBgPaceHelp
         RTS
     :
     CMP #MENU_RATIONS
