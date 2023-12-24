@@ -110,6 +110,8 @@
     STA menuOpen        ; no menu open
     STA menuCursor
     STA wagonStatus     ; stopped, at landmark, no rest remaining
+    LDA #1
+    STA wagonAtLocation
     LDX location
     LDA nextLandmarkDistance, X
     STA nextMi
@@ -3188,6 +3190,8 @@
         BNE :+
             LDA #%00000000      ; neither finger visible
             STA fingerAttr
+            LDA #0
+            STA wagonAtLocation
             LDA menuOpenLast
             CMP #MENU_TEXTPOPUP
             BEQ :+

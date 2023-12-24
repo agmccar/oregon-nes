@@ -102,18 +102,6 @@ keyboardDone:
 decimalDigits:
     .byte _0_,_1_,_2_,_3_,_4_,_5_,_6_,_7_,_8_,_9_
 
-hudMenu:
-    .byte _C_,_O_,_N_,_T_,_I_,_N_,_U_,_E_,___,_O_,_N_,___,_T_,_R_,_A_,_I_,_L_,___,___
-    .byte _C_,_H_,_E_,_C_,_K_,___,_S_,_U_,_P_,_P_,_L_,_I_,_E_,_S_,___,___,___,___,___
-    .byte _L_,_O_,_O_,_K_,___,_A_,_T_,___,_M_,_A_,_P_,___,___,___,___,___,___,___,___
-    .byte _C_,_H_,_A_,_N_,_G_,_E_,___,_P_,_A_,_C_,_E_,___,___,___,___,___,___,___,___
-    .byte _C_,_H_,_A_,_N_,_G_,_E_,___,_F_,_O_,_O_,_D_,___,_R_,_A_,_T_,_I_,_O_,_N_,_S_
-    .byte _S_,_T_,_O_,_P_,___,_T_,_O_,___,_R_,_E_,_S_,_T_,___,___,___,___,___,___,___
-    .byte _A_,_T_,_T_,_E_,_M_,_P_,_T_,___,_T_,_O_,___,_T_,_R_,_A_,_D_,_E_,___,___,___
-    .byte _H_,_U_,_N_,_T_,___,_F_,_O_,_R_,___,_F_,_O_,_O_,_D_,___,___,___,___,___,___
-    .byte _T_,_A_,_L_,_K_,___,_T_,_O_,___,_P_,_E_,_O_,_P_,_L_,_E_,___,___,___,___,___
-    .byte _B_,_U_,_Y_,___,_S_,_U_,_P_,_P_,_L_,_I_,_E_,_S_,___,___,___,___,___,___,___
-
 weatherText:
     .byte _V_,_E_,_R_,_Y_,___,_C_,_O_,_L_,_D_,___ ; < 10 °F
     .byte _C_,_O_,_L_,_D_,___,___,___,___,___,___ ; 10 - 30 °F 
@@ -311,29 +299,29 @@ storeTotalText:
 
 ; Locations (landmarks)
 ; %00000000
-;  |||+++++ location id (index)
-;  ||+----- trail divides(?) unused for now
-;  |+------ river- y/n
-;  +------- store (fort)- y/n
+;  |||||||+----- trail divides(?) unused for now
+;  ||+++++------ unused
+;  |+----------- river- y/n
+;  +------------ store (fort)- y/n
 landmarkAttr:
     .byte %10000000 ; Independence, MO
-    .byte %01000001 ; KANSAS RIVER CROSSING
-    .byte %01000010 ; BIG BLUE RIVER CROSSING
-    .byte %10000011 ; FORT KEARNEY
-    .byte %00000100 ; CHIMNEY ROCK
-    .byte %10000101 ; FORT LARAMIE
-    .byte %00000110 ; INDEPENDENCE ROCK
-    .byte %00000111 ; SOUTH PASS
-    .byte %10001000 ; FORT BRIDGER
-    .byte %01001001 ; GREEN RIVER CROSSING
-    .byte %00001010 ; SODA SPRINGS
-    .byte %10001011 ; FORT HALL
-    .byte %01001100 ; SNAKE RIVER CROSSING
-    .byte %10001101 ; FORT BOISE
-    .byte %00001110 ; BLUE MOUNTAINS
-    .byte %10001111 ; FORT WALLA WALLA
-    .byte %00010000 ; THE DALLES
-    .byte %00010001 ; WILLAMETTE VALLEY
+    .byte %01000000 ; KANSAS RIVER CROSSING
+    .byte %01000000 ; BIG BLUE RIVER CROSSING
+    .byte %10000000 ; FORT KEARNEY
+    .byte %00000000 ; CHIMNEY ROCK
+    .byte %10000000 ; FORT LARAMIE
+    .byte %00000000 ; INDEPENDENCE ROCK
+    .byte %00000000 ; SOUTH PASS
+    .byte %10000000 ; FORT BRIDGER
+    .byte %01000000 ; GREEN RIVER CROSSING
+    .byte %00000000 ; SODA SPRINGS
+    .byte %10000000 ; FORT HALL
+    .byte %01000000 ; SNAKE RIVER CROSSING
+    .byte %10000000 ; FORT BOISE
+    .byte %00000000 ; BLUE MOUNTAINS
+    .byte %10000000 ; FORT WALLA WALLA
+    .byte %00000000 ; THE DALLES
+    .byte %00000000 ; WILLAMETTE VALLEY
 
 ; Byte index of sprite (see sprites.asm->trailSprites)
 landmarkTrailSprite:

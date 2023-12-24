@@ -127,33 +127,34 @@
     CPX #9
     BNE :-
 
-    LDA #0 ; start menu loop
-    STA helper
-    LDX #6
-    LDY #16
-    JSR SetPpuAddrPointerFromXY
-    LDX #0
-    MenuLoop:
-    PPU pointer, pointer+1 ; start menu option line
+    ; Continue on trail
+    BDrawText travelingPointer+34, travelingPointer+35, #$22, #$06
+    ; Check supplies
+    BDrawText travelingPointer+36, travelingPointer+37, #$22, #$26
+    ; Look at map
+    BDrawText travelingPointer+38, travelingPointer+39, #$22, #$46
+    ; Change pace
+    BDrawText travelingPointer, travelingPointer+1, #$22, #$66
+    ; Change food rations
+    BDrawText travelingPointer+20, travelingPointer+21, #$22, #$86
+    ; Stop to rest
+    BDrawText travelingPointer+30, travelingPointer+31, #$22, #$a6
+    ; Attempt to trade
+    BDrawText travelingPointer+40, travelingPointer+41, #$22, #$c6
+    LDA wagonAtLocation
+    BEQ :+
+    ; Talk to people
+    BDrawText travelingPointer+44, travelingPointer+45, #$22, #$e6
+    LDX location
+    LDA landmarkAttr, X
+    BPL :++
+    ; Buy supplies
+    BDrawText travelingPointer+46, travelingPointer+47, #$23, #$06
+    JMP :++
     :
-    LDA hudMenu, X
-    STA PPUDATA
-    INX
-    INC helper
-    LDA helper
-    CMP #TEXT_MAINMENU_LEN
-    BNE :-
-    LDA #0
-    STA helper
-    TXA
-    PHA
-    LDX #6
-    INY
-    JSR SetPpuAddrPointerFromXY
-    PLA
-    TAX
-    CPY #25
-    BNE MenuLoop
+    ; Hunt for food
+    BDrawText travelingPointer+42, travelingPointer+43, #$22, #$e6
+    :
 
     PPU #$23, #$62 ; "What is your choice?"
     LDX #10

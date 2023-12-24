@@ -21,5 +21,5 @@ done
 
 ca65 src/code/decompress.s -g -o decompress.o --verbose
 ca65 src/game.asm -g -o game.o --verbose
-ld65 -o game.nes -m map.txt -C memory.cfg game.o decompress.o --dbgfile game.dbg -Ln game.labels.txt
+ld65 -o game.nes -m map.txt -C memory.cfg decompress.o game.o --dbgfile game.dbg -Ln game.labels.txt
 #echo "Compile OK"

@@ -1,4 +1,4 @@
-## ChangePaceTitle
+## ChangePaceOption
 
 Change pace$
 
@@ -44,7 +44,7 @@ and continuing until dark. You almost never stop to rest. You do not
 get enough sleep at night. You finish each day feeling absolutely
 exhausted, and your health suffers.
 
-## ChangeRationsTitle
+## ChangeRationsOption
 
 Change food rations$
 
@@ -65,7 +65,38 @@ meager - meals are small, but adequate.
 
 bare bones - meals are very small; everyone stays hungry.
 
+## StopToRestOption
+
+Stop to rest$
+
 ## StopToRestText
 
 How many days would you like to rest?
 
+## ContinueOnTrailOption
+
+Continue on trail$
+
+## CheckSuppliesOption
+
+Check supplies$
+
+## LookAtMapOption
+
+Look at map$
+
+## AttemptToTradeOption
+
+Attempt to trade$
+
+## HuntForFoodOption
+
+Hunt for food$
+
+## TalkToPeopleOption
+
+Talk to people$
+
+## BuySuppliesOption
+
+Buy supplies$

@@ -182,14 +182,10 @@ dateDay:            .res 1
 accumulatedRain:    .res 1 ; 0.100 inch increments - max 25.6"
 accumulatedSnow:    .res 1 ; 0.125 inch increments - max 32"
 
-; Locations (landmarks)
-; see: constants.asm -> Locations
-; %00000000
-;  |||+++++ identifier(index)
-;  ||+----- trail divides(?) unused for now
-;  |+------ river y/n
-;  +------- store y/n
+; Location (landmark)
+; see: constants.asm -> Location indices
 location:           .res 1
+wagonAtLocation:    .res 1 ; 0:wagon is on the trail, 1:wagon is at a location
 
 
 
