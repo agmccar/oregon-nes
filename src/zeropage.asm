@@ -95,11 +95,8 @@ oxenHealth:         .res 1 ; 0: all healthy, 1: sick or injured ox ; TODO don't 
 ; Stored as a multiple of 0.2 (eg 0.8 is stored as 4)
 wagonFreezeStarve:  .res 1
 
-; %00000000 wagonSettings
-;  ||||||++ Pace- 00:unused, 01:steady, 10:strenuous, 11:grueling
-;  ||||++-- Rations- 00:unused, 01:bare bones, 10:meager, 11:filling
-;  ++++---- unused
-wagonSettings:      .res 1 
+wagonPace:          .res 1 ; Pace- 1:steady, 2:strenuous, 3:grueling
+wagonRations:       .res 1 ; Rations- 1:bare bones, 2:meager, 3:filling
 wagonRest:          .res 1 ; days of rest/delay remaining. 
 
 

@@ -13,8 +13,10 @@
     STA seed+1
     LDA #$48
     STA seed                ; set an initial seed value ($1848) arbitrarily.
-    LDA #%00001101          ; default steady pace, filling rations
-    STA wagonSettings
+    LDA #PACE_STEADY
+    STA wagonPace
+    LDA #RATIONS_FILLING
+    STA wagonRations
     LDA #2                  ; default cool weather
     STA weather
     LDA #3                  ; default date March 1, 1848
@@ -1950,10 +1952,17 @@
     STA pointer+1
     JSR UnpackImageMeta
 
-    LDA #$23 ; screen location of bottom adornment is always the same 
+    ; screen location of bottom adornment
+    LDA #$23
     STA helper
     LDA #$00
     STA helper+1
+    LDA menuOpen
+    CMP #MENU_RATIONS
+    BNE :+
+    LDA #$40 ; 2 rows lower (upper left tile Y + 2) on rations menu 
+    STA helper+1
+    :
     LDA #<adornmentImageMeta
     STA pointer
     LDA #>adornmentImageMeta
@@ -2013,6 +2022,12 @@
     LDA #$f0 ; bottom adornment
     STA PPUADDR
     LDX #0
+    LDA menuOpen
+    CMP #MENU_RATIONS
+    BNE :+
+    LDA #$af
+    JMP :++
+    :
     LDA #$fa
     :
     STA PPUDATA
@@ -3026,8 +3041,7 @@
     BNE :+
         LDA #%00000100      ; only finger visible, pointing right
         STA fingerAttr
-        LDA wagonSettings
-        AND #%00000011
+        LDA wagonPace
         STA menuCursor
         ASL
         ADC #11
@@ -3047,12 +3061,21 @@
     :
     CMP #MENU_RATIONS
     BNE :+
-        LDA #%00010100      ; only finger visible, up/down arrow
+        LDA #%00000100      ; only finger visible, pointing right
         STA fingerAttr
-        LDX #15
-        LDY #19
+        LDA wagonRations
+        STA menuCursor
+        ASL
+        CLC
+        ADC wagonRations
+        STA helper
+        LDA #23
+        SEC
+        SBC helper
+        LDX #4
+        TAY
         JSR MoveFingerToSubmenu
-        JSR DrawRationsSubmenu
+        JSR LoadBgRations
         JSR RedrawFinger
         RTS
     :
@@ -3363,11 +3386,7 @@
     ; eat food
     JSR CountAlivePeople
     STA helper
-    LDA wagonSettings
-    AND #%00001100
-    LSR
-    LSR
-    TAX
+    LDX wagonRations
     :
     SEC
     LDA foodLbs
@@ -3562,11 +3581,8 @@
     STA helper2+1
     JMP FreezeStarve
     :
-    LDA wagonSettings
-    AND #%00001100
-    LSR
-    LSR
-    CMP #2
+    LDA wagonRations
+    CMP #RATIONS_MEAGER
     BCS :+
     CLC ; bare bones rations: 4
     LDA wagonHealth
@@ -3574,7 +3590,7 @@
     STA wagonHealth
     JMP FreezeStarve
     :
-    CMP #3
+    CMP #RATIONS_FILLING
     BCS :+
     CLC ; meager rations: 2
     LDA wagonHealth
@@ -3616,14 +3632,12 @@
     STA wagonHealth
 
     Pace:
-    LDA wagonSettings
-    AND #%00010000
+    LDA wagonRest
     BEQ :+
     JMP Illness ; resting
     :
-    AND #%00000011
-    CLC
-    ROL
+    LDA wagonPace
+    ASL
     ADC wagonHealth
     STA wagonHealth
 
@@ -3656,9 +3670,7 @@
     LDA #0
     STA helper+1
     ; Pace
-    LDA wagonSettings
-    AND #%00000011
-    TAX
+    LDX wagonPace
     DEX
     :
     CPX #0

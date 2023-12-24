@@ -73,15 +73,20 @@ travelingChangePaceHelpGrueling:
     ; 146 bytes
     .byte $51,$81,$36,$52,$51,$30,$d6,$9f,$1b,$04,$d6,$eb,$e8,$03,$e3,$1a,$e5,$1b,$3f,$03,$e3,$f2,$f7,$d7,$03,$6b,$47,$26
     .byte $42,$86,$73,$a5,$40,$0f,$0d,$e3,$04,$d6,$d1,$24,$07,$06,$35,$e1,$12,$d4,$05,$95,$09,$e3,$04,$e4,$04,$d6,$35,$e3,$27,$d3,$0d,$da
-    .byte $32,$36,$54,$24,$e8,$03,$2b,$9d,$0f,$dd,$3a,$02,$e2,$0a,$96,$07,$06,$e3
+    .byte $32,$36,$54,$24,$e8,$03,$2c,$9d,$0f,$dd,$3a,$02,$e2,$0a,$96,$07,$06,$e3
     .byte $42,$32,$33,$65,$25,$e8,$03,$d3,$09,$de,$60,$10,$0b,$03,$21,$94,$d4,$16,$13,$6d,$21,$e3
     .byte $41,$36,$43,$7a,$90,$e8,$03,$d5,$04,$12,$d7,$08,$1d,$d3,$26,$9a,$1b,$04,$d6,$3f,$e2,$38,$a4,$1b,$e8,$75,$33,$e4,$0f,$0e
     .byte $22,$34,$67,$05,$5a,$03,$a2,$08,$db,$01,$e2,$e4,$4d,$02,$e2
     .byte $00
 
+travelingChangeRationsTitle:
+    ; 14 bytes
+    .byte $25,$64,$70,$1d,$05,$d6,$24,$2a,$54,$13,$d8,$09,$e2
+    .byte $00
+
 travelingChangeRationsText:
     ; 54 bytes
-    .byte $72,$36,$24,$36,$24,$53,$43,$36,$01,$08,$dc,$03,$dd,$0a,$4d,$2c,$d3,$01,$16,$4e,$30,$d4,$04,$e8,$03,$e1,$df,$0d,$46,$08,$e3,$08,$1d,$d3,$26,$d2,$05,$1d,$05,$69
+    .byte $72,$36,$24,$36,$24,$53,$43,$36,$01,$08,$dc,$03,$dd,$0a,$4d,$2a,$d3,$01,$16,$4e,$30,$d4,$04,$e8,$03,$e1,$df,$0d,$46,$08,$e3,$08,$1d,$d3,$26,$d2,$05,$1d,$05,$69
     .byte $25,$57,$40,$01,$06,$08,$dc,$03,$dd,$32,$0d,$d4,$ee
     .byte $00
 
@@ -117,6 +122,7 @@ travelingPointer:
     .byte <travelingChangePaceHelpSteady,>travelingChangePaceHelpSteady
     .byte <travelingChangePaceHelpStrenuous,>travelingChangePaceHelpStrenuous
     .byte <travelingChangePaceHelpGrueling,>travelingChangePaceHelpGrueling
+    .byte <travelingChangeRationsTitle,>travelingChangeRationsTitle
     .byte <travelingChangeRationsText,>travelingChangeRationsText
     .byte <travelingChangeRationsOptionFilling,>travelingChangeRationsOptionFilling
     .byte <travelingChangeRationsOptionMeager,>travelingChangeRationsOptionMeager

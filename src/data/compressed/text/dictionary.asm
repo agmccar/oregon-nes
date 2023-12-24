@@ -66,9 +66,9 @@ talkDictionary:
     .byte _I_,_L_
     .byte _A_,_M_
     .byte _B_,_U_
+    .byte _O_,_O_
     .byte _N_,_O_
     .byte _A_,_L_
-    .byte _O_,_O_
     .byte _I_,_F_
     .byte _W_,_H_
     .byte _A_,_C_
@@ -108,9 +108,9 @@ talkDictionary:
     .byte _V_,_E_
     .byte _B_,_Y_
     .byte _A_,_F_
+    .byte _D_,_R_
     .byte _C_,_K_
     .byte _D_,_F_
-    .byte _D_,_R_
     .byte _R_,_I_
     .byte _O_,_V_
     .byte _T_,_L_

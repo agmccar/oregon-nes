@@ -44,6 +44,10 @@ and continuing until dark. You almost never stop to rest. You do not
 get enough sleep at night. You finish each day feeling absolutely
 exhausted, and your health suffers.
 
+## ChangeRationsTitle
+
+Change food rations$
+
 ## ChangeRationsText
 
 The amount of food the people in your party eat each day can change.

@@ -377,10 +377,8 @@
             STA menuCursor
             RTS
             :
-            LDA wagonSettings
-            AND #%11111100
-            ORA menuCursor
-            STA wagonSettings
+            LDA menuCursor
+            STA wagonPace
             LDA #3
             STA menuCursor
             LDA #19
@@ -391,7 +389,12 @@
         :
         CMP #MENU_RATIONS
         BNE :+
-            JSR CloseSubmenu
+            LDA menuCursor
+            STA wagonRations
+            LDA #4
+            STA menuCursor
+            LDA #20
+            STA fingerY
             LDA #MENU_MAINMENU
             STA menuOpen
             RTS
@@ -554,28 +557,18 @@
         :
         CMP #MENU_RATIONS
         BNE :++
-            LDA wagonSettings
-            AND #%00001100
-            LSR
-            LSR
-            STA helper
-            LDA #%11110011
-            AND wagonSettings
-            STA wagonSettings
-            INC helper
-            LDA helper
-            AND #%00000011
-            CMP #0
+            INC menuCursor
+            LDX fingerY
+            DEX
+            DEX
+            DEX
+            CPX #11 ; check if fingerY is past top of menu
             BNE :+
-            LDA #1
+            LDX #20 ; wrap to bottom of menu
+            LDA #RATIONS_BARE_BONES
+            STA menuCursor
             :
-            CLC
-            ROL
-            ROL
-            ORA wagonSettings
-            STA wagonSettings
-            JSR DrawRationsSubmenu
-            JSR RedrawFinger
+            STX fingerY
             RTS
         :
         CMP #MENU_REST
@@ -642,28 +635,18 @@
         :
         CMP #MENU_RATIONS
         BNE :++
-            LDA wagonSettings
-            AND #%00001100
-            LSR
-            LSR
-            STA helper
-            LDA #%11110011
-            AND wagonSettings
-            STA wagonSettings
-            DEC helper
-            LDA helper
-            AND #%00000011
-            CMP #0
+            DEC menuCursor
+            LDX fingerY
+            INX
+            INX
+            INX
+            CPX #23 ; check if fingerY is past bottom of menu
             BNE :+
-            LDA #3
+            LDX #14 ; wrap to top of menu
+            LDA #RATIONS_FILLING
+            STA menuCursor
             :
-            CLC
-            ROL
-            ROL
-            ORA wagonSettings
-            STA wagonSettings
-            JSR DrawRationsSubmenu
-            JSR RedrawFinger
+            STX fingerY
             RTS
         :
         CMP #MENU_REST
@@ -721,8 +704,7 @@
     BDrawText travelingPointer+0, travelingPointer+1, #$20, #$ca
     ; (currently "$pace")
     BDrawText travelingPointer+2, travelingPointer+3, #$20, #$e5
-    LDA wagonSettings
-    AND #%00000011
+    LDA wagonPace
     CMP #1
     BNE :+
     LDA #9 ; strlen('"steady")')
@@ -800,109 +782,89 @@
     RTS
 .endproc
 
-.proc DrawRationsSubmenu
-    LDX #4 ; top row of menu
-    LDY #17
-    JSR SetPpuAddrPointerFromXY
-    SBW #23, pointer, pointer+1
-        LDA #_RD
+.proc LoadBgRations
+    JSR ClearScreen
+    JSR ClearAttributes
+    SBD
+    JSR DrawAdornments
+    EBD
+
+    ; Change food rations
+    BDrawText travelingPointer+20, travelingPointer+21, #$20, #$c6
+    ; (currently "$rations")
+    BDrawText travelingPointer+2, travelingPointer+3, #$20, #$e5
+    LDA wagonRations
+    CMP #3
+    BNE :+
+    LDA #10 ; strlen('"filling")')
+    LDY #TEXT_RATIONS_LEN*2 ; rationsText index 
+    JMP :+++
+    :
+    CMP #2
+    BNE :+
+    LDA #9 ; strlen('"meager")')
+    LDY #TEXT_RATIONS_LEN*1 ; rationsText index 
+    JMP :++
+    :
+    CMP #1
+    BNE :+
+    LDA #13 ; strlen('"bare bones")')
+    LDY #TEXT_RATIONS_LEN*0 ; rationsText index 
+    :
+    STA helper
+    STY helper2
+    SBW helper, #$20, #$f0
+        LDA #_QT
         WBB
-        LDA #_HR
-        LDX #0
+        LDX helper
+        DEX
+        DEX
+        DEX
         :
+        LDY helper2
+        LDA rationsText, Y
         WBB
-        INX
-        CPX #21
+        INC helper2
+        DEX
         BNE :-
-        LDA #_LD
+        LDA #_QT
+        WBB
+        LDA #_CP
         WBB
     EBW
+    
+    ; The amount of food the people in your party eat each day can change. These amounts are:
+    BDrawText travelingPointer+22, travelingPointer+23, #$21, #$24
 
-    LDX #4  ; vertical bars (left)
-    LDY #18
-    LDA #_VR
-    WTB
-    LDX #4
-    LDY #19
-    LDA #_VR
-    WTB
-    LDX #4
-    LDY #20
-    LDA #_VR
-    WTB
-    LDX #26  ; vertical bars (right)
-    LDY #18
-    LDA #_VR
-    WTB
-    LDX #26
-    LDY #19
-    LDA #_VR
-    WTB
-    LDX #26
-    LDY #20
-    LDA #_VR
-    WTB
+    ; filling - meals are large and generous.
+    ; meager - meals are small, but adequate.
+    ; bare bones - meals are very small; everyone stays hungry.
+    LDX #24
+    LDA #$21
+    STA bufferHelper
+    LDA #$c6
+    STA bufferHelper+1
+    :
+    LDA travelingPointer, X
+    STA pointer
+    INX
+    LDA travelingPointer, X
+    STA pointer+1
+    JSR BufferDrawText
+    JSR BufferHelperNextLine
+    JSR BufferHelperNextLine
+    INX
+    CPX #30
+    BNE :-
 
-    LDX #4 ; bottom row of menu
-    LDY #21
-    JSR SetPpuAddrPointerFromXY
-    SBW #23, pointer, pointer+1
-        LDA #_RU
-        WBB
-        LDA #_HR
-        LDX #0
+    ; What is your choice?
+    SBW #20, #$23, #$04
+        LDX #10
         :
+        LDA whatIsYourChoiceText, X
         WBB
         INX
-        CPX #21
-        BNE :-
-        LDA #_LU
-        WBB
-    EBW
-
-    LDX #6  ; "RATIONS: xxxxxxxxxx"
-    LDY #19
-    JSR SetPpuAddrPointerFromXY
-    SBW 19, pointer, pointer+1
-        LDX #20
-        :
-        LDA hudMenuStatusText, X
-        WBB
-        INX
-        CPX #28
-        BNE :-
-        LDA #___
-        WBB
-        LDX #0
-        LDY #0
-        STY helper+1
-        LDA wagonSettings
-        AND #%00001100
-        LSR
-        LSR
-        STA helper
-        DEC helper
-        :
-        CPY helper
-        BNE :+
-        JMP :++
-        :
-        INX
-        INC helper+1
-        LDA helper+1
-        CMP #TEXT_RATIONS_LEN
-        BNE :-
-        LDA #0
-        STA helper+1
-        INY
-        JMP :--
-        :
-        LDA rationsText, X
-        WBB
-        INX
-        INC helper+1
-        LDA helper+1
-        CMP #TEXT_RATIONS_LEN
+        CPX #30
         BNE :-
     EBW
 
@@ -1574,11 +1536,7 @@
     ; @param pointer: nametable location
     JSR BufferClearTravelingHUDValue
     SBW #TEXT_RATIONS_LEN, pointer, pointer+1
-        LDA wagonSettings
-        AND #%00001100
-        LSR
-        LSR
-        TAX
+        LDX wagonRations
         DEX
         LDA #0
         STA counter
@@ -1616,9 +1574,7 @@
     ; @param pointer: nametable location
     JSR BufferClearTravelingHUDValue
     SBW #TEXT_PACE_LEN, pointer, pointer+1
-        LDA wagonSettings
-        AND #%00000011
-        TAX
+        LDX wagonPace
         DEX
         LDA #0
         STA counter
