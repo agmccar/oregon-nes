@@ -2,250 +2,178 @@
 ; Default names and scores (high byte first) on the Oregon Top Ten
 ; size must match allocated vars.asm->oregonTopTen
 topTenDefault:
-    .byte _S_,_PD,_M_,_E_,_E_,_K_,___,___,$1d,$e2
-    .byte _H_,_A_,_S_,_T_,_I_,_N_,_G_,_S_,$16,$3e
-    .byte _S_,_U_,_B_,_L_,_E_,_T_,_T_,_E_,$10,$2a
-    .byte _C_,_PD,_H_,_I_,_N_,_E_,_S_,___,$0b,$81
-    .byte _E_,_PD,_M_,_E_,_E_,_K_,_E_,_R_,$08,$04
-    .byte _W_,_PD,_V_,_A_,_U_,_G_,_H_,_N_,$05,$79
-    .byte _B_,_A_,_R_,_T_,_L_,_E_,_T_,_T_,$03,$a9
-    .byte _W_,_I_,_G_,_G_,_I_,_N_,_S_,___,$02,$67
-    .byte _C_,_PD,_H_,_O_,_P_,_P_,_E_,_R_,$01,$8c
-    .byte _E_,_PD,_W_,_H_,_I_,_T_,_E_,___,$00,$fa
+    .byte "S.Meek  ",$1d,$e2
+    .byte "Hastings",$16,$3e
+    .byte "Sublette",$10,$2a
+    .byte "C.Hines ",$0b,$81
+    .byte "E.Meeker",$08,$04
+    .byte "W.Vaughn",$05,$79
+    .byte "Bartlett",$03,$a9
+    .byte "Wiggins ",$02,$67
+    .byte "C.Hopper",$01,$8c
+    .byte "E.White ",$00,$fa
 
 titleOptionsText:
-    .byte 16,_T_,_R_,_A_,_V_,_E_,_L_,___,_T_,_H_,_E_,___,_T_,_R_,_A_,_I_,_L_
-    .byte 21,_L_,_E_,_A_,_R_,_N_,___,_A_,_B_,_O_,_U_,_T_,___,_T_,_H_,_E_,___,_T_,_R_,_A_,_I_,_L_
-    .byte 22,_S_,_E_,_E_,___,_T_,_H_,_E_,___,_O_,_R_,_E_,_G_,_O_,_N_,___,_T_,_O_,_P_,___,_T_,_E_,_N_
-    .byte 11,_T_,_U_,_R_,_N_,___,_S_,_O_,_U_,_N_,_D_,___
-    .byte _O_,_F_,_F_
-    .byte _O_,_N_
+    .byte 16,"Travel the trail"
+    .byte 21,"Learn about the trail"
+    .byte 22,"See the Oregon Top Ten"
+    .byte 11,"Turn sound ", "off", "on"
 
 titleColorsText:
-    .byte _O_,_R_,_A_,_N_,_G_,_E_,___,_G_,_R_,_E_,_E_,_N_
-    .byte ___,_B_,_L_,_U_,_E_,___,_V_,_I_,_O_,_L_,_E_,_T_
+    .byte "Orange Green", " Blue Violet"
 
 whatIsYourChoiceText:
-    .byte 8,_Y_,_O_,_U_,___,_M_,_A_,_Y_,_CL
-    .byte 20,_W_,_H_,_A_,_T_,___,_I_,_S_,___,_Y_,_O_,_U_,_R_,___,_C_,_H_,_O_,_I_,_C_,_E_,_QU
+    .byte 8,"You may:"
+    .byte 20,"What is your choice?"
 
 pressStartText:
-    .byte ___,___,___,___,_P_,_R_,_E_,_S_,_S_,___,_S_,_T_,_A_,_R_,_T_,___,_T_,_O_,___,_C_,_O_,_N_,_T_,_I_,_N_,_U_,_E_,___,___,___,___,___
+    .byte "    Press START to continue     "
 sizeUpSituationText:
-    .byte _P_,_R_,_E_,_S_,_S_,___,_A_,___,_T_,_O_,___,_S_,_I_,_Z_,_E_,___,_U_,_P_,___,_T_,_H_,_E_,___,_S_,_I_,_T_,_U_,_A_,_T_,_I_,_O_,_N_
+    .byte "Press A to size up the situation"
 
 nextLandmarkText: ; len:18
-    .byte _I_,_T_,___,_I_,_S_,___, 0 , 0 , 0 ,___,_M_,_I_,_L_,_E_,_S_,___,_T_,_O_
+    .byte "It is 000 miles to"
+
 reachedLandmarkText: ; len 17
-    .byte _Y_,_O_,_U_,___,_H_,_A_,_V_,_E_,___,_R_,_E_,_A_,_C_,_H_,_E_,_D_,___
+    .byte "You have reached "
 
 mapTitleText:
-    .byte _M_,_A_,_P_,___,_O_,_F_,___,_T_,_H_,_E_
-    .byte _O_,_R_,_E_,_G_,_O_,_N_,___,_T_,_R_,_A_,_I_,_L_
-
-newGameText:
-    .byte _L_,_E_,_A_,_D_,_E_,_R_,_CL
-    .byte _O_,_C_,_C_,_U_,_P_,_A_,_T_,_I_,_O_,_N_,_CL
-    .byte _O_,_T_,_H_,_E_,_R_,___,_P_,_A_,_R_,_T_,_Y_,___,_M_,_E_,_M_,_B_,_E_,_R_,_S_,_CL
-    .byte _S_,_T_,_A_,_R_,_T_,_I_,_N_,_G_,___,_D_,_A_,_T_,_E_,_CL
+    .byte "Map of the", "Oregon Trail"
 
 monthText:
-    .byte _J_,_A_,_N_
-    .byte _F_,_E_,_B_
-    .byte _M_,_A_,_R_
-    .byte _A_,_P_,_R_
-    .byte _M_,_A_,_Y_
-    .byte _J_,_U_,_N_
-    .byte _J_,_U_,_L_
-    .byte _A_,_U_,_G_
-    .byte _S_,_E_,_P_
-    .byte _O_,_C_,_T_
-    .byte _N_,_O_,_V_
-    .byte _D_,_E_,_C_
+    .byte "Jan", "Feb", "Mar", "Apr"
+    .byte "May", "Jun", "Jul", "Aug"
+    .byte "Sep", "Oct", "Nov", "Dec"
 
 hudText:
-    .byte _D_,_A_,_T_,_E_ ; 0-4
-    .byte _W_,_E_,_A_,_T_,_H_,_E_,_R_ ; 4-11
-    .byte _H_,_E_,_A_,_L_,_T_,_H_ ; 11-17
-    .byte _F_,_O_,_O_,_D_ ; 17-21
-    .byte _N_,_E_,_X_,_T_,___,_L_,_A_,_N_,_D_,_M_,_A_,_R_,_K_ ; 21-34
-    .byte _M_,_I_,_L_,_E_,_S_,___,_T_,_R_,_A_,_V_,_E_,_L_,_E_,_D_ ; 34-48
+    .byte "Date", "Weather", "Health", "Food"
+    .byte "Next landmark", "Miles traveled"
 
 hudMenuStatusText:
-    .byte _W_,_E_,_A_,_T_,_H_,_E_,_R_,_CL ;0-8
-    .byte _H_,_E_,_A_,_L_,_T_,_H_,_CL ;8-15
-    .byte _P_,_A_,_C_,_E_,_CL ;15-20
-    .byte _R_,_A_,_T_,_I_,_O_,_N_,_S_,_CL ;20-28
-    .byte _Y_,_O_,_U_,_R_,___,_S_,_U_,_P_,_P_,_L_,_I_,_E_,_S_ ;28-41
-    .byte _P_,_O_,_U_,_N_,_D_,_S_ ;41-47
-    .byte _M_,_I_,_L_,_E_,_S_ ;47-52
+    .byte "Weather:", "Health:", "Pace:", "Rations:"
+    .byte "Your Supplies", "pounds", "miles"
 
 startingDateText:
-    .byte 5,_M_,_A_,_R_,_C_,_H_
-    .byte 5,_A_,_P_,_R_,_I_,_L_
-    .byte 3,_M_,_A_,_Y_
-    .byte 4,_J_,_U_,_N_,_E_
-    .byte 4,_J_,_U_,_L_,_Y_
-    .byte 14,_A_,_S_,_K_,___,_F_,_O_,_R_,___,_A_,_D_,_V_,_I_,_C_,_E_
+    .byte 5,"March"
+    .byte 5,"April"
+    .byte 3,"May"
+    .byte 4,"June"
+    .byte 4,"July"
+    .byte 14,"Ask for advice"
 
 keyboard:
-    .byte _Q_,_W_,_E_,_R_,_T_,_Y_,_U_,_I_,_O_,_P_
-    .byte _A_,_S_,_D_,_F_,_G_,_H_,_J_,_K_,_L_,_PD
-    .byte _Z_,_X_,_C_,_V_,_B_,_N_,_M_,_UL,___,___
-    ; .byte _A_,_B_,_C_,_D_,_E_,_F_,_G_,_H_,_7_,_8_,_9_
-    ; .byte _I_,_J_,_K_,_L_,_M_,_N_,_O_,_P_,_4_,_5_,_6_
-    ; .byte _Q_,_R_,_S_,_T_,_U_,_V_,_W_,_X_,_1_,_2_,_3_
-    ; .byte _Y_,_Z_,_CL,_CM,_PD,_EX,_QU,___,___,___,___
+    .byte "QWERTYUIOP"
+    .byte "ASDFGHJKL."
+    .byte "ZXCVBNM_  "
+
 keyboardDone:
-    .byte _D_,_O_,_N_,_E_
+    .byte "Done"
 
 decimalDigits:
-    .byte _0_,_1_,_2_,_3_,_4_,_5_,_6_,_7_,_8_,_9_
+    .byte "0123456789"
 
 weatherText:
-    .byte _V_,_E_,_R_,_Y_,___,_C_,_O_,_L_,_D_,___ ; < 10 °F
-    .byte _C_,_O_,_L_,_D_,___,___,___,___,___,___ ; 10 - 30 °F 
-    .byte _C_,_O_,_O_,_L_,___,___,___,___,___,___ ; 30 - 50 °F
-    .byte _W_,_A_,_R_,_M_,___,___,___,___,___,___ ; 50 - 70 °F
-    .byte _H_,_O_,_T_,___,___,___,___,___,___,___ ; 70 - 90 °F
-    .byte _V_,_E_,_R_,_Y_,___,_H_,_O_,_T_,___,___ ; > 90 °F
-    .byte _R_,_A_,_I_,_N_,_Y_,___,___,___,___,___ ; 0.2", 70% chance
-    .byte _V_,_E_,_R_,_Y_,___,_R_,_A_,_I_,_N_,_Y_ ; 0.8", 30% chance
-    .byte _S_,_N_,_O_,_W_,_Y_,___,___,___,___,___ ; 2", 70% chance
-    .byte _V_,_E_,_R_,_Y_,___,_S_,_N_,_O_,_W_,_Y_ ; 8", 30% chance
+    .byte "very cold " ; < 10 °F
+    .byte "cold      " ; 10 - 30 °F 
+    .byte "cool      " ; 30 - 50 °F
+    .byte "warm      " ; 50 - 70 °F
+    .byte "hot       " ; 70 - 90 °F
+    .byte "very hot  " ; > 90 °F
+    .byte "rainy     " ; 0.2", 70% chance
+    .byte "very rainy" ; 0.8", 30% chance
+    .byte "snowy     " ; 2", 70% chance
+    .byte "very snowy" ; 8", 30% chance
 
-restText:
+restText: ; TODO
     .byte _R_,_E_,_S_,_T_,___,_F_,_O_,_R_,___
     .byte ___,_D_,_A_,_Y_,_S_
 
 paceText:
-    .byte _S_,_T_,_E_,_A_,_D_,_Y_,___,___,___
-    .byte _S_,_T_,_R_,_E_,_N_,_U_,_O_,_U_,_S_
-    .byte _G_,_R_,_U_,_E_,_L_,_I_,_N_,_G_,___
-    .byte _P_,_A_,_C_,_E_
+    .byte "steady   "
+    .byte "strenuous"
+    .byte "grueling "
+    .byte "pace"
 
 rationsText:
-    .byte _B_,_A_,_R_,_E_,___,_B_,_O_,_N_,_E_,_S_
-        ; 1 lb food per person per day
-    .byte _M_,_E_,_A_,_G_,_E_,_R_,___,___,___,___
-        ; 2 lb food per person per day
-    .byte _F_,_I_,_L_,_L_,_I_,_N_,_G_,___,___,___
-        ; 3 lb food per person per day
+    .byte "bare bones" ; 1 lb food per person per day
+    .byte "meager    " ; 2 lb food per person per day
+    .byte "filling   " ; 3 lb food per person per day
 
 suppliesText:
-    .byte _O_,_X_,_E_,_N_,___,___,___
-    .byte _C_,_L_,_O_,_T_,_H_,_E_,_S_
-    .byte _B_,_U_,_L_,_L_,_E_,_T_,_S_
-    .byte _W_,_H_,_E_,_E_,_L_,_S_,___
-    .byte _A_,_X_,_L_,_E_,_S_,___,___
-    .byte _T_,_O_,_N_,_G_,_U_,_E_,_S_
-    .byte _LB,___,_F_,_O_,_O_,_D_,___
-    .byte _C_,_A_,_S_,_H_,___,___,___
+    .byte "oxen   "
+    .byte "clothes"
+    .byte "bullets"
+    .byte "wheels "
+    .byte "axles  "
+    .byte "tongues"
+    .byte "# food "
+    .byte "cash   "
 
 mattSuppliesText:
-    .byte 4,_O_,_X_,_E_,_N_
-    .byte 4,_F_,_O_,_O_,_D_
-    .byte 8,_C_,_L_,_O_,_T_,_H_,_I_,_N_,_G_
-    .byte 10,_A_,_M_,_M_,_U_,_N_,_I_,_T_,_I_,_O_,_N_
-    .byte 11,_S_,_P_,_A_,_R_,_E_,___,_P_,_A_,_R_,_T_,_S_
-    .byte _HY,___,_DL,_1_,_0_,_00,___,_E_,_A_,_C_,_H_
+    .byte 4,"oxen"
+    .byte 4,"food"
+    .byte 8,"clothing"
+    .byte 10,"ammunition"
+    .byte 11,"spare parts"
+    .byte "- $10% each"
 
 mattBillSoFar:
-    .byte _B_,_I_,_L_,_L_,___,_S_,_O_,___,_F_,_A_,_R_,_CL
+    .byte "Bill so far:"
 
 healthText:
-    .byte _G_,_O_,_O_,_D_,___,___,___,___,___
-    .byte _F_,_A_,_I_,_R_,___,___,___,___,___
-    .byte _P_,_O_,_O_,_R_,___,___,___,___,___
-    .byte _V_,_E_,_R_,_Y_,___,_P_,_O_,_O_,_R_
+    .byte "good     "
+    .byte "fair     "
+    .byte "poor     "
+    .byte "very poor"
 
-defaultPersonNames:
-    .byte 6,_P_,_H_,_I_,_L_,_I_,_P_
-    .byte 8,_C_,_H_,_A_,_R_,_O_,_L_,_Y_,_N_
-    .byte 4,_J_,_O_,_H_,_N_
-    .byte 7,_S_,_H_,_I_,_R_,_L_,_E_,_Y_
+; defaultPersonNames:
+;     .byte 6,_P_,_H_,_I_,_L_,_I_,_P_
+;     .byte 8,_C_,_H_,_A_,_R_,_O_,_L_,_Y_,_N_
+;     .byte 4,_J_,_O_,_H_,_N_
+;     .byte 7,_S_,_H_,_I_,_R_,_L_,_E_,_Y_
 
 newgameNamePartyWhatText:
-    .byte _W_,_H_,_A_,_T_,___,_I_,_S_,___,_T_,_H_,_E_,___,_F_,_I_,_R_,_S_,_T_,___,_N_,_A_,_M_,_E_,___,_O_,_F_,___,_T_,_H_,_E_
+    .byte "What is the first name of the"
 
 newgameNewPartyNthText:
-    .byte _2_,_N_,_D_
-    .byte _3_,_R_,_D_
-    .byte _4_,_T_,_H_
-    .byte _5_,_T_,_H_
+    .byte "2nd", "3rd", "4th", "5th"
 
 newgameNamePartyPersonText:
-    .byte _W_,_A_,_G_,_O_,_N_,___,_L_,_E_,_A_,_D_,_E_,_R_,_QU
-    .byte _P_,_A_,_R_,_T_,_Y_,___,_M_,_E_,_M_,_B_,_E_,_R_,_QU
+    .byte "wagon leader?"
+    .byte "party member?"
 
 newgameNamePartyCorrectText:
-    .byte _A_,_R_,_E_,___,_T_,_H_,_E_,_S_,_E_,___,_N_,_A_,_M_,_E_,_S_,___,_C_,_O_,_R_,_R_,_E_,_C_,_T_,_QU
+    .byte "Are these names correct?"
+
 newgameNamePartyChangeText:
-    .byte _C_,_H_,_A_,_N_,_G_,_E_,___,_W_,_H_,_I_,_C_,_H_,___,_N_,_A_,_M_,_E_,_QU
-; occupationText:
-;     .byte _B_,_A_,_N_,_K_,_E_,_R_,___,___,___,___,___
-;     .byte _D_,_O_,_C_,_T_,_O_,_R_,___,___,___,___,___
-;     .byte _M_,_E_,_R_,_C_,_H_,_A_,_N_,_T_,___,___,___
-;     .byte _B_,_L_,_A_,_C_,_K_,_S_,_M_,_I_,_T_,_H_,___
-;     .byte _C_,_A_,_R_,_P_,_E_,_N_,_T_,_E_,_R_,___,___
-;     .byte _S_,_A_,_D_,_D_,_L_,_E_,_M_,_A_,_K_,_E_,_R_
-;     .byte _F_,_A_,_R_,_M_,_E_,_R_,___,___,___,___,___
-;     .byte _T_,_E_,_A_,_C_,_H_,_E_,_R_,___,___,___,___
+    .byte "Change which name?"
 
+; occupationAttribute
+; %00000000 
+;  |||||+++ Bonus multiplier (000:x0.0, 001:x0.5, 010:x1.0, ..., 111:x3.5)
+;  ||+++--- Unused
+;  ++------ Starting cash (00:$400, 01:$800, 10:$1200, 11:$1600)
 occupationAttribute:
-    ; %00000000
-    ;  |||||+++ Bonus multiplier (000:x0.0, 001:x0.5, 010:x1.0, ..., 111:x3.5)
-    ;  ||||+--- Oxen are less likely to get sick and die
-    ;  |||+---- Sick or injured people are less likely to die
-    ;  ||+----- More likely to repair broken wagon parts
-    ;  ++------ Starting cash (00:$400, 01:$800, 10:$1200, 11:$1600)
     .byte %11000000 ; BANKER
-    ; .byte %10010000 ; DOCTOR
-    ; .byte %10000011 ; MERCHANT
-    ; .byte %01100100 ; BLACKSMITH
-    .byte %01100100 ; CARPENTER
-    ; .byte %01000101 ; SADDLEMAKER
-    .byte %00001110 ; FARMER
-    ; .byte %00000111 ; TEACHER
+    .byte %01000100 ; CARPENTER
+    .byte %00000110 ; FARMER
 
+; riverAttribute
+; %00000000, $00
+;  ||||||||   ++ Minimum width (*4 = ft, eg 150*4 = 600ft) 
+;  ||++++++----- Minimum depth (0-63 ft)
+;  |+----------- Indian guide available (3 sets of clothes)
+;  +------------ Ferry available ($5)
+; Caulk and Ford are always an option.
 riverAttribute:
-    ; %00000000
-    ;  |||||+++ Depth?
-    ;  ||+++--- Width?
-    ;  |+------ Indian guide available (3 sets of clothes)
-    ;  +------- Ferry available ($5)
-    ; Caulk and Ford are always an option.
-    .byte %10000000 ; Kansas River 
-        ; Widths (ft): 603,
-        ; Depths (ft): 1.0,
-    .byte %00000000 ; Big Blue River
-        ; Widths (ft): 220,
-        ; Depths (ft): 1.0,
-    .byte %10000000 ; Green River
-        ; Widths (ft): 
-        ; Depths (ft): 
-    .byte %01000000 ; Snake River
-        ; Widths (ft): 
-        ; Depths (ft): 
+    .byte %10000001, 150 ; Kansas River
+    .byte %00000001, 55  ; Big Blue River
+    .byte %10010100, 100 ; Green River
+    .byte %01000110, 250 ; Snake River
 
-; generalStoreText:
-;     .byte _G_,_E_,_N_,_E_,_R_,_A_,_L_,___,_S_,_T_,_O_,_R_,_E_
-; storeColumnHeaderText:
-;     .byte _B_,_U_,_Y_,___
-;     .byte _I_,_T_,_E_,_M_
-;     .byte _E_,_A_,_C_,_H_
-;     .byte _C_,_O_,_S_,_T_
 storeTotalText:
-    .byte _T_,_O_,_T_,_A_,_L_,___,_B_,_I_,_L_,_L_,_CL
-    .byte _Y_,_O_,_U_,___,_H_,_A_,_V_,_E_,_CL
-; storeNameText:
-;     .byte ___,___,___,___,___,___,_M_,_A_,_T_,_T_,_AP,_S_
-;     .byte _F_,_O_,_R_,_T_,___,_K_,_E_,_A_,_R_,_N_,_E_,_Y_
-;     .byte _F_,_O_,_R_,_T_,___,_L_,_A_,_R_,_A_,_M_,_I_,_E_
-;     .byte _F_,_O_,_R_,_T_,___,_B_,_R_,_I_,_D_,_G_,_E_,_R_
-;     .byte _F_,_O_,_R_,_T_,___,_H_,_A_,_L_,_L_,___,___,___
-;     .byte _F_,_O_,_R_,_T_,___,_B_,_O_,_I_,_S_,_E_,___,___
-;     .byte _W_,_A_,_L_,_L_,_A_,___,_W_,_A_,_L_,_L_,_A_,___
+    .byte "Total bill:"
+    .byte "You have:"
 
 ; independencePrices:
 ;     $20.00   ; Oxen
@@ -353,7 +281,7 @@ nextLandmarkDistance:
     .byte 86    ; Chimney Rock to Fort Laramie
     .byte 190   ; Fort Laramie to Independence Rock
     .byte 102   ; Independence Rock to South Pass
-    ;.byte 125    ; South Pass to Fort Bridger ; TODO drail divides
+    ;.byte 125    ; South Pass to Fort Bridger ; TODO trail divides
     .byte 57    ; South Pass to Green River
     .byte 162   ; Fort Bridger to Soda Springs
     .byte 144   ; Green River to Soda Springs
@@ -362,102 +290,100 @@ nextLandmarkDistance:
     .byte 114   ; Snake River to Fort Boise
     .byte 160   ; Fort Boise to Blue Mountains
     .byte 55    ; Blue Mountains to Fort Walla Walla
-    ;.byte 125    ; Blue Mountains to The Dalles ; TODO drail divides
+    ;.byte 125    ; Blue Mountains to The Dalles ; TODO trail divides
     .byte 120   ; Fort Walla Walla to The Dalles
     .byte 100   ; The Dalles to WIllamette Valley (toll road)
 
 locationPrefix:
-    .byte _F_,_O_,_R_,_T_,___
-    .byte ___,_R_,_I_,_V_,_E_,_R_,___,_C_,_R_,_O_,_S_,_S_,_I_,_N_,_G_
+    .byte "Fort "
+    .byte " River Crossing"
 
 locationNameText:
-    .byte 12,_I_,_N_,_D_,_E_,_P_,_E_,_N_,_D_,_E_,_N_,_C_,_E_
-    .byte 6,_K_,_A_,_N_,_S_,_A_,_S_
-    .byte 8,_B_,_I_,_G_,___,_B_,_L_,_U_,_E_
-    .byte 7,_K_,_E_,_A_,_R_,_N_,_E_,_Y_
-    .byte 12,_C_,_H_,_I_,_M_,_N_,_E_,_Y_,___,_R_,_O_,_C_,_K_
-    .byte 7,_L_,_A_,_R_,_A_,_M_,_I_,_E_
-    .byte 17,_I_,_N_,_D_,_E_,_P_,_E_,_N_,_D_,_E_,_N_,_C_,_E_,___,_R_,_O_,_C_,_K_
-    .byte 10,_S_,_O_,_U_,_T_,_H_,___,_P_,_A_,_S_,_S_
-    .byte 7,_B_,_R_,_I_,_D_,_G_,_E_,_R_
-    .byte 5,_G_,_R_,_E_,_E_,_N_
-    .byte 12,_S_,_O_,_D_,_A_,___,_S_,_P_,_R_,_I_,_N_,_G_,_S_
-    .byte 4,_H_,_A_,_L_,_L_
-    .byte 5,_S_,_N_,_A_,_K_,_E_
-    .byte 5,_B_,_O_,_I_,_S_,_E_
-    .byte 18,_T_,_H_,_E_,___,_B_,_L_,_U_,_E_,___,_M_,_O_,_U_,_N_,_T_,_A_,_I_,_N_,_S_
-    .byte 11,_W_,_A_,_L_,_L_,_A_,___,_W_,_A_,_L_,_L_,_A_
-    .byte 10,_T_,_H_,_E_,___,_D_,_A_,_L_,_L_,_E_,_S_
-    .byte 17,_W_,_I_,_L_,_L_,_A_,_M_,_E_,_T_,_T_,_E_,___,_V_,_A_,_L_,_L_,_E_,_Y_
+    .byte 12,"Independence"
+    .byte 6,"Kansas"
+    .byte 8,"Big Blue"
+    .byte 7,"Kearney"
+    .byte 12,"Chimney Rock"
+    .byte 7,"Laramie"
+    .byte 17,"Independence Rock"
+    .byte 10,"South Pass"
+    .byte 7,"Bridger"
+    .byte 5,"Green"
+    .byte 12,"Soda Springs"
+    .byte 4,"Hall"
+    .byte 5,"Snake"
+    .byte 5,"Boise"
+    .byte 18,"The Blue Mountains"
+    .byte 11,"Walla Walla"
+    .byte 10,"The Dalles"
+    .byte 17,"Willamette Valley"
     .byte 0
 
 eventIndianFoodText:
-    .byte 23,_I_,_N_,_D_,_I_,_A_,_N_,_S_,___,_H_,_E_,_L_,_P_,___,_F_,_I_,_N_,_D_,___,_F_,_O_,_O_,_D_,_PD
+    .byte 23,"Indians help find food."
 
 eventThunderstormText:
-    .byte 20,_S_,_E_,_V_,_E_,_R_,_E_,___,_T_,_H_,_U_,_N_,_D_,_E_,_R_,_S_,_T_,_O_,_R_,_M_,_PD ; Lose 1 day
+    .byte 20,"Severe thunderstorm." ; Lose 1 day
 
 eventBlizzardText:
-    .byte 16,_S_,_E_,_V_,_E_,_R_,_E_,___,_B_,_L_,_I_,_Z_,_Z_,_A_,_R_,_D_,_PD ; Lose 1 day
+    .byte 16,"Severe blizzard." ; Lose 1 day
 
 eventWrongTrailText:
-    .byte 12,_W_,_R_,_O_,_N_,_G_,___,_T_,_R_,_A_,_I_,_L_,_PD ; 1 5
+    .byte 12,"Wrong trail." ; 1 5
 
 eventLoseTrailText:
-    .byte 11,_L_,_O_,_S_,_E_,___,_T_,_R_,_A_,_I_,_L_,_PD ; 2 4
+    .byte 11,"Lose trail." ; 2 4
 
 eventHailStormText:
-    .byte 11,_H_,_A_,_I_,_L_,___,_S_,_T_,_O_,_R_,_M_,_PD
+    .byte 11,"Hail storm."
 
 eventHeavyFogText:
-    .byte 9,_H_,_E_,_A_,_V_,_Y_,___,_F_,_O_,_G_
+    .byte 9,"Heavy fog"
 
 eventLoseDaysText:
-    .byte 10,_L_,_O_,_S_,_E_,___,_1_,___,_D_,_A_,_Y_
+    .byte 10,"Lose 1 day"
 
 eventBadWaterText:
-    .byte 9,_B_,_A_,_D_,___,_W_,_A_,_T_,_E_,_R_
+    .byte 9,"Bad water"
 
 eventInadequateGrassText:
-    .byte 16,_I_,_N_,_A_,_D_,_E_,_Q_,_U_,_A_,_T_,_E_,___,_G_,_R_,_A_,_S_,_S_
+    .byte 16,"Inadequate grass"
 
 eventLittleWaterText:
-    .byte 17,_V_,_E_,_R_,_Y_,___,_L_,_I_,_T_,_T_,_L_,_E_,___,_W_,_A_,_T_,_E_,_R_
+    .byte 17,"Very little water"
 
 eventRoughTrailText:
-    .byte 11,_R_,_O_,_U_,_G_,_H_,___,_T_,_R_,_A_,_I_,_L_
+    .byte 11,"Rough trail"
 
 eventIllnessText:
-    .byte ___,_H_,_A_,_S_,___
-    .byte 10,_E_,_X_,_H_,_A_,_U_,_S_,_T_,_I_,_O_,_N_
-    .byte 7,_T_,_Y_,_P_,_H_,_O_,_I_,_D_
-    .byte 7,_C_,_H_,_O_,_L_,_E_,_R_,_A_
-    .byte 7,_M_,_E_,_A_,_S_,_L_,_E_,_S_
-    .byte 9,_D_,_Y_,_S_,_E_,_N_,_T_,_E_,_R_,_Y_
-    .byte 7,_A_,___,_F_,_E_,_V_,_E_,_R_
-    .byte _D_,_I_,_E_,_D_
+    .byte " has "
+    .byte 10,"exhaustion"
+    .byte 7,"typhoid"
+    .byte 7,"cholera"
+    .byte 7,"measles"
+    .byte 9,"dysentery"
+    .byte 7,"a fever"
+    .byte "died"
 
 eventOxWandersOffText:
-    .byte 15,_O_,_X_,___,_W_,_A_,_N_,_D_,_E_,_R_,_S_,___,_O_,_F_,_F_,_PD
+    .byte 15,"Ox wanders off."
 
 eventInjuredOxText:
-    .byte 15,_O_,_N_,_E_,___,_O_,_F_,___,_T_,_H_,_E_,___,_O_,_X_,_E_,_N_
-    .byte 11,_I_,_S_,___,_I_,_N_,_J_,_U_,_R_,_E_,_D_,_PD
+    .byte 15,"One of the oxen"
+    .byte 11,"is injured."
 
 eventInjuryText:
-    .byte _S_,_N_,_A_,_K_,_E_,___,_B_,_I_,_T_,_E_
-    .byte _B_,_R_,_O_,_K_,_E_,_N_
-    .byte _A_,_R_,_M_
-    .byte _L_,_E_,_G_
+    .byte "snake bite"
+    .byte "broken", "arm", "leg"
 
 eventLookAroundText:
-    .byte _W_,_O_,_U_,_L_,_D_,___,_Y_,_O_,_U_,___,_L_,_I_,_K_,_E_,___,_T_,_O_
-    .byte _L_,_O_,_O_,_K_,___,_A_,_R_,_O_,_U_,_N_,_D_,_QU
+    .byte "Would you like to look around?"
+
 ; eventThiefText:
 ;     .byte A THIEF COMES DURING THE NIGHT AND STEALS 
 
 eventWildFruitText:
-    .byte 16,_F_,_I_,_N_,_D_,___,_W_,_I_,_L_,_D_,___,_F_,_R_,_U_,_I_,_T_,_PD
+    .byte 16,"Find wild fruit."
 
 ; eventAbandonedWagonText:
 ; YOU FIND AN ABANDONED WAGON 
@@ -468,7 +394,7 @@ eventWildFruitText:
 ; X IS LOST. LOSE X DAYS.
 
 eventImpassibleTrailText:
-    .byte 17,_I_,_M_,_P_,_A_,_S_,_S_,_I_,_B_,_L_,_E_,___,_T_,_R_,_A_,_I_,_L_,_PD ; LOSE X DAYS.
+    .byte 17,"Impassible trail." ; LOSE X DAYS.
 
 ; IT WAS A MUDDY CROSSING, BUT YOU DID NOT GET STUCK.
 ; YOUR SUPPLIES GOT WET. LOSE 1 DAY. 
@@ -479,46 +405,30 @@ eventImpassibleTrailText:
 ; Minimum score (high byte first) and rating
 ; TODO confirm score values 
 topTenRating:
-    .byte $1b,$58,_T_,_R_,_A_,_I_,_L_,___,_G_,_U_,_I_,_D_,_E_
-    .byte $0b,$b8,_A_,_D_,_V_,_E_,_N_,_T_,_U_,_R_,_E_,_R_,___
-    .byte $00,$00,_G_,_R_,_E_,_E_,_N_,_H_,_O_,_R_,_N_,___,___
+    .byte $1b,$58,"Trail guide"
+    .byte $0b,$b8,"Adventurer "
+    .byte $00,$00,"Greenhorn  "
 
 topTenHeaderText:
-    .byte _T_,_H_,_E_,___,_O_,_R_,_E_,_G_,_O_,_N_,___,_T_,_O_,_P_,___,_T_,_E_,_N_
+    .byte "The Oregon Top Ten"
 
 topTenColumnText:
-    .byte _N_,_A_,_M_,_E_
-    .byte _P_,_O_,_I_,_N_,_T_,_S_
-    .byte _R_,_A_,_T_,_I_,_N_,_G_
+    .byte "Name", "Points", "Rating"
 
 topTenQuestionText:
-    .byte _W_,_O_,_U_,_L_,_D_,___,_Y_,_O_,_U_,___,_L_,_I_,_K_,_E_,___,_T_,_O_,___,_S_,_E_,_E_
-    .byte _H_,_O_,_W_,___,_P_,_T_,_S_,___,_A_,_R_,_E_,___,_E_,_A_,_R_,_N_,_E_,_D_,_QU
+    .byte "Would you like to see how pts are earned?"
 
 topTenHelpText:
-    .byte _O_,_N_,___,_A_,_R_,_R_,_I_,_V_,_I_,_N_,_G_,___,_I_,_N_,___,_O_,_R_,_E_,_G_,_O_,_N_ ; 0-20
-    .byte _H_,_E_,_A_,_L_,_T_,_H_,___,_O_,_F_ ; 21-29
-    .byte _R_,_E_,_S_,_O_,_U_,_R_,_C_,_E_,_S_,___,_O_,_F_ ; 30-41
-    .byte _P_,_A_,_R_,_T_,_Y_ ; 42-46
-    .byte _P_,_O_,_I_,_N_,_T_,_S_,___,_P_,_E_,_R_ ; 47-56
-    .byte _P_,_E_,_R_,_S_,_O_,_N_ ; 57-62
-    .byte _I_,_T_,_E_,_M_,___,___ ; 63-68
+    .byte "On Arriving In Oregon"
+    .byte "Health of", "Resources of", "Party"
+    .byte "Points per", "Person", "Item  "
 
 topTenResourcesText:
-    .byte _W_,_A_,_G_,_O_,_N_
-    .byte _O_,_X_
-    .byte _S_,_P_,_A_,_R_,_E_,___,_W_,_A_,_G_,_O_,_N_,___,_P_,_A_,_R_,_T_
-    .byte _S_,_E_,_T_,___,_O_,_F_,___,_C_,_L_,_O_,_T_,_H_,_I_,_N_,_G_
-    .byte _B_,_U_,_L_,_L_,_E_,_T_,_S_
-    .byte _F_,_O_,_O_,_D_
-    .byte _C_,_A_,_S_,_H_
+    .byte "wagon", "ox", "spare wagon part", "set of clothing"
+    .byte "bullets", "food", "cash"
 
 topTenResourcesEachText:
-    .byte _E_,_A_,_C_,_H_
-    ; .byte _5_,_0_
-    ; .byte _2_,_5_,___,_LB
-    ; .byte _DL,_5_
-    
+    .byte "each"
 
 ; Health of Party   Points per Person
 ; good              500

@@ -1,6 +1,7 @@
 .include "constants.asm"
 .include "header.asm"
 .include "macros.asm"
+.include "charmap.asm"
 
 .segment "VECTORS"
     .addr nmi, reset, irq
@@ -79,7 +80,7 @@
     ; random events
     .include "data/raw/randomevents.asm"
     .include "data/compressed/image/randomevents.asm"
-    ;.include "data/compressed/image/rivercrossing.asm"
+    .include "data/compressed/image/rivercrossing.asm"
 
     ; landmark
     .include "code/landmark.asm"

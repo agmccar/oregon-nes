@@ -11,19 +11,19 @@
 ;   Snake River: USGS 13154500 SNAKE RIVER AT KING HILL ID
 ;       https://waterdata.usgs.gov/id/nwis/monthly/?referred_module=sw&amp;site_no=13154500&amp;por_13154500_45831=1154606,00060,45831,1909-06,2022-12&amp;format=html_table&amp;date_format=YYYY-MM-DD&amp;rdb_compression=file&amp;submitted_form=parameter_selection_list
 
-riverDischarge:
-    ;     Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec
-    .byte 2390, 3330, 5020, 6530, 8690, 11800, 9220, 5600, 5070, 4160, 3410 ; Kansas
-    .byte 392, 617, 1300, 889, 2010, 2300, 1700, 882, 899, 779, 453, 502 ; Big Blue
-    .byte 805, 858, 1050, 1520, 2350, 4390, 2890, 1450, 1070, 952, 872, 788 ; Green River
-    .byte 10600, 10700, 11100, 12400, 12100, 12400, 8360, 7730, 8600, 10000, 10300, 10400 ; Snake River
+; riverDischarge:
+;     ;     Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec
+;     .byte 2390, 3330, 5020, 6530, 8690, 11800, 9220, 5600, 5070, 4160, 3410 ; Kansas
+;     .byte 392, 617, 1300, 889, 2010, 2300, 1700, 882, 899, 779, 453, 502 ; Big Blue
+;     .byte 805, 858, 1050, 1520, 2350, 4390, 2890, 1450, 1070, 952, 872, 788 ; Green River
+;     .byte 10600, 10700, 11100, 12400, 12100, 12400, 8360, 7730, 8600, 10000, 10300, 10400 ; Snake River
 
-riverGageHeight:
-    ;     Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec
-    .byte 6.31, 6.42, 6.88, 7.15, 8.49, 9.14, 8.31, 8.05, 6.79, 6.22, 6.24, 6.72 ; Kansas
-    .byte 12.34, 12.71, 12.89, 12.87, 14.36, 15.01, 13.61, 12.76, 12.64, 12.42, 12.13, 12.22 ; Big Blue
-    ; No gage height data for Green River
-    ; No gage height data for Snake River
+; riverGageHeight:
+;     ;     Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec
+;     .byte 6.31, 6.42, 6.88, 7.15, 8.49, 9.14, 8.31, 8.05, 6.79, 6.22, 6.24, 6.72 ; Kansas
+;     .byte 12.34, 12.71, 12.89, 12.87, 14.36, 15.01, 13.61, 12.76, 12.64, 12.42, 12.13, 12.22 ; Big Blue
+;     ; No gage height data for Green River
+;     ; No gage height data for Snake River
 
 ; River Notes
 ; "If the weather were quite rainy in the days just prior to reaching the
