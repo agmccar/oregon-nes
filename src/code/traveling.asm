@@ -513,13 +513,11 @@
         LDA menuOpen
         CMP #MENU_SUPPLIES
         BNE :+
-        JMP @menuSupplies
+        LDA #MENU_MAINMENU
+        STA menuOpen
+        RTS
         :
         RTS
-        @menuSupplies:
-            LDA #MENU_MAINMENU
-            STA menuOpen
-            RTS
     CheckUp:
         LDA #KEY_UP
         BIT buttons1

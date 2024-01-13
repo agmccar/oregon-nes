@@ -1,0 +1,97 @@
+## RiverYouMustCross
+
+You must cross the river in order to continue. The river at this point is
+currently ………… feet across, and ……… feet deep in the middle.
+
+## RiverFordOption
+
+attempt to ford river$
+
+## RiverCaulkOption
+
+caulk wagon and float$
+
+## RiverFerryOption
+
+take a ferry across$
+
+## RiverWaitOption
+
+wait for a day$
+
+## RiverIndianOption
+
+hire an Indian to help$
+
+## RiverHelpOption
+
+get more information$
+
+## RiverHelpPage1
+
+To ford a river means to pull your wagon across a shallow part of the river,
+with the oxen still attached.
+
+## RiverHelpPage2
+
+To caulk the wagon means to seal it so that no water can get in. The wagon
+can then be floated across like a boat.
+
+## RiverHelpPage3
+
+To use a ferry means to put your wagon on top of a flat boat that belongs
+to someone else. The owner of the ferry will take your wagon across the river.
+
+## RiverWait
+
+You camp near the river for a day.
+
+## RiverNoTroubleFloating
+
+You had no trouble floating the wagon across.
+
+## RiverMuddyCrossing
+
+It was a muddy crossing, but you did not get stuck.
+
+## RiverSuppliesWet
+
+Your supplies got wet. Lose 1 day.
+
+## RiverStuckMud
+
+You become stuck in the mud. Lose 1 day.
+
+## RiverFerryBroke
+
+The ferry broke loose from moorings. You lose:$
+
+## RiverFerrySafelyAcross
+
+The ferry got your party and wagon safely across.
+
+## RiverFerryQuestion
+
+The ferry operator says that he will charge you ……… and that you will have to
+wait … days. Are you willing to do this?
+
+## RiverIndianOffer
+
+A Shoshoni guide says that he will take your wagon across the river in exchange
+for 3 sets of clothing.
+
+## RiverIndianQuestion
+
+Will you accept this offer?
+
+## RiverIndianWillHelp
+
+The Shoshoni guide will help you float your wagon across.
+
+## RiverWidthText
+
+River width:$
+
+## RiverDepthText
+
+River depth:$

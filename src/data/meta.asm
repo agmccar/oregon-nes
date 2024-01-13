@@ -78,6 +78,9 @@ reWagonFireTilesMeta:
 reWildFruitTilesMeta:
     .byte BANK_RANDOMEVENT, <reWildFruitTiles, >reWildFruitTiles, 1, 4, $10
 
+riverWagonTilesMeta:
+    .byte BANK_RIVER, <wagonRiverTiles, >wagonRiverTiles, 6, 2, $10
+
 ; Meta-values associated with general images
 ; TODO: images less than a screen wide?
 ; 0,0,0,0,0,0

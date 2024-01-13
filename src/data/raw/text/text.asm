@@ -396,12 +396,6 @@ eventWildFruitText:
 eventImpassibleTrailText:
     .byte 17,"Impassible trail." ; LOSE X DAYS.
 
-; IT WAS A MUDDY CROSSING, BUT YOU DID NOT GET STUCK.
-; YOUR SUPPLIES GOT WET. LOSE 1 DAY. 
-; YOU BECOME STUCK IN THE MUD. LOSE 1 DAY.
-; THE FERRY BROKE LOOSE FROM MOORINGS. YOU LOSE:
-
-
 ; Minimum score (high byte first) and rating
 ; TODO confirm score values 
 topTenRating:

@@ -170,6 +170,17 @@
     RTS
 .endproc
 
+.proc InitStateRiver
+    LDY #BANK_RIVER
+    JSR bankswitch_y
+    LDA #0
+    STA menuCursor
+    STA fingerAttr
+    LDA #MENU_RIVER_INTRO
+    STA menuOpen
+    RTS
+.endproc
+
 ; Buffer control ---------------------------------------------------------------
 
 .proc ProcessNametableBuffer
@@ -1951,6 +1962,11 @@
     CMP #GAMESTATE_TITLE
     BNE :+
     LDX #$E0 ; under the title logo
+    JMP :+++
+    :
+    CMP #GAMESTATE_RIVER
+    BNE :+
+    LDX #$C0 ; under the location/date
     JMP :++
     :
     LDX #$60 ; tippy top of screen
@@ -1992,6 +2008,13 @@
     LDA #$D0 ; below title logo
     STA PPUADDR
     LDA #$fa
+    JMP :++++
+    :
+    CMP #GAMESTATE_RIVER
+    BNE :+
+    LDA #$C8 ; below location/date
+    STA PPUADDR
+    LDA #$af
     JMP :+++
     :
     LDA #$C0 ; tippy top of screen
@@ -2277,7 +2300,7 @@
     CMP #$03
     BCS :+
     LDA #0 ; traveled less than 0x300 (768) miles 
-    JMP Done
+    RTS
     :
     CMP #$04
     BCS :+
@@ -2285,10 +2308,23 @@
     CMP #$B6
     BCS :+
     LDA #0 ; traveled between 0x300 (768) and 0x3B6 (950) miles
-    JMP Done
+    RTS
     :
     LDA #1 ; traveled more than 0x3B6 (950) or 0x400 (1024) miles
-    Done:
+    RTS
+.endproc
+
+.proc CheckRiver
+    LDA wagonAtLocation
+    BEQ :+
+    LDX location
+    LDA landmarkAttr, X
+    AND #%01000000
+    BEQ :+
+    LDA #1 ; we are at a river
+    RTS
+    :
+    LDA #0 ; we are not at a river
     RTS
 .endproc
 
@@ -2835,6 +2871,11 @@
         JSR InitStateMap
         RTS
     :
+    CMP #GAMESTATE_RIVER
+    BNE :+ 
+        JSR InitStateRiver
+        RTS
+    :
     RTS
 .endproc
 
@@ -2922,6 +2963,11 @@
     CMP #GAMESTATE_MAP
     BNE :+
     JSR GamepadMap
+    RTS
+    :
+    CMP #GAMESTATE_RIVER
+    BNE :+
+    JSR GamepadRiver
     RTS
     :
     RTS
@@ -3167,6 +3213,22 @@
         JSR LoadBgIndependence
         RTS
     :
+    CMP #MENU_RIVER_INTRO
+    BCS :+
+    JMP :+++
+    :
+    CMP #MENU_RIVER_INDIAN+1
+    BCC :+
+    JMP :++
+    :
+        JSR LoadBgRiverMenu
+        RTS
+    :
+    CMP #MENU_RIVER_CROSSING
+    BNE :+
+        JSR LoadBgRiverCrossing
+        RTS
+    :
     RTS
     None:
         LDA #0
@@ -3187,7 +3249,13 @@
             RTS
         :
         CMP #GAMESTATE_TRAVELING
-        BNE :+
+        BNE :++
+            JSR CheckRiver
+            BEQ :+
+            LDA #GAMESTATE_RIVER
+            STA gameState
+            RTS
+            :
             LDA #%00000000      ; neither finger visible
             STA fingerAttr
             LDA #0

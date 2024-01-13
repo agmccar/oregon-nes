@@ -80,10 +80,15 @@
     ; random events
     .include "data/raw/randomevents.asm"
     .include "data/compressed/image/randomevents.asm"
-    .include "data/compressed/image/rivercrossing.asm"
 
     ; landmark
     .include "code/landmark.asm"
+
+    ; river crossing
+    .include "code/river.asm"
+    .include "data/compressed/image/riverTiles.asm"
+    .include "data/compressed/text/river.asm"
+    .include "data/raw/image/river.asm"
 
 .segment "RODATA" ; ROM7
     banktable:              ; Write to this table to switch banks.

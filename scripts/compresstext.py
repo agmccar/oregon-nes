@@ -388,6 +388,7 @@ def main(args):
     verbose = args.verbose
     # DRY: Do Repeat Yourself!
     mass_text = ""
+
     talk_data = parse_raw_text('src/data/raw/text/talk.txt')
     for loc in talk_data:
         for i in range(len(talk_data[loc])):
@@ -395,6 +396,7 @@ def main(args):
             talk_data[loc][i]['quote_segments'] = segments
             for segment in segments:
                 mass_text += squish_segment(segment)
+
     learn_data = parse_raw_text('src/data/raw/text/learn.txt')
     for loc in learn_data:
         for i in range(len(learn_data[loc])):
@@ -402,6 +404,7 @@ def main(args):
             learn_data[loc][i]['quote_segments'] = segments
             for segment in segments:
                 mass_text += squish_segment(segment)
+
     top10_data = parse_raw_text('src/data/raw/text/top10.txt')
     for loc in top10_data:
         for i in range(len(top10_data[loc])):
@@ -409,6 +412,7 @@ def main(args):
             top10_data[loc][i]['quote_segments'] = segments
             for segment in segments:
                 mass_text += squish_segment(segment)
+
     sound_data = parse_raw_text('src/data/raw/text/sound.txt')
     for loc in sound_data:
         for i in range(len(sound_data[loc])):
@@ -416,6 +420,7 @@ def main(args):
             sound_data[loc][i]['quote_segments'] = segments
             for segment in segments:
                 mass_text += squish_segment(segment)
+
     newgame_data = parse_raw_text('src/data/raw/text/newgame.txt')
     for loc in newgame_data:
         for i in range(len(newgame_data[loc])):
@@ -423,6 +428,7 @@ def main(args):
             newgame_data[loc][i]['quote_segments'] = segments
             for segment in segments:
                 mass_text += squish_segment(segment)
+
     traveling_data = parse_raw_text('src/data/raw/text/traveling.txt')
     for loc in traveling_data:
         for i in range(len(traveling_data[loc])):
@@ -430,6 +436,15 @@ def main(args):
             traveling_data[loc][i]['quote_segments'] = segments
             for segment in segments:
                 mass_text += squish_segment(segment)
+
+    river_data = parse_raw_text('src/data/raw/text/river.txt')
+    for loc in river_data:
+        for i in range(len(river_data[loc])):
+            segments = text_to_segments(river_data[loc][i]['quote_raw'])
+            river_data[loc][i]['quote_segments'] = segments
+            for segment in segments:
+                mass_text += squish_segment(segment)
+
     substr_dict = create_substr_dict(mass_text)
     write_asm('src/data/compressed/text/dictionary.asm',substr_dict)
 
@@ -545,6 +560,23 @@ def main(args):
             b.append("$00") 
             traveling_data[page][i]['bytes'] = ",".join(b)
     write_asm('src/data/compressed/text/traveling.asm', substr_dict, data=traveling_data, pointer=True)
+
+    # 'river' text
+    for page in river_data:
+        for i in range(len(river_data[page])):
+            b = []
+            segments = text_to_segments(river_data[page][i]['quote_raw'])
+            river_data[page][i]['quote_byte_segments'] = []
+            for segment in segments:
+                if args.verbose:
+                    print(f"Compressing segment: {segment}")
+                bs = compress_segment(segment, substr_dict)
+                river_data[page][i]['quote_byte_segments'].append(bs)
+                b.append(bs)
+            river_data[page][i]['quote_byte_segments'].append("$00") # end of section
+            b.append("$00") 
+            river_data[page][i]['bytes'] = ",".join(b)
+    write_asm('src/data/compressed/text/river.asm', substr_dict, data=river_data, pointer=True)
 
 
 if __name__ == "__main__":
