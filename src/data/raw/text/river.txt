@@ -9,7 +9,7 @@ attempt to ford river$
 
 ## RiverCaulkOption
 
-caulk wagon and float$
+caulk wagon and float it$
 
 ## RiverFerryOption
 
@@ -17,7 +17,7 @@ take a ferry across$
 
 ## RiverWaitOption
 
-wait for a day$
+wait to see if$
 
 ## RiverIndianOption
 
@@ -95,3 +95,7 @@ River width:$
 ## RiverDepthText
 
 River depth:$
+
+## RiverWaitHack
+
+conditions improve$

@@ -141,7 +141,7 @@
     BDrawText travelingPointer+30, travelingPointer+31, #$22, #$a6
     ; Attempt to trade
     BDrawText travelingPointer+40, travelingPointer+41, #$22, #$c6
-    LDA wagonAtLocation
+    LDA wagonAtLandmark
     BEQ :+
     ; Talk to people
     BDrawText travelingPointer+44, travelingPointer+45, #$22, #$e6

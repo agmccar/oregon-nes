@@ -53,14 +53,39 @@
         BDrawText riverPointer+2, riverPointer+3, #$21, #$e4
         ; caulk wagon and float it across
         BDrawText riverPointer+4, riverPointer+5, #$22, #$04
+
+        LDA #$22 ; stash ppuaddr of 3rd menu option
+        STA bufferHelper
+        LDA #$24
+        STA bufferHelper+1
+        JSR GetRiverAttribute
+        BPL :+ ; does river have a ferry?
         ; take a ferry across
-        BDrawText riverPointer+6, riverPointer+7, #$22, #$24
+        BDrawText riverPointer+6, riverPointer+7, bufferHelper, bufferHelper+1
+        JMP Next
+        :
+        PHA
+        AND #%01000000
+        BEQ :+ ; does river have a guide?
+        PLA
+        ; hire an Indian to help
+        BDrawText riverPointer+10, riverPointer+11, bufferHelper, bufferHelper+1
+        JMP Next
+        :
+        PLA
+        Next:
+        JSR BufferHelperNextLine
+
         ; wait to see if conditions improve
-        BDrawText riverPointer+8, riverPointer+9, #$22, #$44
-        ; ; hire an Indian to help
-        ; BDrawText riverPointer+10, riverPointer+11, #$22, #$44
+        BDrawText riverPointer+8, riverPointer+9, bufferHelper, bufferHelper+1
+        INC bufferHelper+1
+        JSR BufferHelperNextLine
+        BDrawText riverPointer+46, riverPointer+47, bufferHelper, bufferHelper+1
+        JSR BufferHelperNextLine
+        DEC bufferHelper+1
+
         ; get more information
-        BDrawText riverPointer+12, riverPointer+13, #$22, #$64
+        BDrawText riverPointer+12, riverPointer+13, bufferHelper, bufferHelper+1
 
         ; What is your choice?
         SBW #20, #$22, #$c2
@@ -72,6 +97,10 @@
             CPX #30
             BNE :-
         EBW
+
+        LDA #%00000100
+        STA fingerAttr
+        JSR DrawFinger
 
         RTS
     MenuHelp:
@@ -101,21 +130,31 @@
     CMP #MENU_RIVER_WAIT
     BNE :+
         ; You camp near the river for a day.
+        BDrawText riverPointer+20, riverPointer+21, #$21, #$64
+        JSR BufferDrawPressStart
         RTS
     :
     CMP #MENU_RIVER_FERRY
     BNE :+
         ; The ferry operator says ...
+        BDrawText riverPointer+34, riverPointer+35, #$21, #$64
         RTS
     :
     CMP #MENU_RIVER_INDIAN
-    BNE :+
+    BNE :+++
         ; page 1
         ; A Shoshoni guide says ...
         ; Will you accept this offer?
-
+        LDA menuCursor
+        BNE :+
+        BDrawText riverPointer+36, riverPointer+37, #$21, #$64
+        BDrawText riverPointer+38, riverPointer+39, #$21, #$a4
+        JMP :++
+        :
         ; page 2
         ; The Shoshoni guide will help you float your wagon across.
+        BDrawText riverPointer+40, riverPointer+41, #$21, #$a4
+        :
         JSR BufferDrawPressStart
         RTS
     :
@@ -164,6 +203,8 @@
         LDA menuOpen
         CMP #MENU_RIVER_INTRO
         BNE :+
+            LDA #0
+            STA menuCursor
             LDA #MENU_RIVER_OPTIONS
             STA menuOpen
         :
@@ -196,12 +237,68 @@
         BNE :+
         JMP CheckUp
         :
+        LDA menuOpen
+        CMP #MENU_RIVER_OPTIONS
+        BNE :++++
+            LDA menuCursor
+            CMP #3 ; "wait to see.." option
+            BNE :+
+            INC fingerY
+            :
+            INC menuCursor
+            LDA menuCursor
+            CMP #2 ; ferry/guide option
+            BNE :+
+            JSR GetRiverAttribute
+            AND #%11000000
+            BNE :+
+            INC menuCursor
+            :
+            INC fingerY
+            LDA menuCursor
+            CMP #5 ; after last option
+            BNE :+
+            LDA #0 ; wrap to top
+            STA menuCursor
+            LDA #15
+            STA fingerY 
+            :
+            RTS
+        :
         RTS
     CheckUp:
         LDA #KEY_UP
         BIT buttons1
         BNE :+
         JMP CheckLeft
+        :
+        LDA menuOpen
+        CMP #MENU_RIVER_OPTIONS
+        BNE :++++
+            LDA menuCursor
+            BNE :+
+            LDA #20
+            STA fingerY
+            LDA #4
+            STA menuCursor
+            RTS
+            :
+            DEC menuCursor
+            DEC fingerY
+            JSR GetRiverAttribute
+            AND #%11000000
+            BNE :+
+            LDA menuCursor
+            CMP #2
+            BNE :+
+            DEC menuCursor
+            :
+            LDA menuCursor
+            CMP #3
+            BNE :+
+            DEC fingerY
+            :
+            RTS
         :
         RTS
     CheckLeft:
@@ -218,4 +315,16 @@
         RTS
         :
         RTS
+.endproc
+
+.proc GetRiverAttribute
+    ; clobbers X,A
+    LDX location ; does river have a ferry?
+    LDA landmarkAttr, X
+    AND #%00111000 ; get (river ID * 2)
+    LSR
+    LSR
+    TAX
+    LDA riverAttribute, X
+    RTS
 .endproc
