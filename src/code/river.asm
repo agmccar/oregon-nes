@@ -31,12 +31,49 @@
         CPX #8
         BNE :-
         EBW
+        LDA #$21
+        STA pointer
+        LDA #$2B
+        STA pointer+1
+        JSR BufferDrawWeatherText
         
         ; "River width:"
         BDrawText riverPointer+42, riverPointer+43, #$21, #$42
+        SBW #9, #$21, #$4f
+        LDX #0
+        :
+        LDA riverWidthDigit, X
+        WBB
+        INX
+        CPX #4
+        BNE :-
+        LDX #0
+        :
+        LDA riverFeet, X
+        WBB
+        INX
+        CPX #5
+        BNE :-
+        EBW
 
         ; "River depth:"
         BDrawText riverPointer+44, riverPointer+45, #$21, #$62
+        SBW #8, #$21, #$6f
+        LDX #0
+        :
+        LDA riverDepthDigit, X
+        WBB
+        INX
+        CPX #3
+        BNE :-
+        LDX #0
+        :
+        LDA riverFeet, X
+        WBB
+        INX
+        CPX #5
+        BNE :-
+        EBW
 
         ; "You may:"
         SBW #8, #$21, #$a2
@@ -315,16 +352,4 @@
         RTS
         :
         RTS
-.endproc
-
-.proc GetRiverAttribute
-    ; clobbers X,A
-    LDX location ; does river have a ferry?
-    LDA landmarkAttr, X
-    AND #%00111000 ; get (river ID * 2)
-    LSR
-    LSR
-    TAX
-    LDA riverAttribute, X
-    RTS
 .endproc

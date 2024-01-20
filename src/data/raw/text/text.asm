@@ -177,17 +177,22 @@ occupationAttribute:
 ; .%%..%%..%%%%%%....%%....%%%%%%..%%..%%.
 ; ........................................
 ; riverAttribute
-; %00000000, $00
-;  ||||||||   ++ Minimum width (*4 = ft, eg 150*4 = 600ft) 
-;  ||++++++----- Minimum depth (0-63 ft)
-;  |+----------- Indian guide available (3 sets of clothes)
-;  +------------ Ferry available ($5)
+; %00000000, $00, $00
+;  ||||||||   ||   ++ width constant w (w*4 = width in ft) 
+;  ||||||||   ++----- depth constant d (d/10 = depth in ft )
+;  ||||++++---------- Unused
+;  ||++-------------- Bottom type- 0:smooth and firm, 1:muddy, 2:rocky and uneven
+;  |+---------------- Indian guide available (3 sets of clothes)
+;  +----------------- Ferry available ($5)
 ; Caulk and Ford are always an option.
 riverAttribute:
-    .byte %10000001, 150 ; Kansas River
-    .byte %00000001, 55  ; Big Blue River
-    .byte %10010100, 100 ; Green River
-    .byte %01000110, 250 ; Snake River
+    .byte %10000000, 10,  150 ; Kansas River
+    .byte %00000000, 10,  55  ; Big Blue River
+    .byte %10000000, 60,  100 ; Green River
+    .byte %01000000, 200, 250 ; Snake River
+
+riverFeet:
+    .byte " feet"
 
 ; ..%%%%...%%%%%%...%%%%...%%%%%...%%%%%%.
 ; .%%........%%....%%..%%..%%..%%..%%.....

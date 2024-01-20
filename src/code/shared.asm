@@ -2864,6 +2864,69 @@
     RTS
 .endproc
 
+.proc GetRiverAttribute
+    ; clobbers X,A
+    LDX location ; get river id
+    LDA landmarkAttr, X
+    AND #%00111000
+    LSR
+    LSR
+    LSR
+    TAX
+    INX
+    LDA #253
+    :
+    CLC
+    ADC #3
+    DEX
+    BNE :-
+    TAX
+    LDA riverAttribute, X
+    RTS
+.endproc
+
+.proc GetRiverBaseDepth
+    ; clobbers X,A
+    LDX location ; get river id
+    LDA landmarkAttr, X
+    AND #%00111000
+    LSR
+    LSR
+    LSR
+    TAX
+    INX
+    LDA #254
+    :
+    CLC
+    ADC #3
+    DEX
+    BNE :-
+    TAX
+    LDA riverAttribute, X
+    RTS
+.endproc
+
+.proc GetRiverBaseWidth
+    ; clobbers X,A
+    LDX location ; get river id
+    LDA landmarkAttr, X
+    AND #%00111000
+    LSR
+    LSR
+    LSR
+    TAX
+    INX
+    LDA #255
+    :
+    CLC
+    ADC #3
+    DEX
+    BNE :-
+    TAX
+    LDA riverAttribute, X
+    RTS
+.endproc
+
 ; .%%%%%%..%%..%%...%%%%...%%%%%%..%%..%%..%%%%%%.
 ; .%%......%%%.%%..%%........%%....%%%.%%..%%.....
 ; .%%%%....%%.%%%..%%.%%%....%%....%%.%%%..%%%%...
@@ -3489,6 +3552,7 @@
     JSR UpdateSupplies
     JSR UpdateHealth
     JSR UpdateDistance
+    JSR UpdateRiver
     JSR IncrementDate
     Done:
     RTS
@@ -5031,5 +5095,33 @@
     LDX eventQueuePointer
     STA eventQueue, X
     INC eventQueuePointer
+    RTS
+.endproc
+
+.proc UpdateRiver
+
+    LDA accumulatedRain ; update river depth
+    CLC
+    ADC accumulatedRain
+    ADC accumulatedRain
+    LSR
+    PHA
+    JSR GetRiverBaseDepth
+    STA riverDepth
+    PLA
+    CLC
+    ADC riverDepth
+    STA riverDepth
+
+    LDA accumulatedRain ; update river width
+    ASL
+    PHA
+    JSR GetRiverBaseWidth
+    STA riverWidth
+    PLA
+    CLC
+    ADC riverWidth
+    STA riverWidth
+    
     RTS
 .endproc

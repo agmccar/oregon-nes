@@ -223,8 +223,8 @@ weather:            .res 1 ; see text.asm -> weatherText
 dateYear:           .res 1 ; years since 1848
 dateMonth:          .res 1
 dateDay:            .res 1
-accumulatedRain:    .res 1 ; 0.100 inch increments - max 25.6"
-accumulatedSnow:    .res 1 ; 0.125 inch increments - max 32"
+accumulatedRain:    .res 1 ; 0.100 inch increments - max 25.5"
+accumulatedSnow:    .res 1 ; 0.125 inch increments - max 31.875"
 
 ; Location (landmark)
 ; see: constants.asm -> Location indices
@@ -232,9 +232,13 @@ location:           .res 1
 wagonAtLandmark:    .res 1 ; 0:wagon is on the trail, 1:wagon is at a location
 
 ; River conditions
-riverWidth:         .res 2
-riverDepth:         .res 1 ; 0.1 ft increments (0.0 ft - 25.5 ft)
+; 0.100 feet increments - max 25.5'
+; values are added to base river conditions (riverAttribute)
+riverWidth:         .res 1 ; baseWidth + (3 * accumulatedRain / 2)
+riverDepth:         .res 1 ; baseDepth + (2 * accumulatedRain)
+
 riverWidthDigit:    .res 4
 riverDepthDigit:    .res 3
+riverSwiftness:     .res 1 ; ?
 
-; remaining: $66
+; remaining: $65
