@@ -11,9 +11,31 @@
     EBD
     LDA menuOpen
     CMP #MENU_RIVER_INTRO
-    BNE :+
+    BNE :++
         ; You must cross the river ...
         BDrawText riverPointer+0, riverPointer+1, #$21, #$64
+
+        SBW #4, #$21, #$d1 ; river width
+        LDX #0
+        :
+        LDA riverWidthDigit, X
+        WBB
+        INX
+        CPX #4
+        BNE :-
+        EBW
+
+        SBW #4, #$21, #$f0 ; river depth
+        LDA riverDepthDigit+1
+        WBB
+        LDA riverDepthDigit+2
+        WBB
+        LDA #_PD
+        WBB
+        LDA riverDepthDigit+3
+        WBB
+        EBW
+
         JSR BufferDrawPressStart
         RTS
     :
@@ -58,14 +80,15 @@
 
         ; "River depth:"
         BDrawText riverPointer+44, riverPointer+45, #$21, #$62
-        SBW #8, #$21, #$6f
-        LDX #0
-        :
-        LDA riverDepthDigit, X
+        SBW #9, #$21, #$6f
+        LDA riverDepthDigit+1
         WBB
-        INX
-        CPX #3
-        BNE :-
+        LDA riverDepthDigit+2
+        WBB
+        LDA #_PD
+        WBB
+        LDA riverDepthDigit+3
+        WBB
         LDX #0
         :
         LDA riverFeet, X

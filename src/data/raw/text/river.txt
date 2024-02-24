@@ -1,7 +1,7 @@
 ## RiverYouMustCross
 
 You must cross the river in order to continue. The river at this point is
-currently ………… feet across, and ……… feet deep in the middle.
+currently ………… feet across, and ………… feet deep in the middle.
 
 ## RiverFordOption
 

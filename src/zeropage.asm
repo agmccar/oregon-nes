@@ -230,15 +230,16 @@ accumulatedSnow:    .res 1 ; 0.125 inch increments - max 31.875"
 ; see: constants.asm -> Location indices
 location:           .res 1
 wagonAtLandmark:    .res 1 ; 0:wagon is on the trail, 1:wagon is at a location
+nextRiver:          .res 1
 
 ; River conditions
 ; 0.100 feet increments - max 25.5'
 ; values are added to base river conditions (riverAttribute)
-riverWidth:         .res 1 ; baseWidth + (3 * accumulatedRain / 2)
-riverDepth:         .res 1 ; baseDepth + (2 * accumulatedRain)
+riverWidth:         .res 2 ; baseWidth + (3 * accumulatedRain / 2)
+riverDepth:         .res 2 ; baseDepth + (2 * accumulatedRain)
 
 riverWidthDigit:    .res 4
-riverDepthDigit:    .res 3
+riverDepthDigit:    .res 4
 riverSwiftness:     .res 1 ; ?
 
 ; remaining: $65

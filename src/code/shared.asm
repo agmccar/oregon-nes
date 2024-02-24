@@ -29,6 +29,7 @@
     LDA #COST_BASE
     STA costBase
     LDA #0
+    STA nextRiver
     STA traveledMi
     STA dateDay             ; date will increment after choosing start month
     STA location
@@ -2865,8 +2866,9 @@
 .endproc
 
 .proc GetRiverAttribute
+    ; this is a spaghetti mess
     ; clobbers X,A
-    LDX location ; get river id
+    LDX nextRiver ; get river id
     LDA landmarkAttr, X
     AND #%00111000
     LSR
@@ -2886,8 +2888,9 @@
 .endproc
 
 .proc GetRiverBaseDepth
+    ; this is a spaghetti mess
     ; clobbers X,A
-    LDX location ; get river id
+    LDX nextRiver ; get river id
     LDA landmarkAttr, X
     AND #%00111000
     LSR
@@ -2907,8 +2910,9 @@
 .endproc
 
 .proc GetRiverBaseWidth
+    ; this is a spaghetti mess
     ; clobbers X,A
-    LDX location ; get river id
+    LDX nextRiver ; get river id
     LDA landmarkAttr, X
     AND #%00111000
     LSR
@@ -5100,6 +5104,8 @@
 
 .proc UpdateRiver
 
+    LDA #0
+    STA riverDepth+1
     LDA accumulatedRain ; update river depth
     CLC
     ADC accumulatedRain
@@ -5112,16 +5118,34 @@
     CLC
     ADC riverDepth
     STA riverDepth
+    LDA riverDepth+1
+    ADC #0
+    STA riverDepth+1
+    LDX #riverDepthDigit
+    LDY #riverDepth
+    JSR SetDigitFromValue
 
+    LDA #0
+    STA riverWidth+1
     LDA accumulatedRain ; update river width
     ASL
     PHA
     JSR GetRiverBaseWidth
     STA riverWidth
+    ASL riverWidth
+    ROL riverWidth+1
+    ASL riverWidth
+    ROL riverWidth+1
     PLA
     CLC
     ADC riverWidth
     STA riverWidth
+    LDA riverWidth+1
+    ADC #0
+    STA riverWidth+1
+    LDX #riverWidthDigit
+    LDY #riverWidth
+    JSR SetDigitFromValue
     
     RTS
 .endproc
