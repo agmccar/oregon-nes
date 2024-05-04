@@ -74,6 +74,10 @@
     STA fingerLastX     ; (5x,6y) tiles from top left, facing R
     STA fingerLastY
     STA menuCursor      ; page number
+    LDA #4
+    STA fingerX
+    LDA #10
+    STA fingerY
     LDA #MENU_NEWGAME_OCCUPATION
     STA menuOpen
     ; JSR LoadBgNewGame   ; Load background
@@ -3127,12 +3131,8 @@
     BNE :+
         LDA #%00000100      ; only main finger visible, pointing right
         STA fingerAttr
-        LDA #4
-        STA fingerX
-        LDA #10
-        STA fingerY
         JSR LoadBgNewGame
-        ; JSR RedrawFinger
+        JSR RedrawFinger
         ; JSR DrawOccupationMenu
         ; LDX #15
         ; LDY #7

@@ -412,7 +412,7 @@
             ; TODO "N"
             RTS
         :
-        RTS
+        JMP AStartShared
     CheckB:
         LDA #KEY_B
         BIT buttons1
@@ -453,6 +453,12 @@
             :
             RTS
         :
+        CMP #MENU_NEWGAME_OCC_HELP
+        BNE :+
+            LDA #MENU_NEWGAME_OCCUPATION
+            STA menuOpen
+            RTS
+        :
         RTS
     CheckStart:
         LDA #KEY_START
@@ -461,16 +467,6 @@
         JMP CheckSelect
         :
         LDA menuOpen
-        CMP #MENU_NEWGAME_OCCUPATION
-        BNE :+
-            JMP @menuOccupation
-        :
-        CMP #MENU_NEWGAME_OCC_HELP
-        BNE :+
-            LDA #MENU_NEWGAME_OCCUPATION
-            STA menuOpen
-            RTS
-        :
         CMP #MENU_NEWGAME_NAMEPARTY
         BNE :++
             LDA keyboardKey
@@ -488,103 +484,7 @@
             JSR HighlightKeyboardKey
             RTS
         :
-        CMP #MENU_NEWGAME_NAMESCORRECT
-        BNE :++
-            LDA menuCursor
-            BEQ :+
-            JSR IncrementDate ; "Y" selected
-            JSR SetOpeningBalance
-            LDA #MENU_NEWGAME_GOINGBACK
-            STA menuOpen
-            RTS
-            :
-            ; LDA #MENU_NEWGAME_CHANGENAME ; todo "N" selected
-            ; STA menuOpen
-                ; LDA #$23 ; clear text line
-                ; STA bufferHelper
-                ; LDA #$22
-                ; STA bufferHelper
-                ; LDX #28
-                ; LDY #1
-                ; JSR BufferDrawBlankBox
-                ; SBW #18, #$23, #$22 ; "Change which name?"
-                ; LDX #0
-                ; :
-                ; LDA newgameNamePartyChangeText, X
-                ; WBB
-                ; INX
-                ; CPX #18
-                ; BNE :-
-                ; EBW
-            
-            RTS
-        :
-        CMP #MENU_NEWGAME_STARTDATE
-        BNE :++
-            LDA fingerY
-            SEC
-            SBC #14
-            CMP #5
-            BEQ :+
-            CLC
-            ADC #3
-            STA dateMonth
-            LDA #MENU_NEWGAME_BEFORELEAVING1
-            STA menuOpen
-            RTS
-            :
-            LDA #MENU_NEWGAME_DATE_HELP
-            STA menuOpen
-            RTS
-        :
-        CMP #MENU_NEWGAME_DATE_HELP
-        BNE :+
-            LDA #MENU_NEWGAME_STARTDATE
-            STA menuOpen
-            RTS
-        :
-        CMP #MENU_NEWGAME_BEFORELEAVING1
-        BNE :+
-            LDA #MENU_NEWGAME_BEFORELEAVING2
-            STA menuOpen
-            RTS
-        :
-        CMP #MENU_NEWGAME_BEFORELEAVING2
-        BNE :+
-            LDA #GAMESTATE_MATT
-            STA gameState
-            RTS
-        :
-        RTS
-        @menuOccupation:
-            LDA #MENU_NEWGAME_NAMEPARTY
-            STA menuOpen
-            LDA fingerY
-            CMP #10 ; "Be a banker from Boston"
-            BNE :+
-            LDA occupationAttribute
-            STA occupation
-            RTS
-            :
-            CMP #13 ; "Be a carpenter from Ohio"
-            BNE :+
-            LDA occupationAttribute+1
-            STA occupation
-            RTS
-            :
-            CMP #16 ; "Be a farmer from Illinois"
-            BNE :+
-            LDA occupationAttribute+2
-            STA occupation
-            RTS
-            :
-            CMP #19 ; "Find out the differences between these choices"
-            BNE :+
-            LDA #MENU_NEWGAME_OCC_HELP
-            STA menuOpen
-            RTS
-            :
-            RTS
+        JMP AStartShared
     CheckSelect:
         LDA #KEY_SELECT
         BIT buttons1
@@ -821,6 +721,114 @@
         BNE :+
             JSR ToggleYN
             RTS
+        :
+        RTS
+    AStartShared: ; actions performed by both A and Start
+        CMP #MENU_NEWGAME_OCCUPATION
+        BNE :+
+            JMP OccupationMenuNext
+        :
+        CMP #MENU_NEWGAME_OCC_HELP
+        BNE :+
+            LDA #MENU_NEWGAME_OCCUPATION
+            STA menuOpen
+            RTS
+        :
+        CMP #MENU_NEWGAME_STARTDATE
+        BNE :++
+            LDA fingerY
+            SEC
+            SBC #14
+            CMP #5
+            BEQ :+
+            CLC
+            ADC #3
+            STA dateMonth
+            LDA #MENU_NEWGAME_BEFORELEAVING1
+            STA menuOpen
+            RTS
+            :
+            LDA #MENU_NEWGAME_DATE_HELP
+            STA menuOpen
+            RTS
+        :
+        CMP #MENU_NEWGAME_DATE_HELP
+        BNE :+
+            LDA #MENU_NEWGAME_STARTDATE
+            STA menuOpen
+            RTS
+        :
+        CMP #MENU_NEWGAME_BEFORELEAVING1
+        BNE :+
+            LDA #MENU_NEWGAME_BEFORELEAVING2
+            STA menuOpen
+            RTS
+        :
+        CMP #MENU_NEWGAME_BEFORELEAVING2
+        BNE :+
+            LDA #GAMESTATE_MATT
+            STA gameState
+            RTS
+        :
+        CMP #MENU_NEWGAME_NAMESCORRECT
+        BNE :++
+            LDA menuCursor
+            BEQ :+
+            JSR IncrementDate ; "Y" selected
+            JSR SetOpeningBalance
+            LDA #MENU_NEWGAME_GOINGBACK
+            STA menuOpen
+            RTS
+            :
+            ; LDA #MENU_NEWGAME_CHANGENAME ; todo "N" selected
+            ; STA menuOpen
+                ; LDA #$23 ; clear text line
+                ; STA bufferHelper
+                ; LDA #$22
+                ; STA bufferHelper
+                ; LDX #28
+                ; LDY #1
+                ; JSR BufferDrawBlankBox
+                ; SBW #18, #$23, #$22 ; "Change which name?"
+                ; LDX #0
+                ; :
+                ; LDA newgameNamePartyChangeText, X
+                ; WBB
+                ; INX
+                ; CPX #18
+                ; BNE :-
+                ; EBW
+            
+            RTS
+        :
+        RTS
+    OccupationMenuNext:
+        LDA #MENU_NEWGAME_NAMEPARTY
+        STA menuOpen
+        LDA fingerY
+        CMP #10 ; "Be a banker from Boston"
+        BNE :+
+        LDA occupationAttribute
+        STA occupation
+        RTS
+        :
+        CMP #13 ; "Be a carpenter from Ohio"
+        BNE :+
+        LDA occupationAttribute+1
+        STA occupation
+        RTS
+        :
+        CMP #16 ; "Be a farmer from Illinois"
+        BNE :+
+        LDA occupationAttribute+2
+        STA occupation
+        RTS
+        :
+        CMP #19 ; "Find out the differences between these choices"
+        BNE :+
+        LDA #MENU_NEWGAME_OCC_HELP
+        STA menuOpen
+        RTS
         :
         RTS
 .endproc
