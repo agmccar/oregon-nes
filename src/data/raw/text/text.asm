@@ -459,7 +459,8 @@ topTenColumnText:
     .byte "Name", "Points", "Rating"
 
 topTenQuestionText:
-    .byte "Would you like to see how pts are earned?"
+    .byte "Would you like to see"
+    .byte "how pts are earned?"
 
 topTenHelpText:
     .byte "On Arriving In Oregon"

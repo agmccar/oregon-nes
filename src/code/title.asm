@@ -378,7 +378,7 @@
     BPL :+
     JMP Done
     :
-    SBW #4, #$21, #$cb
+    SBW #4, #$21, #$c4
     LDA #_O_
     WBB
     LDA #_N_
@@ -464,8 +464,13 @@
     LDA menuCursor
     CMP #3
     BNE :+
-    CLC
-    JSR BufferHelperNextLine
+    ; shift text down 4 lines on last page
+    LDA bufferHelper+1
+    ADC #$80
+    STA bufferHelper+1
+    LDA bufferHelper
+    ADC #0
+    STA bufferHelper
     :
     JSR BufferDrawText
     JSR BufferDrawPressStart
@@ -898,7 +903,8 @@
         BNE :+
         JMP CheckStart
         :
-        JMP Done
+        ; A button = Start button
+        JMP :+
     CheckStart:
         LDA #KEY_START
         BIT buttons1
