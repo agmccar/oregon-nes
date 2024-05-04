@@ -354,7 +354,7 @@
 .proc BufferDrawTitleSound
     JSR BufferClearTitle
     
-    LDA soundPointer
+    LDA soundPointer ; "The sound is now turned"
     STA pointer
     LDA soundPointer+1
     STA pointer+1
@@ -364,7 +364,9 @@
     STA bufferHelper+1
     JSR BufferDrawText
 
-    LDA soundPointer+2
+    JSR BufferDrawSoundOnOff ; "off. | on."
+
+    LDA soundPointer+2 ; "You may turn the sound on or off..."
     STA pointer
     LDA soundPointer+3
     STA pointer+1
@@ -374,20 +376,6 @@
     STA bufferHelper+1
     JSR BufferDrawText
 
-    BIT gameSettings
-    BPL :+
-    JMP Done
-    :
-    SBW #4, #$21, #$c4
-    LDA #_O_
-    WBB
-    LDA #_N_
-    WBB
-    LDA #_PD
-    WBB
-    LDA #___
-    WBB
-    EBW
     Done:
     LDA gameSettings
     EOR #$80
@@ -1148,10 +1136,38 @@
     DEY
     BNE Option
 
-    SBW #3, #$22, #$71 ; sound On or Off
+    JSR BufferDrawSoundOnOff
+
+    ; draw "What is your choice?"
+    SBW #20, #$22, #$C4
+        LDX #10
+        :
+        LDA whatIsYourChoiceText, X
+        WBB
+        INX
+        CPX #30
+        BNE :-
+    EBW
+    RTS
+.endproc
+
+.proc BufferDrawSoundOnOff
+    LDA #$22 ; assume title screen
+    STA helper
+    LDA #$71
+    STA helper+1
+    LDA menuOpen
+    CMP #MENU_TITLE_SOUND
+    BNE :+
+    LDA #$21 ; shift location on sound options screen
+    STA helper
+    LDA #$C4
+    STA helper+1
+    :
+    SBW #3, helper, helper+1 ; sound On or Off
         LDA #_O_
         WBB
-        LDA gameSettings
+        BIT gameSettings
         BPL :+
         LDA #_F_
         WBB
@@ -1166,15 +1182,19 @@
         :
     EBW
 
-    ; draw "What is your choice?"
-    SBW #20, #$22, #$C4
-        LDX #10
-        :
-        LDA whatIsYourChoiceText, X
-        WBB
-        INX
-        CPX #30
-        BNE :-
-    EBW
+    ; on sound options screen, add a period
+    LDA menuOpen
+    CMP #MENU_TITLE_SOUND
+    BNE :++
+    LDX #6
+    LDA gameSettings
+    BPL :+
+    INX
+    :
+    LDA #_PD
+    LDY #14
+    WTB
+    :
+
     RTS
 .endproc

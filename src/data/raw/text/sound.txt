@@ -1,6 +1,6 @@
 ## Text1
 
-The sound is now turned off.
+The sound is now turned$
 
 ## Text2
 

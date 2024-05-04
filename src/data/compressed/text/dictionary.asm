@@ -47,9 +47,9 @@ talkDictionary:
     .byte _R_,_O_
     .byte _W_,_A_
     .byte _I_,_T_
-    .byte _O_,_F_
     .byte _E_,_C_
     .byte _E_,_P_
+    .byte _O_,_F_
     .byte _W_,_I_
     .byte _I_,_V_
     .byte _E_,_L_
